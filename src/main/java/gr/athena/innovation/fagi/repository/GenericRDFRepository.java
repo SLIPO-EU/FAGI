@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightModel;
 import static gr.athena.innovation.fagi.repository.AbstractRepository.parseLinksFile;
+import java.io.File;
 import java.text.ParseException;
 
 import org.apache.jena.rdf.model.Model;
@@ -22,17 +23,29 @@ public class GenericRDFRepository extends AbstractRepository{
     @Override
     public void parseLeft(String filepath) {
         logger.debug("Loading left dataset file:\" " + filepath + "\" with Generic Loader");
+        
+        if(!isValidPath(filepath)){
+            logger.fatal("Invalid path for Left dataset: " + filepath + ". Check the config file.");
+            throw new RuntimeException();
+        }
+        
         Model model = ModelFactory.createDefaultModel();
         model.read(filepath, null); //null base URI, since URIs are absolute
 
         LeftModel leftModel = LeftModel.getLeftModel();
         logger.debug("Jena model size for left dataset: " + model.size());
-        leftModel.setModel(model);
+        leftModel.setModel(model);   
     }
     
     @Override
     public void parseRight(String filepath) {
         logger.debug("Loading right dataset file:\" " + filepath + "\" with Generic Loader");
+        
+        if(!isValidPath(filepath)){
+            logger.fatal("Invalid path for Right dataset: " + filepath + ". Check the config file.");
+            throw new RuntimeException();
+        }
+        
         Model model = ModelFactory.createDefaultModel();
         model.read(filepath, null); //null base URI, since URIs are absolute
         
@@ -45,6 +58,11 @@ public class GenericRDFRepository extends AbstractRepository{
     public void parseLinks(String filepath) throws ParseException{
         
         logger.debug("Loading links file:\" " + filepath + "\" with Generic Loader");
+        
+        if(!isValidPath(filepath)){
+            logger.fatal("Invalid path for Links file: " + filepath + ". Check the config file.");
+            throw new RuntimeException();
+        }
         
         loadLinksModel(filepath);
         loadLinksList(filepath);
@@ -67,5 +85,9 @@ public class GenericRDFRepository extends AbstractRepository{
     public void readFile(String path) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-   
+    
+    private boolean isValidPath(String filepath){
+        File file = new File(filepath);
+        return (file.exists() && !file.isDirectory());
+    }
 }

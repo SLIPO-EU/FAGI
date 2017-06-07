@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.fusers;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -37,9 +38,12 @@ public class CentroidShiftTranslator {
      * @param deltaShift the Coordinate of the translation
      */ 
     public void translate(Geometry geometry, final Coordinate deltaShift) { 
-      geometry.apply((Coordinate coordinate) -> {
-          coordinate.x += deltaShift.x;
-          coordinate.y += deltaShift.y;
+      geometry.apply(new CoordinateFilter() {
+          @Override
+          public void filter(Coordinate coordinate) {
+              coordinate.x += deltaShift.x;
+              coordinate.y += deltaShift.y;
+          }
       }); 
     } 
 
