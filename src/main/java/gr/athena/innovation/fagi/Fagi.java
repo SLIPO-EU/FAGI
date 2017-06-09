@@ -30,7 +30,7 @@ public class Fagi {
     public static void main(String[] args) throws ParseException, com.vividsolutions.jts.io.ParseException, FileNotFoundException, IOException {
 
         String configPath = "src/main/resources/config.properties";
-        
+
         String arg;
         String value;
         int i = 0;
@@ -58,8 +58,7 @@ public class Fagi {
 
         ConfigReader configReader = new ConfigReader();
         FusionConfig config = configReader.loadConfiguration(configPath);
-        
-        
+
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(config.getPathA());
         genericRDFRepository.parseRight(config.getPathB());
@@ -71,7 +70,7 @@ public class Fagi {
         fuser.fuseAll(config);
 
         fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
-        
+
         logger.info(config.toString());
         logger.trace("interlinkedEntitiesList " + interlinkedEntitiesList.size());
         logger.info("Interlinked not found in datasets: " + fuser.getLinkedEntitiesNotFoundInDataset());

@@ -45,7 +45,7 @@ public class InterlinkedPair {
 
     public void fuse(EnumGeometricActions geoAction, EnumMetadataActions metaAction){
         fusedEntity = new Entity();
-        //Metadata meta = new Metadata();
+
         fuseGeometry(geoAction);
         fuseMetadata(metaAction);
     }

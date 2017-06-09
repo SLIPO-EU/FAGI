@@ -1,8 +1,5 @@
 package gr.athena.innovation.fagi.utils;
 
-
-
-
 /**
  *
  * @author nkarag

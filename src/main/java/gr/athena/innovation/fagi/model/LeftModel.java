@@ -4,7 +4,7 @@ import org.apache.jena.rdf.model.Model;
 
 /**
  *
- * @author Nikos Karagiannakis
+ * @author nkarag
  */
 public final class LeftModel {
     

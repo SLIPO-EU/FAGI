@@ -3,7 +3,7 @@ package gr.athena.innovation.fagi.utils;
 /**
  * Class containing namespaces and other constants to be used globally.
  * 
- * @author Nikos Karagiannakis
+ * @author nkarag
  */
 public class Namespace {
     

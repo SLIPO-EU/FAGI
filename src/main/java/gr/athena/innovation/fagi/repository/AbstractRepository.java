@@ -53,20 +53,8 @@ public abstract class AbstractRepository {
         final StmtIterator iter = model.listStatements();
         
         while(iter.hasNext()) {
+            
             final Statement statement = iter.nextStatement();
-            //System.out.println("--- ");
-            //System.out.println(statement.getSubject().getNameSpace());
-            
-            //TODO - set namespace out of loop, or keep it here in order to check if it is the same for all links.
-            //LeftModel.getLeftModel().setNamespace(statement.getSubject().getNameSpace());
-            
-            //System.out.println(statement.getSubject().getLocalName());
-            //System.out.println("###");
-            //System.out.println(statement.getObject().asResource().getNameSpace());  
-            //RightModel.getRightModel().setNamespace(statement.getObject().asResource().getNameSpace());
-            
-            //statement.getSubject().getNameSpace();
-            
             final String nodeA = statement.getSubject().getURI();
             final String nodeB;
             final RDFNode object = statement.getObject();           

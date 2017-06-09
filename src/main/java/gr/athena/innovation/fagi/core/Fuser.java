@@ -4,8 +4,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.model.Entity;
-import gr.athena.innovation.fagi.model.EnumGeometricActions;
-import gr.athena.innovation.fagi.model.EnumMetadataActions;
 import gr.athena.innovation.fagi.configuration.FusionConfig;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
@@ -38,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Nikos Karagiannakis
+ * @author nkarag
  */
 public class Fuser implements IFuser{ 
     

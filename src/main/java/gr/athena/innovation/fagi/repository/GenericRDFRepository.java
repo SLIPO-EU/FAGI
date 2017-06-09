@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
- * @author Nikos Karagiannakis
+ * @author nkarag
  */
 public class GenericRDFRepository extends AbstractRepository{
 

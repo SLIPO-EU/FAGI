@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Represents a link between two RDF nodes.
  * 
- * @author Nikos Karagiannakis
+ * @author nkarag
  */
 public class Link implements Serializable {
     private String nodeA, nodeB;
