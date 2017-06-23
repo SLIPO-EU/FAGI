@@ -1,8 +1,7 @@
-package gr.athena.innovation.fagi.configuration;
+package gr.athena.innovation.fagi.core.specification;
 
-import gr.athena.innovation.fagi.model.EnumFuseIntoDataset;
-import gr.athena.innovation.fagi.model.EnumGeometricActions;
-import gr.athena.innovation.fagi.model.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
+import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +27,7 @@ public class FusionConfig {
     private EnumMetadataActions metaAction;
 
     private int optionalDepth = 1; //depth of optional in sparql queries
-    private final int maxOptionalDepth = 3;
+    private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;
     
     public void setPathA(String pathA) {

@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -13,6 +15,7 @@ import java.util.Scanner;
  */
 public class DataGridProcessor {
 
+    private static final Logger logger = LogManager.getRootLogger();
     private final String filepath;
 
     public DataGridProcessor(String filepath){
@@ -39,6 +42,9 @@ public class DataGridProcessor {
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
+                if(line.contains(Namespace.WKT)){
+                    logger.debug("Found geometry");
+                }
                 // System.out.println(line);
             }
             //Scanner suppresses exceptions

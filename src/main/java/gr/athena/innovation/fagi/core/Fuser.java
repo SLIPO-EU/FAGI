@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.model.Entity;
-import gr.athena.innovation.fagi.configuration.FusionConfig;
+import gr.athena.innovation.fagi.core.specification.FusionConfig;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.Link;
@@ -173,9 +173,10 @@ public class Fuser implements IFuser{
         Geometry geo = wellKnownTextReader.read(geometryStatement.getLiteral().getString());
         
         //remove geometry from metadata model.
-        model.removeAll(null, ResourceFactory.createProperty(Namespace.WKT), (Literal) null);
+        //TODO - remove any orphaned chain when ontology is defined
         //model.removeAll(null, ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY), (RDFNode) null);
-        
+        model.removeAll(null, ResourceFactory.createProperty(Namespace.WKT), (Literal) null);
+
         Metadata metadata = new Metadata(model);
         
         entity.setGeometryNode(geometryNode);

@@ -1,8 +1,8 @@
 package gr.athena.innovation.fagi;
 
-import gr.athena.innovation.fagi.configuration.ConfigReader;
+import gr.athena.innovation.fagi.core.specification.ConfigReader;
 import gr.athena.innovation.fagi.core.Fuser;
-import gr.athena.innovation.fagi.configuration.FusionConfig;
+import gr.athena.innovation.fagi.core.specification.FusionConfig;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;

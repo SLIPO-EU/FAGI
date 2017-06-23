@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.model;
+package gr.athena.innovation.fagi.core.specification;
 
 import java.util.HashMap;
 import java.util.Map;

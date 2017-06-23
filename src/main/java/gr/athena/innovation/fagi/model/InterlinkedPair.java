@@ -1,9 +1,29 @@
 package gr.athena.innovation.fagi.model;
 
+import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
 import gr.athena.innovation.fagi.fusers.CentroidShiftTranslator;
+import gr.athena.innovation.fagi.utils.SparqlConstructor;
+import java.util.Iterator;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.apache.jena.vocabulary.RDF;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +71,6 @@ public class InterlinkedPair {
     }
 
     public void fuseGeometry(EnumGeometricActions geoAction){
-
         
         Geometry leftGeometry = leftNode.getGeometry();
         Geometry rightGeometry = rightNode.getGeometry();
@@ -106,7 +125,7 @@ public class InterlinkedPair {
     }
 
     public void fuseMetadata(EnumMetadataActions metaAction){
-        
+        //log   
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
 
@@ -119,11 +138,129 @@ public class InterlinkedPair {
                 fusedEntity.setMetadata(rightMetadata);
                 break;
             case KEEP_BOTH_METADATA:
+                {
+                    Metadata fusedMetadata = fusedEntity.getMetadata();
+                    fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
+                    fusedMetadata.setModel(fusedModel);
+                    fusedEntity.setMetadata(fusedMetadata);
+                    break;
+                }
+            case FLATTEN_LEFT_METADATA:
                 Metadata fusedMetadata = fusedEntity.getMetadata();
+                Model mod = leftMetadata.getModel();
+                Model tempModel = leftMetadata.getModel();
+                // iterate over the triples
+                for (StmtIterator i = mod.listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
+                    
+                    Statement originalStatement = i.nextStatement();
+                    tempModel.add(originalStatement);
+                    
+                    Resource s = originalStatement.getSubject();
+                    Property p = originalStatement.getPredicate();
+                    RDFNode o = originalStatement.getObject();
+                    
+                    
+                    
+                    if(o.isLiteral()){ //last triple of chain
+                        System.out.println("#####" + originalStatement.toString());
+                        //check if the subject of this triple is an object to another
+                        if(mod.contains(null, null, s)){
+                            Statement st = mod.getProperty(s, null);
+                            System.out.println("->##########" + st.toString());
+                        }
+                    } else {
+                        System.out.println("*****" + originalStatement.toString());
+                    }
+                    
+//                    if(o.isResource()){
+//
+//                        boolean objectIsAlsoSubject = mod.contains(o.asResource(), null, (RDFNode) null);
+//
+//                        if(objectIsAlsoSubject){
+//                            tempModel.remove(originalStatement);
+//                            //ResourceFactory.createProperty(uriref);
+//                            Statement flattenedStatement = ResourceFactory.createStatement(s, p, o);
+//                            tempModel.add(flattenedStatement);
+//                            //
+//
+//                            //remove statement from model, add flatend
+//                        }
+//
+//                        //System.out.println("&&&&&&" + cont);
+//                        //logger.debug(cont);
+//                        //System.exit(0);
+//                    }
+                }
+                //use SPARQL query
+                String q = SparqlConstructor.selectAll(2);
+                Query query = QueryFactory.create(q);
+                QueryExecution queryExecution = QueryExecutionFactory.create(query, mod);
+                ResultSet resultSet = queryExecution.execSelect();
+                System.out.println("\n\nFlatening");
+
+                //resultSet.
+                while ( resultSet.hasNext() ) {
+                    QuerySolution qs = resultSet.next();
+                    
+                    //?s ?p1 ?o1 ?p2 ?o2 ?p3 ?o3 ?p4 ?o4
+                    RDFNode s = qs.get("s");
+                    RDFNode p1 = qs.get("p1");
+                    RDFNode o1 = qs.get("o1");
+                    
+                    RDFNode p2 = qs.get("p2");
+                    RDFNode o2 = qs.get("o2");
+                    
+                    RDFNode p3 = qs.get("p3");
+                    RDFNode o3 = qs.get("o3");
+                    
+                    RDFNode p4 = qs.get("p4");
+                    RDFNode o4 = qs.get("o4");
+
+                    Iterator<String> vars = qs.varNames();
+                    while(vars.hasNext()){
+                        String var = vars.next();
+                        
+                        RDFNode node = qs.get(var);
+                        if(node.isResource()){
+                            
+                        }
+                        
+                    }
+                    if(o4 != null){
+                        logger.debug("o4 chain");
+                        logger.debug(s + " " + p1+ " " + o1 
+                            + "\n" + o1 + " " + p2 + " " + o2 
+                            + "\n" + o2 + p3 + " " + o3 
+                            + "\n" + o3 + p4 + " " + o4);
+                        if(o4.isLiteral()){
+                            
+                            //found literal, flatten chain in a single triple
+                            
+                        }
+                    } else if(o3 !=null){
+                        logger.warn("o3 chain");
+                        logger.debug(s + " " + p1+ " " + o1 
+                            + "\n" + o1 + " " + p2 + " " + o2 
+                            + "\n" + o2 + p3 + " " + o3);
+                    } else if(o2 != null){
+                        logger.debug("o2 chain");
+                        logger.debug(s + " " + p1+ " " + o1 
+                            + "\n" + o1 + " " + p2 + " " + o2);
+                    }
+                }                
+                //mod.
+//                Metadata fusedMetadata = fusedEntity.getMetadata();
                 fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
                 fusedMetadata.setModel(fusedModel);
+                System.out.println(fusedMetadata.getModel().write(System.out));
                 fusedEntity.setMetadata(fusedMetadata);
                 break;
+//            case KEEP_BOTH_METADATA:
+////                Metadata fusedMetadata = fusedEntity.getMetadata();
+////                fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
+////                fusedMetadata.setModel(fusedModel);
+//                fusedEntity.setMetadata(fusedMetadata);
+//                break;                           
         }        
     }
 }

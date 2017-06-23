@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.model;
+package gr.athena.innovation.fagi.core.action;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

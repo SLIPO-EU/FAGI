@@ -1,8 +1,7 @@
-package gr.athena.innovation.fagi.configuration;
+package gr.athena.innovation.fagi.core.specification;
 
-import gr.athena.innovation.fagi.model.EnumFuseIntoDataset;
-import gr.athena.innovation.fagi.model.EnumGeometricActions;
-import gr.athena.innovation.fagi.model.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
+import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
