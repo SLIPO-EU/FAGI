@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  *
+ * 
  * @author nkarag
  */
 public class Fuser implements IFuser{ 
@@ -45,15 +46,24 @@ public class Fuser implements IFuser{
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
     
+    /**
+     *
+     * @param interlinkedEntitiesList
+     */
     public Fuser(ArrayList<InterlinkedPair> interlinkedEntitiesList) {
         this.interlinkedEntitiesList = interlinkedEntitiesList;
     }
 
+    /**
+     *
+     * @param config
+     * @throws ParseException
+     */
     @Override
     public void fuseAll(FusionConfig config) throws ParseException{
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();
-        
+
         Model left = LeftModel.getLeftModel().getModel();
         Model right = RightModel.getRightModel().getModel();
         LinksModel links = LinksModel.getLinksModel();
@@ -79,12 +89,16 @@ public class Fuser implements IFuser{
             pair.fuse(config.getGeoAction(), config.getMetaAction());
             fusedPairsCount++;
             interlinkedEntitiesList.add(pair);
-
         }
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
     }
     
-    
+    /**
+     *
+     * @param config
+     * @param interlinkedEntitiesList
+     * @throws FileNotFoundException
+     */
     public void combineFusedAndWrite(FusionConfig config, 
             ArrayList<InterlinkedPair> interlinkedEntitiesList) throws FileNotFoundException{
         
@@ -199,14 +213,26 @@ public class Fuser implements IFuser{
         return model;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLinkedEntitiesNotFoundInDataset() {
         return linkedEntitiesNotFoundInDataset;
     }
 
+    /**
+     *
+     * @param linkedEntitiesNotFoundInDataset
+     */
     public void setLinkedEntitiesNotFoundInDataset(int linkedEntitiesNotFoundInDataset) {
         this.linkedEntitiesNotFoundInDataset = linkedEntitiesNotFoundInDataset;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getFusedPairsCount() {
         return fusedPairsCount;
     }
