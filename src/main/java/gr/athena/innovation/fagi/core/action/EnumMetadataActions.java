@@ -15,8 +15,7 @@ import java.util.Map;
  */
 public enum EnumMetadataActions {
     
-    UNDEFINED(0), KEEP_BOTH_METADATA(1), KEEP_LEFT_METADATA(2), KEEP_RIGHT_METADATA(3), 
-    FLATTEN_LEFT_METADATA(4), FLATTEN_RIGHT_METADATA(5);
+    UNDEFINED(0), KEEP_BOTH_METADATA(1), KEEP_LEFT_METADATA(2), KEEP_RIGHT_METADATA(3);
     
 	private final int value;
 
@@ -67,8 +66,6 @@ public enum EnumMetadataActions {
         case KEEP_BOTH_METADATA: return "Keep Both Metadata";
         case KEEP_LEFT_METADATA: return "Keep Left Metadata";
         case KEEP_RIGHT_METADATA: return "Keep Right Metadata";
-        case FLATTEN_LEFT_METADATA: return "Flatten Left Metadata";
-        case FLATTEN_RIGHT_METADATA: return "Flatten Right Metadata";
         default: throw new IllegalArgumentException();
       }
     }    

@@ -30,7 +30,7 @@ public enum EnumGeometricActions {
 			intToTypeMap.put(type.value, type);
 		}
 	}
-    
+         
 	private EnumGeometricActions(int value) {
 		this.value = value;
 	}
