@@ -1,0 +1,40 @@
+<RULES>
+	<DATASETA>OPENSTREETMAP</DATASETA>
+	<DATASETB>WIKIMAPIA</DATASETB>
+	<PRIORITY>
+		<RULE>
+			<PROPERTYA>dateA</PROPERTYA>
+			<PROPERTYB>dateB</PROPERTYB>
+			<CONDITION>
+				<IF>
+					<EXPRESSION>dateIsKnownFormat</EXPRESSION>
+					<ACTION>KeepA</ACTION>
+				</IF>
+			</CONDITION>
+			<CONDITION>
+				<IF>
+					<EXPRESSION>dateIsKnownFormat</EXPRESSION>
+					<ACTION>KeepB</ACTION>
+				</IF>
+				<ELSE>
+					<ACTION>KeepA</ACTION>
+				</ELSE>
+			</CONDITION>
+			<DEFAULT_ACTION>KeepB</DEFAULT_ACTION>
+		</RULE>
+		<RULE>
+			<PROPERTYA>addressA</PROPERTYA>
+			<PROPERTYB>addressB</PROPERTYB>
+			<CONDITION>
+				<IF>
+					<EXPRESSION>addressA.isABBR !addressB.isABBR</EXPRESSION>
+					<ACTION>KeepB</ACTION>
+				</IF>
+				<ELSE>
+				<ACTION>KeepBoth</ACTION>
+				</ELSE>
+			</CONDITION>
+			<DEFAULT_ACTION>KeepA</DEFAULT_ACTION>
+		</RULE>		
+	</PRIORITY>
+</RULES>
