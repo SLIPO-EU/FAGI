@@ -102,7 +102,7 @@ public class XmlProcessor {
             //ruleCatalog.addItem(constructRule(ruleChilds.item(k)));
 
         }
-        System.exit(0);
+        //System.exit(0);
     }
 
     /*

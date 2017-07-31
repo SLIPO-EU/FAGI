@@ -14,9 +14,6 @@ public class LogicalExpressionTag extends ExpressionTag{
     private final int level;
     private List<ExpressionTag> expressionTags = new ArrayList<>();;
     private List<LogicalExpressionTag> logicalExpressionTags = new ArrayList<>();
-    
-    //private ExpressionTag expressionTagA;
-    //private ExpressionTag expressionTagB;
 
     public LogicalExpressionTag(String logicalOp, int level){
         this.level = level;
@@ -42,11 +39,6 @@ public class LogicalExpressionTag extends ExpressionTag{
         this.expressionTags = expressionTags;
     }
 
-    @Override
-    public String toString() {
-        return "LogicalExpressionTag{" + "key=" + key + ", logicalOp=" + logicalOp + ", level=" + level + ", expressionTags=" + expressionTags + ", logicalExpressionTags=" + logicalExpressionTags + '}';
-    }
-
     public List<LogicalExpressionTag> getLogicalExpressionTags() {
         return logicalExpressionTags;
     }
@@ -66,4 +58,9 @@ public class LogicalExpressionTag extends ExpressionTag{
     public void setKey(String key) {
         this.key = key;
     }
+    
+    @Override
+    public String toString() {
+        return "LogicalExpressionTag{" + "key=" + key + ", logicalOp=" + logicalOp + ", level=" + level + ", expressionTags=" + expressionTags + ", logicalExpressionTags=" + logicalExpressionTags + '}';
+    }    
 }

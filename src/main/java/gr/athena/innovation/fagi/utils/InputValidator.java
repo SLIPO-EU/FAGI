@@ -18,7 +18,7 @@ public class InputValidator {
         this.rulesXsdPath = rulesXsdPath;
         this.specificationPath = specificationPath;
     }
-    
+
     public boolean isValidInput() throws FileNotFoundException{
         return isValidXml() && isValidSpecification() && isValidRules();
     }
@@ -26,7 +26,7 @@ public class InputValidator {
     private boolean isValidXml() throws FileNotFoundException{
         XmlValidator xmlValidator = new XmlValidator();
         xmlValidator.validateAgainstXSD(rulesXmlPath, rulesXsdPath);
-        
+
         return true;
     }
     

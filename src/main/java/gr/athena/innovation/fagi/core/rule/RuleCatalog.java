@@ -5,23 +5,20 @@ import java.util.List;
 
 
 /**
- *
  * @author nkarag
- * @param <Rule>
+ * 
  */
-public class RuleCatalog<Rule>{
+
+public class RuleCatalog{
 
 	private final List<Rule> rules = new ArrayList<>(); 
 
-	public RuleCatalog(){
-	}
- 
-	public Object getItem(){
-		return rules.get(0);
-	}
- 
 	public void addItem(Rule rule){ 
 		rules.add(rule);
 	}
-    
+
+    public List<Rule> getRules() {
+        return rules;
+    }
+
 }

@@ -11,23 +11,12 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
  */
 public class Rule {
 
-    private String onProperty;
     private String propertyA;
     private String propertyB;
-    private String method;
-    private EnumGeometricActions geoAction;
-    private EnumMetadataActions metaAction;
+    private ActionRuleSet actionRuleSet;
     private EnumGeometricActions defaultGeoAction;
     private EnumMetadataActions defaultMetaAction;
-    
-    public String getOnProperty() {
-        return onProperty;
-    }
 
-    public void setOnProperty(String onProperty) {
-        this.onProperty = onProperty;
-    }
-    
     public String getPropertyA() {
         return propertyA;
     }
@@ -42,30 +31,6 @@ public class Rule {
 
     public void setPropertyB(String propertyB) {
         this.propertyB = propertyB;
-    }
-    
-    public void setMethod(String method){
-        this.method = method;
-    }
-    
-    public String getMethod(){
-        return method;
-    }
-
-    public EnumGeometricActions getGeoAction() {
-        return geoAction;
-    }
-
-    public void setGeoAction(EnumGeometricActions geoAction) {
-        this.geoAction = geoAction;
-    }
-
-    public EnumMetadataActions getMetaAction() {
-        return metaAction;
-    }
-
-    public void setMetaAction(EnumMetadataActions metaAction) {
-        this.metaAction = metaAction;
     }
 
     public EnumGeometricActions getDefaultGeoAction() {
@@ -83,6 +48,20 @@ public class Rule {
     public void setDefaultMetaAction(EnumMetadataActions defaultMetaAction) {
         this.defaultMetaAction = defaultMetaAction;
     }
-
     
+    @Override
+    public String toString() {
+        return "Rule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
+                + "\ndefaultGeoAction=" + defaultGeoAction + ", "
+                + "\ndefaultMetaAction=" + defaultMetaAction + ", "
+                + "\nactionRuleSet=" + actionRuleSet + '}';
+    }
+
+    public ActionRuleSet getActionRuleSet() {
+        return actionRuleSet;
+    }
+
+    public void setActionRuleSet(ActionRuleSet actionRuleSet) {
+        this.actionRuleSet = actionRuleSet;
+    }
 }

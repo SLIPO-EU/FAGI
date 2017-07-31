@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.specification.ConfigReader;
 import gr.athena.innovation.fagi.core.Fuser;
+import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.rule.XmlValidator;
 import gr.athena.innovation.fagi.core.specification.FusionConfig;
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,16 +55,23 @@ public class Fagi {
             System.out.println("-config requires a file path");
             System.exit(0);
         }
-        
+
         XmlValidator v = new XmlValidator();
         //v.validate("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
         v.validateAgainstXSD("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
-        
-        //System.exit(0);
-        RuleCatalog ruleCatalog = new RuleCatalog();
-        XmlProcessor2 xm = new XmlProcessor2(ruleCatalog);
-        xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules5.xml");
-        
+
+        XmlProcessor2 xm = new XmlProcessor2();
+        RuleCatalog ruleCatalog = xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules5.xml");
+
+        List<Rule> rules = ruleCatalog.getRules();
+        logger.info("\n\n\n\nRules size: " + rules.size());
+        for (Rule rule : rules){
+            logger.fatal(rule.toString());
+            //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
+            //logger.debug(actionRuleString);
+
+        }
+
         String configPath = "src/main/resources/config.properties";
 
         String arg;
@@ -76,7 +85,7 @@ public class Fagi {
                     System.out.println("-config requires a file path");
                     System.exit(0);	   
                 }
-            }    
+            }
             value = args[i+1];
             if(arg.equals("-config")){
              System.out.println("config file set, path is: " + value);

@@ -1,9 +1,6 @@
 package gr.athena.innovation.fagi.core.rule;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import org.w3c.dom.Node;
 
 /**
  *
@@ -20,21 +17,11 @@ public class ConditionTag {
     public void setExpressionTag(ExpressionTag expressionTag) {
         this.expressionTag = expressionTag;
     }
-
-//    @Override
-//    public String toString() {
-//        return "ConditionTag{ tagList=" + tagList + '}';
-//    }
     
     @Override
     public String toString() {
         return "ConditionTag{" + "expressionTag=" + expressionTag + ", \n" +  tagListPrettyPrint(tagList) + '}';
-    }
-
-//    @Override
-//    public String toString() {
-//        return "ConditionTag{" + "expressionTag=" + expressionTag + '}';
-//    }    
+    }    
     
     public void addNode(LogicalExpressionTag node){
         this.tagList.add(node);
@@ -50,8 +37,5 @@ public class ConditionTag {
         
         return sb.toString();
     }
-//    public LinkedList<Node> getList() {
-//        return list;
-//    }
 
 }

@@ -8,16 +8,16 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
  * @author nkarag
  */
 public class ActionRule {
-    
-    private Condition condition;
+
+    private ConditionTag condition;
     private EnumGeometricActions geoAction;
     private EnumMetadataActions metaAction;
             
-    public void setCondition(Condition condition){
+    public void setConditionTag(ConditionTag condition){
         this.condition = condition;
     }
     
-    public Condition getCondition(){
+    public ConditionTag getConditionTag(){
         return condition;
     }
 

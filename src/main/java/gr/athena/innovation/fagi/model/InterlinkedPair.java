@@ -86,7 +86,7 @@ public class InterlinkedPair {
                     fusedEntity.setGeometry(fusedGeometry);
                 } else {
                     fusedEntity.setGeometry(leftGeometry);
-                }    
+                }
                 break;
             case SHIFT_LEFT_GEOMETRY:
                 {
@@ -112,7 +112,6 @@ public class InterlinkedPair {
     }
 
     public void fuseMetadata(EnumMetadataActions metaAction){
-        //log   
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
 

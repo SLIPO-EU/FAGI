@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.xml;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
+import gr.athena.innovation.fagi.core.rule.ActionRuleSet;
 import gr.athena.innovation.fagi.core.rule.ConditionTag;
 import gr.athena.innovation.fagi.core.rule.Expression;
 import gr.athena.innovation.fagi.core.rule.ExpressionTag;
@@ -50,7 +51,7 @@ import static org.w3c.dom.Node.TEXT_NODE;
 public class XmlProcessor2 {
 
     private static final Logger logger = LogManager.getLogger(XmlProcessor2.class);
-    private final RuleCatalog ruleCatalog;
+    //private final RuleCatalog ruleCatalog;
     private int actionRuleCount = 1;
     private int steps = 0;
     
@@ -58,9 +59,9 @@ public class XmlProcessor2 {
      *
      * @param ruleCatalog
      */
-    public XmlProcessor2(RuleCatalog ruleCatalog){
-        this.ruleCatalog = ruleCatalog;
-    }
+//    public XmlProcessor2(RuleCatalog ruleCatalog){
+//        this.ruleCatalog = ruleCatalog;
+//    }
 
 
     /**
@@ -81,8 +82,8 @@ public class XmlProcessor2 {
      * @throws SAXException
      * @throws IOException
      */
-    public void parseRules(String path) throws ParserConfigurationException, SAXException, IOException{
-
+    public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException{
+        RuleCatalog ruleCatalog = new RuleCatalog();
         logger.info("Reading specification from path: " + path);
 
         File fXmlFile = new File(path);
@@ -93,31 +94,27 @@ public class XmlProcessor2 {
         //http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
         doc.getDocumentElement().normalize();
 
-        //System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-        
         //get all <RULE> elements of the XML. The rule elements are all in the same level
         NodeList nList = doc.getElementsByTagName("RULE");
         for (int temp = 0; temp < nList.getLength(); temp++) {
             logger.info("rule " + temp);
-            Rule rule = new Rule();
+            
             Node ruleNode = nList.item(temp);
             NodeList ruleNodeList = ruleNode.getChildNodes();
-            createRule(ruleNodeList, rule);
-            //ruleCatalog.addItem(constructRule(ruleChilds.item(k)));
+            Rule rule = createRule(ruleNodeList);
+            ruleCatalog.addItem(rule);
 
         }
-        System.exit(0);
+        return ruleCatalog;
     }
 
     /*
         Parse propertyA, propertyB and ACTION_RULE_SET of the current rule
     */
-    private void createRule(NodeList ruleNodeList, Rule rule){
+    private Rule createRule(NodeList ruleNodeList){
+        Rule rule = new Rule();
         int length = ruleNodeList.getLength();
         for (int i = 0; i < length; i++) {
-            //logger.info("rule iter " + i);
-            short type = ruleNodeList.item(i).getNodeType();
-            //logger.debug("CREATE RULE, TYPE: " + nodeType(type));
             
             if (ruleNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element ruleElement = (Element) ruleNodeList.item(i);
@@ -135,17 +132,21 @@ public class XmlProcessor2 {
                 } else if(ruleElement.getNodeName().contains("ACTION_RULE_SET")){
                     logger.debug("found rules set, count: " + ruleElement.getFirstChild().getNodeType());
                     NodeList actionRuleNodeList = ruleElement.getElementsByTagName("ACTION_RULE");
-                    createActionRules(actionRuleNodeList, rule);
+                    ActionRuleSet actionRuleSet = createActionRuleSet(actionRuleNodeList);
+                    rule.setActionRuleSet(actionRuleSet);
                 }
             }
-        }        
+        }
+
+        return rule;
     }
-    
+
     /*
         Parse each action rule from the action rule set. All action rules are on the same level
     */
-    private void createActionRules(NodeList actionRuleNodeList, Rule rule){
-        //logger.info("~~~~~~~ Action Rules ~~~~~~~");
+    private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList){
+
+        ActionRuleSet actionRuleSet = new ActionRuleSet();
         
         int length = actionRuleNodeList.getLength();
         for (int i = 0; i < length; i++) {
@@ -153,19 +154,22 @@ public class XmlProcessor2 {
             Node actionRuleNode = actionRuleNodeList.item(i);
 
             if (actionRuleNode.getNodeType() == Node.ELEMENT_NODE) {
-                ActionRule actionRule = new ActionRule();
                 Element actionRuleElement = (Element) actionRuleNode;
-                
-                createActionRule(actionRuleElement, actionRule);
+
+                ActionRule actionRule = createActionRule(actionRuleElement);
+                actionRuleSet.addActionRule(actionRule);
             }
-        }          
+        }
+        return actionRuleSet;
     }
-    
-    private void createActionRule(Element actionRuleElement, ActionRule actionRule){
-        logger.fatal("new ACTION RULE " + actionRuleCount);
+
+    private ActionRule createActionRule(Element actionRuleElement){
+        
+        ActionRule actionRule = new ActionRule();
+
         actionRuleCount++;
         //NodeList actionRuleChilds = actionRuleElement.getChildNodes();
-        
+
         //Extract ACTION element and its text inside ACTION_RULE
         Node action = actionRuleElement.getLastChild();
 
@@ -201,17 +205,12 @@ public class XmlProcessor2 {
             throw new RuntimeException();
         }
 
-        //logger.fatal("CLASS " + conditionsList.item(0).getClass());
-
         Node conditionNode = conditionsList.item(0);
         
-        
-        
         ConditionTag con = constructCondition(conditionNode);
-        
-        logger.trace("FINAL CONDITION: " + con.toString());
-        
+        actionRule.setConditionTag(con);
 
+        return actionRule;
     }
     
     private ConditionTag constructCondition(Node conditionNode) {
@@ -249,26 +248,17 @@ public class XmlProcessor2 {
         
         return conditionTag;
     } 
-    
+
     //recursive method
     private void extractExpression(ConditionTag conditionTag, Node expression, String type, int depth) {
         steps++;
-        logger.warn("diving.. depth: " + depth);
-//        logger.warn("current expression is: " + expression.getNodeName());
-//        logger.warn("current expression text: " + expression.getTextContent());
-        if(depth>6){
-            return;
-        }
-        
-        
-        
+
         //expression can exist in three forms"
         //contains only functions
         //contains only other expressions
         //contains expression and function
 
         if(containsOnlyFunctionChilds(expression)){
-            logger.trace("case 1, depth " + depth);
             //1. Contains only functions under a logical operation. 
             //Each level can have ONLY ONE logical operation. 
             //The operation however can have more than one expressions or functions.
@@ -279,26 +269,19 @@ public class XmlProcessor2 {
             
             LogicalExpressionTag logicalExpression = new LogicalExpressionTag(type, depth);
 
-            
-            
             List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperation(expression);
-            //System.out.println("@@@ logical created! depth " + depth + " type " + type + " simpleFunctions " + simpleFunctions);
-            
+
             logicalExpression.setExpressionTags(simpleFunctions);
             conditionTag.setExpressionTag(logicalExpression);
             conditionTag.addNode(logicalExpression);
-            
-            //logger.info(conditionTag.toString());
+
         } else if(containsExpressionAndFunctionChilds(expression)){
-            logger.trace("case 2, depth " + depth);
-            //logger.trace("found both expression and function");
-            
+
             //2. The expression contains at least one expression and one function. 
             //String logicalOperationType = getLogicalOperationType(expression);
             
             List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperation(expression);
-            //System.out.println("@@@ logical created! depth " + depth + " type " + type + " simpleFunctions " + simpleFunctions);
-            
+
             LogicalExpressionTag logicalExpression = new LogicalExpressionTag(type, depth);
             logicalExpression.setExpressionTags(simpleFunctions);
             conditionTag.setExpressionTag(logicalExpression);
@@ -317,18 +300,15 @@ public class XmlProcessor2 {
                 extractExpression(conditionTag, childExpression, childLogicalType, depth+1);
 
             }
-            //logger.error("expression name: " + expression.getNodeName());
-            //logger.error("logical type: " + logicalOperationType);
-            //logger.error("parent logical type: " + type);
+
             //extractExpression(conditionTag, expression, logicalOperationType, depth+1);
             
             //count expressionTag childs and create additional expressionTags to put into list
             //count Expressions and create additional LogicalExpressionTags to put into list
             
             //conditionTag.setExpressionTag(lo);
-            
+
         } else if(containsOnlyExpressionChilds(expression)){
-            logger.trace("case 3, depth " + depth);
             //contains two or more expressions under a logical operation.
 
             List<Node> expressions = getLogicalExpressionChildNodes(expression);
