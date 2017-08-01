@@ -4,9 +4,16 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
 import gr.athena.innovation.fagi.core.rule.Rule;
+import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.fusers.CentroidShiftTranslator;
+import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,8 +53,32 @@ public class InterlinkedPair {
         return fusedEntity;
     }
 
-    public void fuseWithRule(Rule rule){
+    public void fuseWithRule(RuleCatalog ruleCatalog){
+        fusedEntity = new Entity();
+        
+        List<Rule> rules = ruleCatalog.getRules();
+        for(Rule rule : rules){
+            String propertyA = rule.getPropertyA();
+            String propertyB = rule.getPropertyB();
+            
+        }
+        
+        Metadata leftMetadata = leftNode.getMetadata();
+//        leftMetadata.getModel().
+//        Metadata rightMetadata = rightNode.getMetadata();        
+        Model tempModel = leftMetadata.getModel();
+        // iterate over the triples
+        for (StmtIterator i = leftMetadata.getModel().listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
+            Statement originalStatement = i.nextStatement();
+            //tempModel.add(originalStatement);
+            Resource s = originalStatement.getSubject();
+            Property p = originalStatement.getPredicate();
+            RDFNode o = originalStatement.getObject();
+        }
+        //fuseGeometry(geoAction);
+        //fuseMetadata(metaAction);        
         //rule.getPropertyA()
+        
     }
 
     public void fuse(EnumGeometricActions geoAction, EnumMetadataActions metaAction){
@@ -57,8 +88,8 @@ public class InterlinkedPair {
         fuseMetadata(metaAction);
     }
 
-    public void fuseGeometry(EnumGeometricActions geoAction){
-        
+    private void fuseGeometry(EnumGeometricActions geoAction){
+
         Geometry leftGeometry = leftNode.getGeometry();
         Geometry rightGeometry = rightNode.getGeometry();
         switch(geoAction){
@@ -111,7 +142,7 @@ public class InterlinkedPair {
         }
     }
 
-    public void fuseMetadata(EnumMetadataActions metaAction){
+    private void fuseMetadata(EnumMetadataActions metaAction){
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
 

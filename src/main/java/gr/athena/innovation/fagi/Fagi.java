@@ -44,34 +44,6 @@ public class Fagi {
      */
     public static void main(String[] args) throws ParseException, com.vividsolutions.jts.io.ParseException, FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 
-        String rulesXml = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
-        String rulesXsd = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd";
-        String specification = "";
-        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specification);
-        
-        if(!inputValidator.isValidInput()){
-            System.out.println("Wrong input! Check input files");
-            System.out.println("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
-            System.out.println("-config requires a file path");
-            System.exit(0);
-        }
-
-        XmlValidator v = new XmlValidator();
-        //v.validate("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
-        v.validateAgainstXSD("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
-
-        XmlProcessor2 xm = new XmlProcessor2();
-        RuleCatalog ruleCatalog = xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules5.xml");
-
-        List<Rule> rules = ruleCatalog.getRules();
-        logger.info("\n\n\n\nRules size: " + rules.size());
-        for (Rule rule : rules){
-            logger.fatal(rule.toString());
-            //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
-            //logger.debug(actionRuleString);
-
-        }
-
         String configPath = "src/main/resources/config.properties";
 
         String arg;
@@ -98,6 +70,39 @@ public class Fagi {
             }
             i++;
         }
+        
+        
+        
+        
+        String rulesXml = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
+        String rulesXsd = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd";
+        String specification = "";
+        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specification);
+        
+        if(!inputValidator.isValidInput()){
+            System.out.println("Wrong input! Check input files");
+            System.out.println("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
+            System.out.println("-config requires a file path");
+            System.exit(0);
+        }
+
+        XmlValidator v = new XmlValidator();
+        //v.validate("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
+        v.validateAgainstXSD("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
+
+        XmlProcessor2 xm = new XmlProcessor2();
+        RuleCatalog ruleCatalog = xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules5.xml");
+
+        List<Rule> rules = ruleCatalog.getRules();
+        logger.info("\n\n\n\nRules size: " + rules.size());
+        for (Rule rule : rules){
+            logger.fatal(rule.toString());
+            //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
+            //logger.debug(actionRuleString);
+
+        }        
+        
+        
 
         ConfigReader configReader = new ConfigReader();
         FusionConfig config = configReader.loadConfiguration(configPath);
@@ -111,6 +116,7 @@ public class Fagi {
         Fuser fuser = new Fuser(interlinkedEntitiesList);
 
         fuser.fuseAll(config);
+        fuser.fuseAllWithRules(config, ruleCatalog);
 
         fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
 

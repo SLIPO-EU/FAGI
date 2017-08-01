@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
+import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.FusionConfig;
 
 /**
@@ -17,5 +18,14 @@ public interface IFuser {
      * @throws ParseException
      */
     public void fuseAll(FusionConfig fusionConfig) throws ParseException;
+    
+    /**
+     * Starts the fusion process for all the provided links from the input file using the provided rules.
+     * 
+     * @param config
+     * @param ruleCatalog
+     * @throws ParseException
+     */    
+    public void fuseAllWithRules(FusionConfig config, RuleCatalog ruleCatalog) throws ParseException;
     
 }

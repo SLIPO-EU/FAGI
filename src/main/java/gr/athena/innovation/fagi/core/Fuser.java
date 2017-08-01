@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.core.specification.FusionConfig;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
@@ -87,6 +88,47 @@ public class Fuser implements IFuser{
             pair.setRightNode(entityB);
 
             pair.fuse(config.getGeoAction(), config.getMetaAction());
+            fusedPairsCount++;
+            interlinkedEntitiesList.add(pair);
+        }
+        setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
+    }
+
+    /**
+     *
+     * @throws ParseException
+     */
+    @Override
+    public void fuseAllWithRules(FusionConfig config, RuleCatalog ruleCatalog) throws ParseException{
+        linkedEntitiesNotFoundInDataset = 0;
+        WKTReader wellKnownTextReader = new WKTReader();
+
+        Model left = LeftModel.getLeftModel().getModel();
+        Model right = RightModel.getRightModel().getModel();
+        LinksModel links = LinksModel.getLinksModel();
+
+        for (Link link : links.getLinks()){
+
+            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, config.getOptionalDepth());
+            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, config.getOptionalDepth());
+
+            if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
+                linkedEntitiesNotFoundInDataset++;
+                continue;
+            }
+
+            InterlinkedPair pair = new InterlinkedPair();
+
+            Entity entityA = constructEntity(modelA, link.getNodeA(), wellKnownTextReader);
+            Entity entityB = constructEntity(modelB, link.getNodeB(), wellKnownTextReader);
+            
+            pair.setLeftNode(entityA);
+            pair.setRightNode(entityB);
+
+            //pair.fuse(config.getGeoAction(), config.getMetaAction());
+            
+            pair.fuseWithRule(ruleCatalog);
+            
             fusedPairsCount++;
             interlinkedEntitiesList.add(pair);
         }
