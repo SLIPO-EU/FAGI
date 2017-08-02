@@ -51,10 +51,10 @@ public class Rule {
     
     @Override
     public String toString() {
-        return "Rule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
+        return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
                 + "\ndefaultGeoAction=" + defaultGeoAction + ", "
                 + "\ndefaultMetaAction=" + defaultMetaAction + ", "
-                + "\nactionRuleSet=" + actionRuleSet + '}';
+                + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
     }
 
     public ActionRuleSet getActionRuleSet() {

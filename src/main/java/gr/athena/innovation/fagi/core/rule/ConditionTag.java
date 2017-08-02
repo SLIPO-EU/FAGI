@@ -29,7 +29,7 @@ public class ConditionTag {
 
     private String tagListPrettyPrint(LinkedList<LogicalExpressionTag> tagList){
         StringBuilder sb = new StringBuilder();
-        sb.append("Taglist[\n");
+        sb.append("\nTaglist[\n");
         for(LogicalExpressionTag tag : tagList){
             sb.append(tag.toString());
             sb.append("\n");

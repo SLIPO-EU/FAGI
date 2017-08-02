@@ -6,7 +6,17 @@
 			<ACTION_RULE>
 				<CONDITION>
 					<EXPRESSION>
-						<FUNCTION>singleFunctionRule</FUNCTION>
+						<NOT>
+							<FUNCTION>NOT_SingleFunctionRule</FUNCTION>
+						</NOT>
+					</EXPRESSION>
+				</CONDITION>
+				<ACTION>Keep Left Metadata</ACTION>
+			</ACTION_RULE>
+			<ACTION_RULE>
+				<CONDITION>
+					<EXPRESSION>
+							<FUNCTION>SingleFunctionRule</FUNCTION>
 					</EXPRESSION>
 				</CONDITION>
 				<ACTION>Keep Left Metadata</ACTION>
@@ -29,7 +39,11 @@
 						<OR>
 							<EXPRESSION>
 								<AND>
-									<FUNCTION>AndExpression6</FUNCTION>
+									<EXPRESSION>
+										<NOT>
+											<FUNCTION>NotExpression6</FUNCTION>
+										</NOT>
+									</EXPRESSION>
 									<FUNCTION>AndExpression7</FUNCTION>								
 								</AND>
 							</EXPRESSION>
@@ -43,7 +57,7 @@
 					</EXPRESSION>
 				</CONDITION>				
 				<ACTION>Keep Right Metadata</ACTION>
-			</ACTION_RULE>			
+			</ACTION_RULE>
 			<ACTION_RULE>
 				<CONDITION>
 					<EXPRESSION>
@@ -54,7 +68,11 @@
 									<FUNCTION>AndExpression88</FUNCTION>								
 								</AND>
 							</EXPRESSION>
-							<FUNCTION>OrExpression777</FUNCTION>
+							<EXPRESSION>
+								<NOT>
+									<FUNCTION>OrExpression777</FUNCTION>
+								</NOT>
+							</EXPRESSION>
 						</OR>
 					</EXPRESSION>
 				</CONDITION>				

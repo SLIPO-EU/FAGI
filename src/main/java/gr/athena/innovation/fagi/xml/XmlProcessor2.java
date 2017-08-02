@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.AND;
+import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.NOT;
 import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.OR;
 import java.io.File;
 import java.io.IOException;
@@ -168,7 +169,6 @@ public class XmlProcessor2 {
         ActionRule actionRule = new ActionRule();
 
         actionRuleCount++;
-        //NodeList actionRuleChilds = actionRuleElement.getChildNodes();
 
         //Extract ACTION element and its text inside ACTION_RULE
         Node action = actionRuleElement.getLastChild();
@@ -232,13 +232,12 @@ public class XmlProcessor2 {
         
 
         if(parentExpressionContainsSingleFunction(parentExpression)){
-            //The Condition is simple. Contains only a function.
+            //The Condition is simple and contains only a function.
             ExpressionTag et = new ExpressionTag();
             et.setExpression(getSingleFunction(parentExpression));
             conditionTag.setExpressionTag(et);
             return conditionTag;
         }
-        
 
         //The condition does not contain a single function.
         
@@ -391,7 +390,12 @@ public class XmlProcessor2 {
         if(parentExpression.getNodeType() == Node.ELEMENT_NODE){
             Element parentExpressionElement = (Element) parentExpression;
             NodeList functions = parentExpressionElement.getElementsByTagName(SpecificationConstants.FUNCTION);
-            return functions.getLength() == 1;
+            
+            //a NOT expression can contain a single function. 
+            //If such element exists, the function is not considered single and the method should return false
+            NodeList possibleNotExpression = parentExpressionElement.getElementsByTagName(SpecificationConstants.NOT);
+
+            return functions.getLength() == 1 && possibleNotExpression.getLength() == 0;
         }
         return false;
     }
@@ -419,6 +423,8 @@ public class XmlProcessor2 {
                         return "AND";
                     case OR:
                         return "OR";
+                    case NOT:
+                        return "NOT";                        
                     default:
                         logger.fatal("Expression in XML does not contain a logical operation! " + child.getNodeName());
                         throw new RuntimeException();
@@ -503,7 +509,9 @@ public class XmlProcessor2 {
         while(true){
             
             if(logicalOperationNode.getNodeType() == Node.ELEMENT_NODE){
-                if(logicalOperationNode.getNodeName().equalsIgnoreCase(AND) || logicalOperationNode.getNodeName().equalsIgnoreCase(OR) ){
+                if(logicalOperationNode.getNodeName().equalsIgnoreCase(AND) 
+                        || logicalOperationNode.getNodeName().equalsIgnoreCase(OR) 
+                                || logicalOperationNode.getNodeName().equalsIgnoreCase(NOT)){
                     break;
                 } 
             }

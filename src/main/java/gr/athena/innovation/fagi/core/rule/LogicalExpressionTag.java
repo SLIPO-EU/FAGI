@@ -20,6 +20,7 @@ public class LogicalExpressionTag extends ExpressionTag{
         switch(logicalOp){
             case "AND":
             case "OR":
+            case "NOT":
                 this.logicalOp = logicalOp;
                 break;
             //TODO - check if throwing exception from constructor integrates well with spring    

@@ -91,7 +91,7 @@ public class Fagi {
         v.validateAgainstXSD("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml", "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd");
 
         XmlProcessor2 xm = new XmlProcessor2();
-        RuleCatalog ruleCatalog = xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules5.xml");
+        RuleCatalog ruleCatalog = xm.parseRules("/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules6.xml");
 
         List<Rule> rules = ruleCatalog.getRules();
         logger.info("\n\n\n\nRules size: " + rules.size());
@@ -101,8 +101,6 @@ public class Fagi {
             //logger.debug(actionRuleString);
 
         }        
-        
-        
 
         ConfigReader configReader = new ConfigReader();
         FusionConfig config = configReader.loadConfiguration(configPath);
