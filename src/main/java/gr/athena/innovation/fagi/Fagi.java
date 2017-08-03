@@ -113,9 +113,11 @@ public class Fagi {
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);
 
-        fuser.fuseAll(config);
+        //fuser.fuseAll(config);
+        logger.trace("Start rule Fusion");
         fuser.fuseAllWithRules(config, ruleCatalog);
-
+        logger.trace("Rule Fusion complete.");
+        
         fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
 
         logger.info(config.toString());

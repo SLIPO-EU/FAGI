@@ -3,9 +3,13 @@ package gr.athena.innovation.fagi.model;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
+import gr.athena.innovation.fagi.core.rule.ActionRule;
+import gr.athena.innovation.fagi.core.rule.ExpressionTag;
+import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
 import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.fusers.CentroidShiftTranslator;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -54,18 +58,65 @@ public class InterlinkedPair {
     }
 
     public void fuseWithRule(RuleCatalog ruleCatalog){
+        logger.debug("Fusing with rule..");
         fusedEntity = new Entity();
         
+        Geometry leftGeometry = leftNode.getGeometry();
+        Geometry rightGeometry = rightNode.getGeometry();
+
+        Metadata leftMetadata = leftNode.getMetadata();
+        Metadata rightMetadata = rightNode.getMetadata();        
+        
+
         List<Rule> rules = ruleCatalog.getRules();
         for(Rule rule : rules){
             String propertyA = rule.getPropertyA();
             String propertyB = rule.getPropertyB();
+            EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
+            EnumMetadataActions defaultMetaAction = rule.getDefaultMetaAction();
+            
+            List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
+            for(ActionRule actionRule : actionRules){
+                
+                ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
+                if(actionRule.getConditionTag().getTagList().isEmpty()){
+                    
+                    //logger.debug("expressionTag: " + expressionTag);
+                        //single function
+                        String expression = expressionTag.getExpression();
+                        logger.debug("Check if FUNCTION exists in function list " + expression);
+
+                } else {
+                    if(expressionTag instanceof LogicalExpressionTag){
+                        LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
+                        String operation = logEx.getLogicalOp();
+                        
+                        for(ExpressionTag exTag : logEx.getExpressionTags()){
+                            String expression = exTag.getExpression();
+                            logger.info("shoulb be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
+                        }
+                        //String expression = logEx.getExpressionTags().get(0).getExpression();
+                        
+                    } else {
+                        logger.fatal("expressionTag not logical expression");
+                    }                    
+                }
+                
+                int level = ruleCatalog.getMaxLevelOfActionRule(actionRule);
+                for (int i = level; i>level; i--){
+                    
+                }
+                
+                
+                ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
+                LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();
+//                for(LogicalExpressionTag tag : tagList){
+//                    tag.getLevel();
+//                }
+            }
             
         }
-        
-        Metadata leftMetadata = leftNode.getMetadata();
-//        leftMetadata.getModel().
-//        Metadata rightMetadata = rightNode.getMetadata();        
+ 
         Model tempModel = leftMetadata.getModel();
         // iterate over the triples
         for (StmtIterator i = leftMetadata.getModel().listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {

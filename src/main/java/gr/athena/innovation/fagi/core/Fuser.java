@@ -124,7 +124,6 @@ public class Fuser implements IFuser{
             
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
-
             //pair.fuse(config.getGeoAction(), config.getMetaAction());
             
             pair.fuseWithRule(ruleCatalog);

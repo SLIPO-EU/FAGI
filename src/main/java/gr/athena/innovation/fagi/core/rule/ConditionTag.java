@@ -38,4 +38,8 @@ public class ConditionTag {
         return sb.toString();
     }
 
+    public LinkedList<LogicalExpressionTag> getTagList() {
+        return tagList;
+    }
+
 }

@@ -64,4 +64,8 @@ public class LogicalExpressionTag extends ExpressionTag{
     public String toString() {
         return "LogicalExpressionTag{" + "key=" + key + ", logicalOp=" + logicalOp + ", level=" + level + ", expressionTags=" + expressionTags + ", logicalExpressionTags=" + logicalExpressionTags + '}';
     }    
+
+    public int getLevel() {
+        return level;
+    }
 }
