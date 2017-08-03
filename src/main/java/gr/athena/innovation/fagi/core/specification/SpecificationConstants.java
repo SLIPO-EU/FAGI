@@ -6,8 +6,8 @@ package gr.athena.innovation.fagi.core.specification;
  */
 public class SpecificationConstants {
 
-    public static final String PROPERTY_A = "propertyA";
-    public static final String PROPERTY_B = "propertyB";
+    public static final String PROPERTY_A = "PROPERTYA";
+    public static final String PROPERTY_B = "PROPERTYB";
     public static final String CONDITION = "CONDITION";
     public static final String ACTION_RULE_SET = "ACTION_RULE_SET";
     public static final String FUNCTION = "FUNCTION";
