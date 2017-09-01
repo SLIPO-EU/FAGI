@@ -16,14 +16,4 @@
 		<ID>FUSED_OSM_WIKIMAPIA</ID>
 		<FILE></FILE>
 	</TARGET>
-	<STRATEGY>
-         <MATCH>
-               <PropertyA name="Address"/>
-               <PropertyB name="MyAddress" />
-               <Rule>RuleA</Rule>
-               <Validation>Keep Valid</Validation>
-               <Priority>Default</Priority>
-               <Action>Keep Left</Action>
-         </MATCH>
-	</STRATEGY>
 </SPECIFICATION>

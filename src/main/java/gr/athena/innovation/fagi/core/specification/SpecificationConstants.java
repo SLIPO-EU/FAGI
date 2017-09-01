@@ -15,12 +15,6 @@ public class SpecificationConstants {
     public static final String AND = "AND";
     public static final String OR = "OR";
     public static final String NOT = "NOT";
-
-//    public static final String DATE_FORMAT_1 = "yyyy-MM-dd";
-//    public static final String DATE_FORMAT_2 = "yyyy/MM/dd";
-//    public static final String DATE_FORMAT_3 = "dd mm yyyy";
-//    public static final String DATE_FORMAT_4 = "dd-MM-yy:HH:mm:SS";
-//    public static final String DATE_FORMAT_5 = "dd-MM-yy:HH:mm:SS Z";
     
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",

@@ -39,7 +39,7 @@ public class XmlValidator {
             System.out.println(xmlFile.getSystemId() + " is valid");
 
         } catch (SAXException e) {
-            System.out.println(xmlFile.getSystemId() + " is NOT valid reason:" + e);
+            System.out.println(xmlFile.getSystemId() + " is NOT valid, reason:" + e);
         } catch (IOException e) {
             
         }
@@ -58,7 +58,7 @@ public class XmlValidator {
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(xml));
             
-            logger.debug("successss");
+            logger.debug("Validation against XSD success.");
             return true;
             
         } catch (SAXException e) {

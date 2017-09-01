@@ -8,7 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Date fusion class. Contains methods for checking and transforming date known formats.
+ * 
  * @author nkarag
  */
 public class DateFuser {
@@ -39,5 +40,9 @@ public class DateFuser {
         SimpleDateFormat parser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
         
         return "";
+    }
+    
+    public String getName(){
+        return "isDateKnownFormat";
     }
 }

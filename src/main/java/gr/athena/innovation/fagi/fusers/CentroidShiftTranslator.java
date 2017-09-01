@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class CentroidShiftTranslator {
     
-     private final Geometry targetGeometry; 
+    private final Geometry targetGeometry; 
 
     public CentroidShiftTranslator(Geometry target) { 
       this.targetGeometry = target; 
@@ -23,13 +23,13 @@ public class CentroidShiftTranslator {
      * @return  the shifted geometry as Geometry object
      */ 
     public Geometry shift(Geometry originalGeometry) { 
-      Geometry shiftedGeometry = (Geometry) originalGeometry.clone(); 
-      Coordinate targetCentroid = targetGeometry.getCentroid().getCoordinate(); 
-      Coordinate originalCentroid = originalGeometry.getCentroid().getCoordinate(); 
-      Coordinate deltaShift = subtract(targetCentroid, originalCentroid); 
-      translate(shiftedGeometry, deltaShift);
-      
-      return shiftedGeometry; 
+        Geometry shiftedGeometry = (Geometry) originalGeometry.clone(); 
+        Coordinate targetCentroid = targetGeometry.getCentroid().getCoordinate(); 
+        Coordinate originalCentroid = originalGeometry.getCentroid().getCoordinate(); 
+        Coordinate deltaShift = subtract(targetCentroid, originalCentroid); 
+        translate(shiftedGeometry, deltaShift);
+
+        return shiftedGeometry; 
     } 
 
     /**
@@ -38,16 +38,16 @@ public class CentroidShiftTranslator {
      * @param deltaShift the Coordinate of the translation
      */ 
     public void translate(Geometry geometry, final Coordinate deltaShift) { 
-      geometry.apply(new CoordinateFilter() {
-          @Override
-          public void filter(Coordinate coordinate) {
-              coordinate.x += deltaShift.x;
-              coordinate.y += deltaShift.y;
-          }
-      }); 
+        geometry.apply(new CoordinateFilter() {
+            @Override
+            public void filter(Coordinate coordinate) {
+                coordinate.x += deltaShift.x;
+                coordinate.y += deltaShift.y;
+            }
+        }); 
     } 
 
     private Coordinate subtract(Coordinate coordinateA, Coordinate coordinateB) { 
-      return new Coordinate(coordinateA.x - coordinateB.x, coordinateA.y - coordinateB.y); 
+        return new Coordinate(coordinateA.x - coordinateB.x, coordinateA.y - coordinateB.y); 
     }     
   }

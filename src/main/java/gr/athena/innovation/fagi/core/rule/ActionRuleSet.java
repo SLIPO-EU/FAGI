@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * The ActionRuleSet contains all the ActionRules of each Rule. 
+ * The priority of an ActionRule is the order of appearance.
+ * 
  * @author nkarag
  */
 public class ActionRuleSet {

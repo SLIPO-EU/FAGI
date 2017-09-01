@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.core.rule;
 
 /**
- *
+ * Condition represents the result of an expression that decides if a fusion action is going to be used or not.
+ * 
  * @author nkarag
  */
 public class Condition {

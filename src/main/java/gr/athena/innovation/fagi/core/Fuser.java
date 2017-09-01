@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Fusion core class. Contains methods for the fusion process and writing to output.
  * 
  * @author nkarag
  */
@@ -56,7 +56,8 @@ public class Fuser implements IFuser{
     }
 
     /**
-     *
+     * Fuses all links by using the parameters from the fusion configuration file.
+     * 
      * @param config
      * @throws ParseException
      */
@@ -95,7 +96,8 @@ public class Fuser implements IFuser{
     }
 
     /**
-     *
+     * Fuses all links using the Rules from file.
+     * 
      * @throws ParseException
      */
     @Override
@@ -135,7 +137,9 @@ public class Fuser implements IFuser{
     }
     
     /**
-     *
+     * Constructs the output result by creating a new grapgh to the specified output 
+     * or combining the fused entities into the source datasets.
+     * 
      * @param config
      * @param interlinkedEntitiesList
      * @throws FileNotFoundException
@@ -255,7 +259,8 @@ public class Fuser implements IFuser{
     }
 
     /**
-     *
+     * Returns the count of linked entities that were not found in the source datasets.
+     * 
      * @return
      */
     public int getLinkedEntitiesNotFoundInDataset() {
@@ -271,7 +276,8 @@ public class Fuser implements IFuser{
     }
 
     /**
-     *
+     * Returns the total fused entities.
+     * 
      * @return
      */
     public int getFusedPairsCount() {

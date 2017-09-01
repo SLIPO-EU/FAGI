@@ -25,4 +25,8 @@ public class Exists {
         }
         return false;
     }
+    
+    public String getName(){
+        return "exists";
+    }
 }

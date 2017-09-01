@@ -4,7 +4,9 @@ import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 
 /**
- *
+ * ActionRule represents a fusion action to be executed when a condition is fulfilled. 
+ * The order of appearance inside the general Rule, indicates the priority of the condition-action of the ActionRule. 
+ * 
  * @author nkarag
  */
 public class ActionRule {

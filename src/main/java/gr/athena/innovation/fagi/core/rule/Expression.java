@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.rule;
 
 import org.apache.xerces.dom.NodeImpl;
 import org.w3c.dom.Node;
+
 /**
  *
  * @author nkarag

@@ -65,11 +65,15 @@ public class InterlinkedPair {
         Geometry rightGeometry = rightNode.getGeometry();
 
         Metadata leftMetadata = leftNode.getMetadata();
-        Metadata rightMetadata = rightNode.getMetadata();        
-        
+        Metadata rightMetadata = rightNode.getMetadata();
 
         List<Rule> rules = ruleCatalog.getRules();
+        
+        int j = 0;
+        
         for(Rule rule : rules){
+        
+            logger.trace("Rule number: " + j);
             String propertyA = rule.getPropertyA();
             String propertyB = rule.getPropertyB();
             EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
@@ -78,45 +82,63 @@ public class InterlinkedPair {
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
             for(ActionRule actionRule : actionRules){
                 
+                EnumGeometricActions gA = null;
+                EnumMetadataActions mA = null;
+                //String mA = "";
+
+                if(actionRule.getGeoAction() != null){
+                    gA = actionRule.getGeoAction();
+                }
+                
+                if(actionRule.getMetaAction() != null){
+                    mA = actionRule.getMetaAction();
+                }
+
                 ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
                 if(actionRule.getConditionTag().getTagList().isEmpty()){
-                    
+
                     //logger.debug("expressionTag: " + expressionTag);
-                        //single function
-                        String expression = expressionTag.getExpression();
-                        logger.debug("Check if FUNCTION exists in function list " + expression);
+                    //single function
+                    String expression = expressionTag.getExpression();
+                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + gA + " " + mA);
+                    
 
                 } else {
                     if(expressionTag instanceof LogicalExpressionTag){
                         LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
                         String operation = logEx.getLogicalOp();
-                        
+
                         for(ExpressionTag exTag : logEx.getExpressionTags()){
                             String expression = exTag.getExpression();
-                            logger.info("shoulb be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
+                            logger.info("should be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
                         }
                         //String expression = logEx.getExpressionTags().get(0).getExpression();
-                        
+
                     } else {
                         logger.fatal("expressionTag not logical expression");
-                    }                    
+                    }
                 }
-                
+
                 int level = ruleCatalog.getMaxLevelOfActionRule(actionRule);
-                for (int i = level; i>level; i--){
-                    
+                logger.trace("Max Level: " + level);
+                int i = level;
+                while (i >= level){
+                    logger.trace("Top level: " + i);
+                   i--; 
                 }
-                
-                
+
                 ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
                 LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();
 //                for(LogicalExpressionTag tag : tagList){
 //                    tag.getLevel();
 //                }
+
             }
-            
+            j++;
         }
  
+        System.out.println("Temp End.");
+        System.exit(0);
         Model tempModel = leftMetadata.getModel();
         // iterate over the triples
         for (StmtIterator i = leftMetadata.getModel().listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
