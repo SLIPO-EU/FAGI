@@ -5,15 +5,20 @@
 	<LEFT>
 		<ID>OSM</ID>
 		<ENDPOINT></ENDPOINT>
-		<FILE></FILE>
+		<FILE>/src/main/resources/samples/osm_sample.nt</FILE>
 	</LEFT>
 	<RIGHT>
 		<ID>WIKIMAPIA</ID>
 		<ENDPOINT></ENDPOINT>
-		<FILE></FILE>
+		<FILE>/src/main/resources/samples/wikimapia_sample.nt</FILE>
 	</RIGHT>
+	<LINKS>
+		<ID>LINKS_OSM_WIKIMAPIA</ID>
+		<ENDPOINT></ENDPOINT>
+		<FILE>/src/main/resources/samples/links_sample.nt</FILE>
+	</LINKS>	
 	<TARGET>
 		<ID>FUSED_OSM_WIKIMAPIA</ID>
-		<FILE></FILE>
+		<FILE>System.out</FILE>
 	</TARGET>
 </SPECIFICATION>

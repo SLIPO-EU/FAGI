@@ -6,6 +6,19 @@ package gr.athena.innovation.fagi.core.specification;
  */
 public class SpecificationConstants {
 
+    public static final String SPECIFICATION = "SPECIFICATION";
+    public static final String INPUT_FORMAT = "INPUTFORMAT";
+    public static final String OUTPUT_FORMAT = "OUTPUTFORMAT";
+
+    public static final String LEFT_DATASET = "LEFT";
+    public static final String RIGHT_DATASET = "RIGHT";
+    public static final String TARGET_DATASET = "TARGET";
+    public static final String LINKS = "LINKS";
+
+    public static final String ID = "ID";
+    public static final String FILE = "FILE";
+    public static final String ENDPOINT = "ENDPOINT";
+
     public static final String PROPERTY_A = "PROPERTYA";
     public static final String PROPERTY_B = "PROPERTYB";
     public static final String CONDITION = "CONDITION";

@@ -12,9 +12,15 @@ import org.apache.logging.log4j.Logger;
 public class FusionSpecification {
     
     private static final Logger logger = LogManager.getLogger(FusionSpecification.class);
+    private String idA;
+    private String endpointA;
     private String pathA;
     private String pathB;
+    private String idB;
+    private String endpointB;
     private String pathLinks;
+    private String idLinks;
+    private String endpointLinks;
     private String pathOutput;
     private EnumFuseIntoDataset finalDataset;
     private String outputRDFFormat;
@@ -113,17 +119,74 @@ public class FusionSpecification {
         this.finalDataset = finalDataset;
     }
 
+    public String getIdA() {
+        return idA;
+    }
+
+    public void setIdA(String idA) {
+        this.idA = idA;
+    }
+
+    public String getEndpointA() {
+        return endpointA;
+    }
+
+    public void setEndpointA(String endpointA) {
+        this.endpointA = endpointA;
+    }
+
+    public String getIdB() {
+        return idB;
+    }
+
+    public void setIdB(String idB) {
+        this.idB = idB;
+    }
+
+    public String getEndpointB() {
+        return endpointB;
+    }
+
+    public void setEndpointB(String endpointB) {
+        this.endpointB = endpointB;
+    }
+
+    public String getIdLinks() {
+        return idLinks;
+    }
+
+    public void setIdLinks(String idLinks) {
+        this.idLinks = idLinks;
+    }
+
+    public String getEndpointLinks() {
+        return endpointLinks;
+    }
+
+    public void setEndpointLinks(String endpointLinks) {
+        this.endpointLinks = endpointLinks;
+    }
+
     @Override
     public String toString() {
-        return "Fusion Configuration: {" + 
-                "\npathA=" + pathA + 
-                ", \npathB=" + pathB + 
-                ", \npathLinks=" + pathLinks + 
-                ", \npathOutput=" + pathOutput + 
-                ", \nfinalDataset=" + finalDataset + 
-                ", \noutputRDFFormat=" + outputRDFFormat + 
-                ", \ninputRDFFormat=" + inputRDFFormat + 
-                ", \noptionalDepth=" + optionalDepth + 
-                "\n}";
-    }    
+        return "FusionSpecification{" + 
+                    "\nidA=" + idA + 
+                    "\n, endpointA=" + endpointA + 
+                    "\n, pathA=" + pathA + 
+                    "\n, pathB=" + pathB + 
+                    "\n, idB=" + idB + 
+                    "\n, endpointB=" + endpointB + 
+                    "\n, pathLinks=" + pathLinks + 
+                    "\n, idLinks=" + idLinks + 
+                    "\n, endpointLinks=" + endpointLinks + 
+                    "\n, pathOutput=" + pathOutput + 
+                    "\n, finalDataset=" + finalDataset + 
+                    "\n, outputRDFFormat=" + outputRDFFormat + 
+                    "\n, inputRDFFormat=" + inputRDFFormat + 
+                    "\n, optionalDepth=" + optionalDepth + 
+                    "\n, maxOptionalDepth=" + maxOptionalDepth + 
+                    "\n, minOptionalDepth=" + minOptionalDepth + 
+                    "\n}";
+    }
+
 }

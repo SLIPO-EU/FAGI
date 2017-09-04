@@ -86,6 +86,17 @@ public class Fagi {
             i++;
         }
 
+        //TODO - replace config reader with Specification parser. Pass parameters to abstractRepository from SpecParser
+        SpecificationParser specificationParser = new SpecificationParser();
+        FusionSpecification fusionSpecification = specificationParser.parse(fusionSpec);
+        fusionSpecification.getPathA();
+        
+        AbstractRepository genericRDFRepository = new GenericRDFRepository();
+        genericRDFRepository.parseLeft(fusionSpecification.getPathA());
+        genericRDFRepository.parseRight(fusionSpecification.getPathB());
+        genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());            
+        
+        
         InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, fusionSpec);
         
         if(!inputValidator.isValidInput()){
@@ -110,16 +121,15 @@ public class Fagi {
 
         }
 
-        //TODO - replace config reader with Specification parser. Pass parameters to abstractRepository from SpecParser
-        SpecificationParser specificationParser = new SpecificationParser();
-        FusionSpecification fusionSpecification = specificationParser.parse();
-        ConfigReader configReader = new ConfigReader();
-        FusionConfig config = configReader.loadConfiguration(configPath);
+    
+        
+//        ConfigReader configReader = new ConfigReader();
+//        FusionConfig config = configReader.loadConfiguration(configPath);
 
-        AbstractRepository genericRDFRepository = new GenericRDFRepository();
-        genericRDFRepository.parseLeft(config.getPathA());
-        genericRDFRepository.parseRight(config.getPathB());
-        genericRDFRepository.parseLinks(config.getPathLinks());
+//        AbstractRepository genericRDFRepository = new GenericRDFRepository();
+//        genericRDFRepository.parseLeft(config.getPathA());
+//        genericRDFRepository.parseRight(config.getPathB());
+//        genericRDFRepository.parseLinks(config.getPathLinks());
 
         MethodRegistry methodRegistry = new MethodRegistry();
         methodRegistry.init();
@@ -135,12 +145,12 @@ public class Fagi {
         //fuser.fuseAll(config);
         logger.trace("Start rule Fusion");
         
-        fuser.fuseAllWithRules(config, ruleCatalog);
+        //fuser.fuseAllWithRules(config, ruleCatalog);
         logger.trace("Rule Fusion complete.");
         
-        fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
+        //fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
 
-        logger.info(config.toString());
+        logger.info(fusionSpecification.toString());
         logger.trace("interlinkedEntitiesList " + interlinkedEntitiesList.size());
         logger.info("Interlinked not found in datasets: " + fuser.getLinkedEntitiesNotFoundInDataset());
         logger.info("Number of fused pairs: " + fuser.getFusedPairsCount());        
