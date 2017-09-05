@@ -1,8 +1,6 @@
 package gr.athena.innovation.fagi.fusers;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -15,7 +13,7 @@ public class LiteralFuser {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LiteralFuser.class);
     
-    public boolean isLiteralAbbreviation(String literal){
+    public static boolean isLiteralAbbreviation(String literal){
 
         //1) check dictionary/wordsList
         
@@ -46,7 +44,7 @@ public class LiteralFuser {
         }
     }    
     
-    public String getName(){
+    public static String getName(){
         return "isLiteralAbbreviation";
     }
 }
