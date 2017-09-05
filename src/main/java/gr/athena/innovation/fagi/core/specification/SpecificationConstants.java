@@ -29,6 +29,8 @@ public class SpecificationConstants {
     public static final String OR = "OR";
     public static final String NOT = "NOT";
     
+    public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
+    
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
                 "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",

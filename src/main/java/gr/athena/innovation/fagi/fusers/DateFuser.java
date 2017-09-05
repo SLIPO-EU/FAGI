@@ -16,30 +16,32 @@ public class DateFuser {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DateFuser.class);
     
-    public boolean isDateKnownFormat(String date){
+    public boolean isDateKnownFormat(String dateString){
 
-        if (!StringUtils.isBlank(date)) {
-            for (String parse : SpecificationConstants.DATE_FORMATS) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(parse);
+        boolean isKnown = false;
+        if (!StringUtils.isBlank(dateString)) {
 
+            for (String format : SpecificationConstants.DATE_FORMATS) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
                 try {
-                    Date la = simpleDateFormat.parse(date);
+                    Date date = simpleDateFormat.parse(dateString);
+                    isKnown = true;
                 } catch (ParseException ex) {
-                    logger.error("Error parsing date format: " + date, ex);
+                    //When parsing throws an exception it does not belong to the current format.
+                    //It is not possible to know from before the input date format
+                    //logger.error("Error parsing date format: " + dateString, ex);
                 }
-
             }
-            return true;
-        } else {
-            return false;
         }
-        
+        return isKnown;
     }
     
     public String transformDateToFormat(String date, String format){
-        SimpleDateFormat parser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
         
-        return "";
+        String transformedDate = formatter.format(date);
+
+        return transformedDate;
     }
     
     public String getName(){

@@ -37,30 +37,23 @@ public class SpecificationParser {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
 
-            //optional, but recommended
-            //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
             doc.getDocumentElement().normalize();
 
             NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.INPUT_FORMAT);
             String inputFormat = inputNodeList.item(0).getTextContent();
             fusionSpecification.setInputRDFFormat(inputFormat);
-            logger.debug("INPUT FORMAT " + inputFormat);
             
             NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.OUTPUT_FORMAT);
             String outputFormat = outputNodeList.item(0).getTextContent();
             fusionSpecification.setOutputRDFFormat(outputFormat);
-            logger.debug("OUTPUT FORMAT " + outputFormat);
 
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();
             for (int i = 0; i < leftChilds.getLength(); i++) {
- 
                 Node n = leftChilds.item(i);                            
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    System.out.println("\nCurrent Element :" + n.getNodeName());
-                    System.out.println("\ntext :" + n.getTextContent());
 
                     if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
                        fusionSpecification.setPathA(n.getTextContent());
@@ -69,7 +62,6 @@ public class SpecificationParser {
                     } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
                         fusionSpecification.setEndpointA(n.getTextContent());
                     }
-
                 }
                 n.getNextSibling();
             }
@@ -83,8 +75,6 @@ public class SpecificationParser {
                 Node n = rightChilds.item(i);                            
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    System.out.println("\nCurrent Element :" + n.getNodeName());
-                    System.out.println("\ntext :" + n.getTextContent());
 
                     if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
                        fusionSpecification.setPathB(n.getTextContent());
@@ -105,8 +95,6 @@ public class SpecificationParser {
                 Node n = linksChilds.item(i);                            
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    System.out.println("\nCurrent Element :" + n.getNodeName());
-                    System.out.println("\ntext :" + n.getTextContent());
 
                     if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
                        fusionSpecification.setPathLinks(n.getTextContent());
@@ -115,11 +103,30 @@ public class SpecificationParser {
                     } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
                         fusionSpecification.setEndpointLinks(n.getTextContent());
                     }
-
                 }
                 n.getNextSibling();
             }
 
+            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.TARGET_DATASET);
+            Node targetNode = targetNodeList.item(0);
+            NodeList targetChilds = targetNode.getChildNodes();
+            for (int i = 0; i < targetChilds.getLength(); i++) {
+ 
+                Node n = targetChilds.item(i);                            
+
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+
+                    if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
+                       fusionSpecification.setPathOutput(n.getTextContent());
+                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)){
+                        fusionSpecification.setIdOutput(n.getTextContent());
+                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
+                        fusionSpecification.setEndpointOutput(n.getTextContent());
+                    }
+                }
+                n.getNextSibling();
+            }
+            
         } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
             logger.fatal("Exception occured while parsing the fusion specification: " 
                     + fusionSpecificationPath + "\n" + e);

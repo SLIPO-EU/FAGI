@@ -1,14 +1,7 @@
 package gr.athena.innovation.fagi.fusers;
 
-import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
-import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
-import gr.athena.innovation.fagi.core.rule.ActionRule;
-import gr.athena.innovation.fagi.core.rule.ExpressionTag;
-import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
 import gr.athena.innovation.fagi.core.rule.Rule;
-import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 

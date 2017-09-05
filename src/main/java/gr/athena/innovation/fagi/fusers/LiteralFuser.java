@@ -1,5 +1,8 @@
 package gr.athena.innovation.fagi.fusers;
 
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -34,14 +37,13 @@ public class LiteralFuser {
         //> Use atypical alphanumeric characters such as /, & or ~
         //> Resemble a phonetic transcription of their unabbreviated counterparts
         //> Exploit the rebus principle (eg. inb4 "in before", NRG "energy")       
-        
+
         if (!StringUtils.isBlank(literal)) {
-            
-            return true;
+            boolean matches = literal.matches(SpecificationConstants.ABBR_REGEX);
+            return matches;
         } else {
             return false;
         }
-        
     }    
     
     public String getName(){

@@ -53,8 +53,8 @@ public class Fagi {
         String rulesXsd = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd";
         
         //These values (fusionSpec and rulesXml) will come from the cli arguments
-        String fusionSpec = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fusion.spec";
-        String rulesXml = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
+        String fusionSpec = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fusion.spec";
+        String rulesXml = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
 
         String arg;
         String value;
@@ -63,26 +63,22 @@ public class Fagi {
             arg = args[i];
             if(arg.startsWith("-")){
                 if(arg.equals("-help")){
-                    System.out.println("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
-                    System.out.println("-config requires a file path");
+                    logger.info("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>");
+                    logger.info("-spec requires the spec.xml file path");
+                    logger.info("-rules requires the rules.xml file path");
                     System.exit(0);	   
                 }
             }
             value = args[i+1];
             if(arg.equals("-spec")){
-                System.out.println("spec path: " + value);
+                logger.info("spec path: " + value);
                 fusionSpec = value;
                 //break;
             } else if(arg.equals("-rules")){
-                System.out.println("rules path: " + value);
+                logger.info("rules path: " + value);
                 rulesXml = value;
                 break;
-            } 
-//            else {
-//                 System.out.println("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
-//                 System.out.println("-config requires a file path");
-//                 System.exit(0);
-//            }
+            }
             i++;
         }
 
@@ -95,14 +91,13 @@ public class Fagi {
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
         genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());            
-        
-        
+
         InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, fusionSpec);
         
         if(!inputValidator.isValidInput()){
-            System.out.println("Wrong input! Check input files");
-            System.out.println("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
-            System.out.println("-config requires a file path");
+            logger.info("Wrong input! Check input files");
+            logger.info("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
+            logger.info("-config requires a file path");
             System.exit(0);
         }
 
@@ -120,16 +115,6 @@ public class Fagi {
             //logger.debug(actionRuleString);
 
         }
-
-    
-        
-//        ConfigReader configReader = new ConfigReader();
-//        FusionConfig config = configReader.loadConfiguration(configPath);
-
-//        AbstractRepository genericRDFRepository = new GenericRDFRepository();
-//        genericRDFRepository.parseLeft(config.getPathA());
-//        genericRDFRepository.parseRight(config.getPathB());
-//        genericRDFRepository.parseLinks(config.getPathLinks());
 
         MethodRegistry methodRegistry = new MethodRegistry();
         methodRegistry.init();

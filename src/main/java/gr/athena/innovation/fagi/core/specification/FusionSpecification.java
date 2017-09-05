@@ -22,6 +22,9 @@ public class FusionSpecification {
     private String idLinks;
     private String endpointLinks;
     private String pathOutput;
+    private String idOutput;
+    private String endpointOutput;
+    
     private EnumFuseIntoDataset finalDataset;
     private String outputRDFFormat;
     private String inputRDFFormat;
@@ -167,25 +170,41 @@ public class FusionSpecification {
         this.endpointLinks = endpointLinks;
     }
 
+    public String getIdOutput() {
+        return idOutput;
+    }
+
+    public void setIdOutput(String idOutput) {
+        this.idOutput = idOutput;
+    }
+
+    public String getEndpointOutput() {
+        return endpointOutput;
+    }
+
+    public void setEndpointOutput(String endpointOutput) {
+        this.endpointOutput = endpointOutput;
+    }
+    
     @Override
     public String toString() {
         return "FusionSpecification{" + 
-                    "\nidA=" + idA + 
-                    "\n, endpointA=" + endpointA + 
-                    "\n, pathA=" + pathA + 
-                    "\n, pathB=" + pathB + 
-                    "\n, idB=" + idB + 
-                    "\n, endpointB=" + endpointB + 
-                    "\n, pathLinks=" + pathLinks + 
-                    "\n, idLinks=" + idLinks + 
-                    "\n, endpointLinks=" + endpointLinks + 
-                    "\n, pathOutput=" + pathOutput + 
-                    "\n, finalDataset=" + finalDataset + 
-                    "\n, outputRDFFormat=" + outputRDFFormat + 
-                    "\n, inputRDFFormat=" + inputRDFFormat + 
-                    "\n, optionalDepth=" + optionalDepth + 
-                    "\n, maxOptionalDepth=" + maxOptionalDepth + 
-                    "\n, minOptionalDepth=" + minOptionalDepth + 
+                    "\n idA=" + idA + 
+                    "\n endpointA=" + endpointA + 
+                    "\n pathA=" + pathA + 
+                    "\n pathB=" + pathB + 
+                    "\n idB=" + idB + 
+                    "\n endpointB=" + endpointB + 
+                    "\n pathLinks=" + pathLinks + 
+                    "\n idLinks=" + idLinks + 
+                    "\n endpointLinks=" + endpointLinks + 
+                    "\n pathOutput=" + pathOutput + 
+                    "\n finalDataset=" + finalDataset + 
+                    "\n outputRDFFormat=" + outputRDFFormat + 
+                    "\n inputRDFFormat=" + inputRDFFormat + 
+                    "\n optionalDepth=" + optionalDepth + 
+                    "\n maxOptionalDepth=" + maxOptionalDepth + 
+                    "\n minOptionalDepth=" + minOptionalDepth + 
                     "\n}";
     }
 
