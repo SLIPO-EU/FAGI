@@ -2,41 +2,99 @@
   <xs:element name="RULES">
     <xs:complexType>
       <xs:sequence>
-        <xs:element type="xs:string" name="DATASETA"/>
-        <xs:element type="xs:string" name="DATASETB"/>
-        <xs:element name="PRIORITY">
+        <xs:element name="RULE">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="RULE" maxOccurs="unbounded" minOccurs="0">
+              <xs:element type="xs:string" name="PROPERTYA"/>
+              <xs:element type="xs:string" name="PROPERTYB"/>
+              <xs:element name="ACTION_RULE_SET">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="PROPERTYA"/>
-                    <xs:element type="xs:string" name="PROPERTYB"/>
-                    <xs:element name="CONDITION" maxOccurs="unbounded" minOccurs="0">
+                    <xs:element name="ACTION_RULE" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="IF">
+                          <xs:element name="CONDITION">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element type="xs:string" name="EXPRESSION"/>
-                                <xs:element type="xs:string" name="ACTION"/>
+                                <xs:element name="EXPRESSION">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="NOT" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element type="xs:string" name="FUNCTION"/>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element type="xs:string" name="FUNCTION" minOccurs="0"/>
+                                      <xs:element name="AND" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element type="xs:string" name="FUNCTION" maxOccurs="unbounded" minOccurs="0"/>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                      <xs:element name="OR" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="EXPRESSION" maxOccurs="unbounded" minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="AND" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="EXPRESSION" minOccurs="0">
+                                                          <xs:complexType>
+                                                            <xs:sequence>
+                                                              <xs:element name="NOT">
+                                                                <xs:complexType>
+                                                                  <xs:sequence>
+                                                                    <xs:element type="xs:string" name="FUNCTION"/>
+                                                                  </xs:sequence>
+                                                                </xs:complexType>
+                                                              </xs:element>
+                                                            </xs:sequence>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element type="xs:string" name="FUNCTION" maxOccurs="unbounded" minOccurs="0"/>
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                  <xs:element name="OR" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element type="xs:string" name="FUNCTION" maxOccurs="unbounded" minOccurs="0"/>
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                  <xs:element name="NOT" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element type="xs:string" name="FUNCTION"/>
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
                               </xs:sequence>
                             </xs:complexType>
                           </xs:element>
-                          <xs:element name="ELSE" minOccurs="0">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="ACTION"/>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
+                          <xs:element type="xs:string" name="ACTION"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element type="xs:string" name="DEFAULT_ACTION"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
+              <xs:element type="xs:string" name="DEFAULT_GEO_ACTION"/>
+              <xs:element type="xs:string" name="DEFAULT_META_ACTION"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -44,4 +102,3 @@
     </xs:complexType>
   </xs:element>
 </xs:schema>
-

@@ -7,7 +7,7 @@
 				<CONDITION>
 					<EXPRESSION>
 						<NOT>
-							<FUNCTION>NOT_SingleFunctionRule</FUNCTION>
+							<FUNCTION>isKnownDate(A)</FUNCTION>
 						</NOT>
 					</EXPRESSION>
 				</CONDITION>
