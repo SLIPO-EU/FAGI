@@ -30,6 +30,9 @@ public class SpecificationConstants {
     public static final String NOT = "NOT";
     
     public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
+    public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
+    
+    //((?:[A-Z]\.)+[A-Z]?|[a-zA-Z']+)
     
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",

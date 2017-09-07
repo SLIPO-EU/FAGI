@@ -13,6 +13,12 @@ public class LiteralFuser {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LiteralFuser.class);
     
+    /**
+     * Checks if the given literal is an abbreviation by using a regular expression from the SpecificationConstants.
+     * 
+     * @param literal
+     * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
+     */
     public static boolean isLiteralAbbreviation(String literal){
 
         //1) check dictionary/wordsList
@@ -37,7 +43,7 @@ public class LiteralFuser {
         //> Exploit the rebus principle (eg. inb4 "in before", NRG "energy")       
 
         if (!StringUtils.isBlank(literal)) {
-            boolean matches = literal.matches(SpecificationConstants.ABBR_REGEX);
+            boolean matches = literal.matches(SpecificationConstants.ABBR_REGEX2);
             return matches;
         } else {
             return false;
