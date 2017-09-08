@@ -36,12 +36,12 @@ public class XmlValidator {
             Schema schema = schemaFactory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
             validator.validate(xmlFile);
-            System.out.println(xmlFile.getSystemId() + " is valid");
+            logger.info(xmlFile.getSystemId() + " is valid");
 
         } catch (SAXException e) {
-            System.out.println(xmlFile.getSystemId() + " is NOT valid, reason:" + e);
+            logger.error(xmlFile.getSystemId() + " is NOT valid, reason:" + e);
         } catch (IOException e) {
-            
+            logger.error("Error in XML against XSD validation" + e);
         }
     }
     
@@ -51,8 +51,7 @@ public class XmlValidator {
         InputStream xsd = new FileInputStream(xsdPath);
         
         try {
-            
-            
+
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new StreamSource(xsd));
             Validator validator = schema.newValidator();
@@ -62,10 +61,10 @@ public class XmlValidator {
             return true;
             
         } catch (SAXException e) {
-            System.out.println("Rules in XML are NOT valid reason:" + e);
+            logger.error("Rules in XML are NOT valid reason:" + e);
             return false;
         } catch (IOException e) {
-            System.out.println(e);
+            logger.error(e);
             return false;
         }  
     }    
