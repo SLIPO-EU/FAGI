@@ -68,17 +68,17 @@ public class DateFuserTest {
     /**
      * Test of isValidDate method, of class DateFuser.
      */
-//    @Test
-//    public void testIsValidDate() {
-//        System.out.println("isValidDate");
-//        String format = "dd MM yyyy";
-//        String dateString = "19 19 2017";
-//        DateFuser instance = new DateFuser();
-//        boolean expResult = false;
-//        boolean result = instance.isValidDate(dateString, format);
-//        assertEquals(expResult, result);
-//
-//    }
+    @Test
+    public void testIsValidDate() {
+        logger.info("isValidDate");
+        String format = "yyyy-MM-dd'T'HH:mm:ss";
+        String dateString = "2010-12-37T07:65:00";
+        DateFuser dateFuser = new DateFuser();
+        boolean expResult = false;
+        boolean result = dateFuser.isValidDate(dateString, format);
+        assertEquals(expResult, result);
+
+    }
 
     /**
      * Test of transformDateToFormat method, of class DateFuser.

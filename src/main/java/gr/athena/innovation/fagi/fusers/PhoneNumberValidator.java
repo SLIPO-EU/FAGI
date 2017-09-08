@@ -75,7 +75,7 @@ public class PhoneNumberValidator {
      * @return true if the numbers are the same or false otherwise.
      */
     public static boolean isSamePhoneNumber(String number1, String number2){
-        boolean isSame = false;
+        boolean isSame;
         if(number1.equals(number2)){
             isSame = true;
         } else {

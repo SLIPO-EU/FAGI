@@ -3,10 +3,7 @@ package gr.athena.innovation.fagi.fusers;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -32,11 +29,13 @@ public class DateFuser {
             for (String format : SpecificationConstants.DATE_FORMATS) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
                 try {
-                    Date date = simpleDateFormat.parse(dateString);
-                    isKnown = true;
+                    simpleDateFormat.parse(dateString);
+                    return true;
                 } catch (ParseException ex) {
-                    //When parsing throws an exception it does not belong to the current format.
-                    //It is not possible to know from before the input date format
+                    //do nothing
+                    //When simpleDateFormat.parse throws an exception the format does not match with the date.
+                    //The check is done for each known format with the hope that it does not raise an exception
+                    //which means that the format is belongs to the known formats
                     //logger.error("Error parsing date format: " + dateString, ex);
                 }
             }
@@ -45,7 +44,7 @@ public class DateFuser {
     }
     
     /**
-     * Validates the date range of the given date string using java.util.Calendar
+     * Validates the date range of the given date string using the lenient property of date.
      * 
      * @param dateString the date string
      * @param format the SimpleDateFormat of the date string
@@ -53,33 +52,23 @@ public class DateFuser {
      */
     public boolean isValidDate(String dateString, String format){
 
-        boolean isValid;
+        //TODO - consider using https://github.com/joestelmach/natty for parsing unknown formats
+        boolean isValid = false;
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        simpleDateFormat.setLenient(false);
         Date date = null;
         try {
-            date = simpleDateFormat.parse(dateString);
-        } catch (ParseException ex) {
-            logger.error("Error parsing date: " + date + " with format: " + format);
-            logger.error(ex);
-            return false;
-        }
-        
-        Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setLenient(false);
-            calendar.setTime(date);
-        
-        
-            calendar.getTime();
+            
+            simpleDateFormat.parse(dateString);
             isValid = true;
-        }
-        catch (Exception e) {
-            logger.debug("invalid date ", e);
+
+        } catch (ParseException ex) {
+            //logger.error("Error parsing date: " + date + " with format: " + format);
+            //logger.error(ex);
             isValid = false;
-            return false;
         }
-        
+
         return isValid;
     }
     
