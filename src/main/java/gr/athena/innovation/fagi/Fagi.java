@@ -1,12 +1,11 @@
 package gr.athena.innovation.fagi;
 
-import gr.athena.innovation.fagi.core.specification.ConfigReader;
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.rule.XmlValidator;
-import gr.athena.innovation.fagi.core.specification.FusionConfig;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.specification.SpecificationParser;
 import gr.athena.innovation.fagi.fusers.MethodRegistry;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
@@ -14,8 +13,13 @@ import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.xml.XmlProcessor2;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,12 +52,12 @@ public class Fagi {
      */
     public static void main(String[] args) throws ParseException, com.vividsolutions.jts.io.ParseException, 
             FileNotFoundException, IOException, ParserConfigurationException, SAXException {
-        
-        String configPath = "src/main/resources/config.properties";
-        String rulesXsd = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xsd";
-        
+
+        String rulesXsd = getResourceFilePath("rules.xsd");
+        String specXsd = getResourceFilePath("spec.xsd");
+
         //These values (fusionSpec and rulesXml) will come from the cli arguments
-        String fusionSpec = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fusion.spec";
+        String specXml = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fusion.spec";
         String rulesXml = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
 
         String arg;
@@ -63,17 +67,14 @@ public class Fagi {
             arg = args[i];
             if(arg.startsWith("-")){
                 if(arg.equals("-help")){
-                    logger.info("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>");
-                    logger.info("-spec requires the spec.xml file path");
-                    logger.info("-rules requires the rules.xml file path");
+                    logger.info(SpecificationConstants.HELP);
                     System.exit(0);	   
                 }
             }
             value = args[i+1];
             if(arg.equals("-spec")){
                 logger.info("spec path: " + value);
-                fusionSpec = value;
-                //break;
+                specXml = value;
             } else if(arg.equals("-rules")){
                 logger.info("rules path: " + value);
                 rulesXml = value;
@@ -82,22 +83,18 @@ public class Fagi {
             i++;
         }
 
-        //TODO - replace config reader with Specification parser. Pass parameters to abstractRepository from SpecParser
         SpecificationParser specificationParser = new SpecificationParser();
-        FusionSpecification fusionSpecification = specificationParser.parse(fusionSpec);
-        fusionSpecification.getPathA();
+        FusionSpecification fusionSpecification = specificationParser.parse(specXml);
         
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
         genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());            
 
-        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, fusionSpec);
+        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd);
         
         if(!inputValidator.isValidInput()){
-            logger.info("Wrong input! Check input files");
-            logger.info("Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -config <configFile> ");
-            logger.info("-config requires a file path");
+            logger.info(SpecificationConstants.HELP);
             System.exit(0);
         }
 
@@ -139,5 +136,18 @@ public class Fagi {
         logger.trace("interlinkedEntitiesList " + interlinkedEntitiesList.size());
         logger.info("Interlinked not found in datasets: " + fuser.getLinkedEntitiesNotFoundInDataset());
         logger.info("Number of fused pairs: " + fuser.getFusedPairsCount());        
+    }
+    
+    private static String getResourceFilePath(String filename) throws FileNotFoundException, IOException{
+        InputStream initialStream = new FileInputStream(new File("src/main/resources/" + filename));
+        
+        byte[] buffer = new byte[initialStream.available()];
+        initialStream.read(buffer);
+
+        File targetFile = new File("src/main/resources/targetFile.tmp");
+        targetFile.deleteOnExit();
+        OutputStream outStream = new FileOutputStream(targetFile);
+        outStream.write(buffer); 
+        return targetFile.getAbsolutePath();
     }
 }
