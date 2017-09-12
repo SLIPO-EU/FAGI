@@ -56,13 +56,14 @@ public class Fagi {
         String rulesXsd = getResourceFilePath("rules.xsd");
         String specXsd = getResourceFilePath("spec.xsd");
 
-        //These values (fusionSpec and rulesXml) will come from the cli arguments
-        String specXml = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fusion.spec";
-        String rulesXml = null;// = "/home/nkarag/SLIPO/FAGI-gis/src/main/resources/rules.xml";
+        String specXml = null;
+        String rulesXml = null;
 
         String arg;
         String value;
+        
         int i = 0;
+        
         while (i < args.length){
             arg = args[i];
             if(arg.startsWith("-")){
@@ -89,7 +90,7 @@ public class Fagi {
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
-        genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());            
+        genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());
 
         InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd);
         
@@ -97,20 +98,21 @@ public class Fagi {
             logger.info(SpecificationConstants.HELP);
             System.exit(0);
         }
-
+        
         XmlValidator validator = new XmlValidator();
         validator.validateAgainstXSD(rulesXml, rulesXsd);
 
         XmlProcessor2 xm2 = new XmlProcessor2();
         RuleCatalog ruleCatalog = xm2.parseRules(rulesXml);
 
+        
         List<Rule> rules = ruleCatalog.getRules();
-        logger.info("\n\n\n\nRules size: " + rules.size());
+        logger.info("\nRules size: " + rules.size());
+
         for (Rule rule : rules){
-            logger.fatal(rule.toString());
+            logger.info(rule.toString());
             //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
             //logger.debug(actionRuleString);
-
         }
 
         MethodRegistry methodRegistry = new MethodRegistry();
@@ -118,9 +120,7 @@ public class Fagi {
         methodRegistry.validateRules(ruleCatalog.getRules());
         HashSet<String> methodSet = methodRegistry.getMethodRegistryList();
         
-        
-        
-        
+
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);
 
@@ -147,7 +147,8 @@ public class Fagi {
         File targetFile = new File("src/main/resources/targetFile.tmp");
         targetFile.deleteOnExit();
         OutputStream outStream = new FileOutputStream(targetFile);
-        outStream.write(buffer); 
+        outStream.write(buffer);
+        
         return targetFile.getAbsolutePath();
     }
 }

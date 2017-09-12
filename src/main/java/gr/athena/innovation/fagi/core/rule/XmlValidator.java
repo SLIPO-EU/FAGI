@@ -25,18 +25,19 @@ import org.apache.logging.log4j.Logger;
 public class XmlValidator {
     
     private static final Logger logger = LogManager.getLogger(XmlValidator.class);
-    
-    
+
     public void validate(String xmlPath, String xsdPath) throws MalformedURLException{
         URL schemaFile = new URL(xsdPath);
         Source xmlFile = new StreamSource(new File(xmlPath));
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        
         try {
 
             Schema schema = schemaFactory.newSchema(schemaFile);
             Validator validator = schema.newValidator();
             validator.validate(xmlFile);
-            logger.info(xmlFile.getSystemId() + " is valid");
+
+            logger.debug(xmlFile.getSystemId() + " is valid");
 
         } catch (SAXException e) {
             logger.error(xmlFile.getSystemId() + " is NOT valid, reason:" + e);
@@ -56,8 +57,8 @@ public class XmlValidator {
             Schema schema = factory.newSchema(new StreamSource(xsd));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(xml));
-            
-            logger.debug("Validation against XSD success.");
+
+            logger.debug(xmlPath + " is valid");
             return true;
             
         } catch (SAXException e) {

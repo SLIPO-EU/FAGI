@@ -52,18 +52,8 @@ import static org.w3c.dom.Node.TEXT_NODE;
 public class XmlProcessor2 {
 
     private static final Logger logger = LogManager.getLogger(XmlProcessor2.class);
-    //private final RuleCatalog ruleCatalog;
     private int actionRuleCount = 1;
     private int steps = 0;
-    
-    /**
-     *
-     * @param ruleCatalog
-     */
-//    public XmlProcessor2(RuleCatalog ruleCatalog){
-//        this.ruleCatalog = ruleCatalog;
-//    }
-
 
     /**
      *
@@ -78,7 +68,8 @@ public class XmlProcessor2 {
 
         Its node may have multiple children
      * 
-     * @param path
+     * @param path of the rules XML file.
+     * @return a {@link gr.athena.innovation.fagi.core.rule.RuleCatalog} object that holds the rules configuration. 
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
@@ -96,11 +87,11 @@ public class XmlProcessor2 {
         doc.getDocumentElement().normalize();
 
         //get all <RULE> elements of the XML. The rule elements are all in the same level
-        NodeList nList = doc.getElementsByTagName("RULE");
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            logger.info("rule " + temp);
-            
-            Node ruleNode = nList.item(temp);
+        NodeList rules = doc.getElementsByTagName("RULE");
+        for (int temp = 0; temp < rules.getLength(); temp++) {
+            logger.info("----- Rule " + temp);
+
+            Node ruleNode = rules.item(temp);
             NodeList ruleNodeList = ruleNode.getChildNodes();
             Rule rule = createRule(ruleNodeList);
             ruleCatalog.addItem(rule);
