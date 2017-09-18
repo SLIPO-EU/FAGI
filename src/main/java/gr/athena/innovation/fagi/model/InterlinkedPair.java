@@ -8,6 +8,7 @@ import gr.athena.innovation.fagi.core.rule.ExpressionTag;
 import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
 import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.fusers.CentroidShiftTranslator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class InterlinkedPair {
     public void fuseWithRule(RuleCatalog ruleCatalog){
         logger.debug("Fusing with rule..");
         fusedEntity = new Entity();
-        
+
         Geometry leftGeometry = leftNode.getGeometry();
         Geometry rightGeometry = rightNode.getGeometry();
 
@@ -72,45 +73,76 @@ public class InterlinkedPair {
         int j = 0;
         
         for(Rule rule : rules){
-        
+
             logger.trace("Rule number: " + j);
-            String propertyA = rule.getPropertyA();
-            String propertyB = rule.getPropertyB();
+
             EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
             EnumMetadataActions defaultMetaAction = rule.getDefaultMetaAction();
+
+            //Simple rule with default actions. No conditions and functions are set
+            if(rule.getActionRuleSet() == null){
+                logger.fatal("Rule without ACTION RULE SET, use plain action");
+                if(defaultGeoAction != null){
+                    fuseGeometry(defaultGeoAction);
+                }
+                
+                if(defaultMetaAction != null){
+                    fuseMetadata(defaultMetaAction);
+                }
+                break;
+            }
+            
+            String propertyA = rule.getPropertyA();
+            String propertyB = rule.getPropertyB();
             
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
+            int actionRuleCount = 0;
             for(ActionRule actionRule : actionRules){
+                logger.info("-- Action rule: " + actionRuleCount);
                 
-                EnumGeometricActions gA = null;
-                EnumMetadataActions mA = null;
+                boolean isActionRuleToBeApplied = false;
+                EnumGeometricActions geoAction = null;
+                EnumMetadataActions metaAction = null;
                 //String mA = "";
 
                 if(actionRule.getGeoAction() != null){
-                    gA = actionRule.getGeoAction();
+                    geoAction = actionRule.getGeoAction();
                 }
                 
                 if(actionRule.getMetaAction() != null){
-                    mA = actionRule.getMetaAction();
+                    metaAction = actionRule.getMetaAction();
                 }
 
                 ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
+
                 if(actionRule.getConditionTag().getTagList().isEmpty()){
 
-                    //logger.debug("expressionTag: " + expressionTag);
-                    //single function
+                    //the expression is a single function
                     String expression = expressionTag.getExpression();
-                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + gA + " " + mA);
-                    
+                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + geoAction + " " + metaAction);
+
+                } else if(expressionTag instanceof LogicalExpressionTag){
+                    LogicalExpressionTag logicalExpression = (LogicalExpressionTag) expressionTag;
+                    if(logicalExpression.getLogicalExpressionTags().isEmpty()){
+                        logger.debug("Logical expression should be not, with function: " + logicalExpression.getExpressionTags().get(0).getExpression());
+                        String expression = logicalExpression.getExpressionTags().get(0).getExpression();
+                        
+                    }
 
                 } else {
+                    
                     if(expressionTag instanceof LogicalExpressionTag){
+                        
                         LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
                         String operation = logEx.getLogicalOp();
 
                         for(ExpressionTag exTag : logEx.getExpressionTags()){
                             String expression = exTag.getExpression();
                             logger.info("should be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
+                            logger.fatal("function " + expression + " with operation: " + operation);
+                            if(operation.equals(SpecificationConstants.NOT)){
+                                
+                            }
                         }
                         //String expression = logEx.getExpressionTags().get(0).getExpression();
 
@@ -123,8 +155,20 @@ public class InterlinkedPair {
                 logger.trace("Max Level: " + level);
                 int i = level;
                 while (i >= level){
+                    
+//                    ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
+//                    LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();                    
+//                    for(LogicalExpressionTag tag : tagList){
+//                        tag.getLevel();
+//                        if(tag.getLevel() == i){
+//                            
+//                        }
+//                    }                    
                     logger.trace("Top level: " + i);
-                   i--; 
+                    logger.fatal(actionRule.getConditionTag().getExpressionTag().getExpression());
+                    //ruleCatalog.getRules().
+                    
+                    i--; 
                 }
 
                 ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
@@ -133,12 +177,18 @@ public class InterlinkedPair {
 //                    tag.getLevel();
 //                }
 
+                actionRuleCount++;
+                if(isActionRuleToBeApplied){
+
+                    break;
+                }            
             }
+
             j++;
         }
  
-        System.out.println("Temp End.");
-        System.exit(0);
+        //System.out.println("Temp End.");
+        //System.exit(0);
         Model tempModel = leftMetadata.getModel();
         // iterate over the triples
         for (StmtIterator i = leftMetadata.getModel().listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {

@@ -106,6 +106,7 @@ public class XmlProcessor2 {
     private Rule createRule(NodeList ruleNodeList){
         Rule rule = new Rule();
         int length = ruleNodeList.getLength();
+        ActionRuleSet actionRuleSet = null;
         for (int i = 0; i < length; i++) {
             
             if (ruleNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -113,23 +114,25 @@ public class XmlProcessor2 {
                 if (ruleElement.getNodeName().contains("PROPERTYA")) {
                     logger.debug("property A: " + ruleElement.getTextContent());
                     rule.setPropertyA(ruleElement.getTextContent());
-
                 } else if (ruleElement.getNodeName().contains("PROPERTYB")) {
                     logger.debug("property B: " + ruleElement.getTextContent());
                     rule.setPropertyB(ruleElement.getTextContent());
                 } else if(ruleElement.getNodeName().contains("DEFAULT_GEO_ACTION")){
-                    rule.setDefaultMetaAction(EnumMetadataActions.fromString(ruleElement.getTextContent()));
+                    EnumGeometricActions defaultGeoAction = EnumGeometricActions.fromString(ruleElement.getTextContent());
+                    rule.setDefaultGeoAction(defaultGeoAction);
                 } else if(ruleElement.getNodeName().contains("DEFAULT_META_ACTION")){
                     rule.setDefaultMetaAction(EnumMetadataActions.fromString(ruleElement.getTextContent()));
                 } else if(ruleElement.getNodeName().contains("ACTION_RULE_SET")){
-                    logger.debug("found rules set, count: " + ruleElement.getFirstChild().getNodeType());
-                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName("ACTION_RULE");
-                    ActionRuleSet actionRuleSet = createActionRuleSet(actionRuleNodeList);
+                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName("ACTION_RULE");                   
+                    actionRuleSet = createActionRuleSet(actionRuleNodeList);
                     rule.setActionRuleSet(actionRuleSet);
                 }
             }
         }
-
+        if(actionRuleSet == null){
+            logger.fatal("# RULE without action rule set");
+            logger.fatal(rule.getDefaultGeoAction());
+        }
         return rule;
     }
 

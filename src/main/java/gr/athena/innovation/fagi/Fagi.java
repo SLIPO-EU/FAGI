@@ -105,7 +105,6 @@ public class Fagi {
         XmlProcessor2 xm2 = new XmlProcessor2();
         RuleCatalog ruleCatalog = xm2.parseRules(rulesXml);
 
-        
         List<Rule> rules = ruleCatalog.getRules();
         logger.info("\nRules size: " + rules.size());
 
@@ -119,7 +118,6 @@ public class Fagi {
         methodRegistry.init();
         methodRegistry.validateRules(ruleCatalog.getRules());
         HashSet<String> methodSet = methodRegistry.getMethodRegistryList();
-        
 
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);
@@ -127,10 +125,10 @@ public class Fagi {
         //fuser.fuseAll(config);
         logger.trace("Start rule Fusion");
         
-        //fuser.fuseAllWithRules(config, ruleCatalog);
+        fuser.fuseAllWithRules(fusionSpecification, ruleCatalog);
         logger.trace("Rule Fusion complete.");
         
-        //fuser.combineFusedAndWrite(config, interlinkedEntitiesList);
+        fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntitiesList);
 
         logger.info(fusionSpecification.toString());
         logger.trace("interlinkedEntitiesList " + interlinkedEntitiesList.size());

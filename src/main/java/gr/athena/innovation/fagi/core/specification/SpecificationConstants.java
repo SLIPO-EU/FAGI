@@ -13,6 +13,7 @@ public class SpecificationConstants {
     public static final String LEFT_DATASET = "LEFT";
     public static final String RIGHT_DATASET = "RIGHT";
     public static final String TARGET_DATASET = "TARGET";
+    public static final String MERGE_WITH = "MERGE_WITH";
     public static final String LINKS = "LINKS";
 
     public static final String ID = "ID";

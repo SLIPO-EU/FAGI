@@ -6,6 +6,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.core.specification.FusionConfig;
+import gr.athena.innovation.fagi.core.specification.FusionSpecification;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.Link;
@@ -101,7 +102,7 @@ public class Fuser implements IFuser{
      * @throws ParseException
      */
     @Override
-    public void fuseAllWithRules(FusionConfig config, RuleCatalog ruleCatalog) throws ParseException{
+    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog) throws ParseException{
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();
 
@@ -140,22 +141,21 @@ public class Fuser implements IFuser{
      * Constructs the output result by creating a new grapgh to the specified output 
      * or combining the fused entities into the source datasets.
      * 
-     * @param config
+     * @param fusionSpecification
      * @param interlinkedEntitiesList
      * @throws FileNotFoundException
      */
-    public void combineFusedAndWrite(FusionConfig config, 
+    public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
             ArrayList<InterlinkedPair> interlinkedEntitiesList) throws FileNotFoundException{
         
         OutputStream out;
-        if(config.getPathOutput().equalsIgnoreCase("System.out")){
+        if(fusionSpecification.getPathOutput().equalsIgnoreCase("System.out")){
             out = System.out;
         } else {
-            out = new FileOutputStream(config.getPathOutput());
+            out = new FileOutputStream(fusionSpecification.getPathOutput());
         }
 
-        switch(config.getFinalDataset()) {
-            case DEFAULT:
+        switch(fusionSpecification.getFinalDataset()) {
             case LEFT:
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 
@@ -173,7 +173,7 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedMetadataModel);
                 }
 
-                leftModel.write(out, config.getOutputRDFFormat()) ;
+                leftModel.write(out, fusionSpecification.getOutputRDFFormat()) ;
 
                 break;
             case RIGHT:
@@ -193,28 +193,34 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedMetadataModel);
                 }
 
-                rightModel.write(out, config.getOutputRDFFormat());
+                rightModel.write(out, fusionSpecification.getOutputRDFFormat());
                 break;
             case NEW:
+            case DEFAULT:                
             default:
-                //user default is LEFT dataset, but anything else should not mess with the input files.
-                Model newModel = ModelFactory.createDefaultModel();;
+                //user default is NEW dataset.
+                Model newModel = ModelFactory.createDefaultModel();
                 
-                for(InterlinkedPair p : interlinkedEntitiesList){
+                for(InterlinkedPair pair : interlinkedEntitiesList){
 
-                    Resource leftResource = p.getLeftNode().getGeometryNode().asResource();
+                    Resource geometryNode = pair.getLeftNode().getGeometryNode().asResource();
                     Property wktProperty = ResourceFactory.createProperty(Namespace.WKT);
-                    Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(p.getFusedEntity().getWKTLiteral());
-
-                    Statement statementFused = ResourceFactory.createStatement(leftResource, wktProperty, fusedGeometryLiteral);
+                    Property hasGeometry = ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY);
+                    Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(pair.getFusedEntity().getWKTLiteral());
                     
-                    Model fusedMetadataModel = p.getFusedEntity().getMetadata().getModel();
 
-                    fusedMetadataModel.add(statementFused);
+                    Resource resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
+                    Statement statementFused1 = ResourceFactory.createStatement(resourceURI, hasGeometry, geometryNode);        
+                    Statement statementFused2 = ResourceFactory.createStatement(geometryNode, wktProperty, fusedGeometryLiteral);
+                    
+                    Model fusedMetadataModel = pair.getFusedEntity().getMetadata().getModel();
+
+                    fusedMetadataModel.add(statementFused1);
+                    fusedMetadataModel.add(statementFused2);
                     newModel.add(fusedMetadataModel);
                 }
 
-                newModel.write(out, config.getOutputRDFFormat());                
+                newModel.write(out, fusionSpecification.getOutputRDFFormat());                
                 break;
         }
     }

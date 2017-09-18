@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core;
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.FusionConfig;
+import gr.athena.innovation.fagi.core.specification.FusionSpecification;
 
 /**
  * Interface for a Fuser core component.
@@ -26,6 +27,6 @@ public interface IFuser {
      * @param ruleCatalog
      * @throws ParseException
      */    
-    public void fuseAllWithRules(FusionConfig config, RuleCatalog ruleCatalog) throws ParseException;
+    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog) throws ParseException;
     
 }
