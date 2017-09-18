@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SPECIFICATION>
+	<INPUTFORMAT></INPUTFORMAT>
+	<OUTPUTFORMAT></OUTPUTFORMAT>
+	<LEFT>
+		<ID></ID>
+		<ENDPOINT></ENDPOINT>
+		<FILE></FILE>
+	</LEFT>
+	<RIGHT>
+		<ID></ID>
+		<ENDPOINT></ENDPOINT>
+		<FILE></FILE>
+	</RIGHT>
+	<LINKS>
+		<ID></ID>
+		<ENDPOINT></ENDPOINT>
+		<FILE></FILE>
+	</LINKS>	
+	<TARGET>
+		<ID></ID>
+		<FILE></FILE>
+	</TARGET>
+</SPECIFICATION>
+
+
+
+
+

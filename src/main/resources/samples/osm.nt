@@ -1,0 +1,34 @@
+<http://linkedgeodata.org/triplify/way108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/ontology/Leisure> .
+<http://linkedgeodata.org/triplify/way108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/ontology/Park> .
+<http://linkedgeodata.org/triplify/way108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://geovocab.org/spatial#Feature> .
+<http://linkedgeodata.org/triplify/way108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/meta/Way> .
+<http://linkedgeodata.org/triplify/way108075703> <http://purl.org/dc/terms/contributor> <http://linkedgeodata.org/ontology/user209340> .
+<http://linkedgeodata.org/triplify/way108075703> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://linkedgeodata.org/triplify/way108075703_geom> .
+<http://linkedgeodata.org/triplify/way108075703_geom> <http://www.opengis.net/ont/geosparql#asWKT> "LINESTRING(-0.147618 51.469203,-0.147505 51.469535,-0.148093 51.469614,-0.148353 51.468969,-0.148093 51.468924,-0.147991 51.469241,-0.147618 51.469203)" .
+<http://linkedgeodata.org/geometry/way108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://geovocab.org/geometry#Geometry> .
+<http://linkedgeodata.org/triplify/way108075703> <http://geovocab.org/geometry#geometry> <http://linkedgeodata.org/geometry/way108075703> .
+<http://linkedgeodata.org/geometry/way108075703> <http://linkedgeodata.org/ontology/posSeq> <http://linkedgeodata.org/geometry/posSeq108075703> .
+<http://linkedgeodata.org/geometry/posSeq108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_6> <http://linkedgeodata.org/geometry/node1240661392> .
+<http://linkedgeodata.org/geometry/node1240661392> <http://www.opengis.net/ont/geosparql#asWKT> "POINT(-0.147991 51.469241)" .
+<http://linkedgeodata.org/triplify/way108075703> <http://purl.org/dc/terms/modified> "2011-04-11 10:37:31.0" .
+<http://linkedgeodata.org/triplify/way108075703> <http://linkedgeodata.org/ontology/version> "2" .
+<http://linkedgeodata.org/triplify/way108075703> <http://linkedgeodata.org/ontology/changeset> "7830637" .
+<http://linkedgeodata.org/geometry/way108075703> <http://linkedgeodata.org/ontology/posSeq> <http://linkedgeodata.org/geometry/posSeq108075703> .
+<http://linkedgeodata.org/geometry/posSeq108075703> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_7> <http://linkedgeodata.org/geometry/node1240661407> .
+<http://linkedgeodata.org/geometry/node1240661407> <http://www.opengis.net/ont/geosparql#asWKT> "POINT(-0.147618 51.469203)" .
+
+<http://linkedgeodata.org/triplify/way155488587> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://geovocab.org/spatial#Feature> .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/meta/Way> .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/ontology/Amenity> .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://linkedgeodata.org/ontology/FastFood> .
+<http://linkedgeodata.org/triplify/way155488587> <http://purl.org/dc/terms/contributor> <http://linkedgeodata.org/ontology/user82783> .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.w3.org/2000/01/rdf-schema#label> "Burger King" .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://linkedgeodata.org/triplify/way155488587_geom> .
+<http://linkedgeodata.org/triplify/way155488587_geom> <http://www.opengis.net/ont/geosparql#asWKT> "LINESTRING(-0.174603 51.515895,-0.174674 51.515853,-0.174798 51.515942,-0.174728 51.515981,-0.174603 51.515895)" .
+<http://linkedgeodata.org/triplify/way155488587> <http://geovocab.org/geometry#geometry> <http://linkedgeodata.org/geometry/way155488587> .
+<http://linkedgeodata.org/triplify/way155488587> <http://purl.org/dc/terms/modified> "2012-03-17 21:16:03.0" .
+<http://linkedgeodata.org/triplify/way155488587> <http://linkedgeodata.org/ontology/source> "Bing;photographic_survey" .
+<http://linkedgeodata.org/triplify/way155488587> <http://linkedgeodata.org/ontology/version> "1" .
+<http://linkedgeodata.org/triplify/way155488587> <http://linkedgeodata.org/ontology/building> "1" .
+<http://linkedgeodata.org/triplify/way155488587> <http://linkedgeodata.org/ontology/changeset> "11012679" .
+<http://linkedgeodata.org/triplify/way155488587> <http://linkedgeodata.org/ontology/cuisine> "burger" .
