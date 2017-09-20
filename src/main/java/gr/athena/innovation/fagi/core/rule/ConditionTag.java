@@ -19,13 +19,14 @@ public class ConditionTag {
         this.expressionTag = expressionTag;
     }
     
-    @Override
-    public String toString() {
-        return "ConditionTag{" + "expressionTag=" + expressionTag + ", \n" +  tagListPrettyPrint(tagList) + '}';
-    }    
+   
     
     public void addNode(LogicalExpressionTag node){
         this.tagList.add(node);
+    }
+
+    public LinkedList<LogicalExpressionTag> getTagList() {
+        return tagList;
     }
 
     private String tagListPrettyPrint(LinkedList<LogicalExpressionTag> tagList){
@@ -38,9 +39,9 @@ public class ConditionTag {
         
         return sb.toString();
     }
-
-    public LinkedList<LogicalExpressionTag> getTagList() {
-        return tagList;
-    }
-
+    
+    @Override
+    public String toString() {
+        return "ConditionTag{" + "expressionTag=" + expressionTag + ", \n" +  tagListPrettyPrint(tagList) + '}';
+    }     
 }

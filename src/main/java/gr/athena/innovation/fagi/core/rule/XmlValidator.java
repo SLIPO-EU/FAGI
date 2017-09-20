@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.core.rule;
 
-import gr.athena.innovation.fagi.model.InterlinkedPair;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,7 +9,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.*;
 import java.net.URL;
 import org.xml.sax.SAXException;
-//import java.io.File; // if you use File
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -25,26 +23,6 @@ import org.apache.logging.log4j.Logger;
 public class XmlValidator {
     
     private static final Logger logger = LogManager.getLogger(XmlValidator.class);
-
-    public void validate(String xmlPath, String xsdPath) throws MalformedURLException{
-        URL schemaFile = new URL(xsdPath);
-        Source xmlFile = new StreamSource(new File(xmlPath));
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        
-        try {
-
-            Schema schema = schemaFactory.newSchema(schemaFile);
-            Validator validator = schema.newValidator();
-            validator.validate(xmlFile);
-
-            logger.debug(xmlFile.getSystemId() + " is valid");
-
-        } catch (SAXException e) {
-            logger.error(xmlFile.getSystemId() + " is NOT valid, reason:" + e);
-        } catch (IOException e) {
-            logger.error("Error in XML against XSD validation" + e);
-        }
-    }
     
     public boolean validateAgainstXSD(String xmlPath, String xsdPath) throws FileNotFoundException {
         

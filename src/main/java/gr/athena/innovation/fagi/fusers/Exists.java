@@ -26,7 +26,7 @@ public class Exists {
         return false;
     }
     
-    public String getName(){
+    public static String getName(){
         return "exists";
     }
 }

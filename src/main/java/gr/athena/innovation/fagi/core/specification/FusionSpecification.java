@@ -24,7 +24,7 @@ public class FusionSpecification {
     private String pathOutput;
     private String idOutput;
     private String endpointOutput;
-    
+
     private EnumFuseIntoDataset finalDataset;
     private String outputRDFFormat;
     private String inputRDFFormat;

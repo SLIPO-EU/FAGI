@@ -39,6 +39,10 @@ public class ActionRule {
         this.metaAction = metaAction;
     }
 
+    public boolean isConditionFulfilled(){
+        return true;
+    }
+    
     @Override
     public String toString() {
         return "ActionRule{" + "condition=" + condition + ", geoAction=" + geoAction + ", metaAction=" + metaAction + '}';

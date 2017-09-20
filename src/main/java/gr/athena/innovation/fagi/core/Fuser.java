@@ -99,10 +99,11 @@ public class Fuser implements IFuser{
     /**
      * Fuses all links using the Rules from file.
      * 
+     * @param fusionSpecification
      * @throws ParseException
      */
     @Override
-    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog) throws ParseException{
+    public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog) throws ParseException{
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();
 
@@ -112,8 +113,8 @@ public class Fuser implements IFuser{
 
         for (Link link : links.getLinks()){
 
-            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, config.getOptionalDepth());
-            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, config.getOptionalDepth());
+            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, fusionSpecification.getOptionalDepth());
+            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, fusionSpecification.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
@@ -228,6 +229,7 @@ public class Fuser implements IFuser{
     private Entity constructEntity(Model model, String resourceURI, WKTReader wellKnownTextReader) throws ParseException {
         
         Entity entity = new Entity();
+        
         //We assume the entity has one single geometry representation as WKT
         StmtIterator statements = model.listStatements(
                 new SimpleSelector(null, ResourceFactory.createProperty(Namespace.WKT), (RDFNode) null));

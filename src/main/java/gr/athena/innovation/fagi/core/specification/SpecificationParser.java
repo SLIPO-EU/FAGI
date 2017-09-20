@@ -111,7 +111,6 @@ public class SpecificationParser {
             Node targetNode = targetNodeList.item(0);
             NodeList targetChilds = targetNode.getChildNodes();
             for (int i = 0; i < targetChilds.getLength(); i++) {
- 
                 Node n = targetChilds.item(i);                            
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {

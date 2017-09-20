@@ -12,7 +12,7 @@ import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
-import gr.athena.innovation.fagi.xml.XmlProcessor2;
+import gr.athena.innovation.fagi.xml.XmlProcessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -86,24 +86,26 @@ public class Fagi {
 
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpecification = specificationParser.parse(specXml);
+
+        MethodRegistry methodRegistry = new MethodRegistry();
+        methodRegistry.init();
+
+        HashSet<String> methodSet = methodRegistry.getMethodRegistryList();
+        
+        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd, methodSet);
+  
+        if(!inputValidator.isValidInput()){
+            logger.info(SpecificationConstants.HELP);
+            System.exit(0);
+        }
+
+        XmlProcessor xmlProcessor = new XmlProcessor();
+        RuleCatalog ruleCatalog = xmlProcessor.parseRules(rulesXml);
         
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
         genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());
-
-        InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd);
-        
-        if(!inputValidator.isValidInput()){
-            logger.info(SpecificationConstants.HELP);
-            System.exit(0);
-        }
-        
-        XmlValidator validator = new XmlValidator();
-        validator.validateAgainstXSD(rulesXml, rulesXsd);
-
-        XmlProcessor2 xm2 = new XmlProcessor2();
-        RuleCatalog ruleCatalog = xm2.parseRules(rulesXml);
 
         List<Rule> rules = ruleCatalog.getRules();
         logger.info("\nRules size: " + rules.size());
@@ -114,10 +116,6 @@ public class Fagi {
             //logger.debug(actionRuleString);
         }
 
-        MethodRegistry methodRegistry = new MethodRegistry();
-        methodRegistry.init();
-        methodRegistry.validateRules(ruleCatalog.getRules());
-        HashSet<String> methodSet = methodRegistry.getMethodRegistryList();
 
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);

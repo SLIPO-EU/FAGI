@@ -48,14 +48,6 @@ public class Rule {
     public void setDefaultMetaAction(EnumMetadataActions defaultMetaAction) {
         this.defaultMetaAction = defaultMetaAction;
     }
-    
-    @Override
-    public String toString() {
-        return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
-                + "\ndefaultGeoAction=" + defaultGeoAction + ", "
-                + "\ndefaultMetaAction=" + defaultMetaAction + ", "
-                + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
-    }
 
     public ActionRuleSet getActionRuleSet() {
         return actionRuleSet;
@@ -64,4 +56,12 @@ public class Rule {
     public void setActionRuleSet(ActionRuleSet actionRuleSet) {
         this.actionRuleSet = actionRuleSet;
     }
+
+    @Override
+    public String toString() {
+        return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
+                + "\ndefaultGeoAction=" + defaultGeoAction + ", "
+                + "\ndefaultMetaAction=" + defaultMetaAction + ", "
+                + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
+    }    
 }

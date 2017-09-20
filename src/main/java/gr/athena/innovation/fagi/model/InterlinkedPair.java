@@ -92,6 +92,7 @@ public class InterlinkedPair {
                 break;
             }
             
+            
             String propertyA = rule.getPropertyA();
             String propertyB = rule.getPropertyB();
             
@@ -179,7 +180,8 @@ public class InterlinkedPair {
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
-
+                    fuseGeometry(geoAction);
+                    fuseMetadata(metaAction);
                     break;
                 }            
             }

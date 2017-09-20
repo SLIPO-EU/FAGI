@@ -86,7 +86,7 @@ public class DateFuser {
         return transformedDate;
     }
 
-    public String getName(){
+    public static String getName(){
         return "isDateKnownFormat";
     }
 }

@@ -18,21 +18,19 @@ public class MethodRegistry {
     public void init(){
         
         methodRegistry = new HashSet<>();
-        
-        DateFuser dateFuser = new DateFuser();
-        Exists exists = new Exists();
-        LiteralFuser literalFuser = new LiteralFuser();
 
-        methodRegistry.add(dateFuser.getName());
-        methodRegistry.add(exists.getName());
-        methodRegistry.add(literalFuser.getName());
+        methodRegistry.add(DateFuser.getName());
+        methodRegistry.add(Exists.getName());
+        methodRegistry.add(LiteralFuser.getName());
         
         isInitialized = true;
     }
 
-    public boolean validateRules(List<Rule> rules){
+    public boolean validateRules(List<Rule> rules, HashSet<String> methodSet){
         
-        //for()
+        for(Rule rule : rules){
+            
+        }
         return true;
     }
     

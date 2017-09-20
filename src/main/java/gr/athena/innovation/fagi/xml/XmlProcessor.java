@@ -5,7 +5,6 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
 import gr.athena.innovation.fagi.core.rule.ActionRuleSet;
 import gr.athena.innovation.fagi.core.rule.ConditionTag;
-import gr.athena.innovation.fagi.core.rule.Expression;
 import gr.athena.innovation.fagi.core.rule.ExpressionTag;
 import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
 import gr.athena.innovation.fagi.core.rule.Rule;
@@ -49,9 +48,9 @@ import static org.w3c.dom.Node.TEXT_NODE;
  * 
  * @author nkarag
  */
-public class XmlProcessor2 {
+public class XmlProcessor {
 
-    private static final Logger logger = LogManager.getLogger(XmlProcessor2.class);
+    private static final Logger logger = LogManager.getLogger(XmlProcessor.class);
     private int actionRuleCount = 1;
     private int steps = 0;
 
@@ -129,10 +128,12 @@ public class XmlProcessor2 {
                 }
             }
         }
+        
         if(actionRuleSet == null){
             logger.fatal("# RULE without action rule set");
             logger.fatal(rule.getDefaultGeoAction());
         }
+        
         return rule;
     }
 
@@ -213,7 +214,6 @@ public class XmlProcessor2 {
         //if it is simple, construct simple functions
         //else extract Expression, passing the Expression Child node.
         
-        
         Node parentExpression = conditionNode.getFirstChild();
         while(parentExpression != null){
             if(parentExpression.getNodeType() == Node.ELEMENT_NODE){
@@ -224,7 +224,6 @@ public class XmlProcessor2 {
             parentExpression = parentExpression.getNextSibling();
         }
         
-
         if(parentExpressionContainsSingleFunction(parentExpression)){
             //The Condition is simple and contains only a function.
             ExpressionTag et = new ExpressionTag();
