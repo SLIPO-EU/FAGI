@@ -7,7 +7,7 @@
 				<CONDITION>
 					<EXPRESSION>
 						<NOT>
-							<FUNCTION>isLiteralAbbreviation(A)</FUNCTION>
+							<FUNCTION>isLiteralAbbreviation(B)</FUNCTION>
 						</NOT>
 					</EXPRESSION>
 				</CONDITION>
@@ -20,7 +20,7 @@
 	<RULE>
 		<PROPERTYA>WKT</PROPERTYA>
 		<PROPERTYB>WKT</PROPERTYB>
-		<DEFAULT_GEO_ACTION>Keep Right Geometry</DEFAULT_GEO_ACTION>
-		<DEFAULT_META_ACTION>Keep Right Metadata</DEFAULT_META_ACTION>
-	</RULE>
+		<DEFAULT_GEO_ACTION>Shift Left Geometry</DEFAULT_GEO_ACTION>
+		<DEFAULT_META_ACTION>Shift Left Geometry</DEFAULT_META_ACTION>
+	</RULE>	
 </RULES>

@@ -6,7 +6,7 @@ In order to build the command line version from source, you should first clone t
 `git clone -b cli --single-branch https://github.com/SLIPO-EU/FAGI-gis.git Fagi-gis`
 
 Then, go the the root directory of the project (Fagi-gis) and run:
-`mvn package`
+`mvn clean install`
 Tested with git version 1.9.1 and Apache Maven 3.3.3
 
 ### Run Fagi-gis from command line
@@ -42,4 +42,78 @@ Specifically:
 `MERGE_WITH`: Specify the final fused dataset. The accepted values are `LEFT` or `RIGHT` in order to merge with one of the source datasets, and `NEW` in order to create a new dataset that contains only the interlinked fused entities. 
 
 ### How to fill in the rules.xml file
+
+The rules.xml file starts with the root element `<RULES>`.
+We set rules as a `<RULE>` element inside the root tag. 
+
+Each <RULE> element consists of the following main childs:
+`<PROPERTYA>`
+`<PROPERTYB>`
+`<ACTION_RULE_SET>`
+`<DEFAULT_GEO_ACTION>`
+`<DEFAULT_META_ACTION>`
+
+`<PROPERTYA>` and `<PROPERTYB>` define the two RDF properties that the rule will apply.
+`<ACTION_RULE_SET>` is a set of condition-action pairs with priority the order of appearance.
+`<DEFAULT_GEO_ACTION>` and `<DEFAULT_META_ACTION>` are the default fusion actions to apply if no condition from the <ACTION_RULE_SET> is met.
+
+`<ACTION_RULE_SET>` element:
+This element consists of one or more `<ACTION_RULE>` child elements. 
+Each <ACTION_RULE> is a pair of a condition and a fusion action, namely `<CONDITION>`, `<ACTION>`.
+If the condition of an <ACTION_RULE> is met, then the fusion action of that <ACTION_RULE> is going to be applied and all the rest will be ignored, so the fusion action priority is the order of the <ACTION_RULE> appearance. 
+
+The `<CONDITION>` along with the `<ACTION>` are the most essential part of the configuration of the fusion process. 
+In order to construct a condition, we assemble a group of logical operations that contain functions to apply on the RDF properties defined above.
+We can define a logical operations by using the `<EXPRESSION>` tag as a child of a condition. 
+Then, inside the expression we can put together a combination `<AND>`, `<OR>` and `<NOT>` operations and as operands we can use `<FUNCTION>` elements containing a function or a nested <EXPRESSION> containing more logical operations.
+
+A sample rules.xml file could look like this: 
+
+<RULES>
+
+	<RULE>
+		<PROPERTYA>dateA</PROPERTYA>
+		<PROPERTYB>dateB</PROPERTYB>
+		<ACTION_RULE_SET>
+			<ACTION_RULE>
+				<CONDITION>
+					<EXPRESSION>
+						<FUNCTION>isKnownDate(B)</FUNCTION>
+					</EXPRESSION>
+				</CONDITION>
+				<ACTION>Keep Right Metadata</ACTION>
+			</ACTION_RULE>			
+			<ACTION_RULE>
+				<CONDITION>
+					<EXPRESSION>
+						<NOT>
+							<FUNCTION>isKnownDate(A)</FUNCTION>
+						</NOT>
+					</EXPRESSION>
+				</CONDITION>
+				<ACTION>Keep Both Metadata</ACTION>
+			</ACTION_RULE>		
+		</ACTION_RULE_SET>
+		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
+		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+	</RULE>
+	<RULE>
+		<PROPERTYA>phoneA</PROPERTYA>
+		<PROPERTYB>phoneB</PROPERTYB>
+		<ACTION_RULE_SET>
+			<ACTION_RULE>
+				<CONDITION>
+					<FUNCTION>isSamePhoneNumber(A,B)</FUNCTION>
+				</CONDITION>
+				<ACTION>Keep Left Metadata</ACTION>
+			</ACTION_RULE>		
+		</ACTION_RULE_SET>
+		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
+		<DEFAULT_META_ACTION>Keep Both Metadata</DEFAULT_META_ACTION>
+	</RULE>	
+	
+</RULES>
+
+
+
 
