@@ -21,7 +21,8 @@ public class MethodRegistry {
 
         methodRegistry.add(DateFuser.getName());
         methodRegistry.add(Exists.getName());
-        methodRegistry.add(LiteralFuser.getName());
+        IsLiteralAbbreviation is = new IsLiteralAbbreviation();
+        methodRegistry.add(is.getName());
         
         isInitialized = true;
     }

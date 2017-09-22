@@ -4,7 +4,9 @@ import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
 import gr.athena.innovation.fagi.core.rule.ActionRuleSet;
+import gr.athena.innovation.fagi.core.rule.Condition;
 import gr.athena.innovation.fagi.core.rule.ConditionTagDep;
+import gr.athena.innovation.fagi.core.rule.Expression;
 import gr.athena.innovation.fagi.core.rule.ExpressionTag;
 import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
 import gr.athena.innovation.fagi.core.rule.Rule;
@@ -16,6 +18,7 @@ import static gr.athena.innovation.fagi.core.specification.SpecificationConstant
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,9 +51,9 @@ import static org.w3c.dom.Node.TEXT_NODE;
  * 
  * @author nkarag
  */
-public class XmlProcessor {
+public class RuleProcessor {
 
-    private static final Logger logger = LogManager.getLogger(XmlProcessor.class);
+    private static final Logger logger = LogManager.getLogger(RuleProcessor.class);
     private int actionRuleCount = 1;
     private int steps = 0;
 
@@ -193,7 +196,10 @@ public class XmlProcessor {
             actionRule.setGeoAction(geoAction);
         }
 
+        //Extract condition
         NodeList conditionsList = actionRuleElement.getElementsByTagName("CONDITION");
+        
+        logger.fatal(" condition size: " + conditionsList.getLength());
         if(conditionsList.getLength() != 1){
             //TODO - remove this check after xsd validation is complete
             logger.fatal("Found more than one condition inside ACTION_RULE. Please check the XML input file.");
@@ -201,45 +207,143 @@ public class XmlProcessor {
         }
 
         Node conditionNode = conditionsList.item(0);
-        
-//        ConditionTagDep con = constructCondition(conditionNode);
-//        actionRule.setConditionTag(con);
+
+        Condition con = constructCondition2(conditionNode);
+
+        actionRule.setCondition(con);
 
         return actionRule;
     }
-    
-    private ConditionTagDep constructCondition(Node conditionNode) {
-        ConditionTagDep conditionTag = new ConditionTagDep();
+
+    private Condition constructCondition2(Node conditionNode){
         
-        //if it is simple, construct simple functions
-        //else extract Expression, passing the Expression Child node.
+        Condition condition = new Condition();
         
-        Node parentExpression = conditionNode.getFirstChild();
-        while(parentExpression != null){
-            if(parentExpression.getNodeType() == Node.ELEMENT_NODE){
-                if(parentExpression.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)){
-                    break;
-                }
-            }  
-            parentExpression = parentExpression.getNextSibling();
+        //There are two possibilities for a condition
+        //1) Contains a single function
+        //2) Contains an expression
+        
+        //1) Contains a single function:
+        if(parentNodeContainsSingleFunction(conditionNode)){
+            logger.debug("CONDITION contains only function");
+            
+            String func = getSingleFunction(conditionNode);
+            logger.fatal("found single function: " + func);
+            condition.setSingleFunction(true);
+            condition.setFunction(func);
+            
+            return condition;
         }
         
-        if(parentExpressionContainsSingleFunction(parentExpression)){
-            //The Condition is simple and contains only a function.
-            ExpressionTag et = new ExpressionTag();
-            et.setExpression(getSingleFunction(parentExpression));
-            conditionTag.setExpressionTag(et);
-            return conditionTag;
+        //2) Contains an expression:
+        if(!parentNodeContainsSingleFunction(conditionNode)){
+            Expression expression = constructParentExpression(getParentExpressionNode(conditionNode));
+            condition.setExpression(expression);
         }
 
-        //The condition does not contain a single function.
+        return condition;
+    }
+
+    private Expression constructParentExpression(Node rootExpressionNode){
         
-        //1st call of the recursive function with 0 depth.
-        String logicalOperationType = getLogicalOperationType(parentExpression);
-        extractExpression(conditionTag, parentExpression, logicalOperationType, 0);
+        int depth = 0;
+        Expression expression = new Expression();
         
-        return conditionTag;
-    } 
+        String operator = getLogicalOperationType(rootExpressionNode);
+        expression.setLogicalOperatorParent(operator);
+        //expression.setLevel(depth);
+        
+        //An expression can contain:
+        //1)only single functions
+        //2)only expressions
+        //3)both functions and expressions
+
+        //1)
+        if(containsOnlyFunctionChilds(rootExpressionNode)){
+            List<String> funcs = getFunctionsOfLogicalOperation(rootExpressionNode);
+            expression.setFuncs(funcs);
+            return expression;
+        }
+
+        //2
+        if(containsOnlyExpressionChilds(rootExpressionNode)){
+            List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
+
+            LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            for(Node n : firstNodes){
+                
+                String childOperator = getLogicalOperationType(n);
+                
+                //each of these childs should contain only function nodes.
+                if(!containsOnlyFunctionChilds(n)){
+                    logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
+                    throw new RuntimeException();
+                } else {
+                    List<String> childFuncs = getFunctionsOfLogicalOperation(n);
+
+                    if(expressionChilds.containsKey(childOperator)){
+                        List<String> mergedFuncs = expressionChilds.get(childOperator);
+                        mergedFuncs.addAll(childFuncs);
+                        //childFuncs.addAll(previousFunctionsWithSameOperand);
+                        expressionChilds.put(childOperator, mergedFuncs);
+                    } else {
+                        expressionChilds.put(childOperator, childFuncs);
+                    }
+                }
+            }
+            expression.setGroupsOfChildFunctions(expressionChilds);
+            return expression;
+        }
+
+        //3
+        if(containsExpressionAndFunctionChilds(rootExpressionNode)){
+
+            List<String> funcs = getSimpleFunctionsOfLogicalOperation(rootExpressionNode);
+            expression.setFuncs(funcs);
+            
+            List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
+            LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            
+            for(Node n : firstNodes){
+                String childOperator = getLogicalOperationType(n);
+             
+                //each of these childs should contain only function nodes.
+                if(!containsOnlyFunctionChilds(n)){
+                    logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
+                    throw new RuntimeException();
+                } else {
+                    List<String> childFuncs = getFunctionsOfLogicalOperation(n);
+                    
+                    if(expressionChilds.containsKey(childOperator)){
+                        List<String> mergedFuncs = expressionChilds.get(childOperator);
+                        mergedFuncs.addAll(childFuncs);
+                        expressionChilds.put(childOperator, mergedFuncs);
+                    } else {
+                        expressionChilds.put(childOperator, childFuncs);
+                    }
+                }
+            }
+
+            expression.setGroupsOfChildFunctions(expressionChilds);
+            return expression;
+        }
+        
+        return expression;
+    }
+
+    private Node getParentExpressionNode(Node conditionNode){
+
+        Node child = conditionNode.getFirstChild();
+        while(child != null){
+            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)){
+                return child;
+            }
+            child = child.getNextSibling();
+        }
+        
+        logger.fatal("Condition tag has no expression child!");
+        throw new RuntimeException();
+    }
 
     //recursive method
     private void extractExpression(ConditionTagDep conditionTag, Node expression, String type, int depth) {
@@ -261,7 +365,7 @@ public class XmlProcessor {
             
             LogicalExpressionTag logicalExpression = new LogicalExpressionTag(type, depth);
 
-            List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperation(expression);
+            List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperationDep(expression);
 
             logicalExpression.setExpressionTags(simpleFunctions);
             conditionTag.setExpressionTag(logicalExpression);
@@ -272,7 +376,7 @@ public class XmlProcessor {
             //2. The expression contains at least one expression and one function. 
             //String logicalOperationType = getLogicalOperationType(expression);
             
-            List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperation(expression);
+            List<ExpressionTag> simpleFunctions = getSimpleFunctionsOfLogicalOperationDep(expression);
 
             LogicalExpressionTag logicalExpression = new LogicalExpressionTag(type, depth);
             logicalExpression.setExpressionTags(simpleFunctions);
@@ -338,6 +442,26 @@ public class XmlProcessor {
         }
         return hasOnlyFunctions;
     }
+
+    private boolean nodeContainsOnlyFunctionChilds(Node node) {
+
+        boolean hasOnlyFunctions = false;
+
+        NodeList childs = node.getChildNodes();
+        Node child = childs.item(0);
+
+        while(child != null){
+            if(child.getNodeType() == Node.ELEMENT_NODE){
+                if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
+                    hasOnlyFunctions = true;
+                } else {
+                    return false;
+                }
+            }
+            child = child.getNextSibling();
+        }
+        return hasOnlyFunctions;
+    }
     
     private boolean containsExpressionAndFunctionChilds(Node expression) {
         boolean containsFunction = false;
@@ -379,7 +503,7 @@ public class XmlProcessor {
         return hasOnlyExpressions;
     }    
 
-    private boolean parentExpressionContainsSingleFunction(Node parentExpression) {
+    private boolean parentNodeContainsSingleFunction(Node parentExpression) {
         if(parentExpression.getNodeType() == Node.ELEMENT_NODE){
             Element parentExpressionElement = (Element) parentExpression;
             NodeList functions = parentExpressionElement.getElementsByTagName(SpecificationConstants.FUNCTION);
@@ -407,6 +531,7 @@ public class XmlProcessor {
     }
 
     private String getLogicalOperationType(Node parentExpression) {
+        logger.info("Extracting logical operation: " + parentExpression.getNodeName());
         Node child = parentExpression.getFirstChild();
         while(child != null){
             if(child.getNodeType() == Node.ELEMENT_NODE){
@@ -432,7 +557,24 @@ public class XmlProcessor {
 
     //this method returns a list with all functions under a logical operation. 
     //The input is the parent node of the logical operation (Expression node)
-    private List<ExpressionTag> getSimpleFunctionsOfLogicalOperation(Node expression) {
+    //IMPORTANT: Assumes that the parent node contains only <FUNCTION> tags.
+    private List<String> getFunctionsOfLogicalOperation(Node node) {
+        List<String> list = new ArrayList<>();
+
+        Node logicalOperationNode = getLogicalOperationNode(node);
+        Node child = logicalOperationNode.getFirstChild();
+        while(child != null){
+            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
+                list.add(child.getTextContent());
+            }
+            child = child.getNextSibling();
+        }
+        return list;
+    }
+
+    //this method returns a list with all functions under a logical operation. 
+    //The input is the parent node of the logical operation (Expression node)
+    private List<ExpressionTag> getSimpleFunctionsOfLogicalOperationDep(Node expression) {
         List<ExpressionTag> list = new ArrayList<>();
 
         Node logicalOperationNode = getLogicalOperationNode(expression);
@@ -447,7 +589,23 @@ public class XmlProcessor {
         }
         return list;
     }
+    
+    //this method returns a list with all functions under a logical operation. 
+    //The input is the parent node of the logical operation (Expression node)
+    private List<String> getSimpleFunctionsOfLogicalOperation(Node expressionNode) {
+        List<String> list = new ArrayList<>();
 
+        Node logicalOperationNode = getLogicalOperationNode(expressionNode);
+        Node child = logicalOperationNode.getFirstChild();
+        while(child != null){
+            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
+                list.add(child.getTextContent());
+            }
+            child = child.getNextSibling();
+        }
+        return list;
+    }
+    
     //this method returns a list with all expressions under a logical operation. 
     //The input is the parent node of the logical operation (Expression node)
     private List<LogicalExpressionTag> getExpressionsOfLogicalOperation(ConditionTagDep conditionTag, Node expression, int depth) {
@@ -495,6 +653,7 @@ public class XmlProcessor {
     }
     
     private Node getLogicalOperationNode(Node expression){
+        logger.debug("name of expression: " + expression.getNodeName());
         Node logicalOperationNode = expression.getFirstChild(); //first level child is the logical operation of the expression
         
         //get the logical operation node. Should always exist:
@@ -565,6 +724,6 @@ public class XmlProcessor {
             case PROCESSING_INSTRUCTION_NODE: return "Attribute";
         }
         return "Unidentified";
-    }  
+    }
 
 }

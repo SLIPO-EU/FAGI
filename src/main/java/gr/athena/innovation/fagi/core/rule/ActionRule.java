@@ -11,17 +11,9 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
  */
 public class ActionRule {
 
-    private ConditionTag condition;
+    private Condition condition;
     private EnumGeometricActions geoAction;
     private EnumMetadataActions metaAction;
-            
-    public void setConditionTag(ConditionTag condition){
-        this.condition = condition;
-    }
-    
-    public ConditionTag getConditionTag(){
-        return condition;
-    }
 
     public EnumGeometricActions getGeoAction() {
         return geoAction;
@@ -42,9 +34,17 @@ public class ActionRule {
     public boolean isConditionFulfilled(){
         return true;
     }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
     
     @Override
     public String toString() {
-        return "ActionRule{" + "condition=" + condition + ", geoAction=" + geoAction + ", metaAction=" + metaAction + '}';
-    }
+        return "\nActionRule{" + "condition=" + condition + ", geoAction=" + geoAction + ", metaAction=" + metaAction + "\n}";
+    }    
 }

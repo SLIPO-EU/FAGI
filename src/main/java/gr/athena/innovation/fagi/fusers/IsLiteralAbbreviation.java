@@ -9,9 +9,9 @@ import org.apache.logging.log4j.LogManager;
  * 
  * @author nkarag
  */
-public class LiteralFuser {
+public class IsLiteralAbbreviation {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LiteralFuser.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsLiteralAbbreviation.class);
     
     /**
      * Checks if the given literal is an abbreviation by using a regular expression from the SpecificationConstants.
@@ -19,7 +19,7 @@ public class LiteralFuser {
      * @param literal
      * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
-    public static boolean isLiteralAbbreviation(String literal){
+    public static boolean evaluate(String literal){
 
         //1) check dictionary/wordsList
         
@@ -50,7 +50,8 @@ public class LiteralFuser {
         }
     }    
     
-    public static String getName(){
-        return "isLiteralAbbreviation";
+    public String getName(){
+        String className = this.getClass().getSimpleName();
+        return className;
     }
 }

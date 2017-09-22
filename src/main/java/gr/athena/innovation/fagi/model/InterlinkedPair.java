@@ -114,69 +114,69 @@ public class InterlinkedPair {
                     metaAction = actionRule.getMetaAction();
                 }
 
-                ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
-
-                if(actionRule.getConditionTag().getTagList().isEmpty()){
-
-                    //the expression is a single function
-                    String expression = expressionTag.getExpression();
-                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + geoAction + " " + metaAction);
-
-                } else if(expressionTag instanceof LogicalExpressionTag){
-                    LogicalExpressionTag logicalExpression = (LogicalExpressionTag) expressionTag;
-                    if(logicalExpression.getLogicalExpressionTags().isEmpty()){
-                        logger.debug("Logical expression should be not, with function: " + logicalExpression.getExpressionTags().get(0).getExpression());
-                        String expression = logicalExpression.getExpressionTags().get(0).getExpression();
-                        
-                    }
-
-                } else {
-                    
-                    if(expressionTag instanceof LogicalExpressionTag){
-                        
-                        LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
-                        String operation = logEx.getLogicalOp();
-
-                        for(ExpressionTag exTag : logEx.getExpressionTags()){
-                            String expression = exTag.getExpression();
-                            logger.info("should be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
-                            logger.fatal("function " + expression + " with operation: " + operation);
-                            if(operation.equals(SpecificationConstants.NOT)){
-                                
-                            }
-                        }
-                        //String expression = logEx.getExpressionTags().get(0).getExpression();
-
-                    } else {
-                        logger.fatal("expressionTag not logical expression");
-                    }
-                }
-
-                int level = ruleCatalog.getMaxLevelOfActionRule(actionRule);
-                logger.trace("Max Level: " + level);
-                int i = level;
-                while (i >= level){
-                    
-//                    ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
-//                    LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();                    
-//                    for(LogicalExpressionTag tag : tagList){
-//                        tag.getLevel();
-//                        if(tag.getLevel() == i){
-//                            
+//                ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
+//
+//                if(actionRule.getConditionTag().getTagList().isEmpty()){
+//
+//                    //the expression is a single function
+//                    String expression = expressionTag.getExpression();
+//                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + geoAction + " " + metaAction);
+//
+//                } else if(expressionTag instanceof LogicalExpressionTag){
+//                    LogicalExpressionTag logicalExpression = (LogicalExpressionTag) expressionTag;
+//                    if(logicalExpression.getLogicalExpressionTags().isEmpty()){
+//                        logger.debug("Logical expression should be not, with function: " + logicalExpression.getExpressionTags().get(0).getExpression());
+//                        String expression = logicalExpression.getExpressionTags().get(0).getExpression();
+//                        
+//                    }
+//
+//                } else {
+//                    
+//                    if(expressionTag instanceof LogicalExpressionTag){
+//                        
+//                        LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
+//                        String operation = logEx.getLogicalOp();
+//
+//                        for(ExpressionTag exTag : logEx.getExpressionTags()){
+//                            String expression = exTag.getExpression();
+//                            logger.info("should be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
+//                            logger.fatal("function " + expression + " with operation: " + operation);
+//                            if(operation.equals(SpecificationConstants.NOT)){
+//                                
+//                            }
 //                        }
-//                    }                    
-                    logger.trace("Top level: " + i);
-                    logger.fatal(actionRule.getConditionTag().getExpressionTag().getExpression());
-                    //ruleCatalog.getRules().
-                    
-                    i--; 
-                }
-
-                ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
-                LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();
-//                for(LogicalExpressionTag tag : tagList){
-//                    tag.getLevel();
+//                        //String expression = logEx.getExpressionTags().get(0).getExpression();
+//
+//                    } else {
+//                        logger.fatal("expressionTag not logical expression");
+//                    }
 //                }
+//
+//                int level = ruleCatalog.getMaxLevelOfActionRule(actionRule);
+//                logger.trace("Max Level: " + level);
+//                int i = level;
+//                while (i >= level){
+//                    
+////                    ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
+////                    LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();                    
+////                    for(LogicalExpressionTag tag : tagList){
+////                        tag.getLevel();
+////                        if(tag.getLevel() == i){
+////                            
+////                        }
+////                    }                    
+//                    logger.trace("Top level: " + i);
+//                    logger.fatal(actionRule.getConditionTag().getExpressionTag().getExpression());
+//                    //ruleCatalog.getRules().
+//                    
+//                    i--; 
+//                }
+//
+//                ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
+//                LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();
+////                for(LogicalExpressionTag tag : tagList){
+////                    tag.getLevel();
+////                }
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){

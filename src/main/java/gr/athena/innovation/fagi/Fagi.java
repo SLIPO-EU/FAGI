@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
+import gr.athena.innovation.fagi.xml.RuleProcessor;
 import gr.athena.innovation.fagi.xml.XmlProcessor;
 import java.io.File;
 import java.io.FileInputStream;
@@ -91,16 +92,19 @@ public class Fagi {
         methodRegistry.init();
 
         HashSet<String> methodSet = methodRegistry.getMethodRegistryList();
-        
+
         InputValidator inputValidator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd, methodSet);
-  
+
         if(!inputValidator.isValidInput()){
             logger.info(SpecificationConstants.HELP);
             System.exit(0);
         }
 
-        XmlProcessor xmlProcessor = new XmlProcessor();
-        RuleCatalog ruleCatalog = xmlProcessor.parseRules(rulesXml);
+//        XmlProcessor xmlProcessor = new XmlProcessor();
+//        RuleCatalog ruleCatalog = xmlProcessor.parseRules(rulesXml);
+        
+        RuleProcessor ruleProcessor = new RuleProcessor();
+        RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
         
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
@@ -111,11 +115,11 @@ public class Fagi {
         logger.info("\nRules size: " + rules.size());
 
         for (Rule rule : rules){
+            logger.fatal(" ----------------------");
             logger.info(rule.toString());
             //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
             //logger.debug(actionRuleString);
         }
-
 
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);

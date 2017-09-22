@@ -1,90 +1,67 @@
 package gr.athena.innovation.fagi.core.rule;
 
-import org.apache.xerces.dom.NodeImpl;
-import org.w3c.dom.Node;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  *
  * @author nkarag
  */
-public class Expression extends NodeImpl implements Node{
+public class Expression {
 
-    private String logicalType;
-    private boolean isFunction;
-    private int depth;
-    private Expression parentExpression;
-    private Expression childExpressionA;
-    private Expression childExpressionB;
-    private String function;
-
-    public boolean isIsFunction() {
-        return isFunction;
-    }
-
-    public void setIsFunction(boolean isFunction) {
-        this.isFunction = isFunction;
-    }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public Expression getParentExpression() {
-        return parentExpression;
-    }
-
-    public void setParentExpression(Expression parentExpression) {
-        this.parentExpression = parentExpression;
-    }
-
-    public String getFunction() {
-        return function;
-    }
-
-    public void setFunction(String function) {
-        this.function = function;
-    }
+    private String logicalOperatorParent;
+    //private String logicalOperatorFirstLevelChilds;
+    private List<String> funcs = new ArrayList<>();
     
-    public String getLogicalType() {
-        return logicalType;
-    }
-
-    public void setLogicalType(String logicalType) {
-        this.logicalType = logicalType;
-    }
-
-    public Expression getChildExpressionA() {
-        return childExpressionA;
-    }
-
-    public void setChildExpressionA(Expression childExpressionA) {
-        this.childExpressionA = childExpressionA;
-    }
-
-    public Expression getChildExpressionB() {
-        return childExpressionB;
-    }
-
-    public void setChildExpressionB(Expression childExpressionB) {
-        this.childExpressionB = childExpressionB;
-    }
+    //private boolean expressionIsSingleFunction = false;
+    private List<String> firstChildsFunctions = new ArrayList<>();;
+    private LinkedHashMap<String, List<String>> groupsOfChildFunctions = new LinkedHashMap<>();
 
     @Override
-    public short getNodeType() {
-        if(isFunction){
-            return 1;
-        } else {
-            return 0;
+    public String toString() {
+        
+        if(funcs.isEmpty()){
+            
         }
+        
+        return "\nExpression{" 
+                + "\n\tlogicalOperatorParent=" + logicalOperatorParent 
+                + "\n\tfuncs=" + funcs 
+                + "\n\tfirstChildsFunctions=" + firstChildsFunctions 
+                + "\n\tgroupsOfChildFunctions=" + groupsOfChildFunctions + "\n}";
     }
 
-    @Override
-    public String getNodeName() {
-        return childExpressionA.toString() + " " + logicalType + " " +  childExpressionB.toString();
+    public String getLogicalOperatorParent() {
+        return logicalOperatorParent;
     }
-    
+
+    public void setLogicalOperatorParent(String logicalOperatorParent) {
+        this.logicalOperatorParent = logicalOperatorParent;
+    }
+
+    public List<String> getFuncs() {
+        return funcs;
+    }
+
+    public void setFuncs(List<String> funcs) {
+        this.funcs = funcs;
+    }
+
+    public List<String> getFirstChildsFunctions() {
+        return firstChildsFunctions;
+    }
+
+    public void setFirstChildsFunctions(List<String> firstChildsFunctions) {
+        this.firstChildsFunctions = firstChildsFunctions;
+    }
+
+    public LinkedHashMap<String, List<String>> getGroupsOfChildFunctions() {
+        return groupsOfChildFunctions;
+    }
+
+    public void setGroupsOfChildFunctions(LinkedHashMap<String, List<String>> groupsOfChildFunctions) {
+        this.groupsOfChildFunctions = groupsOfChildFunctions;
+    }
+
 }

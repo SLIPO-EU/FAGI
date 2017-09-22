@@ -45,12 +45,12 @@ public class LiteralFuserTest {
         logger.info("isLiteralAbbreviation");
         String literal1 = "ABBR";
         boolean expResult1 = true;
-        boolean result1 = LiteralFuser.isLiteralAbbreviation(literal1);
+        boolean result1 = IsLiteralAbbreviation.evaluate(literal1);
         assertEquals(expResult1, result1);
 
         String literal2 = "A.B.B.R.";
         boolean expResult2 = true;
-        boolean result2 = LiteralFuser.isLiteralAbbreviation(literal2);
+        boolean result2 = IsLiteralAbbreviation.evaluate(literal2);
         assertEquals(expResult2, result2);
 
 //        String literal3 = "Abbr";

@@ -7,7 +7,7 @@ import java.util.LinkedList;
  * 
  * @author nkarag
  */
-public class ConditionTag {
+public class ConditionTagDep {
     private ExpressionTag expressionTag;
     private LinkedList<LogicalExpressionTag> tagList = new LinkedList<>();
 
