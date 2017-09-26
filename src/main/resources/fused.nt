@@ -1,1 +1,12 @@
-
+<http://geoknow.eu/geodata#building> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://geoknow.eu/geodata#en_28861756> <http://geoknow.eu/geodata#has_lang_name> "English" .
+<http://geoknow.eu/geodata#en_28861756> <http://geoknow.eu/geodata#has_lang_id> "0" .
+<http://geoknow.eu/geodata#fast_food_restaurant> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://linkedgeodata.org/triplify/way155488587> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://linkedgeodata.org/triplify/way155488587_geom> .
+<http://geoknow.eu/geodata#place_28861756> <http://purl.org/dc/terms/modified> "1986-03-17" .
+<http://geoknow.eu/geodata#place_28861756> <http://geoknow.eu/geodata#has_availableLanguages> <http://geoknow.eu/geodata#en_28861756> .
+<http://geoknow.eu/geodata#place_28861756> <http://www.w3.org/2000/01/rdf-schema#label> "Burger King Restaurant" .
+<http://geoknow.eu/geodata#place_28861756> <http://www.opengis.net/ont/geosparql#hasGeometry> <http://geoknow.eu/geodata#place_28861756_geom> .
+<http://geoknow.eu/geodata#place_28861756> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://geoknow.eu/geodata#fast_food_restaurant> .
+<http://geoknow.eu/geodata#place_28861756> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://geoknow.eu/geodata#building> .
+<http://linkedgeodata.org/triplify/way155488587_geom> <http://www.opengis.net/ont/geosparql#asWKT> "LINESTRING (-0.174603 51.515895, -0.174674 51.515853, -0.174798 51.515942, -0.174728 51.515981, -0.174603 51.515895)" .

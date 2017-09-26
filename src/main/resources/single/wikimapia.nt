@@ -36,6 +36,7 @@
 <http://geoknow.eu/geodata#place_28861756> <http://geoknow.eu/geodata#has_availableLanguages> <http://geoknow.eu/geodata#en_28861756> .
 <http://geoknow.eu/geodata#en_28861756> <http://geoknow.eu/geodata#has_lang_id> "0" .
 <http://geoknow.eu/geodata#en_28861756> <http://geoknow.eu/geodata#has_lang_name> "English" .
+<http://geoknow.eu/geodata#place_28861756> <http://purl.org/dc/terms/modified> "1986-03-17" .
 
 
 
