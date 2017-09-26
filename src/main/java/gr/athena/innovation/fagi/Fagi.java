@@ -3,7 +3,6 @@ package gr.athena.innovation.fagi;
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
-import gr.athena.innovation.fagi.core.rule.XmlValidator;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.specification.SpecificationParser;
@@ -13,7 +12,6 @@ import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.xml.RuleProcessor;
-import gr.athena.innovation.fagi.xml.XmlProcessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -102,10 +100,11 @@ public class Fagi {
 
 //        XmlProcessor xmlProcessor = new XmlProcessor();
 //        RuleCatalog ruleCatalog = xmlProcessor.parseRules(rulesXml);
-        
+
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
-        
+        ruleCatalog.setMethodRegistry(methodRegistry);
+
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
@@ -127,7 +126,7 @@ public class Fagi {
         //fuser.fuseAll(config);
         logger.trace("Start rule Fusion");
         
-        fuser.fuseAllWithRules(fusionSpecification, ruleCatalog);
+        fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, methodRegistry.getFunctionMap());
         logger.trace("Rule Fusion complete.");
         
         fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntitiesList);
