@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.utils;
 
 /**
- *
+ * Utilities for constructing SPARQL queries
+ * 
  * @author nkarag
  */
 public class SparqlConstructor {
@@ -124,4 +125,12 @@ public class SparqlConstructor {
     public static String askSubjectPredicateQuery(String subject, String predicate){
         return "ASK { <" + subject + "> <" + predicate + "> ?o }";
     }    
+    
+    public static String selectObjectQuery(String predicate){
+        String query = "SELECT ?o " 
+                        + "WHERE {"
+                        + "?s " + predicate + "?o"
+                        + "}";
+        return query;
+    }
 }

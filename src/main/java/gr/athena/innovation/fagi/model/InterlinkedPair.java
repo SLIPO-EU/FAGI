@@ -4,19 +4,20 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
-import gr.athena.innovation.fagi.core.rule.ExpressionTag;
-import gr.athena.innovation.fagi.core.rule.LogicalExpressionTag;
+import gr.athena.innovation.fagi.core.rule.Condition;
 import gr.athena.innovation.fagi.core.rule.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.fusers.CentroidShiftTranslator;
-import java.util.LinkedList;
+import gr.athena.innovation.fagi.repository.SparqlRepository;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
@@ -58,8 +59,8 @@ public class InterlinkedPair {
         return fusedEntity;
     }
 
-    public void fuseWithRule(RuleCatalog ruleCatalog){
-        logger.debug("Fusing with rule..");
+    public void fuseWithRule(RuleCatalog ruleCatalog, HashMap<String, Object> functionMap){
+
         fusedEntity = new Entity();
 
         Geometry leftGeometry = leftNode.getGeometry();
@@ -69,39 +70,67 @@ public class InterlinkedPair {
         Metadata rightMetadata = rightNode.getMetadata();
 
         List<Rule> rules = ruleCatalog.getRules();
-        
+
         int j = 0;
-        
+
         for(Rule rule : rules){
 
-            logger.trace("Rule number: " + j);
+            logger.trace("Fusing with Rule: " + rule);
 
             EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
             EnumMetadataActions defaultMetaAction = rule.getDefaultMetaAction();
 
             //Simple rule with default actions. No conditions and functions are set
             if(rule.getActionRuleSet() == null){
-                logger.fatal("Rule without ACTION RULE SET, use plain action");
+                logger.fatal("Rule without ACTION RULE SET, use plain action: " + defaultGeoAction + " " + defaultMetaAction);
                 if(defaultGeoAction != null){
                     fuseGeometry(defaultGeoAction);
                 }
-                
+
                 if(defaultMetaAction != null){
                     fuseMetadata(defaultMetaAction);
                 }
                 break;
             }
-            
-            
+
             String propertyA = rule.getPropertyA();
+            Property rdfPropertyA = null;
+            Property rdfPropertyB = null;
             String propertyB = rule.getPropertyB();
+            
+            if(propertyA.equalsIgnoreCase("label")){
+                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.LABEL);
+            } else if(propertyA.equalsIgnoreCase("date")){
+                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.DATE1);
+            } else if(propertyA.equalsIgnoreCase("wkt")){
+                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.WKT);
+            }
+            
+            if(propertyB.equalsIgnoreCase("label")){
+                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.LABEL);
+            } else if(propertyB.equalsIgnoreCase("date")){
+                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.DATE1);
+            } else if(propertyB.equalsIgnoreCase("wkt")){
+                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.WKT);
+            }
+            
+            String objectA = null;
+            String objectB = null;
+            
+            if(rdfPropertyA != null && rdfPropertyB != null){
+                objectA  = SparqlRepository.getObjectOfProperty(rdfPropertyA, leftMetadata.getModel());
+                objectB  = SparqlRepository.getObjectOfProperty(rdfPropertyB, rightMetadata.getModel());
+            }
+
+            logger.info("Found literals: " + objectA + " " + objectB);
             
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
             int actionRuleCount = 0;
+            boolean actionRuleToApply = false;
             for(ActionRule actionRule : actionRules){
-                logger.info("-- Action rule: " + actionRuleCount);
                 
-                boolean isActionRuleToBeApplied = false;
+                logger.info("-- Action rule: " + actionRuleCount);
+
                 EnumGeometricActions geoAction = null;
                 EnumMetadataActions metaAction = null;
                 //String mA = "";
@@ -109,88 +138,35 @@ public class InterlinkedPair {
                 if(actionRule.getGeoAction() != null){
                     geoAction = actionRule.getGeoAction();
                 }
-                
+
                 if(actionRule.getMetaAction() != null){
                     metaAction = actionRule.getMetaAction();
                 }
 
-//                ExpressionTag expressionTag = actionRule.getConditionTag().getExpressionTag();
-//
-//                if(actionRule.getConditionTag().getTagList().isEmpty()){
-//
-//                    //the expression is a single function
-//                    String expression = expressionTag.getExpression();
-//                    logger.debug("Check if FUNCTION exists in function list. Function: " + expression + " , actions: " + geoAction + " " + metaAction);
-//
-//                } else if(expressionTag instanceof LogicalExpressionTag){
-//                    LogicalExpressionTag logicalExpression = (LogicalExpressionTag) expressionTag;
-//                    if(logicalExpression.getLogicalExpressionTags().isEmpty()){
-//                        logger.debug("Logical expression should be not, with function: " + logicalExpression.getExpressionTags().get(0).getExpression());
-//                        String expression = logicalExpression.getExpressionTags().get(0).getExpression();
-//                        
-//                    }
-//
-//                } else {
-//                    
-//                    if(expressionTag instanceof LogicalExpressionTag){
-//                        
-//                        LogicalExpressionTag logEx = (LogicalExpressionTag) expressionTag;
-//                        String operation = logEx.getLogicalOp();
-//
-//                        for(ExpressionTag exTag : logEx.getExpressionTags()){
-//                            String expression = exTag.getExpression();
-//                            logger.info("should be a Logical expression: " + expression + " level: " + ruleCatalog.getMaxLevelOfActionRule(actionRule));
-//                            logger.fatal("function " + expression + " with operation: " + operation);
-//                            if(operation.equals(SpecificationConstants.NOT)){
-//                                
-//                            }
-//                        }
-//                        //String expression = logEx.getExpressionTags().get(0).getExpression();
-//
-//                    } else {
-//                        logger.fatal("expressionTag not logical expression");
-//                    }
-//                }
-//
-//                int level = ruleCatalog.getMaxLevelOfActionRule(actionRule);
-//                logger.trace("Max Level: " + level);
-//                int i = level;
-//                while (i >= level){
-//                    
-////                    ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
-////                    LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();                    
-////                    for(LogicalExpressionTag tag : tagList){
-////                        tag.getLevel();
-////                        if(tag.getLevel() == i){
-////                            
-////                        }
-////                    }                    
-//                    logger.trace("Top level: " + i);
-//                    logger.fatal(actionRule.getConditionTag().getExpressionTag().getExpression());
-//                    //ruleCatalog.getRules().
-//                    
-//                    i--; 
-//                }
-//
-//                ExpressionTag expression = actionRule.getConditionTag().getExpressionTag();
-//                LinkedList<LogicalExpressionTag> tagList = actionRule.getConditionTag().getTagList();
-////                for(LogicalExpressionTag tag : tagList){
-////                    tag.getLevel();
-////                }
+                Condition condition = actionRule.getCondition();
+
+                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, objectA, objectB);
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
-                    fuseGeometry(geoAction);
-                    fuseMetadata(metaAction);
+                    //fuseGeometry(geoAction);
+                    //fuseMetadata(metaAction);
+                    logger.fatal("Replacing in model: " + objectA + " " + objectB);
+                    replaceLiteralInFusedModel(geoAction, metaAction, rdfPropertyA, objectA, objectB);
+                    actionRuleToApply = true;
                     break;
-                }            
+                }
             }
-
+            
+            //No action rule applied. Use default Actions
+            if(actionRuleToApply == false){
+                fuseGeometry(defaultGeoAction);
+                fuseMetadata(defaultMetaAction);
+            }
+            
             j++;
         }
- 
-        //System.out.println("Temp End.");
-        //System.exit(0);
+
         Model tempModel = leftMetadata.getModel();
         // iterate over the triples
         for (StmtIterator i = leftMetadata.getModel().listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
@@ -202,8 +178,7 @@ public class InterlinkedPair {
         }
         //fuseGeometry(geoAction);
         //fuseMetadata(metaAction);        
-        //rule.getPropertyA()
-        
+        //rule.getPropertyA();
     }
 
     public void fuse(EnumGeometricActions geoAction, EnumMetadataActions metaAction){
@@ -214,7 +189,12 @@ public class InterlinkedPair {
     }
 
     private void fuseGeometry(EnumGeometricActions geoAction){
-
+        logger.debug("Fusing geometry with: " + geoAction);
+        if(geoAction == null){
+            //action rule refers to metadataAction
+            return;
+        }
+        
         Geometry leftGeometry = leftNode.getGeometry();
         Geometry rightGeometry = rightNode.getGeometry();
         switch(geoAction){
@@ -267,10 +247,55 @@ public class InterlinkedPair {
         }
     }
 
+    private void replaceLiteralInFusedModel(EnumGeometricActions geoAction, EnumMetadataActions metaAction, 
+            Property property, String objectA, String objectB){
+        
+        logger.trace("Fused entity URI: " + fusedEntity.getResourceURI());
+        Metadata leftMetadata = leftNode.getMetadata();
+        Metadata rightMetadata = rightNode.getMetadata();        
+
+        Metadata fusedMetadata = fusedEntity.getMetadata();
+        
+        switch(metaAction){
+            case KEEP_LEFT_METADATA:
+                Model leftModel = leftMetadata.getModel();
+                leftModel.removeAll(null, property, (RDFNode) null);
+                leftModel.add(ResourceFactory.createResource(leftNode.getResourceURI()), property, ResourceFactory.createStringLiteral(objectA));                
+                
+                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata.setModel(leftModel);
+                
+                fusedEntity.setMetadata(fusedMetadata);
+                break;
+            case KEEP_RIGHT_METADATA:
+                Model rightModel = leftMetadata.getModel();
+                rightModel.removeAll(null, property, null);
+                rightModel.add(ResourceFactory.createResource(rightNode.getResourceURI()), property, ResourceFactory.createStringLiteral(objectB));                
+
+                
+                fusedMetadata.setModel(rightModel);
+                
+                fusedEntity.setMetadata(rightMetadata);
+                break;
+            case KEEP_BOTH_METADATA:
+                {
+//                    Metadata fusedMetadata = fusedEntity.getMetadata();
+//                    fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
+//                    fusedMetadata.setModel(fusedModel);
+//                    fusedEntity.setMetadata(fusedMetadata);
+                    break;
+                }
+        }        
+        
+        
+        
+    }
+    
     private void fuseMetadata(EnumMetadataActions metaAction){
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
 
+        //TODO: if current fusedModel is empty, create the new model. Else use the already.
         Model fusedModel = ModelFactory.createDefaultModel();
         switch(metaAction){
             case KEEP_LEFT_METADATA:
