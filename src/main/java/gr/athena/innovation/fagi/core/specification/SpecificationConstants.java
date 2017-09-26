@@ -30,6 +30,13 @@ public class SpecificationConstants {
     public static final String OR = "OR";
     public static final String NOT = "NOT";
     
+    public static final String A = "A";
+    public static final String B = "B";
+    
+    public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+    public static final String DATE1 = "http://purl.org/dc/terms/modified";
+    public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
+    
     public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
     public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
     

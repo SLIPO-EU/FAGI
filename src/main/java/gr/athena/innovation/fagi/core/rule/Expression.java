@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.rule;
 
+import gr.athena.innovation.fagi.xml.Function;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,10 +14,12 @@ public class Expression {
     private String logicalOperatorParent;
     //private String logicalOperatorFirstLevelChilds;
     private List<String> funcs = new ArrayList<>();
+    private List<Function> functions = new ArrayList<>();
     
     //private boolean expressionIsSingleFunction = false;
     private List<String> firstChildsFunctions = new ArrayList<>();;
     private LinkedHashMap<String, List<String>> groupsOfChildFunctions = new LinkedHashMap<>();
+    private LinkedHashMap<String, List<Function>> groupsOfChildFuncts = new LinkedHashMap<>();
 
     @Override
     public String toString() {
@@ -62,6 +65,22 @@ public class Expression {
 
     public void setGroupsOfChildFunctions(LinkedHashMap<String, List<String>> groupsOfChildFunctions) {
         this.groupsOfChildFunctions = groupsOfChildFunctions;
+    }
+
+    public List<Function> getFunctions() {
+        return functions;
+    }
+
+    public void setFunctions(List<Function> functions) {
+        this.functions = functions;
+    }
+
+    public LinkedHashMap<String, List<Function>> getGroupsOfChildFuncts() {
+        return groupsOfChildFuncts;
+    }
+
+    public void setGroupsOfChildFuncts(LinkedHashMap<String, List<Function>> groupsOfChildFuncts) {
+        this.groupsOfChildFuncts = groupsOfChildFuncts;
     }
 
 }

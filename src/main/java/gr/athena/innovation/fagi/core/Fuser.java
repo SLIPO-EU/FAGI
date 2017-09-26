@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -100,10 +101,13 @@ public class Fuser implements IFuser{
      * Fuses all links using the Rules from file.
      * 
      * @param fusionSpecification
+     * @param ruleCatalog
+     * @param functionMap
      * @throws ParseException
      */
     @Override
-    public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog) throws ParseException{
+    public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog, 
+            HashMap<String, Object> functionMap) throws ParseException{
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();
 
@@ -130,7 +134,7 @@ public class Fuser implements IFuser{
             pair.setRightNode(entityB);
             //pair.fuse(config.getGeoAction(), config.getMetaAction());
             
-            pair.fuseWithRule(ruleCatalog);
+            pair.fuseWithRule(ruleCatalog, functionMap);
             
             fusedPairsCount++;
             interlinkedEntitiesList.add(pair);
