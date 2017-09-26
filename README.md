@@ -3,7 +3,7 @@ ___
 ### Building from source
 In order to build the command line version from source, you should first clone the cli branch to a preferred location by running:
 
-`git clone -b cli --single-branch https://github.com/SLIPO-EU/FAGI-gis.git Fagi-gis`
+`git clone -b cli-develop --single-branch https://github.com/SLIPO-EU/FAGI-gis.git Fagi`
 
 Then, go the the root directory of the project (Fagi-gis) and run:
 `mvn clean install`
