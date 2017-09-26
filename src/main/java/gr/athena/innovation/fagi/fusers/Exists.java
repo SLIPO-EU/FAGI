@@ -26,7 +26,8 @@ public class Exists {
         return false;
     }
     
-    public static String getName(){
-        return "exists";
+    public String getName(){
+        String className = this.getClass().getSimpleName();
+        return className;
     }
 }

@@ -117,4 +117,9 @@ public class PhoneNumberValidator {
         
         return numberNumerical;
     }
+    
+    public String getName(){
+        String className = this.getClass().getSimpleName();
+        return className;
+    }
 }

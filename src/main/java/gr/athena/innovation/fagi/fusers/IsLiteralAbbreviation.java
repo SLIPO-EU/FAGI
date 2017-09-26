@@ -20,7 +20,7 @@ public class IsLiteralAbbreviation {
      * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
     public static boolean evaluate(String literal){
-
+        logger.debug("Evaluating literal: " + literal);
         //1) check dictionary/wordsList
         
         //2) https://stackoverflow.com/questions/7331462/check-if-a-string-is-a-possible-abbrevation-for-a-name
@@ -48,10 +48,10 @@ public class IsLiteralAbbreviation {
         } else {
             return false;
         }
-    }    
+    }
     
     public String getName(){
-        String className = this.getClass().getSimpleName();
+        String className = this.getClass().getSimpleName().toLowerCase();
         return className;
     }
 }

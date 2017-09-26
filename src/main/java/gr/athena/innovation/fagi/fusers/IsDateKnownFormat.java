@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package gr.athena.innovation.fagi.fusers;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
@@ -8,20 +13,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * Date fusion class. Contains methods for checking and transforming date known formats.
- * 
+ *
  * @author nkarag
  */
-public class DateFuser {
-    
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DateFuser.class);
+public class IsDateKnownFormat {
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**
      *
      * @param dateString
      * @return
      */
-    public boolean isDateKnownFormat(String dateString){
+    public static boolean isDateKnownFormat(String dateString){
 
         boolean isKnown = false;
         if (!StringUtils.isBlank(dateString)) {
@@ -87,7 +90,7 @@ public class DateFuser {
     }
 
     public String getName(){
-        String className = this.getClass().getSimpleName();
+        String className = this.getClass().getSimpleName().toLowerCase();
         return className;
-    }
+    }    
 }
