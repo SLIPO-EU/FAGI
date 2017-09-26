@@ -229,8 +229,10 @@ public class RuleProcessor {
             
             String func = getSingleFunction(conditionNode);
             logger.fatal("found single function: " + func);
+            Function function = new Function(func);
             condition.setSingleFunction(true);
             condition.setFunction(func);
+            condition.setFunc(function);
             
             return condition;
         }
@@ -261,7 +263,9 @@ public class RuleProcessor {
         //1)
         if(containsOnlyFunctionChilds(rootExpressionNode)){
             List<String> funcs = getFunctionsOfLogicalOperation(rootExpressionNode);
+            List<Function> functions = getFunctionsOfLogicalOperation2(rootExpressionNode);
             expression.setFuncs(funcs);
+            expression.setFunctions(functions);
             return expression;
         }
 
@@ -270,6 +274,7 @@ public class RuleProcessor {
             List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
 
             LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            LinkedHashMap<String, List<Function>> expressionChildFunctions = new LinkedHashMap<>();
             for(Node n : firstNodes){
                 
                 String childOperator = getLogicalOperationType(n);
@@ -280,18 +285,24 @@ public class RuleProcessor {
                     throw new RuntimeException();
                 } else {
                     List<String> childFuncs = getFunctionsOfLogicalOperation(n);
-
+                    List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
+                    
                     if(expressionChilds.containsKey(childOperator)){
                         List<String> mergedFuncs = expressionChilds.get(childOperator);
+                        List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
                         mergedFuncs.addAll(childFuncs);
+                        mergedFunctions.addAll(mergedFunctions);
                         //childFuncs.addAll(previousFunctionsWithSameOperand);
                         expressionChilds.put(childOperator, mergedFuncs);
+                        expressionChildFunctions.put(childOperator, mergedFunctions);
                     } else {
                         expressionChilds.put(childOperator, childFuncs);
+                        expressionChildFunctions.put(childOperator, childFunctions);
                     }
                 }
             }
             expression.setGroupsOfChildFunctions(expressionChilds);
+            expression.setGroupsOfChildFuncts(expressionChildFunctions);
             return expression;
         }
 
@@ -571,7 +582,24 @@ public class RuleProcessor {
         }
         return list;
     }
+    
+    //this method returns a list with all functions under a logical operation. 
+    //The input is the parent node of the logical operation (Expression node)
+    //IMPORTANT: Assumes that the parent node contains only <FUNCTION> tags.
+    private List<Function> getFunctionsOfLogicalOperation2(Node node) {
+        List<Function> list = new ArrayList<>();
 
+        Node logicalOperationNode = getLogicalOperationNode(node);
+        Node child = logicalOperationNode.getFirstChild();
+        while(child != null){
+            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
+                list.add(new Function(child.getTextContent()));
+            }
+            child = child.getNextSibling();
+        }
+        return list;
+    }
+    
     //this method returns a list with all functions under a logical operation. 
     //The input is the parent node of the logical operation (Expression node)
     private List<ExpressionTag> getSimpleFunctionsOfLogicalOperationDep(Node expression) {
