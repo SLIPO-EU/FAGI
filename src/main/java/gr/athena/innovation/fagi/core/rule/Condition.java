@@ -86,7 +86,7 @@ public class Condition {
                     if(functions.size() == 1){
                         Function notFuntion = functions.get(0);
                         if(functionMap.containsKey(notFuntion.getName())){
-                            Object functionToCast = functionMap.get(notFuntion.getName());
+                            //Object functionToCast = functionMap.get(notFuntion.getName());
                             //resolve which function to use:
                             switch(notFuntion.getName()){
                                 case "isliteralabbreviation":

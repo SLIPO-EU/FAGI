@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.model;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
+import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
 import gr.athena.innovation.fagi.core.rule.Condition;
 import gr.athena.innovation.fagi.core.rule.Rule;
@@ -63,68 +64,46 @@ public class InterlinkedPair {
 
         fusedEntity = new Entity();
 
-        Geometry leftGeometry = leftNode.getGeometry();
-        Geometry rightGeometry = rightNode.getGeometry();
-
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
-        
-        Metadata fusedMetadata = new Metadata();
 
+        EnumDatasetActions defaultAction = ruleCatalog.getDefaultDatasetAction();
         List<Rule> rules = ruleCatalog.getRules();
 
-        int j = 0;
-
         for(Rule rule : rules){
-
-            logger.trace("Fusing with Rule: " + rule);
+            logger.debug("Fusing with Rule: " + rule);
 
             EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
             EnumMetadataActions defaultMetaAction = rule.getDefaultMetaAction();
 
-            //Simple rule with default actions. No conditions and functions are set
+            //objectA = 
+            //Checking if it is a simple rule with default actions and no conditions and functions are set.
+            //Fuse with the rule defaults and break.
             if(rule.getActionRuleSet() == null){
-                logger.fatal("Rule without ACTION RULE SET, use plain action: " + defaultGeoAction + " " + defaultMetaAction);
+                logger.fatal("Rule without ACTION RULE SET, use plain action: " + defaultGeoAction + " " 
+                        + defaultMetaAction);
+                
                 if(defaultGeoAction != null){
+                    
+                    
                     fuseGeometry(defaultGeoAction);
                 }
 
                 if(defaultMetaAction != null){
+                    
+                    
                     fuseMetadata(defaultMetaAction);
                 }
                 break;
             }
 
-            String propertyA = rule.getPropertyA();
-            Property rdfPropertyA = null;
-            Property rdfPropertyB = null;
-            String propertyB = rule.getPropertyB();
+            String literalA = getLiteralValue(rule.getPropertyA(), leftMetadata.getModel());
+            String literalB = getLiteralValue(rule.getPropertyB(), rightMetadata.getModel());
             
-            if(propertyA.equalsIgnoreCase("label")){
-                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.LABEL);
-            } else if(propertyA.equalsIgnoreCase("date")){
-                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.DATE1);
-            } else if(propertyA.equalsIgnoreCase("wkt")){
-                rdfPropertyA = ResourceFactory.createProperty(SpecificationConstants.WKT);
-            }
-            
-            if(propertyB.equalsIgnoreCase("label")){
-                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.LABEL);
-            } else if(propertyB.equalsIgnoreCase("date")){
-                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.DATE1);
-            } else if(propertyB.equalsIgnoreCase("wkt")){
-                rdfPropertyB = ResourceFactory.createProperty(SpecificationConstants.WKT);
-            }
-            
-            String objectA = null;
-            String objectB = null;
-            
-            if(rdfPropertyA != null && rdfPropertyB != null){
-                objectA  = SparqlRepository.getObjectOfProperty(rdfPropertyA, leftMetadata.getModel());
-                objectB  = SparqlRepository.getObjectOfProperty(rdfPropertyB, rightMetadata.getModel());
-            }
+            Property rdfPropertyA = getRDFPropertyFromString(rule.getPropertyA());
+            Property rdfPropertyB = getRDFPropertyFromString(rule.getPropertyB());
 
-            logger.info("Found literals: " + objectA + " " + objectB);
+            logger.info("Found literals: {}, {}", literalA, literalB);
 
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
             int actionRuleCount = 0;
@@ -146,14 +125,14 @@ public class InterlinkedPair {
 
                 Condition condition = actionRule.getCondition();
 
-                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, objectA, objectB);
+                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, literalA, literalB);
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
                     //fuseGeometry(geoAction);
                     //fuseMetadata(metaAction);
-                    logger.fatal("Replacing in model: " + objectA + " " + objectB);
-                    replaceLiteralInFusedModel(geoAction, metaAction, rdfPropertyA, objectA, objectB);
+                    logger.fatal("Replacing in model: " + literalA + " " + literalB);
+                    replaceLiteralInFusedModel(geoAction, metaAction, rdfPropertyA, literalA, literalB);
                     actionRuleToApply = true;
                     break;
                 }
@@ -165,7 +144,6 @@ public class InterlinkedPair {
                 fuseMetadata(defaultMetaAction);
             }
 
-            j++;
         }
 
         Model tempModel = leftMetadata.getModel();
@@ -189,6 +167,37 @@ public class InterlinkedPair {
         fuseMetadata(metaAction);
     }
 
+    public void fuseDefault(EnumDatasetActions datasetDefaultAction){
+
+        //default action should be performed before the rules apply. The fused model should be empty:
+        if(!fusedEntity.getMetadata().getModel().isEmpty()){
+            logger.fatal("Something is wrong. Default fusion action tries to overwrite already fused data!");
+            throw new RuntimeException();
+        }
+
+        Metadata leftMetadata = leftNode.getMetadata();
+        Geometry leftGeometry = leftNode.getGeometry();
+        Metadata rightMetadata = rightNode.getMetadata();
+        Geometry rightGeometry = rightNode.getGeometry();
+        
+        switch(datasetDefaultAction){
+            case KEEP_LEFT:
+                fusedEntity.setGeometry(leftGeometry);
+                fusedEntity.setMetadata(leftMetadata);
+                break;
+            case KEEP_RIGHT:
+                fusedEntity.setGeometry(rightGeometry);
+                fusedEntity.setMetadata(rightMetadata);
+                break;
+            case KEEP_BOTH:
+                Metadata fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata.getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());            
+            default:
+                logger.fatal("Dataset default fusion action is not defined.");
+                throw new RuntimeException();
+        }        
+    }
+    
     private void fuseGeometry(EnumGeometricActions geoAction){
         logger.debug("Fusing geometry with: " + geoAction);
         if(geoAction == null){
@@ -250,6 +259,9 @@ public class InterlinkedPair {
 
     private void replaceLiteralInFusedModel(EnumGeometricActions geoAction, EnumMetadataActions metaAction, 
             Property property, String objectA, String objectB){
+        //TODO: Check Keep both. 
+        //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
+        //Maybe add propertyB and check them both if one does not exist in model.
         
         logger.trace("Fused entity URI: " + fusedEntity.getResourceURI());
         Metadata leftMetadata = leftNode.getMetadata();
@@ -280,6 +292,7 @@ public class InterlinkedPair {
                 break;
             case KEEP_BOTH_METADATA:
                 {
+                    
 //                    Metadata fusedMetadata = fusedEntity.getMetadata();
 //                    fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
 //                    fusedMetadata.setModel(fusedModel);
@@ -287,9 +300,6 @@ public class InterlinkedPair {
                     break;
                 }
         }        
-        
-        
-        
     }
     
     private void fuseMetadata(EnumMetadataActions metaAction){
@@ -433,4 +443,28 @@ public class InterlinkedPair {
 ////                break;                           
         }        
     }
+
+    
+    private String getLiteralValue(String property, Model model){
+        Property propertyRDF = getRDFPropertyFromString(property);
+        
+        if(propertyRDF != null){
+            return SparqlRepository.getObjectOfProperty(propertyRDF, model);
+        } else {
+            logger.warn("Could not find literal for property {}", property);
+            return "";
+        }
+    }
+    
+    private Property getRDFPropertyFromString(String property){
+        Property propertyRDF = null;
+        if(property.equalsIgnoreCase("label")){
+            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.LABEL);
+        } else if(property.equalsIgnoreCase("date")){
+            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.DATE_OSM_MODIFIED);
+        } else if(property.equalsIgnoreCase("wkt")){
+            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.WKT);
+        }
+        return propertyRDF;
+    }    
 }

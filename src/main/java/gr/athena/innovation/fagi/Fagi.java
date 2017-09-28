@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,6 +53,7 @@ public class Fagi {
     public static void main(String[] args) throws ParseException, com.vividsolutions.jts.io.ParseException, 
             FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 
+        long startTimeInput = System.currentTimeMillis();
         String rulesXsd = getResourceFilePath("rules.xsd");
         String specXsd = getResourceFilePath("spec.xsd");
 
@@ -98,43 +100,46 @@ public class Fagi {
             System.exit(0);
         }
 
-//        XmlProcessor xmlProcessor = new XmlProcessor();
-//        RuleCatalog ruleCatalog = xmlProcessor.parseRules(rulesXml);
-
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
         ruleCatalog.setMethodRegistry(methodRegistry);
-
+        
+        long stopTimeInput = System.currentTimeMillis();
+        
+        long startTimeReadFiles = System.currentTimeMillis();
+        
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(fusionSpecification.getPathA());
         genericRDFRepository.parseRight(fusionSpecification.getPathB());
         genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());
-
-        List<Rule> rules = ruleCatalog.getRules();
-        logger.info("\nRules size: " + rules.size());
-
-        for (Rule rule : rules){
-            logger.fatal(" ----------------------");
-            logger.info(rule.toString());
-            //String actionRuleString = rule.getActionRuleSet().getActionRuleList().get(0).toString();
-            //logger.debug(actionRuleString);
-        }
-
+        
+        long stopTimeReadFiles = System.currentTimeMillis();
+        
         ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntitiesList);
 
-        //fuser.fuseAll(config);
-        logger.trace("Start rule Fusion");
+        long startTimeFusion = System.currentTimeMillis();
         
         fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, methodRegistry.getFunctionMap());
-        logger.trace("Rule Fusion complete.");
+        
+        long stopTimeFusion = System.currentTimeMillis();
+        long startTimeWrite = System.currentTimeMillis();
         
         fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntitiesList);
-
+        
+        long stopTimeWrite = System.currentTimeMillis();
+        
         logger.info(fusionSpecification.toString());
-        logger.trace("interlinkedEntitiesList " + interlinkedEntitiesList.size());
-        logger.info("Interlinked not found in datasets: " + fuser.getLinkedEntitiesNotFoundInDataset());
-        logger.info("Number of fused pairs: " + fuser.getFusedPairsCount());        
+        
+        logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
+        logger.info("Interlinked: " + interlinkedEntitiesList.size() + ", Fused: " + fuser.getFusedPairsCount() 
+                + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());        
+        logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput-startTimeInput) + "ms.");
+        logger.info("Datasets loaded in " + (stopTimeReadFiles-startTimeReadFiles) + "ms.");
+        logger.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
+        logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
+        logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
+        logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");  
     }
     
     private static String getResourceFilePath(String filename) throws FileNotFoundException, IOException{

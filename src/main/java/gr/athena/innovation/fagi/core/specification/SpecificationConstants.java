@@ -22,6 +22,7 @@ public class SpecificationConstants {
     public static final String FILE = "FILE";
     public static final String ENDPOINT = "ENDPOINT";
 
+    public static final String DEFAULT_DATASET_ACTION = "DEFAULT_DATASET_ACTION";
     public static final String PROPERTY_A = "PROPERTYA";
     public static final String PROPERTY_B = "PROPERTYB";
     public static final String CONDITION = "CONDITION";
@@ -36,7 +37,7 @@ public class SpecificationConstants {
     public static final String B = "B";
     
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
-    public static final String DATE1 = "http://purl.org/dc/terms/modified";
+    public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
     
     public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";

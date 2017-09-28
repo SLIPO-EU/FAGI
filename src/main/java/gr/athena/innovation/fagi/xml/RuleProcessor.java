@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.xml;
 
+import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.rule.ActionRule;
@@ -68,7 +69,6 @@ public class RuleProcessor {
             |
         Expression
 
-        Its node may have multiple children
      * 
      * @param path of the rules XML file.
      * @return a {@link gr.athena.innovation.fagi.core.rule.RuleCatalog} object that holds the rules configuration. 
@@ -88,6 +88,21 @@ public class RuleProcessor {
         //http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
         doc.getDocumentElement().normalize();
 
+        NodeList defaultDatasetAction = doc.getElementsByTagName("DEFAULT_DATASET_ACTION");
+        
+        if(defaultDatasetAction.getLength() == 1){
+            Node datasetActionNode = defaultDatasetAction.item(0);
+            EnumDatasetActions datasetAction = EnumDatasetActions.fromString(datasetActionNode.getTextContent());
+            ruleCatalog.setDefaultDatasetAction(datasetAction);
+            if(datasetAction.equals(EnumDatasetActions.UNDEFINED)){
+                logger.fatal("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
+                throw new RuntimeException();                
+            }
+        } else {
+            logger.fatal("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
+            throw new RuntimeException();
+        }        
+        
         //get all <RULE> elements of the XML. The rule elements are all in the same level
         NodeList rules = doc.getElementsByTagName("RULE");
         for (int temp = 0; temp < rules.getLength(); temp++) {
