@@ -19,6 +19,7 @@
 	</LINKS>	
 	<TARGET>
 		<ID>FUSED_OSM_WIKIMAPIA</ID>
+		<RESOURCE_URI>LEFT</RESOURCE_URI>	
 		<MERGE_WITH>NEW</MERGE_WITH>
 		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fused.nt</FILE>
 	</TARGET>

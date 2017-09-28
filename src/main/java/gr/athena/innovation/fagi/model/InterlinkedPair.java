@@ -59,7 +59,7 @@ public class InterlinkedPair {
         return fusedEntity;
     }
 
-    public void fuseWithRule(RuleCatalog ruleCatalog, HashMap<String, Object> functionMap){
+    public void fuseWithRule(RuleCatalog ruleCatalog, HashMap<String, Object> functionMap, String resourceUri){
 
         fusedEntity = new Entity();
 
@@ -68,6 +68,8 @@ public class InterlinkedPair {
 
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
+        
+        Metadata fusedMetadata = new Metadata();
 
         List<Rule> rules = ruleCatalog.getRules();
 
@@ -123,17 +125,16 @@ public class InterlinkedPair {
             }
 
             logger.info("Found literals: " + objectA + " " + objectB);
-            
+
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
             int actionRuleCount = 0;
             boolean actionRuleToApply = false;
             for(ActionRule actionRule : actionRules){
-                
+
                 logger.info("-- Action rule: " + actionRuleCount);
 
                 EnumGeometricActions geoAction = null;
                 EnumMetadataActions metaAction = null;
-                //String mA = "";
 
                 if(actionRule.getGeoAction() != null){
                     geoAction = actionRule.getGeoAction();
@@ -157,13 +158,13 @@ public class InterlinkedPair {
                     break;
                 }
             }
-            
+
             //No action rule applied. Use default Actions
             if(actionRuleToApply == false){
                 fuseGeometry(defaultGeoAction);
                 fuseMetadata(defaultMetaAction);
             }
-            
+
             j++;
         }
 

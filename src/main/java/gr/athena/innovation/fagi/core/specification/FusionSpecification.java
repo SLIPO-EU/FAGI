@@ -22,6 +22,7 @@ public class FusionSpecification {
     private String idLinks;
     private String endpointLinks;
     private String pathOutput;
+    private String resourceUri;
     private String idOutput;
     private String endpointOutput;
 
@@ -186,6 +187,14 @@ public class FusionSpecification {
         this.endpointOutput = endpointOutput;
     }
     
+    public String getResourceUri() {
+        return resourceUri;
+    }
+
+    public void setResourceUri(String resourceUri) {
+        this.resourceUri = resourceUri;
+    }
+    
     @Override
     public String toString() {
         return "FusionSpecification{" + 
@@ -199,6 +208,7 @@ public class FusionSpecification {
                     "\n idLinks=" + idLinks + 
                     "\n endpointLinks=" + endpointLinks + 
                     "\n pathOutput=" + pathOutput + 
+                    "\n resourceUri=" + resourceUri +
                     "\n finalDataset=" + finalDataset + 
                     "\n outputRDFFormat=" + outputRDFFormat + 
                     "\n inputRDFFormat=" + inputRDFFormat + 
@@ -207,5 +217,4 @@ public class FusionSpecification {
                     "\n minOptionalDepth=" + minOptionalDepth + 
                     "\n}";
     }
-
 }

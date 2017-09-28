@@ -5,7 +5,6 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
-import gr.athena.innovation.fagi.core.specification.FusionConfig;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
@@ -58,46 +57,6 @@ public class Fuser implements IFuser{
     }
 
     /**
-     * Fuses all links by using the parameters from the fusion configuration file.
-     * 
-     * @param config
-     * @throws ParseException
-     */
-    @Override
-    public void fuseAll(FusionConfig config) throws ParseException{
-        linkedEntitiesNotFoundInDataset = 0;
-        WKTReader wellKnownTextReader = new WKTReader();
-
-        Model left = LeftModel.getLeftModel().getModel();
-        Model right = RightModel.getRightModel().getModel();
-        LinksModel links = LinksModel.getLinksModel();
-
-        for (Link link : links.getLinks()){
-
-            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, config.getOptionalDepth());
-            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, config.getOptionalDepth());
-
-            if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
-                linkedEntitiesNotFoundInDataset++;
-                continue;
-            }
-
-            InterlinkedPair pair = new InterlinkedPair();
-
-            Entity entityA = constructEntity(modelA, link.getNodeA(), wellKnownTextReader);
-            Entity entityB = constructEntity(modelB, link.getNodeB(), wellKnownTextReader);
-            
-            pair.setLeftNode(entityA);
-            pair.setRightNode(entityB);
-
-            pair.fuse(config.getGeoAction(), config.getMetaAction());
-            fusedPairsCount++;
-            interlinkedEntitiesList.add(pair);
-        }
-        setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
-    }
-
-    /**
      * Fuses all links using the Rules from file.
      * 
      * @param fusionSpecification
@@ -134,7 +93,7 @@ public class Fuser implements IFuser{
             pair.setRightNode(entityB);
             //pair.fuse(config.getGeoAction(), config.getMetaAction());
             
-            pair.fuseWithRule(ruleCatalog, functionMap);
+            pair.fuseWithRule(ruleCatalog, functionMap, fusionSpecification.getResourceUri());
             
             fusedPairsCount++;
             interlinkedEntitiesList.add(pair);
@@ -212,7 +171,6 @@ public class Fuser implements IFuser{
                     Property wktProperty = ResourceFactory.createProperty(Namespace.WKT);
                     Property hasGeometry = ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY);
                     Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(pair.getFusedEntity().getWKTLiteral());
-                    
 
                     Resource resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
                     Statement statementFused1 = ResourceFactory.createStatement(resourceURI, hasGeometry, geometryNode);        
