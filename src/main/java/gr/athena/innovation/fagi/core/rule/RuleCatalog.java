@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.core.rule;
 
 import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
-import gr.athena.innovation.fagi.fusers.MethodRegistry;
+import gr.athena.innovation.fagi.fusers.FunctionRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class RuleCatalog{
 
 	private final List<Rule> rules = new ArrayList<>(); 
     private EnumDatasetActions defaultDatasetAction;
-    private MethodRegistry methodRegistry;
+    private FunctionRegistry methodRegistry;
 
 	public void addItem(Rule rule){ 
 		rules.add(rule);
@@ -24,11 +24,11 @@ public class RuleCatalog{
         return rules;
     }
 
-    public MethodRegistry getMethodRegistry() {
+    public FunctionRegistry getMethodRegistry() {
         return methodRegistry;
     }
 
-    public void setMethodRegistry(MethodRegistry methodRegistry) {
+    public void setMethodRegistry(FunctionRegistry methodRegistry) {
         this.methodRegistry = methodRegistry;
     }
 

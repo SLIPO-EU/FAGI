@@ -43,7 +43,7 @@ public class DataGridProcessor {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if(line.contains(Namespace.WKT)){
-                    logger.debug("Found geometry");
+                    logger.trace("Found geometry");
                 }
                 // System.out.println(line);
             }

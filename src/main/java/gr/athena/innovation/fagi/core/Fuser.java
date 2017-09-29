@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
@@ -67,6 +68,7 @@ public class Fuser implements IFuser{
     @Override
     public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog, 
             HashMap<String, Object> functionMap) throws ParseException{
+        
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();
 
@@ -93,7 +95,7 @@ public class Fuser implements IFuser{
             pair.setRightNode(entityB);
             //pair.fuse(config.getGeoAction(), config.getMetaAction());
             
-            pair.fuseWithRule(ruleCatalog, functionMap, fusionSpecification.getResourceUri());
+            pair.fuseWithRule(ruleCatalog, functionMap);
             
             fusedPairsCount++;
             interlinkedEntitiesList.add(pair);
@@ -107,10 +109,12 @@ public class Fuser implements IFuser{
      * 
      * @param fusionSpecification
      * @param interlinkedEntitiesList
+     * @param defaultDatasetAction
      * @throws FileNotFoundException
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
-            ArrayList<InterlinkedPair> interlinkedEntitiesList) throws FileNotFoundException{
+            ArrayList<InterlinkedPair> interlinkedEntitiesList, EnumDatasetActions defaultDatasetAction) 
+                    throws FileNotFoundException{
         
         OutputStream out;
         if(fusionSpecification.getPathOutput().equalsIgnoreCase("System.out")){
@@ -172,7 +176,18 @@ public class Fuser implements IFuser{
                     Property hasGeometry = ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY);
                     Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(pair.getFusedEntity().getWKTLiteral());
 
-                    Resource resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
+                    Resource resourceURI;
+                    switch (defaultDatasetAction) {
+                        case KEEP_LEFT:
+                            resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
+                            break;
+                        case KEEP_RIGHT:
+                            resourceURI = ResourceFactory.createResource(pair.getRightNode().getResourceURI());
+                            break;
+                        default:
+                            resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
+                            break;
+                    }
                     Statement statementFused1 = ResourceFactory.createStatement(resourceURI, hasGeometry, geometryNode);        
                     Statement statementFused2 = ResourceFactory.createStatement(geometryNode, wktProperty, fusedGeometryLiteral);
                     

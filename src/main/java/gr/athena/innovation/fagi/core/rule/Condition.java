@@ -25,12 +25,12 @@ public class Condition {
     public boolean evaluate(HashMap<String, Object> functionMap, String valueA, String valueB){
         
         if(isSingleFunction()){
-            logger.fatal("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
+            logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
             Function function2 = new Function(function);
 
             if(functionMap.containsKey(function2.getName())){
                 Object functionToCast = functionMap.get(func.getName());
-                logger.fatal("\n\nchecking cast " + func.getName());
+                logger.trace("\n\nchecking cast " + func.getName());
                 //resolve which function to use:
                 switch(func.getName()){
                     case "isliteralabbreviation":
@@ -76,7 +76,7 @@ public class Condition {
                 }
             }
         } else {
-            logger.fatal("Not a single function!");
+            logger.trace("Condition is not a single function");
             String parentOperation = expression.getLogicalOperatorParent();
             
             switch (parentOperation) {

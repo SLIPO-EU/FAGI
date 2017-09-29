@@ -12,8 +12,7 @@ import java.util.List;
 public class Expression {
 
     private String logicalOperatorParent;
-    //private String logicalOperatorFirstLevelChilds;
-    private List<String> funcs = new ArrayList<>();
+    //private List<String> funcs = new ArrayList<>();
     private List<Function> functions = new ArrayList<>();
     
     //private boolean expressionIsSingleFunction = false;
@@ -23,14 +22,9 @@ public class Expression {
 
     @Override
     public String toString() {
-        
-        if(funcs.isEmpty()){
-            
-        }
-        
+
         return "\nExpression{" 
                 + "\n\tlogicalOperatorParent=" + logicalOperatorParent 
-                + "\n\tfuncs=" + funcs 
                 + "\n\tfirstChildsFunctions=" + firstChildsFunctions 
                 + "\n\tgroupsOfChildFunctions=" + groupsOfChildFunctions + "\n}";
     }
@@ -43,13 +37,13 @@ public class Expression {
         this.logicalOperatorParent = logicalOperatorParent;
     }
 
-    public List<String> getFuncs() {
-        return funcs;
-    }
-
-    public void setFuncs(List<String> funcs) {
-        this.funcs = funcs;
-    }
+//    public List<String> getFuncs() {
+//        return funcs;
+//    }
+//
+//    public void setFuncs(List<String> funcs) {
+//        this.funcs = funcs;
+//    }
 
     public List<String> getFirstChildsFunctions() {
         return firstChildsFunctions;

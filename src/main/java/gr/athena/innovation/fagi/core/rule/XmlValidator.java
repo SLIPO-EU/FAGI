@@ -1,22 +1,20 @@
 package gr.athena.innovation.fagi.core.rule;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.*;
-import java.net.URL;
 import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Validates the rules XML input against a preconfigured XSD
+ * Validates the rules XML input against the corresponding XSD
  * 
  * @author nkarag
  */
@@ -40,7 +38,7 @@ public class XmlValidator {
             return true;
             
         } catch (SAXException e) {
-            logger.error("Rules in XML are NOT valid reason:" + e);
+            logger.error("Failed to validate " + xmlPath + " with " + xsdPath + ". Reason:\n" + e);
             return false;
         } catch (IOException e) {
             logger.error(e);

@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.utils;
+package gr.athena.innovation.fagi.xml;
 
 import gr.athena.innovation.fagi.core.rule.XmlValidator;
 import java.io.File;
@@ -43,8 +43,7 @@ public class InputValidator {
     public boolean isValidInput() {
         boolean isValid;
         try {
-            isValidFunctions();
-            isValid = isValidRulesXml() && isValidSpecification() && isValidFunctions();
+            isValid = isValidSpecification() && isValidRulesXml() && isValidFunctions();
             
         } catch (FileNotFoundException ex) {
             logger.fatal("Input is not valid! " + ex);

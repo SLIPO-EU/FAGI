@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
                     setParameters(commas);
                 }
 
-                logger.debug("Function parameters: " + Arrays.toString(commas));
+                logger.trace("Function parameters: " + Arrays.toString(commas));
 
             } else {
                 logger.fatal("Function " + functionString + " is malformed (Parenthesis missing). Check rules.xml file!");

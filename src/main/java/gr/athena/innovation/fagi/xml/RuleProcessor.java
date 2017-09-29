@@ -55,7 +55,6 @@ import static org.w3c.dom.Node.TEXT_NODE;
 public class RuleProcessor {
 
     private static final Logger logger = LogManager.getLogger(RuleProcessor.class);
-    private int actionRuleCount = 1;
     private int steps = 0;
 
     /**
@@ -78,7 +77,7 @@ public class RuleProcessor {
      */
     public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException{
         RuleCatalog ruleCatalog = new RuleCatalog();
-        logger.info("Reading specification from path: " + path);
+        logger.info("Parsing rules: " + path);
 
         File fXmlFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -148,8 +147,8 @@ public class RuleProcessor {
         }
         
         if(actionRuleSet == null){
-            logger.fatal("# RULE without action rule set");
-            logger.fatal(rule.getDefaultGeoAction());
+            logger.trace("# RULE without action rule set");
+            logger.trace(rule.getDefaultGeoAction());
         }
         
         return rule;
@@ -180,8 +179,6 @@ public class RuleProcessor {
     private ActionRule createActionRule(Element actionRuleElement){
         
         ActionRule actionRule = new ActionRule();
-
-        actionRuleCount++;
 
         //Extract ACTION element and its text inside ACTION_RULE
         Node action = actionRuleElement.getLastChild();
@@ -214,7 +211,7 @@ public class RuleProcessor {
         //Extract condition
         NodeList conditionsList = actionRuleElement.getElementsByTagName("CONDITION");
         
-        logger.fatal(" condition size: " + conditionsList.getLength());
+        logger.trace(" condition size: " + conditionsList.getLength());
         if(conditionsList.getLength() != 1){
             //TODO - remove this check after xsd validation is complete
             logger.fatal("Found more than one condition inside ACTION_RULE. Please check the XML input file.");
@@ -240,10 +237,10 @@ public class RuleProcessor {
         
         //1) Contains a single function:
         if(parentNodeContainsSingleFunction(conditionNode)){
-            logger.debug("CONDITION contains only function");
+            logger.trace("CONDITION contains only function");
             
             String func = getSingleFunction(conditionNode);
-            logger.fatal("found single function: " + func);
+            logger.trace("found single function: " + func);
             Function function = new Function(func);
             condition.setSingleFunction(true);
             condition.setFunction(func);
@@ -277,9 +274,9 @@ public class RuleProcessor {
 
         //1)
         if(containsOnlyFunctionChilds(rootExpressionNode)){
-            List<String> funcs = getFunctionsOfLogicalOperation(rootExpressionNode);
+            //List<String> funcs = getFunctionsOfLogicalOperation(rootExpressionNode);
             List<Function> functions = getFunctionsOfLogicalOperation2(rootExpressionNode);
-            expression.setFuncs(funcs);
+            //expression.setFuncs(funcs);
             expression.setFunctions(functions);
             return expression;
         }
@@ -288,7 +285,7 @@ public class RuleProcessor {
         if(containsOnlyExpressionChilds(rootExpressionNode)){
             List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
 
-            LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            //LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
             LinkedHashMap<String, List<Function>> expressionChildFunctions = new LinkedHashMap<>();
             for(Node n : firstNodes){
                 
@@ -299,24 +296,24 @@ public class RuleProcessor {
                     logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
                     throw new RuntimeException();
                 } else {
-                    List<String> childFuncs = getFunctionsOfLogicalOperation(n);
+                    //List<String> childFuncs = getFunctionsOfLogicalOperation(n);
                     List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
                     
-                    if(expressionChilds.containsKey(childOperator)){
-                        List<String> mergedFuncs = expressionChilds.get(childOperator);
+                    if(expressionChildFunctions.containsKey(childOperator)){
+                        //List<String> mergedFuncs = expressionChilds.get(childOperator);
                         List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
-                        mergedFuncs.addAll(childFuncs);
+                        //mergedFuncs.addAll(childFuncs);
                         mergedFunctions.addAll(mergedFunctions);
                         //childFuncs.addAll(previousFunctionsWithSameOperand);
-                        expressionChilds.put(childOperator, mergedFuncs);
+                        //expressionChilds.put(childOperator, mergedFuncs);
                         expressionChildFunctions.put(childOperator, mergedFunctions);
                     } else {
-                        expressionChilds.put(childOperator, childFuncs);
+                        //expressionChilds.put(childOperator, childFuncs);
                         expressionChildFunctions.put(childOperator, childFunctions);
                     }
                 }
             }
-            expression.setGroupsOfChildFunctions(expressionChilds);
+            //expression.setGroupsOfChildFunctions(expressionChilds);
             expression.setGroupsOfChildFuncts(expressionChildFunctions);
             return expression;
         }
@@ -324,11 +321,12 @@ public class RuleProcessor {
         //3
         if(containsExpressionAndFunctionChilds(rootExpressionNode)){
 
-            List<String> funcs = getSimpleFunctionsOfLogicalOperation(rootExpressionNode);
-            expression.setFuncs(funcs);
+            //List<String> funcs = getSimpleFunctionsOfLogicalOperation(rootExpressionNode);
+            //expression.setFuncs(funcs);
             
             List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
-            LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            //LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
+            LinkedHashMap<String, List<Function>> expressionChildFunctions = new LinkedHashMap<>();
             
             for(Node n : firstNodes){
                 String childOperator = getLogicalOperationType(n);
@@ -338,19 +336,21 @@ public class RuleProcessor {
                     logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
                     throw new RuntimeException();
                 } else {
-                    List<String> childFuncs = getFunctionsOfLogicalOperation(n);
-                    
-                    if(expressionChilds.containsKey(childOperator)){
-                        List<String> mergedFuncs = expressionChilds.get(childOperator);
-                        mergedFuncs.addAll(childFuncs);
-                        expressionChilds.put(childOperator, mergedFuncs);
+                    //List<String> childFuncs = getFunctionsOfLogicalOperation(n);
+                    List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
+                    if(expressionChildFunctions.containsKey(childOperator)){
+                        //List<String> mergedFuncs = expressionChilds.get(childOperator);
+                        List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
+                        mergedFunctions.addAll(childFunctions);
+                        expressionChildFunctions.put(childOperator, mergedFunctions);
                     } else {
-                        expressionChilds.put(childOperator, childFuncs);
+                        expressionChildFunctions.put(childOperator, childFunctions);
                     }
                 }
             }
 
-            expression.setGroupsOfChildFunctions(expressionChilds);
+            //expression.setGroupsOfChildFunctions(expressionChildFuncts);
+            expression.setGroupsOfChildFuncts(expressionChildFunctions);
             return expression;
         }
         
@@ -557,7 +557,7 @@ public class RuleProcessor {
     }
 
     private String getLogicalOperationType(Node parentExpression) {
-        logger.info("Extracting logical operation: " + parentExpression.getNodeName());
+        logger.trace("Extracting logical operation: " + parentExpression.getNodeName());
         Node child = parentExpression.getFirstChild();
         while(child != null){
             if(child.getNodeType() == Node.ELEMENT_NODE){
@@ -696,9 +696,9 @@ public class RuleProcessor {
     }
     
     private Node getLogicalOperationNode(Node expression){
-        logger.debug("name of expression: " + expression.getNodeName());
-        Node logicalOperationNode = expression.getFirstChild(); //first level child is the logical operation of the expression
         
+        Node logicalOperationNode = expression.getFirstChild(); //first level child is the logical operation of the expression
+        logger.trace("logical operation: " + logicalOperationNode.getNodeName());
         //get the logical operation node. Should always exist:
         int i=0;
         while(true){

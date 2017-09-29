@@ -6,9 +6,14 @@ package gr.athena.innovation.fagi.core.specification;
  */
 public class SpecificationConstants {
 
+    public static final String RULES_XML = "rules.xml";
+    public static final String RULES_XSD = "rules.xsd";
+    public static final String SPEC_XML = "spec.xml";
+    public static final String SPEC_XSD = "spec.xsd";
+    
     public static final String SPECIFICATION = "SPECIFICATION";
-    public static final String INPUT_FORMAT = "INPUTFORMAT";
-    public static final String OUTPUT_FORMAT = "OUTPUTFORMAT";
+    public static final String INPUT_FORMAT = "INPUT_FORMAT";
+    public static final String OUTPUT_FORMAT = "OUTPUT_FORMAT";
 
     public static final String LEFT_DATASET = "LEFT";
     public static final String RIGHT_DATASET = "RIGHT";

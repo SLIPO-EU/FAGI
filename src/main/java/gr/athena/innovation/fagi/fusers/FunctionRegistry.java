@@ -10,9 +10,9 @@ import org.apache.logging.log4j.LogManager;
  *
  * @author nkarag
  */
-public class MethodRegistry {
+public class FunctionRegistry {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(MethodRegistry.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FunctionRegistry.class);
     private HashSet<String> methodRegistry;
     private boolean isInitialized = false;
     private HashMap<String, Object> functionMap;
