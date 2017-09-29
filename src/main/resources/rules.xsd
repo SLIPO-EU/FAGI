@@ -1,16 +1,17 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="RULES">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="RULE">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="PROPERTYA"/>
-              <xs:element type="xs:string" name="PROPERTYB"/>
+              <xs:element type="xs:anyURI" name="PROPERTYA"/>
+              <xs:element type="xs:anyURI" name="PROPERTYB"/>
               <xs:element name="ACTION_RULE_SET">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="ACTION_RULE" maxOccurs="unbounded" minOccurs="0">
+                    <xs:element name="ACTION_RULE" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="CONDITION">

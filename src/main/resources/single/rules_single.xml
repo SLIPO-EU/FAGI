@@ -1,5 +1,5 @@
 <RULES>
-	<DEFAULT_DATASET_ACTION>Keep Left</DEFAULT_DATASET_ACTION>DEFAULT_DATASET_ACTION>		
+	<DEFAULT_DATASET_ACTION>Keep Right</DEFAULT_DATASET_ACTION>	
 	<RULE>
 		<PROPERTYA>label</PROPERTYA>
 		<PROPERTYB>label</PROPERTYB>
@@ -15,8 +15,8 @@
 		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
 	</RULE>	
 	<RULE>
-		<PROPERTYA>date</PROPERTYA>
-		<PROPERTYB>date</PROPERTYB>
+		<PROPERTYA>http://purl.org/dc/terms/modified</PROPERTYA>
+		<PROPERTYB>http://purl.org/dc/terms/modified</PROPERTYB>
 		<ACTION_RULE_SET>		
 			<ACTION_RULE>
 				<CONDITION>
@@ -26,7 +26,7 @@
 						</NOT>
 					</EXPRESSION>
 				</CONDITION>
-				<ACTION>Keep Right Metadata</ACTION>
+				<ACTION>Keep Left Metadata</ACTION>
 			</ACTION_RULE>
 		</ACTION_RULE_SET>
 		<DEFAULT_GEO_ACTION>Shift Left Geometry</DEFAULT_GEO_ACTION>
