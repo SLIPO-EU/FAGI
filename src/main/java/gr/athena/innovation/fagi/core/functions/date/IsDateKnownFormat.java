@@ -19,7 +19,7 @@ public class IsDateKnownFormat {
      * @param dateString
      * @return
      */
-    public static boolean isDateKnownFormat(String dateString){
+    public static boolean evaluate(String dateString){
 
         boolean isKnown = false;
         if (!StringUtils.isBlank(dateString)) {

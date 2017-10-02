@@ -45,12 +45,12 @@ public enum EnumTargetDataset {
     
     @Override
     public String toString() {
-      switch(this) {
-        case DEFAULT: return "Default";
-        case LEFT: return "Left";
-        case RIGHT: return "Right";
-        case NEW: return "New";
-        default: return "New";
-      }
+        switch(this) {
+            case DEFAULT: return "Default";
+            case LEFT: return "Left";
+            case RIGHT: return "Right";
+            case NEW: return "New";
+            default: return "New";
+        }
     }    
 }

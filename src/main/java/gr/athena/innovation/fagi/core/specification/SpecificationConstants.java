@@ -32,8 +32,8 @@ public class SpecificationConstants {
     public static final String PROPERTY_B = "PROPERTYB";
     public static final String CONDITION = "CONDITION";
     public static final String ACTION_RULE_SET = "ACTION_RULE_SET";
-    public static final String FUNCTION = "FUNCTION";
     public static final String EXPRESSION = "EXPRESSION";
+    public static final String FUNCTION = "FUNCTION";
     public static final String AND = "AND";
     public static final String OR = "OR";
     public static final String NOT = "NOT";

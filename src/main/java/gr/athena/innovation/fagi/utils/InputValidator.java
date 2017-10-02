@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,12 +33,22 @@ public class InputValidator {
     private final String rulesXsdPath;
     private final String specXmlPath;
     private final String specXsdPath;
-    private final HashSet<String> methodSet;
+    private final HashSet<String> functionSet;
     
     private final XmlValidator xmlValidator = new XmlValidator();
     
+    public InputValidator(String rulesXmlPath, String rulesXsdPath, String specificationPath, 
+            String specXsdPath, HashSet<String> functionSet){
+        
+        this.rulesXmlPath = rulesXmlPath;
+        this.rulesXsdPath = rulesXsdPath;
+        this.specXmlPath = specificationPath;
+        this.specXsdPath = specXsdPath;
+        this.functionSet = functionSet;
+    }
+    
     /**
-     * Validates the rules XML input against the corresponding XSD
+     * Helper class. Validates the rules XML input against the corresponding XSD
      */
     private class XmlValidator {
 
@@ -64,16 +75,6 @@ public class InputValidator {
                 return false;
             }  
         }    
-    }
-    
-    public InputValidator(String rulesXmlPath, String rulesXsdPath, String specificationPath, 
-            String specXsdPath, HashSet<String> methodSet){
-        
-        this.rulesXmlPath = rulesXmlPath;
-        this.rulesXsdPath = rulesXsdPath;
-        this.specXmlPath = specificationPath;
-        this.specXsdPath = specXsdPath;
-        this.methodSet = methodSet;
     }
 
     public boolean isValidInput() {
@@ -109,7 +110,7 @@ public class InputValidator {
         Document doc = dBuilder.parse(fXmlFile);
 
         doc.getDocumentElement().normalize();        
-        NodeList nList = doc.getElementsByTagName("FUNCTION");
+        NodeList nList = doc.getElementsByTagName(SpecificationConstants.FUNCTION);
         for (int i = 0; i < nList.getLength(); i++) {
             
             Node functionNode = nList.item(i);
@@ -119,7 +120,7 @@ public class InputValidator {
                 int index = function.indexOf("(");
                 if (index != -1){
                     String functionNameBeforeParenthesis = function.substring(0, index);        
-                    if(!methodSet.contains(functionNameBeforeParenthesis)){
+                    if(!functionSet.contains(functionNameBeforeParenthesis)){
                         return false;
                     }
                 }

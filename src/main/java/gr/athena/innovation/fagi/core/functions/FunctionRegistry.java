@@ -6,10 +6,8 @@ import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.functions.property.Exists;
 import gr.athena.innovation.fagi.core.functions.date.DateFuser;
-import gr.athena.innovation.fagi.core.rule.model.Rule;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -51,14 +49,6 @@ public class FunctionRegistry {
         
         isInitialized = true;
     }
-
-//    public boolean validateRules(List<Rule> rules, HashSet<String> methodSet){
-//        
-//        for(Rule rule : rules){
-//            
-//        }
-//        return true;
-//    }
     
     public HashSet<String> getMethodRegistryList(){
         if(!isInitialized){

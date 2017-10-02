@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
-import gr.athena.innovation.fagi.core.rule.model.Expression;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
@@ -27,53 +26,8 @@ public class Condition {
         if(isSingleFunction()){
             logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
             Function function2 = new Function(function);
-
             if(functionMap.containsKey(function2.getName())){
-                Object functionToCast = functionMap.get(func.getName());
-                logger.trace("\n\nchecking cast " + func.getName());
-                //resolve which function to use:
-                switch(func.getName()){
-                    case "isliteralabbreviation":
-                        if(func.getParameters().length == 1){
-                            String parameter = func.getParameters()[0];
-                            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-                            switch (parameter) {
-                                case SpecificationConstants.A:
-                                    return IsLiteralAbbreviation.evaluate(valueA);
-                                case SpecificationConstants.B:
-                                    return IsLiteralAbbreviation.evaluate(valueB);
-                                default:
-                                    logger.fatal("Is abbreviation requires one parameter A or B");
-                                    throw new RuntimeException();
-                            }
-                        } else {
-                            logger.fatal("Is abbreviation requires one parameter!");
-                            throw new RuntimeException();
-                        }
-
-                    case "isdateknownformat":
-                        //IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionToCast;    
-                        if(func.getParameters().length == 1){
-                            String parameter = func.getParameters()[0];
-                            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-                            switch (parameter) {
-                                case SpecificationConstants.A:
-                                    return IsDateKnownFormat.isDateKnownFormat(valueA);
-                                case SpecificationConstants.B:
-                                    return IsDateKnownFormat.isDateKnownFormat(valueB);
-                                default:
-                                    logger.fatal("Is abbreviation requires one parameter A or B");
-                                    throw new RuntimeException();
-                            }
-                        } else {
-                            logger.fatal("Is abbreviation requires one parameter!");
-                            throw new RuntimeException();
-                        }
-                        //break;
-                    default:
-                        logger.fatal("Function used in rules.xml is malformed or doesn' t exist!! " + func.getName());
-                        throw new RuntimeException();
-                }
+                return evaluateFunction(func, valueA, valueB);
             }
         } else {
             logger.trace("Condition is not a single function");
@@ -81,54 +35,13 @@ public class Condition {
             
             switch (parentOperation) {
                 case SpecificationConstants.NOT:
+                {    
                     //NOT should contain a single function or a single expression child.
                     List<Function> functions = expression.getFunctions();
                     if(functions.size() == 1){
-                        Function notFuntion = functions.get(0);
-                        if(functionMap.containsKey(notFuntion.getName())){
-                            //Object functionToCast = functionMap.get(notFuntion.getName());
-                            //resolve which function to use:
-                            switch(notFuntion.getName()){
-                                case "isliteralabbreviation":
-                                    if(notFuntion.getParameters().length == 1){
-                                        String parameter = notFuntion.getParameters()[0];
-                                        logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-                                        switch (parameter) {
-                                            case SpecificationConstants.A:
-                                                return !IsLiteralAbbreviation.evaluate(valueA);
-                                            case SpecificationConstants.B:
-                                                return !IsLiteralAbbreviation.evaluate(valueB);
-                                            default:
-                                                logger.fatal("Is abbreviation requires one parameter A or B");
-                                                throw new RuntimeException();
-                                        }
-                                    } else {
-                                        logger.fatal("Is abbreviation requires one parameter!");
-                                        throw new RuntimeException();
-                                    }
-
-                                case "isdateknownformat":
-                                    //IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionToCast;    
-                                    if(notFuntion.getParameters().length == 1){
-                                        String parameter = notFuntion.getParameters()[0];
-                                        logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-                                        switch (parameter) {
-                                            case SpecificationConstants.A:
-                                                return !IsLiteralAbbreviation.evaluate(valueA);
-                                            case SpecificationConstants.B:
-                                                return !IsLiteralAbbreviation.evaluate(valueB);
-                                            default:
-                                                logger.fatal("Is abbreviation requires one parameter A or B");
-                                                throw new RuntimeException();
-                                        }
-                                    } else {
-                                        logger.fatal("Is abbreviation requires one parameter!");
-                                        throw new RuntimeException();
-                                    }
-                                default:
-                                    logger.fatal("Function used in rules.xml is malformed or doesn' t exist!! " + func.getName());
-                                    throw new RuntimeException();
-                            }
+                        Function notFunction = functions.get(0);
+                        if(functionMap.containsKey(notFunction.getName())){
+                            return evaluateFunction(notFunction, valueA, valueB);
                         }                        
                     } else {
                         logger.fatal("NOT expression in rules.xml does not contain a single function!");
@@ -136,8 +49,23 @@ public class Condition {
                     }
                     
                     break;
+                }
                 case SpecificationConstants.OR:
+                {
+                    List<Function> functions = expression.getFunctions();
+                    //Check with priority of appearance the evaluation of each function:
+                    for(Function orFunction : functions){
+                        
+                        if(functionMap.containsKey(orFunction.getName())){
+                            
+                            
+                        } else {
+                            logger.fatal("Function " + orFunction.getName() + " inside OR is not defined in the spec!");
+                            throw new RuntimeException();                            
+                        }
+                    }
                     break;
+                }
                 case SpecificationConstants.AND:
                     break;
                 default:
@@ -148,6 +76,54 @@ public class Condition {
         return false;
     }
 
+    private boolean evaluateFunction(Function function, String valueA, String valueB){
+        
+        switch(function.getName()){
+            case "isliteralabbreviation":
+                if(function.getParameters().length == 1){
+                    String parameter = function.getParameters()[0];
+                    logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
+                    switch (parameter) {
+                        case SpecificationConstants.A:
+                            return !IsLiteralAbbreviation.evaluate(valueA);
+                        case SpecificationConstants.B:
+                            return !IsLiteralAbbreviation.evaluate(valueB);
+                        default:
+                            logger.fatal("Is abbreviation requires one parameter A or B");
+                            throw new RuntimeException();
+                    }
+                } else {
+                    logger.fatal("Is abbreviation requires one parameter!");
+                    throw new RuntimeException();
+                }
+
+            case "isdateknownformat":  
+                return evaluateWithOneParameter(function, valueA, valueB);
+            default:
+                logger.fatal("Function used in rules.xml is malformed or doesn' t exist!! " + function.getName());
+                throw new RuntimeException();
+        }
+    }
+  
+    private boolean evaluateWithOneParameter(Function function, String valueA, String valueB){
+        if(function.getParameters().length == 1){
+            String parameter = function.getParameters()[0];
+            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
+            switch (parameter) {
+                case SpecificationConstants.A:
+                    return !IsDateKnownFormat.evaluate(valueA);
+                case SpecificationConstants.B:
+                    return !IsDateKnownFormat.evaluate(valueB);
+                default:
+                    logger.fatal(function.getName() + "requires one parameter A or B");
+                    throw new RuntimeException();
+            }             
+        } else {
+            logger.fatal("Is abbreviation requires one parameter!");
+            throw new RuntimeException();
+        }
+    }
+    
     public boolean isSingleFunction() {
         return singleFunction;
     }
