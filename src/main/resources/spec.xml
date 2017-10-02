@@ -5,17 +5,17 @@
 	<LEFT>
 		<ID>OSM</ID>
 		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single/osm.nt</FILE>
+		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/osm.nt</FILE>
 	</LEFT>
 	<RIGHT>
 		<ID>WIKIMAPIA</ID>
 		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single/wikimapia.nt</FILE>
+		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/wikimapia.nt</FILE>
 	</RIGHT>
 	<LINKS>
 		<ID>LINKS_OSM_WIKIMAPIA</ID>
 		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single/link.nt</FILE>
+		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/link.nt</FILE>
 	</LINKS>	
 	<TARGET>
 		<ID>FUSED_OSM_WIKIMAPIA</ID>

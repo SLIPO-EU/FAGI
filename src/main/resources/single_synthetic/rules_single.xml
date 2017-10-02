@@ -1,0 +1,35 @@
+<RULES>
+	<DEFAULT_DATASET_ACTION>Keep Right</DEFAULT_DATASET_ACTION>	
+	<RULE>
+		<PROPERTYA>label</PROPERTYA>
+		<PROPERTYB>label</PROPERTYB>
+		<ACTION_RULE_SET>
+			<ACTION_RULE>
+				<CONDITION>
+					<FUNCTION>isLiteralAbbreviation(B)</FUNCTION>
+				</CONDITION>
+				<ACTION>Keep Right Metadata</ACTION>
+			</ACTION_RULE>
+		</ACTION_RULE_SET>
+		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
+		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+	</RULE>	
+	<RULE>
+		<PROPERTYA>http://purl.org/dc/terms/modified</PROPERTYA>
+		<PROPERTYB>http://purl.org/dc/terms/modified</PROPERTYB>
+		<ACTION_RULE_SET>		
+			<ACTION_RULE>
+				<CONDITION>
+					<EXPRESSION>
+						<NOT>
+							<FUNCTION>isDateKnownFormat(A)</FUNCTION>
+						</NOT>
+					</EXPRESSION>
+				</CONDITION>
+				<ACTION>Keep Left Metadata</ACTION>
+			</ACTION_RULE>
+		</ACTION_RULE_SET>
+		<DEFAULT_GEO_ACTION>Shift Left Geometry</DEFAULT_GEO_ACTION>
+		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+	</RULE>
+</RULES>
