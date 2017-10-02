@@ -27,10 +27,10 @@ The `INPUTFORMAT` refers to the RDF format of the input dataset and the `OUTPUTF
 * JSON-LD (JSONLD)
 * RDF/JSON (RJ)
 * TriG (TRIG)
-* N-Quads ()
+* N-Quads (NQ)
 * TriX (TRIX)
 
-In order to fill the `INPUTFORMAT` and `OUTPUTFORMAT` use the values of the corresponding parenthesis.
+In order to fill the `INPUT_FORMAT` and `OUTPUT_FORMAT` use the values of the corresponding parenthesis.
 
 The `LEFT`, `RIGHT`, `LINKS` and `TARGET` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
