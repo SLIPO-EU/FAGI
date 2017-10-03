@@ -4,15 +4,16 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
 import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
+import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.rule.model.ActionRule;
 import gr.athena.innovation.fagi.core.rule.model.Condition;
 import gr.athena.innovation.fagi.core.rule.model.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.core.functions.geo.CentroidShiftTranslator;
+import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
@@ -56,7 +57,7 @@ public class InterlinkedPair {
         return fusedEntity;
     }
 
-    public void fuseWithRule(RuleCatalog ruleCatalog, HashMap<String, Object> functionMap){
+    public void fuseWithRule(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap){
 
         EnumDatasetActions defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         

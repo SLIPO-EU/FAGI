@@ -1,10 +1,13 @@
 package gr.athena.innovation.fagi.core.functions.phone;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
+
 /**
  *
  * @author nkarag
  */
-public class IsPhoneNumberParsable {
+public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParameter{
     
     /**
      * Checks if the given number is represented as an integer. 
@@ -14,7 +17,8 @@ public class IsPhoneNumberParsable {
      * @return true if the telephone number representation can be parsed as an integer and false otherwise.
      * 
      */
-    public static boolean isPhoneNumberParsable(String number){
+    @Override
+    public boolean evaluate(String number){
         
         boolean parsable = true;
         
@@ -28,5 +32,11 @@ public class IsPhoneNumberParsable {
         }           
 
         return parsable;
+    }
+    
+    @Override
+    public String getName(){
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
     }    
 }

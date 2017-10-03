@@ -1,12 +1,14 @@
 package gr.athena.innovation.fagi.core.functions.phone;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
 import static gr.athena.innovation.fagi.core.functions.phone.PhoneNumberValidator.normalizePhoneNumber;
 
 /**
  *
  * @author nkarag
  */
-public class IsSamePhoneNumber {
+public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the
@@ -16,7 +18,8 @@ public class IsSamePhoneNumber {
      * @param number2
      * @return true if the numbers are the same or false otherwise.
      */
-    public static boolean isSamePhoneNumber(String number1, String number2){
+    @Override
+    public boolean evaluate(String number1, String number2){
         boolean isSame;
         if(number1.equals(number2)){
             isSame = true;
@@ -28,5 +31,11 @@ public class IsSamePhoneNumber {
         }
         
         return isSame;
-    }    
+    }
+
+    @Override
+    public String getName(){
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
+    }
 }

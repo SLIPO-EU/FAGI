@@ -1,10 +1,11 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -21,13 +22,13 @@ public class Condition {
     private Function func;
     private Expression expression;
     
-    public boolean evaluate(HashMap<String, Object> functionMap, String valueA, String valueB){
+    public boolean evaluate(Map<String, IFunction> functionMap, String valueA, String valueB){
         
         if(isSingleFunction()){
             logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
             Function function2 = new Function(function);
             if(functionMap.containsKey(function2.getName())){
-                return evaluateFunction(func, valueA, valueB);
+                return evaluateNOT(functionMap, func, valueA, valueB);
             }
         } else {
             logger.trace("Condition is not a single function");
@@ -41,7 +42,7 @@ public class Condition {
                     if(functions.size() == 1){
                         Function notFunction = functions.get(0);
                         if(functionMap.containsKey(notFunction.getName())){
-                            return evaluateFunction(notFunction, valueA, valueB);
+                            return evaluateNOT(functionMap, notFunction, valueA, valueB);
                         }                        
                     } else {
                         logger.fatal("NOT expression in rules.xml does not contain a single function!");
@@ -76,53 +77,65 @@ public class Condition {
         return false;
     }
 
-    private boolean evaluateFunction(Function function, String valueA, String valueB){
+    private boolean evaluateNOT(Map<String, IFunction> functionMap, Function function, String valueA, String valueB){
         
         switch(function.getName()){
             case "isliteralabbreviation":
                 if(function.getParameters().length == 1){
+                    IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
                     logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
                     switch (parameter) {
                         case SpecificationConstants.A:
-                            return !IsLiteralAbbreviation.evaluate(valueA);
+                            return !isLiteralAbbreviation.evaluate(valueA);
                         case SpecificationConstants.B:
-                            return !IsLiteralAbbreviation.evaluate(valueB);
+                            return !isLiteralAbbreviation.evaluate(valueB);
                         default:
                             logger.fatal("Is abbreviation requires one parameter A or B");
                             throw new RuntimeException();
                     }
                 } else {
-                    logger.fatal("Is abbreviation requires one parameter!");
+                    logger.fatal("IsAbbreviation requires one parameter!");
                     throw new RuntimeException();
                 }
 
             case "isdateknownformat":  
-                return evaluateWithOneParameter(function, valueA, valueB);
+                IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
+                String parameter = function.getParameters()[0];
+                logger.trace("Parameter to use isDateKnownFormat evaluation: " + parameter);
+                switch (parameter) {
+                    case SpecificationConstants.A:
+                        return !isDateKnownFormat.evaluate(valueA);
+                    case SpecificationConstants.B:
+                        return !isDateKnownFormat.evaluate(valueB);
+                    default:
+                        logger.fatal("IsDateKnownFormat requires one parameter A or B");
+                        throw new RuntimeException();
+                }
             default:
-                logger.fatal("Function used in rules.xml is malformed or doesn' t exist!! " + function.getName());
+                logger.fatal("Function used in rules.xml is malformed or doesn' t exist! " + function.getName());
                 throw new RuntimeException();
         }
     }
   
-    private boolean evaluateWithOneParameter(Function function, String valueA, String valueB){
-        if(function.getParameters().length == 1){
-            String parameter = function.getParameters()[0];
-            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-            switch (parameter) {
-                case SpecificationConstants.A:
-                    return !IsDateKnownFormat.evaluate(valueA);
-                case SpecificationConstants.B:
-                    return !IsDateKnownFormat.evaluate(valueB);
-                default:
-                    logger.fatal(function.getName() + "requires one parameter A or B");
-                    throw new RuntimeException();
-            }             
-        } else {
-            logger.fatal("Is abbreviation requires one parameter!");
-            throw new RuntimeException();
-        }
-    }
+//    private boolean evaluateWithOneParameter(Function function, String valueA, String valueB){
+//        if(function.getParameters().length == 1){
+//            String parameter = function.getParameters()[0];
+//            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
+//            switch (parameter) {
+//                case SpecificationConstants.A:
+//                    return !IsDateKnownFormat.evaluate(valueA);
+//                case SpecificationConstants.B:
+//                    return !IsDateKnownFormat.evaluate(valueB);
+//                default:
+//                    logger.fatal(function.getName() + "requires one parameter A or B");
+//                    throw new RuntimeException();
+//            }             
+//        } else {
+//            logger.fatal("Is abbreviation requires one parameter!");
+//            throw new RuntimeException();
+//        }
+//    }
     
     public boolean isSingleFunction() {
         return singleFunction;

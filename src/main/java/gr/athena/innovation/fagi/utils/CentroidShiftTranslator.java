@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions.geo;
+package gr.athena.innovation.fagi.utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;

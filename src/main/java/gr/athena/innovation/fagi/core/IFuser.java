@@ -1,9 +1,10 @@
 package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
+import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Interface for a Fuser core component.
@@ -20,6 +21,7 @@ public interface IFuser {
      * @param functionMap
      * @throws ParseException
      */    
-    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog, HashMap<String, Object> functionMap) throws ParseException;
+    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog, 
+            Map<String, IFunction> functionMap) throws ParseException;
     
 }

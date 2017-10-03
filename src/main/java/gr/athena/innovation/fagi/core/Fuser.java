@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
+import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.core.specification.FusionSpecification;
@@ -19,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -67,7 +68,7 @@ public class Fuser implements IFuser{
      */
     @Override
     public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog, 
-            HashMap<String, Object> functionMap) throws ParseException{
+            Map<String, IFunction> functionMap) throws ParseException{
         
         linkedEntitiesNotFoundInDataset = 0;
         WKTReader wellKnownTextReader = new WKTReader();

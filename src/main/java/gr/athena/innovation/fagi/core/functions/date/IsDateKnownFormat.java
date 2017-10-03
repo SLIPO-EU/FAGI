@@ -1,9 +1,10 @@
 package gr.athena.innovation.fagi.core.functions.date;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -11,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
  *
  * @author nkarag
  */
-public class IsDateKnownFormat {
+public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**
@@ -19,7 +20,8 @@ public class IsDateKnownFormat {
      * @param dateString
      * @return
      */
-    public static boolean evaluate(String dateString){
+    @Override
+    public boolean evaluate(String dateString){
 
         boolean isKnown = false;
         if (!StringUtils.isBlank(dateString)) {
@@ -42,35 +44,6 @@ public class IsDateKnownFormat {
     }
     
     /**
-     * Validates the date range of the given date string using the lenient property of date.
-     * 
-     * @param dateString the date string
-     * @param format the SimpleDateFormat of the date string
-     * @return true if the date is valid and false if the date is invalid or it does not agree with the given format.
-     */
-    public boolean isValidDate(String dateString, String format){
-
-        //TODO - consider using https://github.com/joestelmach/natty for parsing unknown formats
-        boolean isValid = false;
-        
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        simpleDateFormat.setLenient(false);
-        Date date = null;
-        try {
-            
-            simpleDateFormat.parse(dateString);
-            isValid = true;
-
-        } catch (ParseException ex) {
-            //logger.error("Error parsing date: " + date + " with format: " + format);
-            //logger.error(ex);
-            isValid = false;
-        }
-
-        return isValid;
-    }
-    
-    /**
      *
      * @param date
      * @param format
@@ -84,8 +57,9 @@ public class IsDateKnownFormat {
         return transformedDate;
     }
 
+    @Override
     public String getName(){
         String className = this.getClass().getSimpleName().toLowerCase();
         return className;
-    }    
+    }
 }

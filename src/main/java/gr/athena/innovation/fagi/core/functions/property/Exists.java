@@ -1,17 +1,33 @@
 package gr.athena.innovation.fagi.core.functions.property;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
+import java.io.ByteArrayInputStream;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * Class for utility method of a rule. Checks if the provided property exists in the RDF model of a resource.
+ * Checks if the provided property exists in the RDF model of a resource.
  * 
  * @author nkarag
  */
-public class Exists {
+public class Exists implements IFunction, IFunctionTwoParameters{
+
+    @Override
+    public boolean evaluate(String modelText, String propertyString) {
+        
+        Property property = ResourceFactory.createProperty(propertyString);
+        final Model model = ModelFactory.createDefaultModel();
+        model.read(new ByteArrayInputStream(modelText.getBytes()), null);
+        
+        return propertyExistsInModel(model, property);
+
+    }
     
     public static boolean propertyExistsInModel(Model model, Property property){
 
@@ -26,8 +42,9 @@ public class Exists {
         return false;
     }
     
+    @Override
     public String getName(){
         String className = this.getClass().getSimpleName();
         return className;
-    }
+    }    
 }

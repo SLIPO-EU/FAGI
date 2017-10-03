@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  * @author nkarag
  */
-public class IsLiteralAbbreviation {
+public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParameter{
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsLiteralAbbreviation.class);
     
@@ -19,7 +21,8 @@ public class IsLiteralAbbreviation {
      * @param literal
      * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
-    public static boolean evaluate(String literal){
+    @Override
+    public boolean evaluate(String literal){
         logger.debug("Evaluating literal: " + literal);
         //1) check dictionary/wordsList
         
@@ -50,6 +53,7 @@ public class IsLiteralAbbreviation {
         }
     }
     
+    @Override
     public String getName(){
         String className = this.getClass().getSimpleName().toLowerCase();
         return className;

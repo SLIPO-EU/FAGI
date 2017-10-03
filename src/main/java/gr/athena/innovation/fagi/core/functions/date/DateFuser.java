@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.core.functions.date;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  * @author nkarag
  */
-public class DateFuser {
+public class DateFuser implements IFunction, IFunctionSingleParameter{
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(DateFuser.class);
     
@@ -86,8 +88,14 @@ public class DateFuser {
         return transformedDate;
     }
 
+    @Override
     public String getName(){
         String className = this.getClass().getSimpleName();
         return className;
+    }
+
+    @Override
+    public boolean evaluate(String value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

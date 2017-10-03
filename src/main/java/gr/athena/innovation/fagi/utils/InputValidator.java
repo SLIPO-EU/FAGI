@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,12 +33,12 @@ public class InputValidator {
     private final String rulesXsdPath;
     private final String specXmlPath;
     private final String specXsdPath;
-    private final HashSet<String> functionSet;
+    private final Set<String> functionSet;
     
     private final XmlValidator xmlValidator = new XmlValidator();
     
     public InputValidator(String rulesXmlPath, String rulesXsdPath, String specificationPath, 
-            String specXsdPath, HashSet<String> functionSet){
+            String specXsdPath, Set<String> functionSet){
         
         this.rulesXmlPath = rulesXmlPath;
         this.rulesXsdPath = rulesXsdPath;
@@ -88,7 +88,7 @@ public class InputValidator {
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             logger.fatal("Input is not valid! " + ex);
             //TODO: change return value after implementation is complete
-            return true;
+            return false;
         }
         
         return true;

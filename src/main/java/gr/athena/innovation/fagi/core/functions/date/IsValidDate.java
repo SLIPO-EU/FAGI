@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.core.functions.date;
 
+import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,7 +10,7 @@ import java.util.Date;
  *
  * @author nkarag
  */
-public class IsValidDate {
+public class IsValidDate implements IFunction, IFunctionTwoParameters{
     
     /**
      * Validates the date range of the given date string using the lenient property of date.
@@ -17,8 +19,8 @@ public class IsValidDate {
      * @param format the SimpleDateFormat of the date string
      * @return true if the date is valid and false if the date is invalid or it does not agree with the given format.
      */
-    public boolean isValidDate(String dateString, String format){
-
+    @Override
+    public boolean evaluate(String dateString, String format) {
         //TODO - consider using https://github.com/joestelmach/natty for parsing unknown formats
         boolean isValid;
         
@@ -37,5 +39,11 @@ public class IsValidDate {
         }
 
         return isValid;
+    }
+
+    @Override
+    public String getName() {
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
     }
 }

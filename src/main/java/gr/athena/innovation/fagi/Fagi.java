@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.core.rule.RuleProcessor;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,8 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -84,7 +86,7 @@ public class Fagi {
         //Validate input
         FunctionRegistry functionRegistry = new FunctionRegistry();
         functionRegistry.init();
-        HashSet<String> functionSet = functionRegistry.getMethodRegistryList();
+        Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
         
         InputValidator validator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd, functionSet);
         logger.info("Validating input..");
