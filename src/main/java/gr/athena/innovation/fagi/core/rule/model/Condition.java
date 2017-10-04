@@ -3,7 +3,11 @@ package gr.athena.innovation.fagi.core.rule.model;
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
+import gr.athena.innovation.fagi.core.functions.date.IsValidDate;
 import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
+import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
+import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -80,7 +84,39 @@ public class Condition {
     private boolean evaluateNOT(Map<String, IFunction> functionMap, Function function, String valueA, String valueB){
         
         switch(function.getName()){
+            case "isdateknownformat":
+            {
+                IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
+                String parameter = function.getParameters()[0];
+                logger.trace("Parameter to use isDateKnownFormat evaluation: " + parameter);
+                switch (parameter) {
+                    case SpecificationConstants.A:
+                        return !isDateKnownFormat.evaluate(valueA);
+                    case SpecificationConstants.B:
+                        return !isDateKnownFormat.evaluate(valueB);
+                    default:
+                        logger.fatal("IsDateKnownFormat requires one parameter A or B");
+                        throw new RuntimeException();
+                }  
+            }
+            case "isvaliddate":
+            {
+                IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
+                String parameterA = function.getParameters()[0];
+                String parameterB = function.getParameters()[1];
+                logger.trace("Parameter to use isValidDate evaluation: " + parameterA);
+                switch (parameterA) {
+                    case SpecificationConstants.A:
+                        return !isValidDate.evaluate(valueA, parameterB);
+                    case SpecificationConstants.B:
+                        return !isValidDate.evaluate(valueB, parameterB);
+                    default:
+                        logger.fatal("IsDateKnownFormat requires one parameter A or B and a date format string");
+                        throw new RuntimeException();
+                }  
+            }
             case "isliteralabbreviation":
+            {
                 if(function.getParameters().length == 1){
                     IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
@@ -98,22 +134,47 @@ public class Condition {
                     logger.fatal("IsAbbreviation requires one parameter!");
                     throw new RuntimeException();
                 }
-
-            case "isdateknownformat":  
-                IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
-                String parameter = function.getParameters()[0];
-                logger.trace("Parameter to use isDateKnownFormat evaluation: " + parameter);
-                switch (parameter) {
-                    case SpecificationConstants.A:
-                        return !isDateKnownFormat.evaluate(valueA);
-                    case SpecificationConstants.B:
-                        return !isDateKnownFormat.evaluate(valueB);
-                    default:
-                        logger.fatal("IsDateKnownFormat requires one parameter A or B");
-                        throw new RuntimeException();
+            }
+            case "isphonenumberparsable":
+            {
+                if(function.getParameters().length == 1){
+                    IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
+                    String parameter = function.getParameters()[0];
+                    logger.trace("Parameter to use in IsPhoneNumberParsable evaluation: " + parameter);
+                    switch (parameter) {
+                        case SpecificationConstants.A:
+                            return !isPhoneNumberParsable.evaluate(valueA);
+                        case SpecificationConstants.B:
+                            return !isPhoneNumberParsable.evaluate(valueB);
+                        default:
+                            logger.fatal("IsPhoneNumberParsable requires one parameter A or B");
+                            throw new RuntimeException();
+                    }
+                } else {
+                    logger.fatal("IsPhoneNumberParsable requires one parameter!");
+                    throw new RuntimeException();
                 }
+            } 
+            case "issamephonenumber":
+            {
+                
+                IsSamePhoneNumber isSamePhoneNumber = (IsSamePhoneNumber) functionMap.get(function.getName());
+                //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
+                return !isSamePhoneNumber.evaluate(valueA, valueB); 
+            }  
+            case "issamephonenumberusingexitcode":
+            {
+                
+                IsSamePhoneNumberUsingExitCode isSamePhoneNumberUsingExitCode 
+                        = (IsSamePhoneNumberUsingExitCode) functionMap.get(function.getName());
+                //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
+                //Use the third parameter as the exit code digits
+                String exitCodeDigits = function.getParameters()[2];
+                return !isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits); 
+            }            
             default:
-                logger.fatal("Function used in rules.xml is malformed or doesn' t exist! " + function.getName());
+                logger.fatal("Function used in rules.xml is malformed does not exist or currently not supported!" 
+                        + function.getName());
                 throw new RuntimeException();
         }
     }

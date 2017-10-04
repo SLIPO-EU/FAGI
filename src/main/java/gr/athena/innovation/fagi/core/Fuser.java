@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -46,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 public class Fuser implements IFuser{ 
     
     private static final Logger logger = LogManager.getLogger(Fuser.class);
-    private final ArrayList<InterlinkedPair> interlinkedEntitiesList;
+    private final List<InterlinkedPair> interlinkedEntitiesList;
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
     
@@ -54,7 +55,7 @@ public class Fuser implements IFuser{
      *
      * @param interlinkedEntitiesList
      */
-    public Fuser(ArrayList<InterlinkedPair> interlinkedEntitiesList) {
+    public Fuser(List<InterlinkedPair> interlinkedEntitiesList) {
         this.interlinkedEntitiesList = interlinkedEntitiesList;
     }
 
@@ -113,7 +114,7 @@ public class Fuser implements IFuser{
      * @throws FileNotFoundException
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
-            ArrayList<InterlinkedPair> interlinkedEntitiesList, EnumDatasetActions defaultDatasetAction) 
+            List<InterlinkedPair> interlinkedEntitiesList, EnumDatasetActions defaultDatasetAction) 
                     throws FileNotFoundException{
         
         OutputStream out;

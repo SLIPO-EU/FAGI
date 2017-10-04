@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -118,7 +119,7 @@ public class Fagi {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-        ArrayList<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
+        List<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
 
         Fuser fuser = new Fuser(interlinkedEntitiesList);
         fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, functionRegistry.getFunctionMap());

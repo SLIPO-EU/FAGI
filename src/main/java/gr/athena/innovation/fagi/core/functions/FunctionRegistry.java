@@ -35,7 +35,7 @@ public class FunctionRegistry {
         IsGeometryMoreComplicated isGeometryMoreComplicated = new IsGeometryMoreComplicated();
         
         //literal
-        IsLiteralAbbreviation isAbbreviation = new IsLiteralAbbreviation();
+        IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
 
         //phone
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
@@ -53,7 +53,7 @@ public class FunctionRegistry {
         functionMap.put(isGeometryMoreComplicated.getName(), isGeometryMoreComplicated);
         
         //literal
-        functionMap.put(isAbbreviation.getName(), isAbbreviation);
+        functionMap.put(isLiteralAbbreviation.getName(), isLiteralAbbreviation);
         
         //phone
         functionMap.put(isPhoneNumberParsable.getName(), isPhoneNumberParsable);
@@ -61,7 +61,7 @@ public class FunctionRegistry {
         functionMap.put(exists.getName(), exists);
         
         //property
-        functionMap.put(isSamePhoneNumberUsingExitCode.getName(), isSamePhoneNumberUsingExitCode);
+        functionMap.put(exists.getName(), exists);
 
         isInitialized = true;
     }
