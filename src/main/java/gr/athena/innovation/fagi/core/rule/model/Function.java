@@ -1,6 +1,8 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +19,11 @@ import org.apache.logging.log4j.Logger;
 
         public Function(String functionString){
 
+            if(StringUtils.isBlank(functionString)){
+                logger.fatal("Something went wrong parsing a function from " + SpecificationConstants.RULES_XML);
+                throw new RuntimeException();
+            }
+            
             if(functionString.contains("(") && functionString.contains(")")){
 
                 String[] parts = functionString.split("\\(");

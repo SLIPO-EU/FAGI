@@ -4,7 +4,6 @@ import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *
@@ -26,7 +25,6 @@ public class IsValidDate implements IFunction, IFunctionTwoParameters{
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         simpleDateFormat.setLenient(false);
-        Date date = null;
         try {
             
             simpleDateFormat.parse(dateString);

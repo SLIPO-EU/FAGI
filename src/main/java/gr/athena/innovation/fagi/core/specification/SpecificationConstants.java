@@ -65,4 +65,16 @@ public class SpecificationConstants {
                 "dd mm yyyy",                   "yyyy/MM/dd",
                 "dd-mm-yyyy",                   "dd/mm/yyyy", 
                 "dd MM yyyy",                   };
+    
+    public class Functions {
+        
+        public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
+        public static final String IS_VALID_DATE = "isvaliddate";
+        public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
+        public static final String IS_PHONE_NUMBER_PARSABLE = "isphonenumberparsable";
+        public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
+        public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
+        public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplicated";
+        
+    }    
 }

@@ -58,7 +58,7 @@ public class FunctionRegistry {
         //phone
         functionMap.put(isPhoneNumberParsable.getName(), isPhoneNumberParsable);
         functionMap.put(isSamePhoneNumber.getName(), isSamePhoneNumber);
-        functionMap.put(exists.getName(), exists);
+        functionMap.put(isSamePhoneNumberUsingExitCode.getName(), isSamePhoneNumberUsingExitCode);
         
         //property
         functionMap.put(exists.getName(), exists);

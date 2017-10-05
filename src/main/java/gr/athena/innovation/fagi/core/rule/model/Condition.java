@@ -30,9 +30,9 @@ public class Condition {
         
         if(isSingleFunction()){
             logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
-            Function function2 = new Function(function);
+            Function function2 = new Function(this.function);
             if(functionMap.containsKey(function2.getName())){
-                return evaluateNOT(functionMap, func, valueA, valueB);
+                return evaluateOperator(functionMap, func, valueA, valueB);
             }
         } else {
             logger.trace("Condition is not a single function");
@@ -46,7 +46,7 @@ public class Condition {
                     if(functions.size() == 1){
                         Function notFunction = functions.get(0);
                         if(functionMap.containsKey(notFunction.getName())){
-                            return evaluateNOT(functionMap, notFunction, valueA, valueB);
+                            return !evaluateOperator(functionMap, notFunction, valueA, valueB);
                         }                        
                     } else {
                         logger.fatal("NOT expression in rules.xml does not contain a single function!");
@@ -62,8 +62,10 @@ public class Condition {
                     for(Function orFunction : functions){
                         
                         if(functionMap.containsKey(orFunction.getName())){
-                            
-                            
+                            boolean evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB);
+                            if(evaluated){
+                                return true;
+                            }
                         } else {
                             logger.fatal("Function " + orFunction.getName() + " inside OR is not defined in the spec!");
                             throw new RuntimeException();                            
@@ -72,7 +74,22 @@ public class Condition {
                     break;
                 }
                 case SpecificationConstants.AND:
-                    break;
+                {
+                    List<Function> functions = expression.getFunctions();
+                    //Check with priority of appearance the evaluation of each function:
+                    boolean evaluated = true;
+                    for(Function orFunction : functions){
+                        
+                        if(functionMap.containsKey(orFunction.getName())){
+                            evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB) && evaluated;
+
+                        } else {
+                            logger.fatal("Function " + orFunction.getName() + " inside AND is not defined in the spec!");
+                            throw new RuntimeException();                            
+                        }
+                    }
+                    return evaluated;
+                }
                 default:
                     break;
             }
@@ -81,88 +98,89 @@ public class Condition {
         return false;
     }
 
-    private boolean evaluateNOT(Map<String, IFunction> functionMap, Function function, String valueA, String valueB){
+    private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, String valueA, String valueB){
         
         switch(function.getName()){
-            case "isdateknownformat":
+            case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT:
             {
                 IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
                 String parameter = function.getParameters()[0];
-                logger.trace("Parameter to use isDateKnownFormat evaluation: " + parameter);
                 switch (parameter) {
                     case SpecificationConstants.A:
-                        return !isDateKnownFormat.evaluate(valueA);
+                        return isDateKnownFormat.evaluate(valueA);
                     case SpecificationConstants.B:
-                        return !isDateKnownFormat.evaluate(valueB);
+                        return isDateKnownFormat.evaluate(valueB);
                     default:
-                        logger.fatal("IsDateKnownFormat requires one parameter A or B");
+                        logger.fatal(SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT 
+                                + " requires one parameter A or B");
                         throw new RuntimeException();
-                }  
+                }
             }
-            case "isvaliddate":
+            case SpecificationConstants.Functions.IS_VALID_DATE:
             {
                 IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
                 String parameterA = function.getParameters()[0];
                 String parameterB = function.getParameters()[1];
-                logger.trace("Parameter to use isValidDate evaluation: " + parameterA);
                 switch (parameterA) {
                     case SpecificationConstants.A:
-                        return !isValidDate.evaluate(valueA, parameterB);
+                        return isValidDate.evaluate(valueA, parameterB);
                     case SpecificationConstants.B:
-                        return !isValidDate.evaluate(valueB, parameterB);
+                        return isValidDate.evaluate(valueB, parameterB);
                     default:
-                        logger.fatal("IsDateKnownFormat requires one parameter A or B and a date format string");
+                        logger.fatal(SpecificationConstants.Functions.IS_VALID_DATE 
+                                + " requires one parameter A or B and a date format string");
                         throw new RuntimeException();
-                }  
+                }
             }
-            case "isliteralabbreviation":
+            case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION:
             {
                 if(function.getParameters().length == 1){
                     IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
-                    logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
                     switch (parameter) {
                         case SpecificationConstants.A:
-                            return !isLiteralAbbreviation.evaluate(valueA);
+                            return isLiteralAbbreviation.evaluate(valueA);
                         case SpecificationConstants.B:
-                            return !isLiteralAbbreviation.evaluate(valueB);
+                            return isLiteralAbbreviation.evaluate(valueB);
                         default:
-                            logger.fatal("Is abbreviation requires one parameter A or B");
+                            logger.fatal(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION 
+                                    + " requires one parameter A or B");
                             throw new RuntimeException();
                     }
                 } else {
-                    logger.fatal("IsAbbreviation requires one parameter!");
+                    logger.fatal(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION + " requires one parameter!");
                     throw new RuntimeException();
                 }
             }
-            case "isphonenumberparsable":
+            case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE:
             {
+                //SpecificationConstants.lala.lalala
                 if(function.getParameters().length == 1){
                     IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
-                    logger.trace("Parameter to use in IsPhoneNumberParsable evaluation: " + parameter);
                     switch (parameter) {
                         case SpecificationConstants.A:
-                            return !isPhoneNumberParsable.evaluate(valueA);
+                            return isPhoneNumberParsable.evaluate(valueA);
                         case SpecificationConstants.B:
-                            return !isPhoneNumberParsable.evaluate(valueB);
+                            return isPhoneNumberParsable.evaluate(valueB);
                         default:
-                            logger.fatal("IsPhoneNumberParsable requires one parameter A or B");
+                            logger.fatal(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE 
+                                    + " requires one parameter A or B");
                             throw new RuntimeException();
                     }
                 } else {
-                    logger.fatal("IsPhoneNumberParsable requires one parameter!");
+                    logger.fatal(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE + " requires one parameter!");
                     throw new RuntimeException();
                 }
             } 
-            case "issamephonenumber":
+            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER:
             {
                 
                 IsSamePhoneNumber isSamePhoneNumber = (IsSamePhoneNumber) functionMap.get(function.getName());
                 //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
-                return !isSamePhoneNumber.evaluate(valueA, valueB); 
+                return isSamePhoneNumber.evaluate(valueA, valueB); 
             }  
-            case "issamephonenumberusingexitcode":
+            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE:
             {
                 
                 IsSamePhoneNumberUsingExitCode isSamePhoneNumberUsingExitCode 
@@ -170,7 +188,7 @@ public class Condition {
                 //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
                 //Use the third parameter as the exit code digits
                 String exitCodeDigits = function.getParameters()[2];
-                return !isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits); 
+                return isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits); 
             }            
             default:
                 logger.fatal("Function used in rules.xml is malformed does not exist or currently not supported!" 
@@ -178,26 +196,7 @@ public class Condition {
                 throw new RuntimeException();
         }
     }
-  
-//    private boolean evaluateWithOneParameter(Function function, String valueA, String valueB){
-//        if(function.getParameters().length == 1){
-//            String parameter = function.getParameters()[0];
-//            logger.trace("Parameter to use in abbreviation evaluation: " + parameter);
-//            switch (parameter) {
-//                case SpecificationConstants.A:
-//                    return !IsDateKnownFormat.evaluate(valueA);
-//                case SpecificationConstants.B:
-//                    return !IsDateKnownFormat.evaluate(valueB);
-//                default:
-//                    logger.fatal(function.getName() + "requires one parameter A or B");
-//                    throw new RuntimeException();
-//            }             
-//        } else {
-//            logger.fatal("Is abbreviation requires one parameter!");
-//            throw new RuntimeException();
-//        }
-//    }
-    
+
     public boolean isSingleFunction() {
         return singleFunction;
     }

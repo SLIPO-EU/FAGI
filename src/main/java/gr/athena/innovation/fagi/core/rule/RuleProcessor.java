@@ -263,7 +263,6 @@ public class RuleProcessor {
         
         String operator = getLogicalOperationType(rootExpressionNode);
         expression.setLogicalOperatorParent(operator);
-        //expression.setLevel(depth);
         
         //An expression can contain:
         //1)only single functions
@@ -272,9 +271,7 @@ public class RuleProcessor {
 
         //1)
         if(containsOnlyFunctionChilds(rootExpressionNode)){
-            //List<String> funcs = getFunctionsOfLogicalOperation(rootExpressionNode);
             List<Function> functions = getFunctionsOfLogicalOperation2(rootExpressionNode);
-            //expression.setFuncs(funcs);
             expression.setFunctions(functions);
             return expression;
         }
