@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
-import gr.athena.innovation.fagi.core.rule.model.ActionRule;
 import java.util.ArrayList;
 import java.util.List;
 

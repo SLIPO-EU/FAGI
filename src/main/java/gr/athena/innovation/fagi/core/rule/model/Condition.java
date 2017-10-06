@@ -79,7 +79,6 @@ public class Condition {
                     //Check with priority of appearance the evaluation of each function:
                     boolean evaluated = true;
                     for(Function orFunction : functions){
-                        
                         if(functionMap.containsKey(orFunction.getName())){
                             evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB) && evaluated;
 
@@ -154,7 +153,6 @@ public class Condition {
             }
             case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE:
             {
-                //SpecificationConstants.lala.lalala
                 if(function.getParameters().length == 1){
                     IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];

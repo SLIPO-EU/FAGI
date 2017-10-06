@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
                 logger.fatal("Something went wrong parsing a function from " + SpecificationConstants.RULES_XML);
                 throw new RuntimeException();
             }
-            
+
             if(functionString.contains("(") && functionString.contains(")")){
 
                 String[] parts = functionString.split("\\(");

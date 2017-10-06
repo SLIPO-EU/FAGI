@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * Registers all fusion functions.
+ * Registers all available functions that can be defined inside rule conditions.
  * 
  * @author nkarag
  */
@@ -23,6 +23,11 @@ public class FunctionRegistry {
     private boolean isInitialized = false;
     private HashMap<String, IFunction> functionMap;
     
+    /**
+     * Initializes a FunctionRegistry object. Creates all available function objects and puts them in the functionMap.
+     * The function map contains key-value entries of function names along with their corresponding function object.
+     * 
+     */
     public void init(){
 
         functionMap = new HashMap<>();
@@ -66,7 +71,13 @@ public class FunctionRegistry {
         isInitialized = true;
     }
     
-    public Map<String, IFunction> getFunctionMap(){
+    /**
+     * Returns the map that contains the function names as keys and the corresponding function objects as values.
+     * 
+     * @throws RuntimeException when the FunctionRegistry is not initialized.
+     * @return the map
+     */
+    public Map<String, IFunction> getFunctionMap() {
         if(!isInitialized){
             logger.fatal("Method registry is not initialized.");
             throw new RuntimeException();

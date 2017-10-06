@@ -53,7 +53,6 @@ import static org.w3c.dom.Node.TEXT_NODE;
 public class RuleProcessor {
 
     private static final Logger logger = LogManager.getLogger(RuleProcessor.class);
-    private int steps = 0;
 
     /**
      *
@@ -257,8 +256,7 @@ public class RuleProcessor {
     }
 
     private Expression constructParentExpression(Node rootExpressionNode){
-        
-        int depth = 0;
+
         Expression expression = new Expression();
         
         String operator = getLogicalOperationType(rootExpressionNode);
@@ -279,8 +277,6 @@ public class RuleProcessor {
         //2
         if(containsOnlyExpressionChilds(rootExpressionNode)){
             List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
-
-            //LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
             LinkedHashMap<String, List<Function>> expressionChildFunctions = new LinkedHashMap<>();
             for(Node n : firstNodes){
                 
@@ -291,36 +287,25 @@ public class RuleProcessor {
                     logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
                     throw new RuntimeException();
                 } else {
-                    //List<String> childFuncs = getFunctionsOfLogicalOperation(n);
                     List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
                     
                     if(expressionChildFunctions.containsKey(childOperator)){
-                        //List<String> mergedFuncs = expressionChilds.get(childOperator);
                         List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
-                        //mergedFuncs.addAll(childFuncs);
                         mergedFunctions.addAll(mergedFunctions);
-                        //childFuncs.addAll(previousFunctionsWithSameOperand);
-                        //expressionChilds.put(childOperator, mergedFuncs);
                         expressionChildFunctions.put(childOperator, mergedFunctions);
                     } else {
-                        //expressionChilds.put(childOperator, childFuncs);
                         expressionChildFunctions.put(childOperator, childFunctions);
                     }
                 }
             }
-            //expression.setGroupsOfChildFunctions(expressionChilds);
-            expression.setGroupsOfChildFuncts(expressionChildFunctions);
+            expression.setGroupsOfChildFunctions(expressionChildFunctions);
             return expression;
         }
 
         //3
         if(containsExpressionAndFunctionChilds(rootExpressionNode)){
 
-            //List<String> funcs = getSimpleFunctionsOfLogicalOperation(rootExpressionNode);
-            //expression.setFuncs(funcs);
-            
             List<Node> firstNodes = getLogicalExpressionChildNodes(rootExpressionNode);
-            //LinkedHashMap<String, List<String>> expressionChilds = new LinkedHashMap<>();
             LinkedHashMap<String, List<Function>> expressionChildFunctions = new LinkedHashMap<>();
             
             for(Node n : firstNodes){
@@ -331,10 +316,8 @@ public class RuleProcessor {
                     logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
                     throw new RuntimeException();
                 } else {
-                    //List<String> childFuncs = getFunctionsOfLogicalOperation(n);
                     List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
                     if(expressionChildFunctions.containsKey(childOperator)){
-                        //List<String> mergedFuncs = expressionChilds.get(childOperator);
                         List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
                         mergedFunctions.addAll(childFunctions);
                         expressionChildFunctions.put(childOperator, mergedFunctions);
@@ -344,8 +327,7 @@ public class RuleProcessor {
                 }
             }
 
-            //expression.setGroupsOfChildFunctions(expressionChildFuncts);
-            expression.setGroupsOfChildFuncts(expressionChildFunctions);
+            expression.setGroupsOfChildFunctions(expressionChildFunctions);
             return expression;
         }
         
