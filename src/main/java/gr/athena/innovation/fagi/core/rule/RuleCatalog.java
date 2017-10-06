@@ -17,7 +17,7 @@ public class RuleCatalog{
 
 	private final List<Rule> rules = new ArrayList<>(); 
     private EnumDatasetActions defaultDatasetAction;
-    private FunctionRegistry methodRegistry;
+    private FunctionRegistry functionRegistry;
 
     /**
      * Adds a rule to the catalog.
@@ -37,17 +37,17 @@ public class RuleCatalog{
     /**
      * @return the Function Registry object.
      */
-    public FunctionRegistry getMethodRegistry() {
-        return methodRegistry;
+    public FunctionRegistry getFunctionRegistry() {
+        return functionRegistry;
     }
 
     /**
      * Sets the FunctionRegistry object.
      * 
-     * @param methodRegistry
+     * @param functionRegistry
      */
-    public void setMethodRegistry(FunctionRegistry methodRegistry) {
-        this.methodRegistry = methodRegistry;
+    public void setFunctionRegistry(FunctionRegistry functionRegistry) {
+        this.functionRegistry = functionRegistry;
     }
 
     /**

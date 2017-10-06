@@ -103,8 +103,8 @@ public class Fagi {
 
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
-        ruleCatalog.setMethodRegistry(functionRegistry);
-        //EnumDatasetActions l = ruleCatalog.getDefaultDatasetAction();
+        ruleCatalog.setFunctionRegistry(functionRegistry);
+
         long stopTimeInput = System.currentTimeMillis();
 
         //Load datasets

@@ -91,7 +91,7 @@ public class InputValidator {
             return false;
         }
         
-        return true;
+        return isValid;
     }
     
     private boolean isValidRulesXml() throws FileNotFoundException{
@@ -112,15 +112,17 @@ public class InputValidator {
         doc.getDocumentElement().normalize();        
         NodeList nList = doc.getElementsByTagName(SpecificationConstants.FUNCTION);
         for (int i = 0; i < nList.getLength(); i++) {
-            
+
             Node functionNode = nList.item(i);
             if (functionNode.getNodeType() == Node.ELEMENT_NODE) {
                 String function = functionNode.getTextContent();
 
                 int index = function.indexOf("(");
                 if (index != -1){
-                    String functionNameBeforeParenthesis = function.substring(0, index);        
+                    String functionNameBeforeParenthesis = function.substring(0, index).toLowerCase();
                     if(!functionSet.contains(functionNameBeforeParenthesis)){
+                        logger.fatal("Functions defined in " + SpecificationConstants.RULES_XML + " is not valid. "
+                                + functionNameBeforeParenthesis + " is malformed or not supported.");
                         return false;
                     }
                 }
