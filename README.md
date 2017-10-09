@@ -131,7 +131,7 @@ A sample rules.xml file could look like this:
 | Keep Right | Both | Keeps the value of the right source dataset in the fused model.
 | Keep Both | Both | Keeps both values of the source datasets in the fused model.
 | Keep More Points | Geometry | Keeps the geometry that is composed with more points than the other.
-| Keep More Points And Shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry
+| Keep More Points And Shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
 | Shift Left Geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | Shift Right Geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
 
