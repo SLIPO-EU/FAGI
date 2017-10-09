@@ -110,3 +110,35 @@ A sample rules.xml file could look like this:
 	</RULE>	
 	
 </RULES>
+
+# Available functions:
+| Name        | Parameters     | Category  | Example
+| ------------- |:-------------:| :-----:|:-----:|
+| isDateKnownFormat      | A or B | Date | isDateKnowFormat(A)
+| isValidDate      | A or B and format | Date | isValidDate(A, DD/MM/YYYY)
+| isGeometryMoreComplicated | A or B |  Geometry | isGeometryMoreComplicated(B)
+| isLiteralAbbreviation | A or B | Literal | isLiteralAbbreviation(B) 
+| isPhoneNumberParsable | A or B | Phone | isPhoneNumberParsable(A) 
+| isSamePhoneNumber | A and B | Phone | isSamePhoneNumber(A,B)  
+| isSamePhoneNumberUsingExitCode | A,B and digits | Phone | isSamePhoneNumberUsingExitCode(A,B,0030)  
+| exists | model, property | Property | exists(A,ht&#8203;tp://www.w3.org/2000/01/rdf-schema#label)  
+
+
+# Available fusion actions:
+| Name        | Type | Description
+| ------------- |:-------------|:------|
+| Keep Left | Both | Keeps the value of the left source dataset in the fused model.
+| Keep Right | Both | Keeps the value of the right source dataset in the fused model.
+| Keep Both | Both | Keeps both values of the source datasets in the fused model.
+| Keep More Points | Geometry | Keeps the geometry that is composed with more points than the other.
+| Keep More Points And Shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry
+| Shift Left Geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
+| Shift Right Geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
+
+# Available default dataset actions:
+| Name        | Type | Description
+| ------------- |:-------------|:------|
+| Keep Left | Both | Keeps the value of the left source entity in the fused model.
+| Keep Right | Both | Keeps the value of the right source entity in the fused model.
+| Keep Both | Both | Keeps both values of the source entities in the fused model.
+
