@@ -9,14 +9,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Function class with evaluation method on date known formats.
+ * 
  * @author nkarag
  */
 public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**
-     *
+     * Checks if the given date String is written as a known format as defined in the specification.
+     * See {@link SpecificationConstants.DATE_FORMATS}
+     * 
      * @param dateString
      * @return
      */
@@ -28,6 +31,7 @@ public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
 
             for (String format : SpecificationConstants.DATE_FORMATS) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+                simpleDateFormat.setLenient(false);
                 try {
                     simpleDateFormat.parse(dateString);
                     return true;
@@ -41,20 +45,6 @@ public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
             }
         }
         return isKnown;
-    }
-    
-    /**
-     *
-     * @param date
-     * @param format
-     * @return
-     */
-    public String transformDateToFormat(String date, String format){
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
-        
-        String transformedDate = formatter.format(date);
-
-        return transformedDate;
     }
 
     @Override

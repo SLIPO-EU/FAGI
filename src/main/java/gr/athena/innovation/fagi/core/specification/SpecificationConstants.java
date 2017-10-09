@@ -63,8 +63,9 @@ public class SpecificationConstants {
                 "MM/dd/yyyy'T'HH:mm:ssZ",       "MM/dd/yyyy'T'HH:mm:ss", 
                 "yyyy:MM:dd HH:mm:ss",          "yyyy-MM-dd", 
                 "dd mm yyyy",                   "yyyy/MM/dd",
-                "dd-mm-yyyy",                   "dd/mm/yyyy", 
-                "dd MM yyyy",                   };
+                "dd-mm-yyyy",                   "dd-MM-yyyy",
+                "dd/mm/yyyy",                   "dd MM yyyy",
+                "yyyy/MM/dd"};
     
     public class Functions {
         

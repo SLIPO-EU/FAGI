@@ -11,25 +11,7 @@ import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 public class ActionRule {
 
     private Condition condition;
-    //private EnumGeometricActions geoAction;
-    //private EnumMetadataActions metaAction;
     private EnumFusionAction action;
-
-//    public EnumGeometricActions getGeoAction() {
-//        return geoAction;
-//    }
-//
-//    public void setGeoAction(EnumGeometricActions geoAction) {
-//        this.geoAction = geoAction;
-//    }
-//
-//    public EnumMetadataActions getMetaAction() {
-//        return metaAction;
-//    }
-//
-//    public void setMetaAction(EnumMetadataActions metaAction) {
-//        this.metaAction = metaAction;
-//    }
 
     public EnumFusionAction getAction() {
         return action;

@@ -13,8 +13,6 @@ public class Rule {
     private String propertyA;
     private String propertyB;
     private ActionRuleSet actionRuleSet;
-    //private EnumGeometricActions defaultGeoAction;
-    //private EnumMetadataActions defaultMetaAction;
     private EnumFusionAction defaultAction;
 
     public String getPropertyA() {
@@ -40,22 +38,6 @@ public class Rule {
     public void setDefaultAction(EnumFusionAction defaultAction) {
         this.defaultAction = defaultAction;
     }
-    
-//    public EnumGeometricActions getDefaultGeoAction() {
-//        return defaultGeoAction;
-//    }
-//
-//    public void setDefaultGeoAction(EnumGeometricActions defaultGeoAction) {
-//        this.defaultGeoAction = defaultGeoAction;
-//    }
-//
-//    public EnumMetadataActions getDefaultMetaAction() {
-//        return defaultMetaAction;
-//    }
-//
-//    public void setDefaultMetaAction(EnumMetadataActions defaultMetaAction) {
-//        this.defaultMetaAction = defaultMetaAction;
-//    }
 
     public ActionRuleSet getActionRuleSet() {
         return actionRuleSet;
@@ -69,8 +51,6 @@ public class Rule {
     public String toString() {
         return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
                 + "\ndefaultAction=" + defaultAction + ", "
-                //+ "\ndefaultGeoAction=" + defaultGeoAction + ", "
-                //+ "\ndefaultMetaAction=" + defaultMetaAction + ", "
                 + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
     }
 }

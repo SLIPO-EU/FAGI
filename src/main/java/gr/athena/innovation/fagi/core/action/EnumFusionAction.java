@@ -14,8 +14,46 @@ import java.util.Map;
  * @author nkarag
  */
 public enum EnumFusionAction {
-    UNDEFINED(0), KEEP_LEFT(1), KEEP_RIGHT(2), KEEP_BOTH(3), 
-    KEEP_MORE_POINTS(4), KEEP_MORE_POINTS_AND_SHIFT(5), SHIFT_LEFT_GEOMETRY(6), SHIFT_RIGHT_GEOMETRY(7);
+
+    /**
+     * Undefined value of the fusion action.
+     */
+    UNDEFINED(0), 
+
+    /**
+     * Keeps the model of the entity from the left source dataset.
+     */
+    KEEP_LEFT(1), 
+
+    /**
+     * Keeps the model of the entity from the right source dataset.
+     */
+    KEEP_RIGHT(2), 
+
+    /**
+     * Keeps both models of the entity from left and right source datasets.
+     */
+    KEEP_BOTH(3), 
+
+    /**
+     * Keeps the geometry containing more points than the other.
+     */
+    KEEP_MORE_POINTS(4),
+
+    /**
+     * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
+     */
+    KEEP_MORE_POINTS_AND_SHIFT(5),
+
+    /**
+     * Shifts the geometry of the left source entity to the centroid of the right.
+     */
+    SHIFT_LEFT_GEOMETRY(6),
+
+    /**
+     * Shifts the geometry of the right source entity to the centroid of the left.
+     */
+    SHIFT_RIGHT_GEOMETRY(7);
     
 	private final int value;
 
@@ -23,7 +61,11 @@ public enum EnumFusionAction {
 		this.value = value;
 	}
     
-	public int getValue() {
+    /**
+     * Returns the integer value of the action.
+     * @return
+     */
+    public int getValue() {
 		return this.value;
 	}
 
@@ -34,14 +76,26 @@ public enum EnumFusionAction {
 		}
 	}
 
-	public static EnumFusionAction fromInteger(int value) {
+    /**
+     * Returns the EnumFusionAction object from its integer value or UNDEFINED if the type does not exist.
+     * 
+     * @param value the integer value of the action.
+     * @return the type of the action.
+     */
+    public static EnumFusionAction fromInteger(int value) {
 		EnumFusionAction type = intToTypeMap.get(value);
 		if (type == null)
 			return EnumFusionAction.UNDEFINED;
 		return type;
 	}
 
-	public static EnumFusionAction fromString(String value) {
+    /**
+     * Returns the EnumFusionAction object from its String value or UNDEFINED if the type does not exist.
+     * 
+     * @param value
+     * @return
+     */
+    public static EnumFusionAction fromString(String value) {
 		for (EnumFusionAction item : EnumFusionAction.values()) {
 			if (item.toString().equalsIgnoreCase(value)) {
 				return item;
@@ -50,8 +104,20 @@ public enum EnumFusionAction {
 		return EnumFusionAction.UNDEFINED;
 	}
 
-	public static class Deserializer extends JsonDeserializer<EnumFusionAction> {
-
+    /**
+     * Deserialization class. 
+     */
+    public static class Deserializer extends JsonDeserializer<EnumFusionAction> {
+        
+        /**
+         * Deserializes the EnumDatasetAction
+         * 
+         * @param parser the Json parser
+         * @param context the deserialization context
+         * @return the EnumDatasetAction
+         * @throws java.io.IOException
+         * @throws com.fasterxml.jackson.core.JsonProcessingException
+         */
 		@Override
 		public EnumFusionAction deserialize(JsonParser parser, DeserializationContext context) throws IOException,
 						JsonProcessingException {

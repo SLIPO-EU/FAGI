@@ -16,7 +16,7 @@
 	<RULE>
 		<PROPERTYA>wkt</PROPERTYA>
 		<PROPERTYB>wkt</PROPERTYB>
-		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
+		<DEFAULT_ACTION>Keep Right</DEFAULT_ACTION>
 	</RULE>		
 	<RULE>
 		<PROPERTYA>http://purl.org/dc/terms/modified</PROPERTYA>

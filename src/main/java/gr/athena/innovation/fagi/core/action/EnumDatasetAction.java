@@ -14,7 +14,26 @@ import java.util.Map;
  * @author nkarag
  */
 public enum EnumDatasetAction {
-	UNDEFINED(0), KEEP_LEFT(1), KEEP_RIGHT(2), KEEP_BOTH(3);
+
+    /**
+     * Undefined value of the dataset action.
+     */
+    UNDEFINED(0),
+
+    /**
+     * Keeps the model of the entity from the left source dataset.
+     */
+    KEEP_LEFT(1),
+
+    /**
+     * Keeps the model of the entity from the right source dataset.
+     */
+    KEEP_RIGHT(2),
+
+    /**
+     * Keeps both models of the entity from left and right source datasets.
+     */
+    KEEP_BOTH(3);
 
 	private final int value;
     
@@ -29,18 +48,34 @@ public enum EnumDatasetAction {
 		this.value = value;
 	}
 
-	public int getValue() {
+    /**
+     * Returns the integer value of the action.
+     * @return
+     */
+    public int getValue() {
 		return this.value;
 	}
 
-	public static EnumDatasetAction fromInteger(int value) {
+    /**
+     * Returns the EnumDatasetAction object from its integer value or UNDEFINED if the type does not exist.
+     * 
+     * @param value the integer value of the action.
+     * @return the type of the action.
+     */
+    public static EnumDatasetAction fromInteger(int value) {
 		EnumDatasetAction type = intToTypeMap.get(value);
 		if (type == null)
 			return EnumDatasetAction.UNDEFINED;
 		return type;
 	}
 
-	public static EnumDatasetAction fromString(String value) {
+    /**
+     * Returns the EnumDatasetAction object from its String value or UNDEFINED if the type does not exist.
+     * 
+     * @param value
+     * @return
+     */
+    public static EnumDatasetAction fromString(String value) {
 		for (EnumDatasetAction item : EnumDatasetAction.values()) {
 			if (item.toString().equalsIgnoreCase(value)) {
 				return item;
@@ -49,8 +84,20 @@ public enum EnumDatasetAction {
 		return EnumDatasetAction.UNDEFINED;
 	}
 
-	public static class Deserializer extends JsonDeserializer<EnumDatasetAction> {
-
+    /**
+     * Deserialization class. 
+     */
+    public static class Deserializer extends JsonDeserializer<EnumDatasetAction> {
+        
+        /**
+         * Deserializes the EnumDatasetAction
+         * 
+         * @param parser the Json parser
+         * @param context the deserialization context
+         * @return the EnumDatasetAction
+         * @throws java.io.IOException
+         * @throws com.fasterxml.jackson.core.JsonProcessingException
+         */
 		@Override
 		public EnumDatasetAction deserialize(JsonParser parser, DeserializationContext context) throws IOException,
 						JsonProcessingException {
