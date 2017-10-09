@@ -9,7 +9,7 @@
             <xs:sequence>
               <xs:element name="PROPERTYA" type="xs:anyURI" />
               <xs:element name="PROPERTYB" type="xs:anyURI" />
-              <xs:element name="ACTION_RULE_SET">
+              <xs:element name="ACTION_RULE_SET" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="ACTION_RULE">
@@ -56,8 +56,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element type="xs:string" name="DEFAULT_GEO_ACTION"/>
-              <xs:element type="xs:string" name="DEFAULT_META_ACTION"/>
+              <xs:element type="xs:string" name="DEFAULT_ACTION"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

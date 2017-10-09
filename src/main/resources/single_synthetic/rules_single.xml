@@ -8,12 +8,16 @@
 				<CONDITION>
 					<FUNCTION>isLiteralAbbreviation(B)</FUNCTION>
 				</CONDITION>
-				<ACTION>Keep Right Metadata</ACTION>
+				<ACTION>Keep Right</ACTION>
 			</ACTION_RULE>
 		</ACTION_RULE_SET>
-		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
-		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
 	</RULE>	
+	<RULE>
+		<PROPERTYA>wkt</PROPERTYA>
+		<PROPERTYB>wkt</PROPERTYB>
+		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
+	</RULE>		
 	<RULE>
 		<PROPERTYA>http://purl.org/dc/terms/modified</PROPERTYA>
 		<PROPERTYB>http://purl.org/dc/terms/modified</PROPERTYB>
@@ -26,10 +30,9 @@
 						</NOT>
 					</EXPRESSION>
 				</CONDITION>
-				<ACTION>Keep Left Metadata</ACTION>
+				<ACTION>Keep Left</ACTION>
 			</ACTION_RULE>
 		</ACTION_RULE_SET>
-		<DEFAULT_GEO_ACTION>Shift Left Geometry</DEFAULT_GEO_ACTION>
-		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+		<DEFAULT_ACTION>Keep Right</DEFAULT_ACTION>
 	</RULE>
 </RULES>
