@@ -18,7 +18,7 @@ Then go to the target directory of the project and run:
 
 ### How to fill in the spec.xml file
 Inside the resources directory of the project there is a spec.template.xml file and a spec.xml as an example for convenience. The Specification holds general configuration for the fusion process and is filled with text values between an opening and a closing tag. 
-The `INPUTFORMAT` refers to the RDF format of the input dataset and the `OUTPUTFORMAT` holds the value of the desired output format. The accepted RDF formats are the following:
+The `INPUT_FORMAT` refers to the RDF format of the input dataset and the `OUTPUT_FORMAT` holds the value of the desired output format. The accepted RDF formats are the following:
 
 * N-Triples (NT)
 * Turtle (TTL)
@@ -50,12 +50,11 @@ Each <RULE> element consists of the following main childs:
 `<PROPERTYA>`
 `<PROPERTYB>`
 `<ACTION_RULE_SET>`
-`<DEFAULT_GEO_ACTION>`
-`<DEFAULT_META_ACTION>`
+`<DEFAULT_ACTION>`
 
 `<PROPERTYA>` and `<PROPERTYB>` define the two RDF properties that the rule will apply.
 `<ACTION_RULE_SET>` is a set of condition-action pairs with priority the order of appearance.
-`<DEFAULT_GEO_ACTION>` and `<DEFAULT_META_ACTION>` are the default fusion actions to apply if no condition from the <ACTION_RULE_SET> is met.
+`<DEFAULT_ACTION>` is the default fusion action to apply if no condition from the <ACTION_RULE_SET> is met.
 
 `<ACTION_RULE_SET>` element:
 This element consists of one or more `<ACTION_RULE>` child elements. 
@@ -81,7 +80,7 @@ A sample rules.xml file could look like this:
 						<FUNCTION>isKnownDate(B)</FUNCTION>
 					</EXPRESSION>
 				</CONDITION>
-				<ACTION>Keep Right Metadata</ACTION>
+				<ACTION>Keep Right</ACTION>
 			</ACTION_RULE>			
 			<ACTION_RULE>
 				<CONDITION>
@@ -91,11 +90,10 @@ A sample rules.xml file could look like this:
 						</NOT>
 					</EXPRESSION>
 				</CONDITION>
-				<ACTION>Keep Both Metadata</ACTION>
+				<ACTION>Keep Both</ACTION>
 			</ACTION_RULE>		
 		</ACTION_RULE_SET>
-		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
-		<DEFAULT_META_ACTION>Keep Left Metadata</DEFAULT_META_ACTION>
+		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
 	</RULE>
 	<RULE>
 		<PROPERTYA>phoneA</PROPERTYA>
@@ -105,15 +103,10 @@ A sample rules.xml file could look like this:
 				<CONDITION>
 					<FUNCTION>isSamePhoneNumber(A,B)</FUNCTION>
 				</CONDITION>
-				<ACTION>Keep Left Metadata</ACTION>
+				<ACTION>Keep Left</ACTION>
 			</ACTION_RULE>		
 		</ACTION_RULE_SET>
-		<DEFAULT_GEO_ACTION>Keep Left Geometry</DEFAULT_GEO_ACTION>
-		<DEFAULT_META_ACTION>Keep Both Metadata</DEFAULT_META_ACTION>
+		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
 	</RULE>	
 	
 </RULES>
-
-
-
-
