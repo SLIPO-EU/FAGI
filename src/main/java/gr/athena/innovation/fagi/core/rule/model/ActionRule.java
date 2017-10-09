@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
-import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
-import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 
 /**
  * ActionRule represents a fusion action to be executed when a condition is fulfilled. 
@@ -12,25 +11,34 @@ import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
 public class ActionRule {
 
     private Condition condition;
-    private EnumGeometricActions geoAction;
-    private EnumMetadataActions metaAction;
+    //private EnumGeometricActions geoAction;
+    //private EnumMetadataActions metaAction;
+    private EnumFusionAction action;
 
-    public EnumGeometricActions getGeoAction() {
-        return geoAction;
+//    public EnumGeometricActions getGeoAction() {
+//        return geoAction;
+//    }
+//
+//    public void setGeoAction(EnumGeometricActions geoAction) {
+//        this.geoAction = geoAction;
+//    }
+//
+//    public EnumMetadataActions getMetaAction() {
+//        return metaAction;
+//    }
+//
+//    public void setMetaAction(EnumMetadataActions metaAction) {
+//        this.metaAction = metaAction;
+//    }
+
+    public EnumFusionAction getAction() {
+        return action;
     }
 
-    public void setGeoAction(EnumGeometricActions geoAction) {
-        this.geoAction = geoAction;
+    public void setAction(EnumFusionAction action) {
+        this.action = action;
     }
-
-    public EnumMetadataActions getMetaAction() {
-        return metaAction;
-    }
-
-    public void setMetaAction(EnumMetadataActions metaAction) {
-        this.metaAction = metaAction;
-    }
-
+    
     public boolean isConditionFulfilled(){
         return true;
     }
@@ -45,6 +53,6 @@ public class ActionRule {
     
     @Override
     public String toString() {
-        return "\nActionRule{" + "condition=" + condition + ", geoAction=" + geoAction + ", metaAction=" + metaAction + "\n}";
+        return "\nActionRule{" + "condition=" + condition + ", action=" + action + "\n}";
     }    
 }

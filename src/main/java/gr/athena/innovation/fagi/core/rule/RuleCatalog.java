@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.core.rule;
 
 import gr.athena.innovation.fagi.core.rule.model.Rule;
-import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
+import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.functions.FunctionRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class RuleCatalog{
 
 	private final List<Rule> rules = new ArrayList<>(); 
-    private EnumDatasetActions defaultDatasetAction;
+    private EnumDatasetAction defaultDatasetAction;
     private FunctionRegistry functionRegistry;
 
     /**
@@ -51,9 +51,9 @@ public class RuleCatalog{
     }
 
     /**
-     * @return the default dataset action as a {@link EnumDatasetActions} object.
+     * @return the default dataset action as a {@link EnumDatasetAction} object.
      */
-    public EnumDatasetActions getDefaultDatasetAction() {
+    public EnumDatasetAction getDefaultDatasetAction() {
         return defaultDatasetAction;
     }
 
@@ -62,7 +62,7 @@ public class RuleCatalog{
      * 
      * @param defaultDatasetAction
      */
-    public void setDefaultDatasetAction(EnumDatasetActions defaultDatasetAction) {
+    public void setDefaultDatasetAction(EnumDatasetAction defaultDatasetAction) {
         this.defaultDatasetAction = defaultDatasetAction;
     }
 }

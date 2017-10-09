@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core.rule.model;
 
-import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
-import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 
 /**
  * Class representing a rule for fusion. 
@@ -14,8 +13,9 @@ public class Rule {
     private String propertyA;
     private String propertyB;
     private ActionRuleSet actionRuleSet;
-    private EnumGeometricActions defaultGeoAction;
-    private EnumMetadataActions defaultMetaAction;
+    //private EnumGeometricActions defaultGeoAction;
+    //private EnumMetadataActions defaultMetaAction;
+    private EnumFusionAction defaultAction;
 
     public String getPropertyA() {
         return propertyA;
@@ -33,21 +33,29 @@ public class Rule {
         this.propertyB = propertyB;
     }
 
-    public EnumGeometricActions getDefaultGeoAction() {
-        return defaultGeoAction;
+    public EnumFusionAction getDefaultAction() {
+        return defaultAction;
     }
 
-    public void setDefaultGeoAction(EnumGeometricActions defaultGeoAction) {
-        this.defaultGeoAction = defaultGeoAction;
+    public void setDefaultAction(EnumFusionAction defaultAction) {
+        this.defaultAction = defaultAction;
     }
-
-    public EnumMetadataActions getDefaultMetaAction() {
-        return defaultMetaAction;
-    }
-
-    public void setDefaultMetaAction(EnumMetadataActions defaultMetaAction) {
-        this.defaultMetaAction = defaultMetaAction;
-    }
+    
+//    public EnumGeometricActions getDefaultGeoAction() {
+//        return defaultGeoAction;
+//    }
+//
+//    public void setDefaultGeoAction(EnumGeometricActions defaultGeoAction) {
+//        this.defaultGeoAction = defaultGeoAction;
+//    }
+//
+//    public EnumMetadataActions getDefaultMetaAction() {
+//        return defaultMetaAction;
+//    }
+//
+//    public void setDefaultMetaAction(EnumMetadataActions defaultMetaAction) {
+//        this.defaultMetaAction = defaultMetaAction;
+//    }
 
     public ActionRuleSet getActionRuleSet() {
         return actionRuleSet;
@@ -60,8 +68,9 @@ public class Rule {
     @Override
     public String toString() {
         return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
-                + "\ndefaultGeoAction=" + defaultGeoAction + ", "
-                + "\ndefaultMetaAction=" + defaultMetaAction + ", "
+                + "\ndefaultAction=" + defaultAction + ", "
+                //+ "\ndefaultGeoAction=" + defaultGeoAction + ", "
+                //+ "\ndefaultMetaAction=" + defaultMetaAction + ", "
                 + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
-    }    
+    }
 }

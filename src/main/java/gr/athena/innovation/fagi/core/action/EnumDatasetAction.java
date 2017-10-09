@@ -13,19 +13,19 @@ import java.util.Map;
  * 
  * @author nkarag
  */
-public enum EnumDatasetActions {
+public enum EnumDatasetAction {
 	UNDEFINED(0), KEEP_LEFT(1), KEEP_RIGHT(2), KEEP_BOTH(3);
 
 	private final int value;
     
-	private static final Map<Integer, EnumDatasetActions> intToTypeMap = new HashMap<>();
+	private static final Map<Integer, EnumDatasetAction> intToTypeMap = new HashMap<>();
 	static {
-		for (EnumDatasetActions type : EnumDatasetActions.values()) {
+		for (EnumDatasetAction type : EnumDatasetAction.values()) {
 			intToTypeMap.put(type.value, type);
 		}
 	}
          
-	private EnumDatasetActions(int value) {
+	private EnumDatasetAction(int value) {
 		this.value = value;
 	}
 
@@ -33,28 +33,28 @@ public enum EnumDatasetActions {
 		return this.value;
 	}
 
-	public static EnumDatasetActions fromInteger(int value) {
-		EnumDatasetActions type = intToTypeMap.get(value);
+	public static EnumDatasetAction fromInteger(int value) {
+		EnumDatasetAction type = intToTypeMap.get(value);
 		if (type == null)
-			return EnumDatasetActions.UNDEFINED;
+			return EnumDatasetAction.UNDEFINED;
 		return type;
 	}
 
-	public static EnumDatasetActions fromString(String value) {
-		for (EnumDatasetActions item : EnumDatasetActions.values()) {
+	public static EnumDatasetAction fromString(String value) {
+		for (EnumDatasetAction item : EnumDatasetAction.values()) {
 			if (item.toString().equalsIgnoreCase(value)) {
 				return item;
 			}
 		}
-		return EnumDatasetActions.UNDEFINED;
+		return EnumDatasetAction.UNDEFINED;
 	}
 
-	public static class Deserializer extends JsonDeserializer<EnumDatasetActions> {
+	public static class Deserializer extends JsonDeserializer<EnumDatasetAction> {
 
 		@Override
-		public EnumDatasetActions deserialize(JsonParser parser, DeserializationContext context) throws IOException,
+		public EnumDatasetAction deserialize(JsonParser parser, DeserializationContext context) throws IOException,
 						JsonProcessingException {
-			return EnumDatasetActions.fromString(parser.getValueAsString());
+			return EnumDatasetAction.fromString(parser.getValueAsString());
 		}
 	}
     

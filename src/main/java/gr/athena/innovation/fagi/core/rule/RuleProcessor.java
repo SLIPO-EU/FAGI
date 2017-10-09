@@ -1,15 +1,13 @@
 package gr.athena.innovation.fagi.core.rule;
 
 import gr.athena.innovation.fagi.core.rule.model.Function;
-import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
-import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
-import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
+import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
+import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 import gr.athena.innovation.fagi.core.rule.model.ActionRule;
 import gr.athena.innovation.fagi.core.rule.model.ActionRuleSet;
 import gr.athena.innovation.fagi.core.rule.model.Condition;
 import gr.athena.innovation.fagi.core.rule.model.Expression;
 import gr.athena.innovation.fagi.core.rule.model.Rule;
-import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.AND;
 import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.NOT;
@@ -88,9 +86,9 @@ public class RuleProcessor {
         
         if(defaultDatasetAction.getLength() == 1){
             Node datasetActionNode = defaultDatasetAction.item(0);
-            EnumDatasetActions datasetAction = EnumDatasetActions.fromString(datasetActionNode.getTextContent());
+            EnumDatasetAction datasetAction = EnumDatasetAction.fromString(datasetActionNode.getTextContent());
             ruleCatalog.setDefaultDatasetAction(datasetAction);
-            if(datasetAction.equals(EnumDatasetActions.UNDEFINED)){
+            if(datasetAction.equals(EnumDatasetAction.UNDEFINED)){
                 logger.fatal("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
                 throw new RuntimeException();                
             }
@@ -130,11 +128,9 @@ public class RuleProcessor {
                 } else if (ruleElement.getNodeName().contains("PROPERTYB")) {
                     logger.debug("property B: " + ruleElement.getTextContent());
                     rule.setPropertyB(ruleElement.getTextContent());
-                } else if(ruleElement.getNodeName().contains("DEFAULT_GEO_ACTION")){
-                    EnumGeometricActions defaultGeoAction = EnumGeometricActions.fromString(ruleElement.getTextContent());
-                    rule.setDefaultGeoAction(defaultGeoAction);
-                } else if(ruleElement.getNodeName().contains("DEFAULT_META_ACTION")){
-                    rule.setDefaultMetaAction(EnumMetadataActions.fromString(ruleElement.getTextContent()));
+                } else if(ruleElement.getNodeName().contains("DEFAULT_ACTION")){
+                    EnumFusionAction defaultGeoAction = EnumFusionAction.fromString(ruleElement.getTextContent());
+                    rule.setDefaultAction(defaultGeoAction);
                 } else if(ruleElement.getNodeName().contains("ACTION_RULE_SET")){
                     NodeList actionRuleNodeList = ruleElement.getElementsByTagName("ACTION_RULE");                   
                     actionRuleSet = createActionRuleSet(actionRuleNodeList);
@@ -145,7 +141,7 @@ public class RuleProcessor {
         
         if(actionRuleSet == null){
             logger.trace("# RULE without action rule set");
-            logger.trace(rule.getDefaultGeoAction());
+            logger.trace(rule.getDefaultAction());
         }
         
         return rule;
@@ -178,11 +174,11 @@ public class RuleProcessor {
         ActionRule actionRule = new ActionRule();
 
         //Extract ACTION element and its text inside ACTION_RULE
-        Node action = actionRuleElement.getLastChild();
+        Node actionNode = actionRuleElement.getLastChild();
 
         int i = 0;
-        while(!action.getNodeName().equalsIgnoreCase("ACTION")){
-            action = action.getPreviousSibling();
+        while(!actionNode.getNodeName().equalsIgnoreCase("ACTION")){
+            actionNode = actionNode.getPreviousSibling();
             i++;
             if(i>5000){
                 //TODO - remove this check when xsd validation is complete
@@ -191,18 +187,13 @@ public class RuleProcessor {
             }
         }
 
-        EnumGeometricActions geoAction = EnumGeometricActions.fromString(action.getTextContent());
-        if(geoAction.equals(EnumGeometricActions.UNDEFINED)){
-            EnumMetadataActions metaAction = EnumMetadataActions.fromString(action.getTextContent());
-            if(metaAction.equals(EnumMetadataActions.UNDEFINED)){
-                logger.fatal("Wrong action input: " + action.getTextContent());
-                //TODO - remove exception when the xsd validation is complete.
-                throw new RuntimeException();
-            } else {
-                actionRule.setMetaAction(metaAction);
-            }
+        EnumFusionAction action = EnumFusionAction.fromString(actionNode.getTextContent());
+        
+        if(action.equals(EnumFusionAction.UNDEFINED)){
+            logger.fatal("Wrong fusion action input: " + actionNode.getTextContent());
+            throw new RuntimeException();
         } else {
-            actionRule.setGeoAction(geoAction);
+            actionRule.setAction(action);
         }
 
         //Extract condition

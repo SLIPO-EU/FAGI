@@ -1,9 +1,8 @@
 package gr.athena.innovation.fagi.core;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
+import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
@@ -14,7 +13,6 @@ import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.Metadata;
 import gr.athena.innovation.fagi.model.RightModel;
-import gr.athena.innovation.fagi.utils.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,16 +23,8 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.SimpleSelector;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -104,7 +94,7 @@ public class Fuser implements IFuser{
     }
     
     /**
-     * Constructs the output result by creating a new grapgh to the specified output 
+     * Constructs the output result by creating a new graph to the specified output 
      * or combining the fused entities into the source datasets.
      * 
      * @param fusionSpecification
@@ -113,7 +103,7 @@ public class Fuser implements IFuser{
      * @throws FileNotFoundException
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
-            List<InterlinkedPair> interlinkedEntitiesList, EnumDatasetActions defaultDatasetAction) 
+            List<InterlinkedPair> interlinkedEntitiesList, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException{
         
         OutputStream out;
@@ -129,15 +119,7 @@ public class Fuser implements IFuser{
                 
                 for(InterlinkedPair p : interlinkedEntitiesList){
 
-                    Resource leftResource = p.getLeftNode().getGeometryNode().asResource();
-                    Property wktProperty = ResourceFactory.createProperty(Namespace.WKT);
-                    Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(p.getFusedEntity().getWKTLiteral());
-
-                    Statement statementFused = ResourceFactory.createStatement(leftResource, wktProperty, fusedGeometryLiteral);
-                    
                     Model fusedMetadataModel = p.getFusedEntity().getMetadata().getModel();
-
-                    fusedMetadataModel.add(statementFused);
                     leftModel.add(fusedMetadataModel);
                 }
 
@@ -149,15 +131,7 @@ public class Fuser implements IFuser{
                 
                 for(InterlinkedPair p : interlinkedEntitiesList){
 
-                    Resource leftResource = p.getLeftNode().getGeometryNode().asResource();
-                    Property wktProperty = ResourceFactory.createProperty(Namespace.WKT);
-                    Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(p.getFusedEntity().getWKTLiteral());
-
-                    Statement statementFused = ResourceFactory.createStatement(leftResource, wktProperty, fusedGeometryLiteral);
-                    
                     Model fusedMetadataModel = p.getFusedEntity().getMetadata().getModel();
-
-                    fusedMetadataModel.add(statementFused);
                     rightModel.add(fusedMetadataModel);
                 }
 
@@ -171,30 +145,7 @@ public class Fuser implements IFuser{
                 
                 for(InterlinkedPair pair : interlinkedEntitiesList){
 
-                    Resource geometryNode = pair.getLeftNode().getGeometryNode().asResource();
-                    Property wktProperty = ResourceFactory.createProperty(Namespace.WKT);
-                    Property hasGeometry = ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY);
-                    Literal fusedGeometryLiteral = ResourceFactory.createPlainLiteral(pair.getFusedEntity().getWKTLiteral());
-
-                    Resource resourceURI;
-                    switch (defaultDatasetAction) {
-                        case KEEP_LEFT:
-                            resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
-                            break;
-                        case KEEP_RIGHT:
-                            resourceURI = ResourceFactory.createResource(pair.getRightNode().getResourceURI());
-                            break;
-                        default:
-                            resourceURI = ResourceFactory.createResource(pair.getLeftNode().getResourceURI());
-                            break;
-                    }
-                    Statement statementFused1 = ResourceFactory.createStatement(resourceURI, hasGeometry, geometryNode);        
-                    Statement statementFused2 = ResourceFactory.createStatement(geometryNode, wktProperty, fusedGeometryLiteral);
-                    
                     Model fusedMetadataModel = pair.getFusedEntity().getMetadata().getModel();
-
-                    fusedMetadataModel.add(statementFused1);
-                    fusedMetadataModel.add(statementFused2);
                     newModel.add(fusedMetadataModel);
                 }
 
@@ -206,33 +157,15 @@ public class Fuser implements IFuser{
     private Entity constructEntity(Model model, String resourceURI, WKTReader wellKnownTextReader) throws ParseException {
         
         Entity entity = new Entity();
-        
-        //We assume the entity has one single geometry representation as WKT
-        StmtIterator statements = model.listStatements(
-                new SimpleSelector(null, ResourceFactory.createProperty(Namespace.WKT), (RDFNode) null));
-        
-        Statement geometryStatement = statements.next();
-        Resource geometryNode = geometryStatement.getSubject();
-        
-        Geometry geo = wellKnownTextReader.read(geometryStatement.getLiteral().getString());
-        
-        //remove geometry from metadata model.
-        //TODO - remove any orphaned chain when ontology is defined
-        //model.removeAll(null, ResourceFactory.createProperty(Namespace.GEOSPARQL_HAS_GEOMETRY), (RDFNode) null);
-        model.removeAll(null, ResourceFactory.createProperty(Namespace.WKT), (Literal) null);
-
         Metadata metadata = new Metadata(model);
-        
-        entity.setGeometryNode(geometryNode);
         entity.setResourceURI(resourceURI);
-        entity.setGeometry(geo);
         entity.setMetadata(metadata);
         
         return entity;
     }
-    
+
     private Model constructEntityMetadataModel(String node, Model sourceModel, int depth){
-        
+
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);
         QueryExecution queryExecution = QueryExecutionFactory.create(query, sourceModel);
@@ -240,6 +173,7 @@ public class Fuser implements IFuser{
 
         //removing constructed model from source model.
         sourceModel.remove(model);
+
         return model;
     }
 

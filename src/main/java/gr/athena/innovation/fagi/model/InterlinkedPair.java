@@ -1,17 +1,19 @@
 package gr.athena.innovation.fagi.model;
 
-import gr.athena.innovation.fagi.core.action.EnumMetadataActions;
-import gr.athena.innovation.fagi.core.action.EnumGeometricActions;
 import com.vividsolutions.jts.geom.Geometry;
-import gr.athena.innovation.fagi.core.action.EnumDatasetActions;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
+import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
+import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.rule.model.ActionRule;
 import gr.athena.innovation.fagi.core.rule.model.Condition;
 import gr.athena.innovation.fagi.core.rule.model.Rule;
 import gr.athena.innovation.fagi.core.rule.RuleCatalog;
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
+import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import java.util.List;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
@@ -59,7 +61,7 @@ public class InterlinkedPair {
 
     public void fuseWithRule(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap){
 
-        EnumDatasetActions defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
+        EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
         fusedEntity = new Entity();
         fusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction));
@@ -67,17 +69,14 @@ public class InterlinkedPair {
         Metadata leftMetadata = leftNode.getMetadata();
         Metadata rightMetadata = rightNode.getMetadata();
 
-        
-        
-        fuseDefault(defaultDatasetAction);
+        fuseDefaultDatasetAction(defaultDatasetAction);
 
         List<Rule> rules = ruleCatalog.getRules();
 
         for(Rule rule : rules){
             logger.trace("Fusing with Rule: " + rule);
 
-            EnumGeometricActions defaultGeoAction = rule.getDefaultGeoAction();
-            EnumMetadataActions defaultMetaAction = rule.getDefaultMetaAction();
+            EnumFusionAction defaultAction = rule.getDefaultAction();
 
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
             Property rdfPropertyA = getRDFPropertyFromString(rule.getPropertyA());
@@ -90,10 +89,9 @@ public class InterlinkedPair {
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if(rule.getActionRuleSet() == null){
-                logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultGeoAction + " " 
-                        + defaultMetaAction);
-                if(defaultMetaAction != null){
-                    replaceLiteralInFusedModel(defaultMetaAction, rdfPropertyA, literalA, literalB);
+                logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultAction);
+                if(defaultAction != null){
+                    fuseRuleAction(defaultAction, rdfPropertyA, literalA, literalB);
                 }
                 break;
             }
@@ -105,61 +103,48 @@ public class InterlinkedPair {
 
                 logger.info("-- Action rule: " + actionRuleCount);
 
-                EnumGeometricActions geoAction = null;
-                EnumMetadataActions metaAction = null;
-
-                if(actionRule.getGeoAction() != null){
-                    geoAction = actionRule.getGeoAction();
+                EnumFusionAction action = null;
+                
+                if(actionRule.getAction() != null){
+                    action = actionRule.getAction();
                 }
-
-                if(actionRule.getMetaAction() != null){
-                    metaAction = actionRule.getMetaAction();
-                }
-
+                
                 Condition condition = actionRule.getCondition();
 
                 boolean isActionRuleToBeApplied = condition.evaluate(functionMap, literalA, literalB);
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
-                    //fuseGeometry(geoAction);
-                    //fuseMetadata(metaAction);
-                    logger.trace("Replacing in model: " + literalA + " with " + literalB);
-                    replaceLiteralInFusedModel(metaAction, rdfPropertyA, literalA, literalB);
+                    logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
+                    fuseRuleAction(action, rdfPropertyA, literalA, literalB);
                     actionRuleToApply = true;
                     break;
                 }
             }
 
-            //No action rule applied. Use default Actions
-//            if(actionRuleToApply == false){
-//                fuseGeometry(defaultGeoAction);
-//                fuseMetadata(defaultMetaAction);
-//            }
-
+            //No action rule applied. Use default Action
+            if(actionRuleToApply == false){
+                fuseRuleAction(defaultAction, rdfPropertyA, literalA, literalB);
+            }
         }
     }
 
-    public void fuseDefault(EnumDatasetActions datasetDefaultAction){
+    public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction){
 
-        //default action should be performed before the rules apply. The fused model should be empty:
+        //default dataset action should be performed before the rules apply. The fused model should be empty:
         if(!fusedEntity.getMetadata().getModel().isEmpty()){
             logger.fatal("Something is wrong. Default fusion action tries to overwrite already fused data!");
             throw new RuntimeException();
         }
 
         Metadata leftMetadata = leftNode.getMetadata();
-        Geometry leftGeometry = leftNode.getGeometry();
         Metadata rightMetadata = rightNode.getMetadata();
-        Geometry rightGeometry = rightNode.getGeometry();
         
         switch(datasetDefaultAction){
             case KEEP_LEFT:
-                fusedEntity.setGeometry(leftGeometry);
                 fusedEntity.setMetadata(leftMetadata);
                 break;
             case KEEP_RIGHT:
-                fusedEntity.setGeometry(rightGeometry);
                 fusedEntity.setMetadata(rightMetadata);
                 break;
             case KEEP_BOTH:
@@ -169,78 +154,19 @@ public class InterlinkedPair {
                 throw new RuntimeException();
         }        
     }
-    
-    private void fuseGeometry(EnumGeometricActions geoAction){
-        logger.trace("Fusing geometry with: " + geoAction);
-        if(geoAction == null){
-            //action rule refers to metadataAction
-            return;
-        }
-        
-        Geometry leftGeometry = leftNode.getGeometry();
-        Geometry rightGeometry = rightNode.getGeometry();
-        switch(geoAction){
-            case KEEP_LEFT_GEOMETRY:
-                fusedEntity.setGeometry(leftGeometry);
-                break;
-            case KEEP_RIGHT_GEOMETRY:
-                fusedEntity.setGeometry(rightGeometry);
-                break;
-            case KEEP_MORE_POINTS:
-                if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
-                    fusedEntity.setGeometry(leftGeometry);
-                } else {
-                    fusedEntity.setGeometry(rightGeometry);
-                }
-                break;
-            case KEEP_MORE_POINTS_AND_SHIFT:
-                if(leftGeometry.getNumPoints() > rightGeometry.getNumPoints()) {
-                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
-                    Geometry fusedGeometry = centroidTranslator.shift(leftGeometry);
-                    fusedEntity.setGeometry(fusedGeometry);
-                } else if(leftGeometry.getNumPoints() < rightGeometry.getNumPoints()){
-                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
-                    Geometry fusedGeometry = centroidTranslator.shift(rightGeometry);                    
-                    fusedEntity.setGeometry(fusedGeometry);
-                } else {
-                    fusedEntity.setGeometry(leftGeometry);
-                }
-                break;
-            case SHIFT_LEFT_GEOMETRY:
-                {
-                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
-                    Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
-                    fusedEntity.setGeometry(shiftedToRightGeometry);
-                    break;
-                }
-            case SHIFT_RIGHT_GEOMETRY:
-                {
-                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
-                    Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);
-                    fusedEntity.setGeometry(shiftedToLeftGeometry);
-                    break;
-                }
-            case KEEP_BOTH_GEOMETRIES:
-                logger.fatal("Keep both geometries not supported yet.");
-                throw new UnsupportedOperationException("Keep both geometries not supported yet.");                
-            default:
-                logger.fatal("Geometric fusion action is not defined.");
-                throw new RuntimeException();
-        }
-    }
 
-    private void replaceLiteralInFusedModel(EnumMetadataActions metaAction, 
+    private void fuseRuleAction(EnumFusionAction action, 
             Property property, String literalA, String literalB){
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
-        
+
         String fusedURI = fusedEntity.getResourceURI();
 
         Metadata fusedMetadata = fusedEntity.getMetadata();
 
-        switch(metaAction){
-            case KEEP_LEFT_METADATA:
+        switch(action){
+            case KEEP_LEFT:
             {
                 Model fusedModel = fusedMetadata.getModel();
                 fusedModel.removeAll(null, property, (RDFNode) null);
@@ -248,30 +174,141 @@ public class InterlinkedPair {
                 
                 fusedMetadata = fusedEntity.getMetadata();
                 fusedMetadata.setModel(fusedModel);
-                
                 fusedEntity.setMetadata(fusedMetadata);
+
                 break;
             }
-            case KEEP_RIGHT_METADATA:
+            case KEEP_RIGHT:
             {
                 Model fusedModel = fusedMetadata.getModel();
                 fusedModel.removeAll(null, property, null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
 
                 fusedMetadata.setModel(fusedModel);
-                
                 fusedEntity.setMetadata(fusedMetadata);
+                
                 break;
             }
-            case KEEP_BOTH_METADATA:
-                {
+            case KEEP_BOTH:
+            {
+                    Metadata leftMetadata = leftNode.getMetadata();
+                    Metadata rightMetadata = rightNode.getMetadata();
+
+                    Model fusedModel = fusedMetadata.getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
+                    fusedMetadata.setModel(fusedModel);
+                    fusedEntity.setMetadata(fusedMetadata);
                     
-//                    Metadata fusedMetadata = fusedEntity.getMetadata();
-//                    fusedModel.add(leftMetadata.getModel()).add(rightMetadata.getModel());
-//                    fusedMetadata.setModel(fusedModel);
-//                    fusedEntity.setMetadata(fusedMetadata);
                     break;
+            }
+            case KEEP_MORE_POINTS:
+            {
+                checkWKTProperty(property,action);
+
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+
+                if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
+
+                    Model fusedModel = fusedMetadata.getModel();
+                    fusedModel.removeAll(null, property, (RDFNode) null);
+                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
+
+                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata.setModel(fusedModel);
+
+                    fusedEntity.setMetadata(fusedMetadata);
+
+                } else {
+                    Model fusedModel = fusedMetadata.getModel();
+                    fusedModel.removeAll(null, property, (RDFNode) null);
+                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
+
+                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata.setModel(fusedModel);
+
+                    fusedEntity.setMetadata(fusedMetadata);
                 }
+                break;
+            }
+            case KEEP_MORE_POINTS_AND_SHIFT:
+            {
+                checkWKTProperty(property,action);
+
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+
+                if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
+                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
+                    Geometry fusedGeometry = centroidTranslator.shift(leftGeometry);
+                    String wktFusedGeometry = getWKTLiteral(fusedGeometry);
+
+                    Model fusedModel = fusedMetadata.getModel();
+                    fusedModel.removeAll(null, property, (RDFNode) null);
+                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+
+                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata.setModel(fusedModel);
+                    fusedEntity.setMetadata(fusedMetadata);
+                    
+                } else if(leftGeometry.getNumPoints() < rightGeometry.getNumPoints()){
+
+                    CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
+                    Geometry fusedGeometry = centroidTranslator.shift(rightGeometry);   
+                    String wktFusedGeometry = getWKTLiteral(fusedGeometry);
+
+                    Model fusedModel = fusedMetadata.getModel();
+                    fusedModel.removeAll(null, property, (RDFNode) null);
+                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+
+                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata.setModel(fusedModel);
+                    fusedEntity.setMetadata(fusedMetadata);
+                }
+                
+                break;
+            }
+            case SHIFT_LEFT_GEOMETRY:
+            {
+                checkWKTProperty(property,action);
+                
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+                
+                CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
+                Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
+                String wktFusedGeometry = getWKTLiteral(shiftedToRightGeometry);
+
+                Model fusedModel = fusedMetadata.getModel();
+                fusedModel.removeAll(null, property, (RDFNode) null);
+                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+
+                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata.setModel(fusedModel);
+                fusedEntity.setMetadata(fusedMetadata);
+                
+                break;
+            }
+            case SHIFT_RIGHT_GEOMETRY:
+            {
+                checkWKTProperty(property,action);  
+
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+                
+                CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
+                Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);   
+                String wktFusedGeometry = getWKTLiteral(shiftedToLeftGeometry);
+
+                Model fusedModel = fusedMetadata.getModel();
+                fusedModel.removeAll(null, property, (RDFNode) null);
+                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+
+                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata.setModel(fusedModel);
+                fusedEntity.setMetadata(fusedMetadata);
+
+                break;
+            }                
         }        
     }
 
@@ -300,7 +337,7 @@ public class InterlinkedPair {
         return propertyRDF;
     }    
 
-    private String resolveFusedEntityURI(EnumDatasetActions defaultDatasetAction) {
+    private String resolveFusedEntityURI(EnumDatasetAction defaultDatasetAction) {
         String resourceURI;
         switch (defaultDatasetAction) {
             case KEEP_LEFT:
@@ -315,5 +352,34 @@ public class InterlinkedPair {
                 break;
         }
         return resourceURI;
+    }
+
+    private Geometry parseGeometry(String literal) {
+        
+        WKTReader wellKnownTextReader = new WKTReader();
+        Geometry geometry = null;
+        try {
+            geometry = wellKnownTextReader.read(literal);
+        } catch (ParseException ex) {
+            logger.fatal("Error parsing geometry literal " + literal);
+            logger.fatal(ex);
+        }
+
+        return geometry;
+    }
+
+    private String getWKTLiteral(Geometry geometry) {
+
+        WKTWriter wellKnownTextWriter = new WKTWriter();
+        String wktString = wellKnownTextWriter.write(geometry);
+        
+        return wktString;
+    }
+    
+    private void checkWKTProperty(Property property, EnumFusionAction action){
+        if(!property.toString().equals(SpecificationConstants.WKT)){
+            logger.fatal("The selected action " + action.toString() + " applies only for WKT geometry literals");
+            throw new RuntimeException();
+        }         
     }
 }
