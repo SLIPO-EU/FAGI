@@ -111,7 +111,7 @@ A sample rules.xml file could look like this:
 	
 </RULES>
 
-# Available functions:
+### Available functions:
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
 | isDateKnownFormat      | A or B | Date | isDateKnowFormat(A)
@@ -121,10 +121,10 @@ A sample rules.xml file could look like this:
 | isPhoneNumberParsable | A or B | Phone | isPhoneNumberParsable(A) 
 | isSamePhoneNumber | A and B | Phone | isSamePhoneNumber(A,B)  
 | isSamePhoneNumberUsingExitCode | A,B and digits | Phone | isSamePhoneNumberUsingExitCode(A,B,0030)  
-| exists | model, property | Property | exists(A,ht&#8203;tp://www.w3.org/2000/01/rdf-schema#label)  
+| exists | model, property | Property | exists(A,http&#58;//www.w3.org/2000/01/rdf-schema#label)  
 
 
-# Available fusion actions:
+### Available fusion actions:
 | Name        | Type | Description
 | ------------- |:-------------|:------|
 | Keep Left | Both | Keeps the value of the left source dataset in the fused model.
@@ -135,7 +135,7 @@ A sample rules.xml file could look like this:
 | Shift Left Geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | Shift Right Geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
 
-# Available default dataset actions:
+### Available default dataset actions:
 | Name        | Type | Description
 | ------------- |:-------------|:------|
 | Keep Left | Both | Keeps the value of the left source entity in the fused model.
