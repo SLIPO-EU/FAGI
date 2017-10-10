@@ -77,5 +77,12 @@ public class SpecificationConstants {
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
         public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplicated";
         
+    } 
+    
+    public class Transformations {
+        
+        public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
+        public static final String TRANSFORM_DATE_TO_FORMAT = "transformtoformat";
+        
     }    
 }

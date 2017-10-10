@@ -1,23 +1,25 @@
 package gr.athena.innovation.fagi.core.transform.date;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.core.transform.ITransform;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * Class for date format transformations.
+ * 
  * @author nkarag
  */
-public class TransformToFormat {
+public class TransformToFormat implements ITransform{
     /**
      * Transforms the given date String to the provided format.
      * @param dateString
      * @param targetFormat the target date format
      * @return the String date formatted with the given date format.
      */
-    public String transformDateToFormat(String dateString, String targetFormat){
+    public String transform(String dateString, String targetFormat){
         
         if (!StringUtils.isBlank(dateString)) {
             for (String tempFormat : SpecificationConstants.DATE_FORMATS) {
@@ -43,4 +45,10 @@ public class TransformToFormat {
 
         return dateString;
     }    
+
+    @Override
+    public String getName(){
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
+    }
 }

@@ -23,7 +23,7 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
      */
     @Override
     public boolean evaluate(String literal){
-        logger.debug("Evaluating literal: " + literal);
+        logger.trace("Evaluating literal: " + literal);
         //1) check dictionary/wordsList
         
         //2) https://stackoverflow.com/questions/7331462/check-if-a-string-is-a-possible-abbrevation-for-a-name

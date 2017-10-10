@@ -1,6 +1,6 @@
-package gr.athena.innovation.fagi.core.funtions;
+package gr.athena.innovation.fagi.core.functions.literal;
 
-import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,12 +13,11 @@ import static org.junit.Assert.*;
  *
  * @author nkarag
  */
-public class LiteralFuserTest {
+public class IsLiteralAbbreviationTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LiteralFuserTest.class);
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsLiteralAbbreviationTest.class);
     
-    public LiteralFuserTest() {
-        
+    public IsLiteralAbbreviationTest() {
     }
     
     @BeforeClass
@@ -38,12 +37,11 @@ public class LiteralFuserTest {
     }
 
     /**
-     * Test of isLiteralAbbreviation method, of class LiteralFuser.
+     * Test of evaluate method, of class IsLiteralAbbreviation.
      */
     @Test
-    public void testIsLiteralAbbreviation() {
-        
-        logger.info("isLiteralAbbreviation");
+    public void testEvaluate() {
+        logger.info("evaluate");
         IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
         String literal1 = "ABBR";
         boolean expResult1 = true;
@@ -54,12 +52,23 @@ public class LiteralFuserTest {
         boolean expResult2 = true;
         boolean result2 = isLiteralAbbreviation.evaluate(literal2);
         assertEquals(expResult2, result2);
-
+        
 //        String literal3 = "Abbr";
 //        boolean expResult3 = false;
 //        boolean result3 = LiteralFuser.isLiteralAbbreviation(literal3);
-//        assertEquals(expResult3, result3);
-        
+//        assertEquals(expResult3, result3);        
+    }
+
+    /**
+     * Test of getName method, of class IsLiteralAbbreviation.
+     */
+    @Test
+    public void testGetName() {
+        logger.info("getName");
+        IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
+        String expResult = SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION;
+        String result = isLiteralAbbreviation.getName();
+        assertEquals(expResult, result);
     }
     
 }

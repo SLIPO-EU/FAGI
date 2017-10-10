@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.functions.date;
 
+import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -69,4 +70,17 @@ public class IsDateKnownFormatTest {
         boolean result4 = isDateKnownFormat.evaluate(dateString4);
         assertEquals(expResult4, result4);        
     }
+    
+    /**
+     * Test of getName method, of class IsDateKnownFormatTest.
+     */
+    @Test
+    public void testGetName() {
+        logger.info("getName");
+        IsDateKnownFormat isDateKnownFormat = new IsDateKnownFormat();
+
+        String expResult = SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT;
+        String result = isDateKnownFormat.getName();
+        assertEquals(expResult, result);
+    }    
 }
