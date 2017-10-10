@@ -14,8 +14,9 @@ import static org.junit.Assert.*;
  * @author nkarag
  */
 public class NormalizeDateToFormatTest {
-    private static final org.apache.logging.log4j.Logger logger 
-            = LogManager.getLogger(NormalizeDateToFormatTest.class);    
+    
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(NormalizeDateToFormatTest.class);
+    
     public NormalizeDateToFormatTest() {
     }
     
@@ -56,6 +57,7 @@ public class NormalizeDateToFormatTest {
         String result = transformToFormat.normalize(date, targetFormat2);
         assertEquals(expResult, result);        
     }
+    
     /**
      * Test of getName method, of class TransformToFormat.
      */

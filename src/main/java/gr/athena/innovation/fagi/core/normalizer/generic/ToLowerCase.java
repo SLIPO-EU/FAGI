@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.generic;
 
+import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -7,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author nkarag
  */
-public class ToLowerCase {
+public class ToLowerCase implements INormalizer{
     
     /**
      * Normalizes the given string literal to lowercase. Returns an empty string if the literal is blank.
@@ -23,4 +24,10 @@ public class ToLowerCase {
             return literal.toLowerCase();
         }
     }    
+
+    @Override
+    public String getName(){
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
+    }
 }
