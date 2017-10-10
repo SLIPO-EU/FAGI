@@ -63,7 +63,7 @@ public class TransformToFormatTest {
     public void testGetName() {
         logger.info("getName");
         NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
-        String expResult = SpecificationConstants.Transformations.TRANSFORM_DATE_TO_FORMAT;
+        String expResult = SpecificationConstants.Normalize.TRANSFORM_DATE_TO_FORMAT;
         String result = transformToFormat.getName();
         assertEquals(expResult, result);
     }    

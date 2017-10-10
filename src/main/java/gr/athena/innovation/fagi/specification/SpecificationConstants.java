@@ -80,7 +80,7 @@ public class SpecificationConstants {
         
     } 
     
-    public class Transformations {
+    public class Normalize {
         
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
         public static final String TRANSFORM_DATE_TO_FORMAT = "normalizedatetoformat";

@@ -64,7 +64,7 @@ public class PhoneNumberNormalizerTest {
     public void testGetName() {
         logger.info("getName");
         PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
-        String expResult = SpecificationConstants.Transformations.PHONE_NUMBER_NORMALIZER;
+        String expResult = SpecificationConstants.Normalize.PHONE_NUMBER_NORMALIZER;
         String result = phoneNumberNormalizer.getName();
         assertEquals(expResult, result);
     }    
