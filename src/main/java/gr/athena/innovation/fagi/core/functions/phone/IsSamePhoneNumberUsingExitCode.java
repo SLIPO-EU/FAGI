@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.core.functions.phone;
 
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.functions.IFunctionThreeParameters;
-import gr.athena.innovation.fagi.core.transform.phone.PhoneNumberNormalizer;
+import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 
 /**
  * Class for evaluating phone numbers using country's exit code digits. 
@@ -29,8 +29,8 @@ public class IsSamePhoneNumberUsingExitCode implements IFunction, IFunctionThree
             
             PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
             //TODO: using normalized values without asking the user here.
-            String normalizedNumber1 = phoneNumberNormalizer.normalizePhoneNumber(number1, exitCodeDigits);
-            String normalizedNumber2 = phoneNumberNormalizer.normalizePhoneNumber(number2, exitCodeDigits);
+            String normalizedNumber1 = phoneNumberNormalizer.normalize(number1, exitCodeDigits);
+            String normalizedNumber2 = phoneNumberNormalizer.normalize(number2, exitCodeDigits);
             
             isSame = normalizedNumber1.equals(normalizedNumber2);
         }

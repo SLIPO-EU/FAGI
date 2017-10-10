@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.transform.phone;
+package gr.athena.innovation.fagi.core.normalizer.phone;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
@@ -47,13 +47,13 @@ public class PhoneNumberNormalizerTest {
         
         String number1 = "+123-44 5678 999";
         String expResult1 = "123445678999";
-        String result1 = phoneNumberNormalizer.normalizePhoneNumber(number1, null);
+        String result1 = phoneNumberNormalizer.normalize(number1, null);
         assertEquals(expResult1, result1);
 
         String number2 = "+123-44 5678 999";
         String expResult2 = "00123445678999";
         String exitCodeDigits = "00";
-        String result2 = phoneNumberNormalizer.normalizePhoneNumber(number2, exitCodeDigits);
+        String result2 = phoneNumberNormalizer.normalize(number2, exitCodeDigits);
         assertEquals(expResult2, result2);   
     }
     

@@ -1,25 +1,26 @@
-package gr.athena.innovation.fagi.core.transform.date;
+package gr.athena.innovation.fagi.core.normalizer.date;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.core.transform.ITransform;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
+import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 
 /**
  * Class for date format transformations.
  * 
  * @author nkarag
  */
-public class TransformToFormat implements ITransform{
+public class NormalizeDateToFormat implements INormalizer{
+    
     /**
      * Transforms the given date String to the provided format.
      * @param dateString
      * @param targetFormat the target date format
      * @return the String date formatted with the given date format.
      */
-    public String transform(String dateString, String targetFormat){
+    public String normalize(String dateString, String targetFormat){
         
         if (!StringUtils.isBlank(dateString)) {
             for (String tempFormat : SpecificationConstants.DATE_FORMATS) {

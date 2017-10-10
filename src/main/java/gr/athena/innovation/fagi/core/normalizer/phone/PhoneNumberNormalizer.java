@@ -1,15 +1,15 @@
-package gr.athena.innovation.fagi.core.transform.phone;
+package gr.athena.innovation.fagi.core.normalizer.phone;
 
 import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
-import gr.athena.innovation.fagi.core.transform.ITransform;
 import org.apache.commons.lang3.StringUtils;
+import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 
 /**
  * Class for phone number normalization.
  * 
  * @author nkarag
  */
-public class PhoneNumberNormalizer implements ITransform{
+public class PhoneNumberNormalizer implements INormalizer{
     
     /**
      * Normalizes a telephone number representation by keeping only the numeric characters. 
@@ -19,7 +19,7 @@ public class PhoneNumberNormalizer implements ITransform{
      * @param exitCodeDigits digits to replace the "+" symbol in an international telephone number. 
      * @return the String representation of the normalized telephone number.
      */
-    public String normalizePhoneNumber(String numberString, String exitCodeDigits) {
+    public String normalize(String numberString, String exitCodeDigits) {
         String normalizedNumber;
         
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();

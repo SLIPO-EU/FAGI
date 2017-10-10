@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.transform.date;
+package gr.athena.innovation.fagi.core.normalizer.date;
 
 import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
@@ -41,19 +41,19 @@ public class TransformToFormatTest {
     @Test
     public void testTransformDateToFormat() {
         System.out.println("transformDateToFormat");
-        TransformToFormat transformToFormat = new TransformToFormat();
+        NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
         
         String date1 = "19-09-2015";
         String targetFormat1 = "yyyy/mm/dd";
         
         String expResult1 = "2015/09/19";
-        String result1 = transformToFormat.transform(date1, targetFormat1);
+        String result1 = transformToFormat.normalize(date1, targetFormat1);
         assertEquals(expResult1, result1);
         
         String date = "11/11/2015";
         String targetFormat2 = "yyyy mm dd";
         String expResult = "2015 11 11";
-        String result = transformToFormat.transform(date, targetFormat2);
+        String result = transformToFormat.normalize(date, targetFormat2);
         assertEquals(expResult, result);        
     }
     /**
@@ -62,7 +62,7 @@ public class TransformToFormatTest {
     @Test
     public void testGetName() {
         logger.info("getName");
-        TransformToFormat transformToFormat = new TransformToFormat();
+        NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
         String expResult = SpecificationConstants.Transformations.TRANSFORM_DATE_TO_FORMAT;
         String result = transformToFormat.getName();
         assertEquals(expResult, result);

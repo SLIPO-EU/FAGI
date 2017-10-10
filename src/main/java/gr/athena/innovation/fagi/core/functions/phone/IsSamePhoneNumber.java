@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.core.functions.phone;
 
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
-import gr.athena.innovation.fagi.core.transform.phone.PhoneNumberNormalizer;
+import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 
 /**
  *
@@ -27,8 +27,8 @@ public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
             
             PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
             //TODO: using normalized values without asking the user here.
-            String normalizedNumber1 = phoneNumberNormalizer.normalizePhoneNumber(number1, null);
-            String normalizedNumber2 = phoneNumberNormalizer.normalizePhoneNumber(number2, null);
+            String normalizedNumber1 = phoneNumberNormalizer.normalize(number1, null);
+            String normalizedNumber2 = phoneNumberNormalizer.normalize(number2, null);
             
             isSame = normalizedNumber1.equals(normalizedNumber2);
         }

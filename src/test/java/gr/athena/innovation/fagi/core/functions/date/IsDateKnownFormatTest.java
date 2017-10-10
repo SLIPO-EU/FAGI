@@ -41,7 +41,7 @@ public class IsDateKnownFormatTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate isDateKnownFormat");
+        logger.info("evaluate");
         String dateString = "12/11/2016";
         IsDateKnownFormat isDateKnownFormat = new IsDateKnownFormat();
 
