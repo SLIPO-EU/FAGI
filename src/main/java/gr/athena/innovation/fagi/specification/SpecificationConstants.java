@@ -83,7 +83,8 @@ public class SpecificationConstants {
     public class Normalize {
         
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
-        public static final String TRANSFORM_DATE_TO_FORMAT = "normalizedatetoformat";
+        public static final String NORMALIZE_DATE_TO_FORMAT = "normalizedatetoformat";
+        public static final String NORMALIZE_ALPHABETICALLY = "alphabeticalnormalizer";
         
     }    
 }

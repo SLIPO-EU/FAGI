@@ -13,10 +13,10 @@ import static org.junit.Assert.*;
  *
  * @author nkarag
  */
-public class TransformToFormatTest {
+public class NormalizeDateToFormatTest {
     private static final org.apache.logging.log4j.Logger logger 
-            = LogManager.getLogger(TransformToFormatTest.class);    
-    public TransformToFormatTest() {
+            = LogManager.getLogger(NormalizeDateToFormatTest.class);    
+    public NormalizeDateToFormatTest() {
     }
     
     @BeforeClass
@@ -63,7 +63,7 @@ public class TransformToFormatTest {
     public void testGetName() {
         logger.info("getName");
         NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
-        String expResult = SpecificationConstants.Normalize.TRANSFORM_DATE_TO_FORMAT;
+        String expResult = SpecificationConstants.Normalize.NORMALIZE_DATE_TO_FORMAT;
         String result = transformToFormat.getName();
         assertEquals(expResult, result);
     }    
