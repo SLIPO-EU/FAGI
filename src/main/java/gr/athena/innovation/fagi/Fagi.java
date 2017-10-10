@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.Fuser;
-import gr.athena.innovation.fagi.core.rule.RuleCatalog;
-import gr.athena.innovation.fagi.core.specification.FusionSpecification;
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.core.specification.SpecificationParser;
+import gr.athena.innovation.fagi.rule.RuleCatalog;
+import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.core.functions.FunctionRegistry;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
-import gr.athena.innovation.fagi.core.rule.RuleProcessor;
+import gr.athena.innovation.fagi.rule.RuleProcessor;
 
 import java.io.File;
 import java.io.FileInputStream;

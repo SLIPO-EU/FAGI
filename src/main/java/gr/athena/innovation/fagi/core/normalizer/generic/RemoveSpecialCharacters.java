@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.generic;
 
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
 
 /**

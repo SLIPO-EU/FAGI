@@ -1,7 +1,7 @@
-package gr.athena.innovation.fagi.core.rule.model;
+package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.functions.date.IsValidDate;
 import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;

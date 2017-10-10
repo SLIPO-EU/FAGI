@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.specification;
+package gr.athena.innovation.fagi.specification;
 
 /**
  * Constants for RDF input formats.

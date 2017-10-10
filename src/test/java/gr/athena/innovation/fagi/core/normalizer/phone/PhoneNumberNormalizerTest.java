@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.phone;
 
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.AfterClass;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gr.athena.innovation.fagi.core.specification;
+package gr.athena.innovation.fagi.specification;
 
 import java.io.File;
 import java.io.IOException;

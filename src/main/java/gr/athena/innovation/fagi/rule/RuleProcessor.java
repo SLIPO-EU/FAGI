@@ -1,17 +1,17 @@
-package gr.athena.innovation.fagi.core.rule;
+package gr.athena.innovation.fagi.rule;
 
-import gr.athena.innovation.fagi.core.rule.model.Function;
+import gr.athena.innovation.fagi.rule.model.Function;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
-import gr.athena.innovation.fagi.core.rule.model.ActionRule;
-import gr.athena.innovation.fagi.core.rule.model.ActionRuleSet;
-import gr.athena.innovation.fagi.core.rule.model.Condition;
-import gr.athena.innovation.fagi.core.rule.model.Expression;
-import gr.athena.innovation.fagi.core.rule.model.Rule;
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
-import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.AND;
-import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.NOT;
-import static gr.athena.innovation.fagi.core.specification.SpecificationConstants.OR;
+import gr.athena.innovation.fagi.rule.model.ActionRule;
+import gr.athena.innovation.fagi.rule.model.ActionRuleSet;
+import gr.athena.innovation.fagi.rule.model.Condition;
+import gr.athena.innovation.fagi.rule.model.Expression;
+import gr.athena.innovation.fagi.rule.model.Rule;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.AND;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.NOT;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.OR;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class RuleProcessor {
 
      * 
      * @param path of the rules XML file.
-     * @return a {@link gr.athena.innovation.fagi.core.rule.RuleCatalog} object that holds the rules configuration. 
+     * @return a {@link gr.athena.innovation.fagi.rule.RuleCatalog} object that holds the rules configuration. 
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException

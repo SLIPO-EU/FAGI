@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.rule.model;
+package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 

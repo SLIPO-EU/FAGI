@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

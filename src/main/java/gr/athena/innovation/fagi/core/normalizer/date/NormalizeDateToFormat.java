@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.date;
 
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

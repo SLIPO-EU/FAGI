@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.specification;
+package gr.athena.innovation.fagi.specification;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

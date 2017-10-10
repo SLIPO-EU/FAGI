@@ -1,6 +1,6 @@
-package gr.athena.innovation.fagi.core.rule.model;
+package gr.athena.innovation.fagi.rule.model;
 
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.core.functions.date;
 
 import gr.athena.innovation.fagi.core.functions.IFunction;
 import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
-import gr.athena.innovation.fagi.core.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;

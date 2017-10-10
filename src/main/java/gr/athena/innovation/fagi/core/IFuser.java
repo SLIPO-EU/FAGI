@@ -2,8 +2,8 @@ package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.rule.RuleCatalog;
-import gr.athena.innovation.fagi.core.specification.FusionSpecification;
+import gr.athena.innovation.fagi.rule.RuleCatalog;
+import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.util.Map;
 
 /**
