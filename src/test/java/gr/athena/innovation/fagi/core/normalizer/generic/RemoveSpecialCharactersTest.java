@@ -13,11 +13,12 @@ import static org.junit.Assert.*;
  *
  * @author nkarag
  */
-public class ToLowerCaseTest {
-
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ToLowerCaseTest.class);
+public class RemoveSpecialCharactersTest {
     
-    public ToLowerCaseTest() {
+    private static final org.apache.logging.log4j.Logger logger 
+            = LogManager.getLogger(RemoveSpecialCharactersTest.class);
+    
+    public RemoveSpecialCharactersTest() {
     }
     
     @BeforeClass
@@ -37,29 +38,30 @@ public class ToLowerCaseTest {
     }
 
     /**
-     * Test of normalize method, of class ToLowerCase.
+     * Test of normalize method, of class RemoveSpecialCharacters.
      */
     @Test
     public void testNormalize() {
         logger.info("normalize");
         
-        ToLowerCase toLowerCase = new ToLowerCase();
-        String literal = "FaGi";
+        RemoveSpecialCharacters removeSpecialCharacters = new RemoveSpecialCharacters();
         
-        String expResult = "fagi";
-        String result = toLowerCase.normalize(literal);
+        String literal = "$@#i contain^^ m@any special characTers$";
+        
+        String expResult = "   i contain   m any special characTers ";
+        String result = removeSpecialCharacters.normalize(literal);
         assertEquals(expResult, result);
     }
-    
+
     /**
-     * Test of getName method, of class ToLowerCase.
+     * Test of getName method, of class RemoveSpecialCharacters.
      */
     @Test
     public void testGetName() {
         logger.info("getName");
-        ToLowerCase toLowerCase = new ToLowerCase();
-        String expResult = SpecificationConstants.Normalize.TO_LOWER_CASE;
-        String result = toLowerCase.getName();
+        RemoveSpecialCharacters removeSpecialCharacters = new RemoveSpecialCharacters();
+        String expResult = SpecificationConstants.Normalize.REMOVE_SPECIAL_CHARACTERS;
+        String result = removeSpecialCharacters.getName();
         assertEquals(expResult, result);
-    }     
+    }
 }

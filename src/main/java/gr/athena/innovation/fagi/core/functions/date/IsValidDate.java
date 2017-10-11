@@ -6,7 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- *
+ * Class for evaluating valid date strings against a date format. 
+ * 
  * @author nkarag
  */
 public class IsValidDate implements IFunction, IFunctionTwoParameters{

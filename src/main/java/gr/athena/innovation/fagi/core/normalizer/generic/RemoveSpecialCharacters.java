@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.generic;
 
+import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author nkarag
  */
-public class RemoveSpecialCharacters {
+public class RemoveSpecialCharacters implements INormalizer{
     
     /**
      * Normalizes the given string literal by removing any special characters and replacing with a space character.
@@ -29,4 +30,10 @@ public class RemoveSpecialCharacters {
             return normalizedLiteral;
         }
     }     
+
+    @Override
+    public String getName(){
+        String className = this.getClass().getSimpleName().toLowerCase();
+        return className;
+    }
 }

@@ -40,8 +40,9 @@ public class NormalizeDateToFormatTest {
      * Test of transformDateToFormat method, of class TransformToFormat.
      */
     @Test
-    public void testTransformDateToFormat() {
-        System.out.println("transformDateToFormat");
+    public void testNormalize() {
+        logger.info("normalize");
+        
         NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
         
         String date1 = "19-09-2015";
