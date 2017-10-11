@@ -20,7 +20,7 @@ public class Exists implements IFunction, IFunctionTwoParameters{
 
     @Override
     public boolean evaluate(String modelText, String propertyString) {
-        
+        //TODO: create test
         Property property = ResourceFactory.createProperty(propertyString);
         final Model model = ModelFactory.createDefaultModel();
         model.read(new ByteArrayInputStream(modelText.getBytes()), null);
