@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 public class Fagi {
 
     private static final Logger logger = LogManager.getRootLogger();
-    
+
     /**
      * 
      * Entry point of FAGI. Parses arguments from command line, reads the specification and rules, validates input  
@@ -54,7 +54,7 @@ public class Fagi {
             FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 
         long startTimeInput = System.currentTimeMillis();
-        
+
         String rulesXsd = getResourceFilePath(SpecificationConstants.RULES_XSD);
         String specXsd = getResourceFilePath(SpecificationConstants.SPEC_XSD);
 
@@ -63,9 +63,9 @@ public class Fagi {
 
         String arg;
         String value;
-        
+
         int i = 0;
-        
+
         while (i < args.length){
             arg = args[i];
             if(arg.startsWith("-")){
@@ -88,13 +88,16 @@ public class Fagi {
         FunctionRegistry functionRegistry = new FunctionRegistry();
         functionRegistry.init();
         Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
-        
+
         InputValidator validator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd, functionSet);
+
         logger.info("Validating input..");
+
         if(!validator.isValidInput()){
             logger.info(SpecificationConstants.HELP);
             System.exit(0);
         }
+
         logger.info("XML files seem valid.");
 
         //Parse specification and rules
