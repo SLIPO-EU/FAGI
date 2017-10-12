@@ -13,6 +13,8 @@ public class JaroWinkler {
 
     /**
      * Computes the Jaro Winkler Distance which indicates the similarity score between two strings.
+     * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">
+     * http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance</a>.
      * 
      * @param a the first string.
      * @param b the second string.
