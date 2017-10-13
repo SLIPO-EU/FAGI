@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  * @author nkarag
  */
-public class LevenshteinDistanceOptionalThreshold {
+public final class LevenshteinDistanceOptionalThreshold {
 
     private static final org.apache.logging.log4j.Logger logger = 
             LogManager.getLogger(LevenshteinDistanceOptionalThreshold.class);
@@ -28,7 +28,9 @@ public class LevenshteinDistanceOptionalThreshold {
      * may be null if the desired distance should be computed without a threshold.
      * @return the normalized distance result. Returns 1.0 if the distance is greater than the threshold.
      */
-    public static double compute(String a, String b, Integer threshold){
+    public static double computeDistance(String a, String b, Integer threshold){
+        //TODO: add weights for insertions, deletions, subs and return 1 if the distance is greater than the max lengths.
+        
         //https://stackoverflow.com/questions/6629712/levensteindistance-commons-lang-3-0-api
         try {
 
@@ -73,16 +75,12 @@ public class LevenshteinDistanceOptionalThreshold {
      * may be null if the desired distance should be computed without a threshold.
      * @return the distance result. Returns -1 if the distance is greater than the threshold.
      */
-    public int computeInsertions(String a, String b, Integer threshold){
+    public static int computeInsertions(String a, String b, Integer threshold){
 
         try {
 
             LevenshteinDetailedDistance ld = new LevenshteinDetailedDistance(threshold);
             int result = ld.apply(a, b).getDistance();
-
-            if(result == -1){
-                return 1;
-            }
 
             return result;            
          
@@ -102,16 +100,12 @@ public class LevenshteinDistanceOptionalThreshold {
      * may be null if the desired distance should be computed without a threshold.
      * @return the distance result. Returns -1 if the distance is greater than the threshold.
      */
-    public int computeDeletes(String a, String b, Integer threshold){
+    public static int computeDeletes(String a, String b, Integer threshold){
 
         try {
             
             LevenshteinDetailedDistance ld = new LevenshteinDetailedDistance(threshold);
             int result = ld.apply(a, b).getDeleteCount();
-            
-            if(result == -1){
-                return 1;
-            }
 
             return result;            
          
@@ -131,16 +125,12 @@ public class LevenshteinDistanceOptionalThreshold {
      * may be null if the desired distance should be computed without a threshold.
      * @return the distance result. Returns -1 if the distance is greater than the threshold.
      */
-    public int computeSubstitutes(String a, String b, Integer threshold){
+    public static int computeSubstitutes(String a, String b, Integer threshold){
 
         try {
             
             LevenshteinDetailedDistance ld = new LevenshteinDetailedDistance(threshold);
             int result = ld.apply(a, b).getSubstituteCount();
-
-            if(result == -1){
-                return 1;
-            }
 
             return result;            
          
