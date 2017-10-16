@@ -11,10 +11,10 @@ import org.apache.logging.log4j.LogManager;
  * 
  * @author nkarag
  */
-public final class LevenshteinDistanceOptionalThreshold {
+public final class Levenshtein {
 
     private static final org.apache.logging.log4j.Logger logger = 
-            LogManager.getLogger(LevenshteinDistanceOptionalThreshold.class);
+            LogManager.getLogger(Levenshtein.class);
 
     /**
      * Computes a normalized value of the Levenshtein Distance for the given strings. 

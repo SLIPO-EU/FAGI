@@ -45,19 +45,19 @@ public class LevenshteinDistanceTest {
         String a = "the first string for the test is longer than the second and all its characters are different.";
         String b = "###$$%%";
         double expResult1 = 1.0;
-        double result1 = LevenshteinDistanceOptionalThreshold.computeDistance(a, b, null);
+        double result1 = Levenshtein.computeDistance(a, b, null);
         assertEquals(expResult1, result1, 0.0);
 
         String c = "we are same!";
         String d = "we are same!";
         double expResult2 = 0.0;
-        double result2 = LevenshteinDistanceOptionalThreshold.computeDistance(c, d, null);
+        double result2 = Levenshtein.computeDistance(c, d, null);
         assertEquals(expResult2, result2, 0.0);
         
         String e = "one";
         String f = "one+";
         double expResult3 = 0.25; //1 levenshten distance / 4 max length of the two strings
-        double result3 = LevenshteinDistanceOptionalThreshold.computeDistance(e, f, null);
+        double result3 = Levenshtein.computeDistance(e, f, null);
         assertEquals(expResult3, result3, 0.0);        
     }
 }
