@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.specification;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author nkarag
@@ -48,6 +50,13 @@ public class SpecificationConstants {
     public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
     public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
     public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
+    
+    public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.001);
+    public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
+    public static final double SIMILARITY_ACCEPTED_ERROR = 1e-3;
+    public static final double SIMILARITY_MAX = 0.999;
+    public static final double SIMILARITY_MIN = 0.001;
+    public static final int ROUND_DECIMALS = 3;
     
     public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
                                     + "-spec requires the spec.xml file path\n"

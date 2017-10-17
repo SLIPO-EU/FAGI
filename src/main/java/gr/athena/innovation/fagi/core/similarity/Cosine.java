@@ -1,5 +1,8 @@
 package gr.athena.innovation.fagi.core.similarity;
 
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +32,10 @@ public final class Cosine {
      * 
      * See: <a href="https://en.wikipedia.org/wiki/Cosine_similarity">
      * https://en.wikipedia.org/wiki/Cosine_similarity</a>.
+     * 
+     * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
+     * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
+     * on the {@link SpecificationConstants.ROUND_DECIMALS} decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.
@@ -60,7 +67,16 @@ public final class Cosine {
 
         Double result = cosineSimilarity.cosineSimilarity(aVector, bVector);
 
-        return result;
+        if(result > SpecificationConstants.SIMILARITY_MAX){
+            return 1;
+        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+            return 0;
+        } else {
+            double roundedResult = new BigDecimal(result).
+                    setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();
+
+            return roundedResult;
+        }
     }
 
     /**
@@ -68,6 +84,10 @@ public final class Cosine {
      * Cosine similarity is in the range of [-1,1] so we normalize the result by mapping it to [0,1].
      * See: <a href="https://en.wikipedia.org/wiki/Cosine_similarity">
      * https://en.wikipedia.org/wiki/Cosine_similarity</a>.
+     * 
+     * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
+     * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
+     * on the {@link SpecificationConstants.ROUND_DECIMALS} decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.
@@ -77,9 +97,19 @@ public final class Cosine {
 
         CosineDistance cosDist = new CosineDistance();
 
-        Double cosineDistance = cosDist.apply(a, b);
+        Double result = cosDist.apply(a, b);
+        
+        //check the returned result 
+        if(result > SpecificationConstants.SIMILARITY_MAX){
+            return 1;
+        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+            return 0;
+        } else {
+            double resultRounded = new BigDecimal(result).
+                    setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();
 
-        return cosineDistance;
+            return resultRounded;
+        }
     }
 
     /**
