@@ -10,7 +10,7 @@ Then, go the the root directory of the project (Fagi-gis) and run:
 Tested with git version 1.9.1 and Apache Maven 3.3.3
 
 ### Run Fagi-gis from command line
-Go to config.properties inside the resources folder and change the configuration as you need.
+Go to resources directory and change the spec.xml and rules.xml as described below.
 
 Then go to the target directory of the project and run:
 
