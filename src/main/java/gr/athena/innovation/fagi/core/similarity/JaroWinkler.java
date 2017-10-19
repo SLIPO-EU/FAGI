@@ -1,5 +1,8 @@
 package gr.athena.innovation.fagi.core.similarity;
 
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.apache.logging.log4j.LogManager;
 
@@ -20,11 +23,24 @@ public final class JaroWinkler {
      * @param b the second string.
      * @return the distance. Range is between [0,1].
      */
-    public static double compute(String a, String b){
+    public static double computeSimilarity(String a, String b){
 
-        JaroWinklerDistance j = new JaroWinklerDistance();
-        Double distance = j.apply(b, b);
+        //The class is named Distance, but it returns similarity score. 
+        //TODO: check issue progress at https://issues.apache.org/jira/browse/TEXT-104 for any change
+        JaroWinklerDistance jaroWinkler = new JaroWinklerDistance();
 
-        return distance;
+        double result = jaroWinkler.apply(a, b);
+        
+        logger.debug(result + " " + a + " " + b);
+        if(result > SpecificationConstants.SIMILARITY_MAX){
+            return 1;
+        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+            return 0;
+        } else {
+            double roundedResult = new BigDecimal(result).
+                    setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();
+
+            return roundedResult;
+        }
     }    
 }

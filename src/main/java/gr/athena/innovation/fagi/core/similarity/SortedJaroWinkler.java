@@ -22,7 +22,7 @@ public class SortedJaroWinkler {
         String sortedA = alphabeticalNormalizer.normalize(a);
         String sortedB = alphabeticalNormalizer.normalize(b);
 
-        double result = JaroWinkler.compute(sortedA, sortedB);
+        double result = JaroWinkler.computeSimilarity(sortedA, sortedB);
         
         return result;
     }    

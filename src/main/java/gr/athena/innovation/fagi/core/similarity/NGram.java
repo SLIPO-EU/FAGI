@@ -16,7 +16,7 @@ public class NGram {
      * @param b the second string.
      * @return the computed 2-gram distance.
      */
-    public static float compute(String a, String b){
+    public static float computeDistance(String a, String b){
         NGramDistance n = new NGramDistance();
         float result = n.getDistance(a, b);
         
@@ -31,7 +31,7 @@ public class NGram {
      * @param size the size of the n-grams distance measure.
      * @return the computed n-gram distance.
      */
-    public static float compute(String a, String b, int size){
+    public static float computeDistance(String a, String b, int size){
         NGramDistance n = new NGramDistance(size);
         float result = n.getDistance(a, b);
         

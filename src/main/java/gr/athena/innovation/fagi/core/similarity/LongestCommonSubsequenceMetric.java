@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.core.similarity;
 
 import org.apache.commons.text.similarity.LongestCommonSubsequence;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class for computing the longest common subsequence.
@@ -9,6 +10,8 @@ import org.apache.commons.text.similarity.LongestCommonSubsequence;
  */
 public class LongestCommonSubsequenceMetric {
 
+    private static final org.apache.logging.log4j.Logger logger = 
+            LogManager.getLogger(LongestCommonSubsequenceMetric.class);    
     /**
      * Computes the longest Common Subsequence similarity score of the two given strings.
      * Normalizes the output score between [0,1] by dividing the output with the max length of the two strings.
@@ -27,6 +30,10 @@ public class LongestCommonSubsequenceMetric {
         //Get max length of the two strings.
         int maxLength = (a.length() > b.length()) ? a.length() : b.length();
 
+        if(maxLength == 0){
+            return 0.0;    
+        }
+        
         Integer result = longestCommonSubsequence.apply(a, b);
 
         double normalizedResult = (double) result/ (double) maxLength;

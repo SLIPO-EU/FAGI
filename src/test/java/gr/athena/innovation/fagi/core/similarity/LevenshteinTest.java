@@ -16,7 +16,7 @@ public class LevenshteinTest {
      * Test of compute method, of class LevenshteinDistance.
      */
     @Test
-    public void testCompute() {
+    public void testComputeDistance() {
         logger.info("compute");
         
         String a = "the first string for the test is longer than the second and all its characters are different.";
@@ -35,6 +35,6 @@ public class LevenshteinTest {
         String f = "one+";
         double expResult3 = 0.25; //1 levenshten distance / 4 max length of the two strings
         double result3 = Levenshtein.computeDistance(e, f, null);
-        assertEquals(expResult3, result3, 0.0);        
+        assertEquals(expResult3, result3, 0.0);
     }
 }

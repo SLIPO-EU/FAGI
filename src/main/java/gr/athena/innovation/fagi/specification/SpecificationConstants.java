@@ -51,9 +51,10 @@ public class SpecificationConstants {
     public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
     public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
     
-    public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.001);
+    public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
     public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
-    public static final double SIMILARITY_ACCEPTED_ERROR = 1e-3;
+    public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
+    public static final double ERROR_E = 1e-3;
     public static final double SIMILARITY_MAX = 0.999;
     public static final double SIMILARITY_MIN = 0.001;
     public static final int ROUND_DECIMALS = 3;

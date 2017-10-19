@@ -34,7 +34,13 @@ public class PermutedJaroWinkler {
      */
     public double computeSimilarity(String a, String b){
 
-        //TODO: this is not optimized at all
+        if(StringUtils.isBlank(a) || StringUtils.isBlank(b)){
+            //if any is empty the Jaro-Winkler returns 0 similarity. 
+            //Even if both strings are the same empty string            
+            return 0.0;
+        }
+        
+        //TODO: this is not optimized much
         
         String[] wordsA = tokenize(a);
         String[] wordsB = tokenize(b);
@@ -50,7 +56,7 @@ public class PermutedJaroWinkler {
             String[] permArrayA = permA.next();
             String permStringA = String.join(" ", permArrayA);
             permSetA.add(permStringA);
-            count++;
+            //count++;
         }
         
         count = 0;
@@ -64,7 +70,7 @@ public class PermutedJaroWinkler {
         double maxSimilarity = 0;
         for (String stringA : permSetA ) {
             for (String stringB : permSetB) {
-                double tempSimilarity = JaroWinkler.compute(stringA, stringB);
+                double tempSimilarity = JaroWinkler.computeSimilarity(stringA, stringB);
                 if(tempSimilarity > maxSimilarity){
                     maxSimilarity = tempSimilarity;
                 }
