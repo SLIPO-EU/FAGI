@@ -30,8 +30,7 @@ public final class JaroWinkler {
         JaroWinklerDistance jaroWinkler = new JaroWinklerDistance();
 
         double result = jaroWinkler.apply(a, b);
-        
-        logger.debug(result + " " + a + " " + b);
+
         if(result > SpecificationConstants.SIMILARITY_MAX){
             return 1;
         } else if(result < SpecificationConstants.SIMILARITY_MIN){
