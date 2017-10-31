@@ -12,13 +12,8 @@ import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.rule.RuleProcessor;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +50,6 @@ public class Fagi {
 
         long startTimeInput = System.currentTimeMillis();
 
-        String rulesXsd = getResourceFilePath(SpecificationConstants.RULES_XSD);
-        String specXsd = getResourceFilePath(SpecificationConstants.SPEC_XSD);
-
         String specXml = null;
         String rulesXml = null;
 
@@ -89,7 +81,7 @@ public class Fagi {
         functionRegistry.init();
         Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
 
-        InputValidator validator = new InputValidator(rulesXml, rulesXsd, specXml, specXsd, functionSet);
+        InputValidator validator = new InputValidator(rulesXml, specXml, functionSet);
 
         logger.info("Validating input..");
 
@@ -99,7 +91,7 @@ public class Fagi {
         }
 
         logger.info("XML files seem valid.");
-
+        
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpecification = specificationParser.parse(specXml);
@@ -147,21 +139,5 @@ public class Fagi {
         logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
         logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
         logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");  
-    }
-    
-    private static String getResourceFilePath(String filename) throws FileNotFoundException, IOException{
-        InputStream initialStream = new FileInputStream(new File("src/main/resources/" + filename));
-        
-        byte[] buffer = new byte[initialStream.available()];
-        initialStream.read(buffer);
-
-        File targetFile = new File("src/main/resources/"+filename+".tmp");
-        targetFile.deleteOnExit();
-        OutputStream outStream = new FileOutputStream(targetFile);
-        outStream.write(buffer);
-        
-        String path = targetFile.getAbsolutePath();
-        logger.trace("path from resources for file: " + filename + " is " + path);
-        return path;
     }
 }

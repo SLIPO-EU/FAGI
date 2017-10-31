@@ -1,16 +1,19 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.specification.SchemaDefinition;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -30,20 +33,15 @@ public class InputValidator {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(InputValidator.class);
     
     private final String rulesXmlPath;
-    private final String rulesXsdPath;
     private final String specXmlPath;
-    private final String specXsdPath;
     private final Set<String> functionSet;
     
     private final XmlValidator xmlValidator = new XmlValidator();
     
-    public InputValidator(String rulesXmlPath, String rulesXsdPath, String specificationPath, 
-            String specXsdPath, Set<String> functionSet){
+    public InputValidator(String rulesXmlPath, String specificationPath, Set<String> functionSet){
         
         this.rulesXmlPath = rulesXmlPath;
-        this.rulesXsdPath = rulesXsdPath;
         this.specXmlPath = specificationPath;
-        this.specXsdPath = specXsdPath;
         this.functionSet = functionSet;
     }
     
@@ -52,15 +50,16 @@ public class InputValidator {
      */
     private class XmlValidator {
 
-        public boolean validateAgainstXSD(String xmlPath, String xsdPath) throws FileNotFoundException {
+        public boolean validateAgainstXSD(String xmlPath, String xsd) throws FileNotFoundException {
 
             InputStream xml = new FileInputStream(xmlPath);
-            InputStream xsd = new FileInputStream(xsdPath);
+
+            Source is = new StreamSource(new StringReader(xsd));
 
             try {
 
                 SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                Schema schema = factory.newSchema(new StreamSource(xsd));
+                Schema schema = factory.newSchema(is);
                 Validator validator = schema.newValidator();
                 validator.validate(new StreamSource(xml));
 
@@ -68,7 +67,7 @@ public class InputValidator {
                 return true;
 
             } catch (SAXException e) {
-                logger.error("Failed to validate " + xmlPath + " with " + xsdPath + ". Reason:\n" + e);
+                logger.error("Failed to validate " + xmlPath + " with corresponding XSD. Reason:\n" + e);
                 return false;
             } catch (IOException e) {
                 logger.error(e);
@@ -95,11 +94,11 @@ public class InputValidator {
     }
     
     private boolean isValidRulesXml() throws FileNotFoundException{
-        return xmlValidator.validateAgainstXSD(rulesXmlPath, rulesXsdPath);
+        return xmlValidator.validateAgainstXSD(rulesXmlPath, SchemaDefinition.RULE_XSD);
     }
     
     private boolean isValidSpecification() throws FileNotFoundException{
-        return xmlValidator.validateAgainstXSD(specXmlPath, specXsdPath);
+        return xmlValidator.validateAgainstXSD(specXmlPath, SchemaDefinition.SPEC_XSD);
     }
     
     private boolean isValidFunctions() throws ParserConfigurationException, SAXException, IOException{

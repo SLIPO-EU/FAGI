@@ -10,7 +10,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
+    
     <build>
         <plugins>
             
@@ -178,7 +178,7 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-spellchecker</artifactId>
         <version>3.6.2</version>
-    </dependency>
+    </dependency>  
 </dependencies>
 <!-- Inherit defaults from Spring Boot -->
 <!--<parent>

@@ -82,6 +82,9 @@ public class NGramTest {
         float result5 = NGram.computeDistance(c, d, 4);
         logger.debug(result5);
         assertEquals(expResult5, result5, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);        
+        
+        //TODO: add test for trigrams and examples like the following
+        //"Hofmeisterstraße" - "HofmeisterstraΓe"
     }
     
 }
