@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.util.Map;
@@ -20,8 +21,9 @@ public interface IFuser {
      * @param ruleCatalog
      * @param functionMap
      * @throws ParseException
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */    
     public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog, 
-            Map<String, IFunction> functionMap) throws ParseException;
+            Map<String, IFunction> functionMap) throws ParseException, WrongInputException;
     
 }

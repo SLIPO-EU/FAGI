@@ -39,18 +39,18 @@ public class SpecificationConstants {
     public static final String AND = "AND";
     public static final String OR = "OR";
     public static final String NOT = "NOT";
-    
+
     public static final String A = "A";
     public static final String B = "B";
-    
+
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
-    
+
     public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
     public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
     public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
-    
+
     public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
     public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
     public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
@@ -58,13 +58,13 @@ public class SpecificationConstants {
     public static final double SIMILARITY_MAX = 0.999;
     public static final double SIMILARITY_MIN = 0.001;
     public static final int ROUND_DECIMALS = 3;
-    
+
     public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
                                     + "-spec requires the spec.xml file path\n"
                                     + "-rules requires the rules.xml file path\n";
-    
+
     //((?:[A-Z]\.)+[A-Z]?|[a-zA-Z']+)
-    
+
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
                 "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -77,9 +77,9 @@ public class SpecificationConstants {
                 "dd-mm-yyyy",                   "dd-MM-yyyy",
                 "dd/mm/yyyy",                   "dd MM yyyy",
                 "yyyy/MM/dd"};
-    
+
     public class Functions {
-        
+
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
         public static final String IS_VALID_DATE = "isvaliddate";
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
@@ -87,9 +87,9 @@ public class SpecificationConstants {
         public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
         public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplicated";
-        
-    } 
-    
+
+    }
+
     public class Normalize {
         
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
@@ -97,5 +97,5 @@ public class SpecificationConstants {
         public static final String NORMALIZE_ALPHABETICALLY = "alphabeticalnormalizer";
         public static final String TO_LOWER_CASE = "tolowercase";
         public static final String REMOVE_SPECIAL_CHARACTERS = "removespecialcharacters";
-    }    
+    }
 }

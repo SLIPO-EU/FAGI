@@ -8,6 +8,7 @@ import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ public class Condition {
     private Function func;
     private Expression expression;
     
-    public boolean evaluate(Map<String, IFunction> functionMap, String valueA, String valueB){
+    public boolean evaluate(Map<String, IFunction> functionMap, String valueA, String valueB) throws WrongInputException{
         
         if(isSingleFunction()){
             logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
@@ -49,8 +50,7 @@ public class Condition {
                             return !evaluateOperator(functionMap, notFunction, valueA, valueB);
                         }                        
                     } else {
-                        logger.fatal("NOT expression in rules.xml does not contain a single function!");
-                        throw new RuntimeException();
+                        throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
                     }
                     
                     break;
@@ -67,8 +67,8 @@ public class Condition {
                                 return true;
                             }
                         } else {
-                            logger.fatal("Function " + orFunction.getName() + " inside OR is not defined in the spec!");
-                            throw new RuntimeException();                            
+                            throw new WrongInputException
+                                ("Function " + orFunction.getName() + " inside OR is not defined in the spec!");                         
                         }
                     }
                     break;
@@ -83,8 +83,8 @@ public class Condition {
                             evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB) && evaluated;
 
                         } else {
-                            logger.fatal("Function " + orFunction.getName() + " inside AND is not defined in the spec!");
-                            throw new RuntimeException();                            
+                            throw new WrongInputException
+                                ("Function " + orFunction.getName() + " inside AND is not defined in the spec!");                           
                         }
                     }
                     return evaluated;
@@ -97,7 +97,8 @@ public class Condition {
         return false;
     }
 
-    private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, String valueA, String valueB){
+    private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, String valueA, String valueB) 
+            throws WrongInputException{
         
         switch(function.getName()){
             case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT:
@@ -110,9 +111,8 @@ public class Condition {
                     case SpecificationConstants.B:
                         return isDateKnownFormat.evaluate(valueB);
                     default:
-                        logger.fatal(SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT 
+                        throw new WrongInputException(SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT 
                                 + " requires one parameter A or B");
-                        throw new RuntimeException();
                 }
             }
             case SpecificationConstants.Functions.IS_VALID_DATE:
@@ -126,9 +126,8 @@ public class Condition {
                     case SpecificationConstants.B:
                         return isValidDate.evaluate(valueB, parameterB);
                     default:
-                        logger.fatal(SpecificationConstants.Functions.IS_VALID_DATE 
+                        throw new WrongInputException(SpecificationConstants.Functions.IS_VALID_DATE 
                                 + " requires one parameter A or B and a date format string");
-                        throw new RuntimeException();
                 }
             }
             case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION:
@@ -142,13 +141,12 @@ public class Condition {
                         case SpecificationConstants.B:
                             return isLiteralAbbreviation.evaluate(valueB);
                         default:
-                            logger.fatal(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION 
+                            throw new WrongInputException(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION 
                                     + " requires one parameter A or B");
-                            throw new RuntimeException();
                     }
                 } else {
-                    logger.fatal(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION + " requires one parameter!");
-                    throw new RuntimeException();
+                    throw new WrongInputException
+                        (SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION + " requires one parameter!");
                 }
             }
             case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE:
@@ -162,13 +160,12 @@ public class Condition {
                         case SpecificationConstants.B:
                             return isPhoneNumberParsable.evaluate(valueB);
                         default:
-                            logger.fatal(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE 
+                            throw new WrongInputException(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE 
                                     + " requires one parameter A or B");
-                            throw new RuntimeException();
                     }
                 } else {
-                    logger.fatal(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE + " requires one parameter!");
-                    throw new RuntimeException();
+                    throw new WrongInputException
+                        (SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE + " requires one parameter!");
                 }
             } 
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER:
@@ -189,9 +186,8 @@ public class Condition {
                 return isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits); 
             }            
             default:
-                logger.fatal("Function used in rules.xml is malformed does not exist or currently not supported!" 
-                        + function.getName());
-                throw new RuntimeException();
+                throw new WrongInputException
+                    ("Function used in rules.xml is malformed does not exist or currently not supported!" + function.getName());
         }
     }
 

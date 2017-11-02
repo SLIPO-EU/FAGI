@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.specification;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,11 +35,10 @@ public class FusionSpecification {
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;    
 
-    public void setPathA(String pathA) {
+    public void setPathA(String pathA) throws WrongInputException {
         
         if(StringUtils.isBlank(pathA)){
-            logger.fatal("Dataset A path is blank!");
-            throw new RuntimeException();
+            throw new WrongInputException("Dataset A path is blank!");
         }
         
         this.pathA = pathA;
@@ -48,40 +48,37 @@ public class FusionSpecification {
         return pathA;
     }
 
-    public void setPathB(String pathB) {
+    public void setPathB(String pathB) throws WrongInputException {
         
         if(StringUtils.isBlank(pathB)){
-            logger.fatal("Dataset B path is blank!");
-            throw new RuntimeException();
+            throw new WrongInputException("Dataset B path is blank!");
         }
-        
+
         this.pathB = pathB;
     }
-    
+
     public String getPathB() {
         return pathB;
     }
-    
+
     public String getPathLinks() {
         return pathLinks;
     }
 
-    public void setPathLinks(String pathLinks) {
+    public void setPathLinks(String pathLinks) throws WrongInputException {
         if(StringUtils.isBlank(pathLinks)){
-            logger.fatal("Links path is blank!");
-            throw new RuntimeException();
+            throw new WrongInputException("Links path is blank!");
         }        
         this.pathLinks = pathLinks;
     }
-    
+
     public String getPathOutput() {
         return pathOutput;
     }
 
-    public void setPathOutput(String pathOutput) {
+    public void setPathOutput(String pathOutput) throws WrongInputException {
         if(StringUtils.isBlank(pathOutput)){
-            logger.fatal("Output path is blank!");
-            throw new RuntimeException();
+            throw new WrongInputException("Output path is blank!");
         }          
         this.pathOutput = pathOutput;
     }

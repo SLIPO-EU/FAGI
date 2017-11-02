@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.rule;
 import gr.athena.innovation.fagi.rule.model.Function;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.ActionRuleSet;
 import gr.athena.innovation.fagi.rule.model.Condition;
@@ -28,16 +29,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import static org.w3c.dom.Node.ATTRIBUTE_NODE;
-import static org.w3c.dom.Node.CDATA_SECTION_NODE;
-import static org.w3c.dom.Node.COMMENT_NODE;
-import static org.w3c.dom.Node.DOCUMENT_TYPE_NODE;
-import static org.w3c.dom.Node.ELEMENT_NODE;
-import static org.w3c.dom.Node.ENTITY_NODE;
-import static org.w3c.dom.Node.ENTITY_REFERENCE_NODE;
-import static org.w3c.dom.Node.NOTATION_NODE;
-import static org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE;
-import static org.w3c.dom.Node.TEXT_NODE;
 
 /**
  *
@@ -69,8 +60,9 @@ public class RuleProcessor {
      * @throws ParserConfigurationException
      * @throws SAXException
      * @throws IOException
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */
-    public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException{
+    public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException{
         RuleCatalog ruleCatalog = new RuleCatalog();
         logger.info("Parsing rules: " + path);
 
@@ -89,12 +81,12 @@ public class RuleProcessor {
             EnumDatasetAction datasetAction = EnumDatasetAction.fromString(datasetActionNode.getTextContent());
             ruleCatalog.setDefaultDatasetAction(datasetAction);
             if(datasetAction.equals(EnumDatasetAction.UNDEFINED)){
-                logger.fatal("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
-                throw new RuntimeException();                
+                throw new WrongInputException
+                    ("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
             }
         } else {
-            logger.fatal("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
-            throw new RuntimeException();
+            throw new WrongInputException
+                ("<" + SpecificationConstants.DEFAULT_DATASET_ACTION+"> tag not found in rules.xml file.");
         }        
         
         //get all <RULE> elements of the XML. The rule elements are all in the same level
@@ -114,7 +106,7 @@ public class RuleProcessor {
     /*
         Parse propertyA, propertyB and ACTION_RULE_SET of the current rule
     */
-    private Rule createRule(NodeList ruleNodeList){
+    private Rule createRule(NodeList ruleNodeList) throws WrongInputException{
         Rule rule = new Rule();
         int length = ruleNodeList.getLength();
         ActionRuleSet actionRuleSet = null;
@@ -150,7 +142,7 @@ public class RuleProcessor {
     /*
         Parse each action rule from the action rule set. All action rules are on the same level
     */
-    private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList){
+    private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList) throws WrongInputException{
 
         ActionRuleSet actionRuleSet = new ActionRuleSet();
         
@@ -169,7 +161,7 @@ public class RuleProcessor {
         return actionRuleSet;
     }
 
-    private ActionRule createActionRule(Element actionRuleElement){
+    private ActionRule createActionRule(Element actionRuleElement) throws WrongInputException{
         
         ActionRule actionRule = new ActionRule();
 
@@ -182,16 +174,15 @@ public class RuleProcessor {
             i++;
             if(i>5000){
                 //TODO - remove this check when xsd validation is complete
-                logger.fatal("Could not find \"ACTION\" tag inside \"ACTION_RULE\". Check the XML input.");
-                throw new RuntimeException();
+                throw new WrongInputException
+                    ("Could not find \"ACTION\" tag inside \"ACTION_RULE\". Check the XML input.");
             }
         }
 
         EnumFusionAction action = EnumFusionAction.fromString(actionNode.getTextContent());
         
         if(action.equals(EnumFusionAction.UNDEFINED)){
-            logger.fatal("Wrong fusion action input: " + actionNode.getTextContent());
-            throw new RuntimeException();
+            throw new WrongInputException("Wrong fusion action input: " + actionNode.getTextContent());
         } else {
             actionRule.setAction(action);
         }
@@ -202,8 +193,8 @@ public class RuleProcessor {
         logger.trace(" condition size: " + conditionsList.getLength());
         if(conditionsList.getLength() != 1){
             //TODO - remove this check after xsd validation is complete
-            logger.fatal("Found more than one condition inside ACTION_RULE. Please check the XML input file.");
-            throw new RuntimeException();
+            throw new WrongInputException
+                ("Found more than one condition inside ACTION_RULE. Please check the XML input file.");
         }
 
         Node conditionNode = conditionsList.item(0);
@@ -215,7 +206,7 @@ public class RuleProcessor {
         return actionRule;
     }
 
-    private Condition constructCondition(Node conditionNode){
+    private Condition constructCondition(Node conditionNode) throws WrongInputException{
         
         Condition condition = new Condition();
         
@@ -246,7 +237,7 @@ public class RuleProcessor {
         return condition;
     }
 
-    private Expression constructParentExpression(Node rootExpressionNode){
+    private Expression constructParentExpression(Node rootExpressionNode) throws WrongInputException{
 
         Expression expression = new Expression();
         
@@ -275,8 +266,7 @@ public class RuleProcessor {
                 
                 //each of these childs should contain only function nodes.
                 if(!containsOnlyFunctionChilds(n)){
-                    logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
-                    throw new RuntimeException();
+                    throw new WrongInputException("Expression depth exceeded! Re-construct the conditions in rules.xml");
                 } else {
                     List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
                     
@@ -304,8 +294,7 @@ public class RuleProcessor {
              
                 //each of these childs should contain only function nodes.
                 if(!containsOnlyFunctionChilds(n)){
-                    logger.fatal("Expression depth exceeded! Re-construct the conditions in rules.xml");
-                    throw new RuntimeException();
+                    throw new WrongInputException("Expression depth exceeded! Re-construct the conditions in rules.xml");
                 } else {
                     List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
                     if(expressionChildFunctions.containsKey(childOperator)){
@@ -325,7 +314,7 @@ public class RuleProcessor {
         return expression;
     }
 
-    private Node getParentExpressionNode(Node conditionNode){
+    private Node getParentExpressionNode(Node conditionNode) throws WrongInputException{
 
         Node child = conditionNode.getFirstChild();
         while(child != null){
@@ -335,11 +324,10 @@ public class RuleProcessor {
             child = child.getNextSibling();
         }
         
-        logger.fatal("Condition tag has no expression child!");
-        throw new RuntimeException();
+        throw new WrongInputException("Condition tag has no expression child!");
     }
 
-    private boolean containsOnlyFunctionChilds(Node expression) {
+    private boolean containsOnlyFunctionChilds(Node expression) throws WrongInputException {
 
         boolean hasOnlyFunctions = false;
         Node logicalOperationNode = getLogicalOperationNode(expression);
@@ -358,28 +346,8 @@ public class RuleProcessor {
         }
         return hasOnlyFunctions;
     }
-
-    private boolean nodeContainsOnlyFunctionChilds(Node node) {
-
-        boolean hasOnlyFunctions = false;
-
-        NodeList childs = node.getChildNodes();
-        Node child = childs.item(0);
-
-        while(child != null){
-            if(child.getNodeType() == Node.ELEMENT_NODE){
-                if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
-                    hasOnlyFunctions = true;
-                } else {
-                    return false;
-                }
-            }
-            child = child.getNextSibling();
-        }
-        return hasOnlyFunctions;
-    }
     
-    private boolean containsExpressionAndFunctionChilds(Node expression) {
+    private boolean containsExpressionAndFunctionChilds(Node expression) throws WrongInputException {
         boolean containsFunction = false;
         boolean containsExpression = false;
         Node logicalOperationNode = getLogicalOperationNode(expression);
@@ -399,7 +367,7 @@ public class RuleProcessor {
         return containsFunction && containsExpression;
     }
     
-    private boolean containsOnlyExpressionChilds(Node expression) {
+    private boolean containsOnlyExpressionChilds(Node expression) throws WrongInputException {
 
         boolean hasOnlyExpressions = false;
         Node logicalOperationNode = getLogicalOperationNode(expression);
@@ -446,7 +414,7 @@ public class RuleProcessor {
         return null;
     }
 
-    private String getLogicalOperationType(Node parentExpression) {
+    private String getLogicalOperationType(Node parentExpression) throws WrongInputException {
         logger.trace("Extracting logical operation: " + parentExpression.getNodeName());
         Node child = parentExpression.getFirstChild();
         while(child != null){
@@ -460,38 +428,20 @@ public class RuleProcessor {
                     case NOT:
                         return "NOT";                        
                     default:
-                        logger.fatal("Expression in XML does not contain a logical operation! " + child.getNodeName());
-                        throw new RuntimeException();
+                        throw new WrongInputException
+                            ("Expression in XML does not contain a logical operation! " + child.getNodeName());
                 }
             }
             child = child.getNextSibling();
         }
         
-        logger.fatal("Expression in XML does not contain a logical operation! ", parentExpression);
-        throw new RuntimeException();
-    }
-
-    //this method returns a list with all functions under a logical operation. 
-    //The input is the parent node of the logical operation (Expression node)
-    //IMPORTANT: Assumes that the parent node contains only <FUNCTION> tags.
-    private List<String> getFunctionsOfLogicalOperation(Node node) {
-        List<String> list = new ArrayList<>();
-
-        Node logicalOperationNode = getLogicalOperationNode(node);
-        Node child = logicalOperationNode.getFirstChild();
-        while(child != null){
-            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
-                list.add(child.getTextContent());
-            }
-            child = child.getNextSibling();
-        }
-        return list;
+        throw new WrongInputException("Expression in XML does not contain a logical operation! " + parentExpression);
     }
     
     //this method returns a list with all functions under a logical operation. 
     //The input is the parent node of the logical operation (Expression node)
     //IMPORTANT: Assumes that the parent node contains only <FUNCTION> tags.
-    private List<Function> getFunctionsOfLogicalOperation2(Node node) {
+    private List<Function> getFunctionsOfLogicalOperation2(Node node) throws WrongInputException {
         List<Function> list = new ArrayList<>();
 
         Node logicalOperationNode = getLogicalOperationNode(node);
@@ -505,23 +455,7 @@ public class RuleProcessor {
         return list;
     }
 
-    //this method returns a list with all functions under a logical operation. 
-    //The input is the parent node of the logical operation (Expression node)
-    private List<String> getSimpleFunctionsOfLogicalOperation(Node expressionNode) {
-        List<String> list = new ArrayList<>();
-
-        Node logicalOperationNode = getLogicalOperationNode(expressionNode);
-        Node child = logicalOperationNode.getFirstChild();
-        while(child != null){
-            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)){
-                list.add(child.getTextContent());
-            }
-            child = child.getNextSibling();
-        }
-        return list;
-    }
-
-    private Node getLogicalOperationNode(Node expression){
+    private Node getLogicalOperationNode(Node expression) throws WrongInputException{
         
         Node logicalOperationNode = expression.getFirstChild(); //first level child is the logical operation of the expression
         logger.trace("logical operation: " + logicalOperationNode.getNodeName());
@@ -538,8 +472,8 @@ public class RuleProcessor {
             }
             
             if(i>5000){ //erroneous xml input check
-                logger.fatal("Expression in XML does not contain a logical operation! ", logicalOperationNode);
-                throw new RuntimeException();
+                throw new WrongInputException
+                    ("Expression in XML does not contain a logical operation! " + logicalOperationNode);
             }
 
             i++;
@@ -549,21 +483,7 @@ public class RuleProcessor {
         return logicalOperationNode;
     }
 
-    private int countExpressionsUnderLogicalOperation(Node expression) {
-        int count = 0;
-        Node logicalOperationNode = getLogicalOperationNode(expression);
-        Node child = logicalOperationNode.getFirstChild();
-        while(child != null){
-            if(child.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)){
-                count++;
-
-            }
-            child = child.getNextSibling();
-        }
-        return count;
-    }
-
-    private List<Node> getLogicalExpressionChildNodes(Node expression) {
+    private List<Node> getLogicalExpressionChildNodes(Node expression) throws WrongInputException {
         List<Node> childExpressions = new ArrayList<>();
         Node logicalOperationNode = getLogicalOperationNode(expression);
         Node childExpression = logicalOperationNode.getFirstChild();
@@ -577,22 +497,4 @@ public class RuleProcessor {
         }
         return childExpressions;
     }
-
-    private static String nodeType(short type) {
-        
-        switch(type) {
-            case ELEMENT_NODE:                return "Element";
-            case DOCUMENT_TYPE_NODE:          return "Document type";
-            case ENTITY_NODE:                 return "Entity";
-            case ENTITY_REFERENCE_NODE:       return "Entity reference";
-            case NOTATION_NODE:               return "Notation";
-            case TEXT_NODE:                   return "Text";
-            case COMMENT_NODE:                return "Comment";
-            case CDATA_SECTION_NODE:          return "CDATA Section";
-            case ATTRIBUTE_NODE:              return "Attribute";
-            case PROCESSING_INSTRUCTION_NODE: return "Attribute";
-        }
-        return "Unidentified";
-    }
-
 }

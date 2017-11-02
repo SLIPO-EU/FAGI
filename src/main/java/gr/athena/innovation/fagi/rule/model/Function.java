@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.rule.model;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
@@ -17,11 +18,10 @@ import org.apache.logging.log4j.Logger;
         private String[] parameters;
         private int parameterCount;
 
-        public Function(String functionString){
+        public Function(String functionString) throws WrongInputException{
 
             if(StringUtils.isBlank(functionString)){
-                logger.fatal("Something went wrong parsing a function from " + SpecificationConstants.RULES_XML);
-                throw new RuntimeException();
+                throw new WrongInputException("Found empty function string in " + SpecificationConstants.RULES_XML);
             }
 
             if(functionString.contains("(") && functionString.contains(")")){

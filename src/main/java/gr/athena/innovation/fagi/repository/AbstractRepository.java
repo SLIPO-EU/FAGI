@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.Link;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,21 +23,24 @@ public abstract class AbstractRepository {
     /**
      * Loads the given RDF file into a RDF model as the left dataset.
      * @param filepath
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */
-    public abstract void parseLeft(String filepath);
+    public abstract void parseLeft(String filepath) throws WrongInputException;
     
     /**
      * Loads the given RDF file into a RDF model as the right dataset.
      * @param filepath
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */  
-    public abstract void parseRight(String filepath);
+    public abstract void parseRight(String filepath) throws WrongInputException;
     
     /**
      * Loads the given links file into a RDF model.
      * @param filepath
      * @throws java.text.ParseException if link file contains invalid links
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */    
-    public abstract void parseLinks(String filepath) throws ParseException;
+    public abstract void parseLinks(String filepath) throws ParseException, WrongInputException;
     
     /**
      * Parses given RDF link file into a list of @Link.

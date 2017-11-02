@@ -8,6 +8,7 @@ import gr.athena.innovation.fagi.core.functions.geo.IsGeometryMoreComplicated;
 import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -74,13 +75,11 @@ public class FunctionRegistry {
     /**
      * Returns the map that contains the function names as keys and the corresponding function objects as values.
      * 
-     * @throws RuntimeException when the FunctionRegistry is not initialized.
      * @return the map
      */
     public Map<String, IFunction> getFunctionMap() {
         if(!isInitialized){
-            logger.fatal("Method registry is not initialized.");
-            throw new RuntimeException();
+            throw new ApplicationException("Method registry is not initialized.");
         } else {
             return functionMap;
         }

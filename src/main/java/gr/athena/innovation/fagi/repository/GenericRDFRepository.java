@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightModel;
@@ -21,12 +22,11 @@ public class GenericRDFRepository extends AbstractRepository{
     private static final Logger logger = LogManager.getLogger(GenericRDFRepository.class);
     
     @Override
-    public void parseLeft(String filepath) {
+    public void parseLeft(String filepath) throws WrongInputException{
         logger.debug("Loading left dataset file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
-            logger.fatal("Invalid path for Left dataset: " + filepath + ". Check the config file.");
-            throw new RuntimeException();
+            throw new WrongInputException("Invalid path for Left dataset: " + filepath + ". Check the config file.");
         }
         
         Model model = ModelFactory.createDefaultModel();
@@ -38,12 +38,11 @@ public class GenericRDFRepository extends AbstractRepository{
     }
     
     @Override
-    public void parseRight(String filepath) {
+    public void parseRight(String filepath) throws WrongInputException {
         logger.debug("Loading right dataset file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
-            logger.fatal("Invalid path for Right dataset: " + filepath + ". Check the config file.");
-            throw new RuntimeException();
+            throw new WrongInputException("Invalid path for Right dataset: " + filepath + ". Check the config file.");
         }
         
         Model model = ModelFactory.createDefaultModel();
@@ -55,13 +54,12 @@ public class GenericRDFRepository extends AbstractRepository{
     }   
     
     @Override
-    public void parseLinks(String filepath) throws ParseException{
+    public void parseLinks(String filepath) throws ParseException, WrongInputException{
         
         logger.debug("Loading links file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
-            logger.fatal("Invalid path for Links file: " + filepath + ". Check the config file.");
-            throw new RuntimeException();
+            throw new WrongInputException("Invalid path for Links file: " + filepath + ". Check the config file.");
         }
         
         loadLinksModel(filepath);
@@ -83,7 +81,7 @@ public class GenericRDFRepository extends AbstractRepository{
 
     @Override
     public void readFile(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
     
     private boolean isValidPath(String filepath){

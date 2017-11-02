@@ -5,6 +5,7 @@
  */
 package gr.athena.innovation.fagi.specification;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.io.File;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
@@ -25,7 +26,7 @@ public class SpecificationParser {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SpecificationParser.class);
     
-    public FusionSpecification parse(String fusionSpecificationPath){
+    public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException{
         
         logger.info("Parsing Fusion Specification: " + fusionSpecificationPath);
         FusionSpecification fusionSpecification = new FusionSpecification();

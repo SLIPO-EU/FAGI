@@ -7,6 +7,8 @@ import com.vividsolutions.jts.io.WKTWriter;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.exception.ApplicationException;
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.Condition;
 import gr.athena.innovation.fagi.rule.model.Rule;
@@ -54,12 +56,12 @@ public class InterlinkedPair {
     public Entity getFusedEntity() {
         if(fusedEntity == null){
             logger.fatal("Current pair is not fused: " + this);
-            throw new RuntimeException();
+            throw new ApplicationException("Current pair is not fused: " + this);
         }
         return fusedEntity;
     }
 
-    public void fuseWithRule(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap){
+    public void fuseWithRule(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap) throws WrongInputException{
 
         EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
@@ -129,12 +131,12 @@ public class InterlinkedPair {
         }
     }
 
-    public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction){
+    public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction) throws WrongInputException{
 
         //default dataset action should be performed before the rules apply. The fused model should be empty:
         if(!fusedEntity.getMetadata().getModel().isEmpty()){
-            logger.fatal("Something is wrong. Default fusion action tries to overwrite already fused data!");
-            throw new RuntimeException();
+            throw new ApplicationException
+                ("Default fusion action tries to overwrite already fused data!");
         }
 
         Metadata leftMetadata = leftNode.getMetadata();
@@ -150,13 +152,12 @@ public class InterlinkedPair {
             case KEEP_BOTH:
                 fusedEntity.getMetadata().getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
             default:
-                logger.fatal("Dataset default fusion action is not defined.");
-                throw new RuntimeException();
+                throw new WrongInputException("Dataset default fusion action is not defined.");
         }        
     }
 
     private void fuseRuleAction(EnumFusionAction action, 
-            Property property, String literalA, String literalB){
+            Property property, String literalA, String literalB) throws WrongInputException{
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
@@ -376,10 +377,10 @@ public class InterlinkedPair {
         return wktString;
     }
     
-    private void checkWKTProperty(Property property, EnumFusionAction action){
+    private void checkWKTProperty(Property property, EnumFusionAction action) throws WrongInputException{
         if(!property.toString().equals(SpecificationConstants.WKT)){
-            logger.fatal("The selected action " + action.toString() + " applies only for WKT geometry literals");
-            throw new RuntimeException();
+            throw new WrongInputException
+                ("The selected action " + action.toString() + " applies only for WKT geometry literals");
         }         
     }
 }
