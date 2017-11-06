@@ -47,10 +47,6 @@ public class SpecificationConstants {
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
 
-    public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
-    public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
-    public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
-
     public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
     public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
     public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
@@ -63,8 +59,19 @@ public class SpecificationConstants {
                                     + "-spec requires the spec.xml file path\n"
                                     + "-rules requires the rules.xml file path\n";
 
-    //((?:[A-Z]\.)+[A-Z]?|[a-zA-Z']+)
+    
 
+    public class Regex {
+        
+        //((?:[A-Z]\.)+[A-Z]?|[a-zA-Z']+)
+        
+        public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
+        public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
+        public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
+        public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
+        public static final String PUNCTUATION_EXCEPT_PARENTHESIS_REGEX = "[\\p{Punct}&&[^()]]";
+    }    
+    
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
                 "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",

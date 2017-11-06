@@ -46,13 +46,13 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
         //> Exploit the rebus principle (eg. inb4 "in before", NRG "energy")       
 
         if (!StringUtils.isBlank(literal)) {
-            boolean matches = literal.matches(SpecificationConstants.ABBR_REGEX2);
+            boolean matches = literal.matches(SpecificationConstants.Regex.ABBR_REGEX2);
             return matches;
         } else {
             return false;
         }
     }
-    
+
     @Override
     public String getName(){
         String className = this.getClass().getSimpleName().toLowerCase();

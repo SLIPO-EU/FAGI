@@ -22,7 +22,7 @@ public class RemoveSpecialCharacters implements INormalizer{
         // \w : A word character, short for [a-zA-Z_0-9]
         // \W : A non-word character. Considers space also a non-word character, but the replace is also a space.
         
-        String normalizedLiteral = literal.replaceAll(SpecificationConstants.NON_WORD_CHARACTERS_REGEX, " ");
+        String normalizedLiteral = literal.replaceAll(SpecificationConstants.Regex.NON_WORD_CHARACTERS_REGEX, " ");
 
         if(StringUtils.isBlank(literal)){
             return "";
