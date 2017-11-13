@@ -13,21 +13,21 @@ public class SpecificationConstants {
     public static final String SPEC_XML = "spec.xml";
     public static final String SPEC_XSD = "spec.xsd";
     
-    public static final String SPECIFICATION = "SPECIFICATION";
-    public static final String INPUT_FORMAT = "INPUT_FORMAT";
-    public static final String OUTPUT_FORMAT = "OUTPUT_FORMAT";
+    public static final String SPECIFICATION = "specification";
+    public static final String INPUT_FORMAT = "inputFormat";
+    public static final String OUTPUT_FORMAT = "outputFormat";
 
-    public static final String LEFT_DATASET = "LEFT";
-    public static final String RIGHT_DATASET = "RIGHT";
+    public static final String LEFT_DATASET = "left";
+    public static final String RIGHT_DATASET = "right";
     
-    public static final String TARGET_DATASET = "TARGET";
-    public static final String TARGET_RESOURCE_URI = "RESOURCE_URI";
-    public static final String MERGE_WITH = "MERGE_WITH";
-    public static final String LINKS = "LINKS";
+    public static final String TARGET_DATASET = "target";
+    public static final String TARGET_RESOURCE_URI = "resourceURI";
+    public static final String MERGE_WITH = "mergeWith";
+    public static final String LINKS = "links";
 
-    public static final String ID = "ID";
-    public static final String FILE = "FILE";
-    public static final String ENDPOINT = "ENDPOINT";
+    public static final String ID = "id";
+    public static final String FILE = "file";
+    public static final String ENDPOINT = "endpoint";
 
     public static final String DEFAULT_DATASET_ACTION = "DEFAULT_DATASET_ACTION";
     public static final String PROPERTY_A = "PROPERTYA";

@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SPECIFICATION>
-	<INPUT_FORMAT>NT</INPUT_FORMAT>
-	<OUTPUT_FORMAT>NT</OUTPUT_FORMAT>
-	<LEFT>
-		<ID>OSM</ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/osm.nt</FILE>
-	</LEFT>
-	<RIGHT>
-		<ID>WIKIMAPIA</ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/wikimapia.nt</FILE>
-	</RIGHT>
-	<LINKS>
-		<ID>LINKS_OSM_WIKIMAPIA</ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/link.nt</FILE>
-	</LINKS>	
-	<TARGET>
-		<ID>FUSED_OSM_WIKIMAPIA</ID>
-		<RESOURCE_URI>LEFT</RESOURCE_URI>	
-		<MERGE_WITH>NEW</MERGE_WITH>
-		<FILE>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fused.nt</FILE>
-	</TARGET>
-</SPECIFICATION>
+<specification>
+	<inputFormat>NT</inputFormat>
+	<outputFormat>NT</outputFormat>
+	<left>
+		<id>OSM</id>
+		<endpoint></endpoint>
+		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/osm.nt</file>
+	</left>
+	<right>
+		<id>WIKIMAPIA</id>
+		<endpoint></endpoint>
+		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/wikimapia.nt</file>
+	</right>
+	<links>
+		<id>LINKS_OSM_WIKIMAPIA</id>
+		<endpoint></endpoint>
+		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/link.nt</file>
+	</links>	
+	<target>
+		<id>FUSED_OSM_WIKIMAPIA</id>
+		<resourceURI>LEFT</resourceURI>	
+		<mergeWith>NEW</mergeWith>
+		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fused.nt</file>
+	</target>
+</specification>
 
 
 

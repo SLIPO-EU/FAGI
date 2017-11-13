@@ -3,42 +3,42 @@
 <xs:element name="SPECIFICATION">	
   <xs:complexType>
     <xs:sequence>
-		<xs:element name="INPUT_FORMAT" type="xs:string"/>
-		<xs:element name="OUTPUT_FORMAT" type="xs:string"/>
-		<xs:element name="LEFT">
+		<xs:element name="inputFormat" type="xs:string"/>
+		<xs:element name="outputFormat" type="xs:string"/>
+		<xs:element name="left">
 		  <xs:complexType>
 			<xs:sequence>
-			  <xs:element name="ID" type="xs:string"/>
-			  <xs:element name="ENDPOINT" type="xs:string" minOccurs="0"/>
-			  <xs:element name="FILE" type="xs:anyURI"/>
+			  <xs:element name="id" type="xs:string"/>
+			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element> 
-		<xs:element name="RIGHT">
+		<xs:element name="right">
 		  <xs:complexType>
 			<xs:sequence>
-			  <xs:element name="ID" type="xs:string"/>
-			  <xs:element name="ENDPOINT" type="xs:string" minOccurs="0"/>
-			  <xs:element name="FILE" type="xs:anyURI"/>
+			  <xs:element name="id" type="xs:string"/>
+			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>
-		<xs:element name="LINKS">
+		<xs:element name="links">
 		  <xs:complexType>
 			<xs:sequence>
-			  <xs:element name="ID" type="xs:string"/>
-			  <xs:element name="ENDPOINT" type="xs:string" minOccurs="0"/>
-			  <xs:element name="FILE" type="xs:anyURI"/>
+			  <xs:element name="id" type="xs:string"/>
+			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>
-		<xs:element name="TARGET">
+		<xs:element name="target">
 		  <xs:complexType>
 			<xs:sequence>
-			  <xs:element name="ID" type="xs:string"/>
-			  <xs:element name="RESOURCE_URI" type="xs:anyURI"/>
-			  <xs:element name="MERGE_WITH" type="xs:string"/>			  
-			  <xs:element name="FILE" type="xs:anyURI"/>
+			  <xs:element name="id" type="xs:string"/>
+			  <xs:element name="resourceURI" type="xs:anyURI"/>
+			  <xs:element name="mergeWith" type="xs:string"/>			  
+			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>				

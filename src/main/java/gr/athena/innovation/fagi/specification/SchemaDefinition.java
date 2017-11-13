@@ -8,45 +8,45 @@ package gr.athena.innovation.fagi.specification;
 public class SchemaDefinition {
     public static final String SPEC_XSD = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
         "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-        "<xs:element name=\"SPECIFICATION\">	\n" +
+        "<xs:element name=\"specification\">	\n" +
         "  <xs:complexType>\n" +
         "    <xs:sequence>\n" +
-        "		<xs:element name=\"INPUT_FORMAT\" type=\"xs:string\"/>\n" +
-        "		<xs:element name=\"OUTPUT_FORMAT\" type=\"xs:string\"/>\n" +
-        "		<xs:element name=\"LEFT\">\n" +
+        "		<xs:element name=\"inputFormat\" type=\"xs:string\"/>\n" +
+        "		<xs:element name=\"outputFormat\" type=\"xs:string\"/>\n" +
+        "		<xs:element name=\"left\">\n" +
         "		  <xs:complexType>\n" +
         "			<xs:sequence>\n" +
-        "			  <xs:element name=\"ID\" type=\"xs:string\"/>\n" +
-        "			  <xs:element name=\"ENDPOINT\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "			  <xs:element name=\"FILE\" type=\"xs:anyURI\"/>\n" +
+        "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
+        "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
         "			</xs:sequence>\n" +
         "		  </xs:complexType>\n" +
         "		</xs:element> \n" +
-        "		<xs:element name=\"RIGHT\">\n" +
+        "		<xs:element name=\"right\">\n" +
         "		  <xs:complexType>\n" +
         "			<xs:sequence>\n" +
-        "			  <xs:element name=\"ID\" type=\"xs:string\"/>\n" +
-        "			  <xs:element name=\"ENDPOINT\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "			  <xs:element name=\"FILE\" type=\"xs:anyURI\"/>\n" +
+        "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
+        "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
         "			</xs:sequence>\n" +
         "		  </xs:complexType>\n" +
         "		</xs:element>\n" +
-        "		<xs:element name=\"LINKS\">\n" +
+        "		<xs:element name=\"links\">\n" +
         "		  <xs:complexType>\n" +
         "			<xs:sequence>\n" +
-        "			  <xs:element name=\"ID\" type=\"xs:string\"/>\n" +
-        "			  <xs:element name=\"ENDPOINT\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "			  <xs:element name=\"FILE\" type=\"xs:anyURI\"/>\n" +
+        "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
+        "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
         "			</xs:sequence>\n" +
         "		  </xs:complexType>\n" +
         "		</xs:element>\n" +
-        "		<xs:element name=\"TARGET\">\n" +
+        "		<xs:element name=\"target\">\n" +
         "		  <xs:complexType>\n" +
         "			<xs:sequence>\n" +
-        "			  <xs:element name=\"ID\" type=\"xs:string\"/>\n" +
-        "			  <xs:element name=\"RESOURCE_URI\" type=\"xs:anyURI\"/>\n" +
-        "			  <xs:element name=\"MERGE_WITH\" type=\"xs:string\"/>			  \n" +
-        "			  <xs:element name=\"FILE\" type=\"xs:anyURI\"/>\n" +
+        "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
+        "			  <xs:element name=\"resourceURI\" type=\"xs:anyURI\"/>\n" +
+        "			  <xs:element name=\"mergeWith\" type=\"xs:string\"/>			  \n" +
+        "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
         "			</xs:sequence>\n" +
         "		  </xs:complexType>\n" +
         "		</xs:element>				\n" +
