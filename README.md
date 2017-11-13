@@ -37,7 +37,7 @@ The `left`, `right`, `links` and `target` tags refer to the source and target da
 Specifically:
 `id`: An ID to identify the dataset.
 `file`: The filepath of the dataset. For the target (output) dataset, "System.out" is also accepted as console output.
-`endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `FILE` tag empty.
+`endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `file` tag empty.
 
 `mergeWith`: Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
 
@@ -77,7 +77,7 @@ A sample rules.xml file could look like this:
 			<actionRule>
 				<condition>
 					<expression>
-						<function>isKnownDate(B)</function>
+						<function>isKnownDate(b)</function>
 					</expression>
 				</condition>
 				<action>Keep Right</action>
@@ -86,7 +86,7 @@ A sample rules.xml file could look like this:
 				<condition>
 					<expression>
 						<not>
-							<function>isKnownDate(A)</function>
+							<function>isKnownDate(a)</function>
 						</not>
 					</expression>
 				</condition>
@@ -101,7 +101,7 @@ A sample rules.xml file could look like this:
 		<actionRuleSet>
 			<actionRule>
 				<condition>
-					<function>isSamePhoneNumber(A,B)</function>
+					<function>isSamePhoneNumber(a,b)</function>
 				</condition>
 				<action>Keep Left</action>
 			</actionRule>		
@@ -127,18 +127,18 @@ A sample rules.xml file could look like this:
 ### Available fusion actions:
 | Name        | Type | Description
 | ------------- |:-------------|:------|
-| Keep Left | Both | Keeps the value of the left source dataset in the fused model.
-| Keep Right | Both | Keeps the value of the right source dataset in the fused model.
-| Keep Both | Both | Keeps both values of the source datasets in the fused model.
-| Keep More Points | Geometry | Keeps the geometry that is composed with more points than the other.
-| Keep More Points And Shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
-| Shift Left Geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
-| Shift Right Geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
+| keep-left | Both | Keeps the value of the left source dataset in the fused model.
+| keep-right | Both | Keeps the value of the right source dataset in the fused model.
+| keep-both | Both | Keeps both values of the source datasets in the fused model.
+| keep-more-points | Geometry | Keeps the geometry that is composed with more points than the other.
+| keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
+| shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
+| shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
 
 ### Available default dataset actions:
 | Name        | Type | Description
 | ------------- |:-------------|:------|
-| Keep Left | Both | Keeps the value of the left source entity in the fused model.
-| Keep Right | Both | Keeps the value of the right source entity in the fused model.
-| Keep Both | Both | Keeps both values of the source entities in the fused model.
+| keep-left | Both | Keeps the value of the left source entity in the fused model.
+| keep-right | Both | Keeps the value of the right source entity in the fused model.
+| keep-both | Both | Keeps both values of the source entities in the fused model.
 
