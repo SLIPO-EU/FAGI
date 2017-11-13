@@ -74,7 +74,7 @@ public class RuleProcessor {
         //http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
         doc.getDocumentElement().normalize();
 
-        NodeList defaultDatasetAction = doc.getElementsByTagName("DEFAULT_DATASET_ACTION");
+        NodeList defaultDatasetAction = doc.getElementsByTagName(SpecificationConstants.DEFAULT_DATASET_ACTION);
         
         if(defaultDatasetAction.getLength() == 1){
             Node datasetActionNode = defaultDatasetAction.item(0);
@@ -90,7 +90,7 @@ public class RuleProcessor {
         }        
         
         //get all <RULE> elements of the XML. The rule elements are all in the same level
-        NodeList rules = doc.getElementsByTagName("RULE");
+        NodeList rules = doc.getElementsByTagName(SpecificationConstants.RULE);
         for (int temp = 0; temp < rules.getLength(); temp++) {
             logger.info("----- Rule " + temp);
 
@@ -114,17 +114,17 @@ public class RuleProcessor {
             
             if (ruleNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element ruleElement = (Element) ruleNodeList.item(i);
-                if (ruleElement.getNodeName().contains("PROPERTYA")) {
+                if (ruleElement.getNodeName().contains(SpecificationConstants.PROPERTY_A)) {
                     logger.debug("property A: " + ruleElement.getTextContent());
                     rule.setPropertyA(ruleElement.getTextContent());
-                } else if (ruleElement.getNodeName().contains("PROPERTYB")) {
+                } else if (ruleElement.getNodeName().contains(SpecificationConstants.PROPERTY_B)) {
                     logger.debug("property B: " + ruleElement.getTextContent());
                     rule.setPropertyB(ruleElement.getTextContent());
-                } else if(ruleElement.getNodeName().contains("DEFAULT_ACTION")){
+                } else if(ruleElement.getNodeName().contains(SpecificationConstants.DEFAULT_ACTION)){
                     EnumFusionAction defaultGeoAction = EnumFusionAction.fromString(ruleElement.getTextContent());
                     rule.setDefaultAction(defaultGeoAction);
-                } else if(ruleElement.getNodeName().contains("ACTION_RULE_SET")){
-                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName("ACTION_RULE");                   
+                } else if(ruleElement.getNodeName().contains(SpecificationConstants.ACTION_RULE_SET)){
+                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName(SpecificationConstants.ACTION_RULE);                   
                     actionRuleSet = createActionRuleSet(actionRuleNodeList);
                     rule.setActionRuleSet(actionRuleSet);
                 }
@@ -143,7 +143,6 @@ public class RuleProcessor {
         Parse each action rule from the action rule set. All action rules are on the same level
     */
     private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList) throws WrongInputException{
-
         ActionRuleSet actionRuleSet = new ActionRuleSet();
         
         int length = actionRuleNodeList.getLength();
@@ -162,20 +161,20 @@ public class RuleProcessor {
     }
 
     private ActionRule createActionRule(Element actionRuleElement) throws WrongInputException{
-        
         ActionRule actionRule = new ActionRule();
 
         //Extract ACTION element and its text inside ACTION_RULE
         Node actionNode = actionRuleElement.getLastChild();
 
         int i = 0;
-        while(!actionNode.getNodeName().equalsIgnoreCase("ACTION")){
+        while(!actionNode.getNodeName().equalsIgnoreCase(SpecificationConstants.ACTION)){
             actionNode = actionNode.getPreviousSibling();
             i++;
             if(i>5000){
                 //TODO - remove this check when xsd validation is complete
                 throw new WrongInputException
-                    ("Could not find \"ACTION\" tag inside \"ACTION_RULE\". Check the XML input.");
+                    ("Could not find " + SpecificationConstants.ACTION + " tag inside " 
+                            + SpecificationConstants.ACTION_RULE + ". Check the XML input.");
             }
         }
 
@@ -188,13 +187,14 @@ public class RuleProcessor {
         }
 
         //Extract condition
-        NodeList conditionsList = actionRuleElement.getElementsByTagName("CONDITION");
+        NodeList conditionsList = actionRuleElement.getElementsByTagName(SpecificationConstants.CONDITION);
         
         logger.trace(" condition size: " + conditionsList.getLength());
         if(conditionsList.getLength() != 1){
             //TODO - remove this check after xsd validation is complete
             throw new WrongInputException
-                ("Found more than one condition inside ACTION_RULE. Please check the XML input file.");
+                ("Condition should be exactly one inside " + SpecificationConstants.ACTION_RULE 
+                        + ". Please check the XML input file.");
         }
 
         Node conditionNode = conditionsList.item(0);
@@ -216,7 +216,7 @@ public class RuleProcessor {
         
         //1) Contains a single function:
         if(parentNodeContainsSingleFunction(conditionNode)){
-            logger.trace("CONDITION contains only function");
+            logger.trace("Condition contains only function");
             
             String func = getSingleFunction(conditionNode);
             logger.trace("found single function: " + func);
@@ -422,11 +422,11 @@ public class RuleProcessor {
                 String name = child.getNodeName();
                 switch(name){
                     case AND:
-                        return "AND";
+                        return AND;
                     case OR:
-                        return "OR";
+                        return OR;
                     case NOT:
-                        return "NOT";                        
+                        return NOT;                        
                     default:
                         throw new WrongInputException
                             ("Expression in XML does not contain a logical operation! " + child.getNodeName());

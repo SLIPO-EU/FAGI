@@ -3,7 +3,8 @@ package gr.athena.innovation.fagi.specification;
 import java.math.BigDecimal;
 
 /**
- *
+ * Class with the specification constants used across the application.
+ * 
  * @author nkarag
  */
 public class SpecificationConstants {
@@ -29,19 +30,23 @@ public class SpecificationConstants {
     public static final String FILE = "file";
     public static final String ENDPOINT = "endpoint";
 
-    public static final String DEFAULT_DATASET_ACTION = "DEFAULT_DATASET_ACTION";
-    public static final String PROPERTY_A = "PROPERTYA";
-    public static final String PROPERTY_B = "PROPERTYB";
-    public static final String CONDITION = "CONDITION";
-    public static final String ACTION_RULE_SET = "ACTION_RULE_SET";
-    public static final String EXPRESSION = "EXPRESSION";
-    public static final String FUNCTION = "FUNCTION";
-    public static final String AND = "AND";
-    public static final String OR = "OR";
-    public static final String NOT = "NOT";
+    public static final String RULE = "rule";
+    public static final String DEFAULT_DATASET_ACTION = "defaultDatasetAction";
+    public static final String DEFAULT_ACTION = "defaultAction";
+    public static final String PROPERTY_A = "propertyA";
+    public static final String PROPERTY_B = "propertyB";
+    public static final String CONDITION = "condition";
+    public static final String ACTION_RULE_SET = "actionRuleSet";
+    public static final String ACTION_RULE = "actionRule";
+    public static final String ACTION = "action";
+    public static final String EXPRESSION = "expression";
+    public static final String FUNCTION = "function";
+    public static final String AND = "and";
+    public static final String OR = "or";
+    public static final String NOT = "not";
 
-    public static final String A = "A";
-    public static final String B = "B";
+    public static final String A = "a";
+    public static final String B = "b";
 
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";

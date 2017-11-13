@@ -57,63 +57,63 @@ public class SchemaDefinition {
     
     public static final String RULE_XSD = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
         "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-        "  <xs:element name=\"RULES\">\n" +
+        "  <xs:element name=\"rules\">\n" +
         "    <xs:complexType>\n" +
         "      <xs:sequence>\n" +
-        "		<xs:element name=\"DEFAULT_DATASET_ACTION\" type=\"xs:string\"/>\n" +
-        "        <xs:element name=\"RULE\" maxOccurs=\"unbounded\">\n" +
+        "		<xs:element name=\"defaultDatasetAction\" type=\"xs:string\"/>\n" +
+        "        <xs:element name=\"rule\" maxOccurs=\"unbounded\">\n" +
         "          <xs:complexType>\n" +
         "            <xs:sequence>\n" +
-        "              <xs:element name=\"PROPERTYA\" type=\"xs:anyURI\" />\n" +
-        "              <xs:element name=\"PROPERTYB\" type=\"xs:anyURI\" />\n" +
-        "              <xs:element name=\"ACTION_RULE_SET\" minOccurs=\"0\">\n" +
+        "              <xs:element name=\"propertyA\" type=\"xs:anyURI\" />\n" +
+        "              <xs:element name=\"propertyB\" type=\"xs:anyURI\" />\n" +
+        "              <xs:element name=\"actionRuleSet\" minOccurs=\"0\">\n" +
         "                <xs:complexType>\n" +
         "                  <xs:sequence>\n" +
-        "                    <xs:element name=\"ACTION_RULE\">\n" +
+        "                    <xs:element name=\"actionRule\">\n" +
         "                      <xs:complexType>\n" +
         "                        <xs:sequence>\n" +
-        "                          <xs:element name=\"CONDITION\">\n" +
+        "                          <xs:element name=\"condition\">\n" +
         "							  <xs:complexType>\n" +
         "								<xs:sequence>\n" +
-        "								  <xs:element name=\"FUNCTION\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "								  <xs:element name=\"EXPRESSION\" minOccurs=\"0\">\n" +
+        "								  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "								  <xs:element name=\"expression\" minOccurs=\"0\">\n" +
         "							        <xs:complexType>\n" +
-        "										<xs:sequence>\n" +
-        "											<xs:element name=\"NOT\" minOccurs=\"0\">\n" +
-        "											  <xs:complexType>\n" +
-        "												<xs:sequence>\n" +
-        "												  <xs:element name=\"FUNCTION\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "												</xs:sequence>\n" +
-        "											  </xs:complexType>\n" +
-        "											</xs:element> \n" +
-        "											<xs:element name=\"AND\" minOccurs=\"0\">\n" +
-        "											  <xs:complexType>\n" +
-        "												<xs:sequence>\n" +
-        "												  <xs:element name=\"FUNCTION\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "												</xs:sequence>\n" +
-        "											  </xs:complexType>\n" +
-        "											</xs:element> \n" +
-        "											<xs:element name=\"OR\" minOccurs=\"0\">\n" +
-        "											  <xs:complexType>\n" +
-        "												<xs:sequence>\n" +
-        "												  <xs:element name=\"FUNCTION\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-        "												</xs:sequence>\n" +
-        "											  </xs:complexType>\n" +
-        "											</xs:element> \n" +
-        "										</xs:sequence>\n" +
+        "									 <xs:sequence>\n" +
+        "										<xs:element name=\"not\" minOccurs=\"0\">\n" +
+        "										  <xs:complexType>\n" +
+        "											<xs:sequence>\n" +
+        "											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "											</xs:sequence>\n" +
+        "										  </xs:complexType>\n" +
+        "										</xs:element> \n" +
+        "										<xs:element name=\"and\" minOccurs=\"0\">\n" +
+        "										  <xs:complexType>\n" +
+        "											<xs:sequence>\n" +
+        "											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "											</xs:sequence>\n" +
+        "										  </xs:complexType>\n" +
+        "										</xs:element> \n" +
+        "										<xs:element name=\"or\" minOccurs=\"0\">\n" +
+        "										  <xs:complexType>\n" +
+        "											<xs:sequence>\n" +
+        "											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+        "											</xs:sequence>\n" +
+        "										  </xs:complexType>\n" +
+        "										</xs:element> \n" +
+        "									 </xs:sequence>\n" +
         "									</xs:complexType>\n" +
         "								  </xs:element>									  \n" +
         "								</xs:sequence>\n" +
         "							  </xs:complexType>\n" +
         "						  </xs:element> 							  \n" +
-        "                          <xs:element name=\"ACTION\" type=\"xs:string\"/>\n" +
+        "                          <xs:element name=\"action\" type=\"xs:string\"/>\n" +
         "                        </xs:sequence>\n" +
         "                      </xs:complexType>\n" +
         "                    </xs:element>\n" +
         "                  </xs:sequence>\n" +
         "                </xs:complexType>\n" +
         "              </xs:element>\n" +
-        "              <xs:element type=\"xs:string\" name=\"DEFAULT_ACTION\"/>\n" +
+        "              <xs:element type=\"xs:string\" name=\"defaultAction\"/>\n" +
         "            </xs:sequence>\n" +
         "          </xs:complexType>\n" +
         "        </xs:element>\n" +

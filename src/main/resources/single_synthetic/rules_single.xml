@@ -1,38 +1,38 @@
-<RULES>
-	<DEFAULT_DATASET_ACTION>Keep Right</DEFAULT_DATASET_ACTION>	
-	<RULE>
-		<PROPERTYA>label</PROPERTYA>
-		<PROPERTYB>label</PROPERTYB>
-		<ACTION_RULE_SET>
-			<ACTION_RULE>
-				<CONDITION>
-					<FUNCTION>isLiteralAbbreviation(B)</FUNCTION>
-				</CONDITION>
-				<ACTION>Keep Right</ACTION>
-			</ACTION_RULE>
-		</ACTION_RULE_SET>
-		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
-	</RULE>	
-	<RULE>
-		<PROPERTYA>wkt</PROPERTYA>
-		<PROPERTYB>wkt</PROPERTYB>
-		<DEFAULT_ACTION>Keep Right</DEFAULT_ACTION>
-	</RULE>		
-	<RULE>
-		<PROPERTYA>http://purl.org/dc/terms/modified</PROPERTYA>
-		<PROPERTYB>http://purl.org/dc/terms/modified</PROPERTYB>
-		<ACTION_RULE_SET>		
-			<ACTION_RULE>
-				<CONDITION>
-					<EXPRESSION>
-						<NOT>
-							<FUNCTION>isDateKnownFormat(A)</FUNCTION>
-						</NOT>
-					</EXPRESSION>
-				</CONDITION>
-				<ACTION>Keep Left</ACTION>
-			</ACTION_RULE>
-		</ACTION_RULE_SET>
-		<DEFAULT_ACTION>Keep Right</DEFAULT_ACTION>
-	</RULE>
-</RULES>
+<rules>
+	<defaultDatasetAction>Keep Right</defaultDatasetAction>	
+	<rule>
+		<propertyA>label</propertyA>
+		<propertyB>label</propertyB>
+		<actionRuleSet>
+			<actionRule>
+				<condition>
+					<function>isLiteralAbbreviation(b)</function>
+				</condition>
+				<action>Keep Right</action>
+			</actionRule>
+		</actionRuleSet>
+		<defaultAction>Keep Left</defaultAction>
+	</rule>	
+	<rule>
+		<propertyA>wkt</propertyA>
+		<propertyB>wkt</propertyB>
+		<defaultAction>Keep Right</defaultAction>
+	</rule>		
+	<rule>
+		<propertyA>http://purl.org/dc/terms/modified</propertyA>
+		<propertyB>http://purl.org/dc/terms/modified</propertyB>
+		<actionRuleSet>		
+			<actionRule>
+				<condition>
+					<expression>
+						<not>
+							<function>isDateKnownFormat(a)</function>
+						</not>
+					</expression>
+				</condition>
+				<action>Keep Left</action>
+			</actionRule>
+		</actionRuleSet>
+		<defaultAction>Keep Right</defaultAction>
+	</rule>
+</rules>
