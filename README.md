@@ -18,7 +18,7 @@ Then go to the target directory of the project and run:
 
 ### How to fill in the spec.xml file
 Inside the resources directory of the project there is a spec.template.xml file and a spec.xml as an example for convenience. The Specification holds general configuration for the fusion process and is filled with text values between an opening and a closing tag. 
-The `INPUT_FORMAT` refers to the RDF format of the input dataset and the `OUTPUT_FORMAT` holds the value of the desired output format. The accepted RDF formats are the following:
+The `inputFormat` refers to the RDF format of the input dataset and the `outputFormat` holds the value of the desired output format. The accepted RDF formats are the following:
 
 * N-Triples (NT)
 * Turtle (TTL)
@@ -30,98 +30,98 @@ The `INPUT_FORMAT` refers to the RDF format of the input dataset and the `OUTPUT
 * N-Quads (NQ)
 * TriX (TRIX)
 
-In order to fill the `INPUT_FORMAT` and `OUTPUT_FORMAT` use the values of the corresponding parenthesis.
+In order to fill the `inputFormat` and `outputFormat` use the values of the corresponding parenthesis.
 
-The `LEFT`, `RIGHT`, `LINKS` and `TARGET` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
+The `left`, `right`, `links` and `target` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
 Specifically:
-`ID`: An ID to identify the dataset.
-`FILE`: The filepath of the dataset. For the target (output) dataset, "System.out" is also accepted as console output.
-`ENDPOINT`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `FILE` tag empty.
+`id`: An ID to identify the dataset.
+`file`: The filepath of the dataset. For the target (output) dataset, "System.out" is also accepted as console output.
+`endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `FILE` tag empty.
 
-`MERGE_WITH`: Specify the final fused dataset. The accepted values are `LEFT` or `RIGHT` in order to merge with one of the source datasets, and `NEW` in order to create a new dataset that contains only the interlinked fused entities. 
+`mergeWith`: Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
 
 ### How to fill in the rules.xml file
 
-The rules.xml file starts with the root element `<RULES>`.
-We set rules as a `<RULE>` element inside the root tag. 
+The rules.xml file starts with the root element `<rules>`.
+We set rules as a `<rule>` element inside the root tag. 
 
-Each <RULE> element consists of the following main childs:
-`<PROPERTYA>`
-`<PROPERTYB>`
-`<ACTION_RULE_SET>`
-`<DEFAULT_ACTION>`
+Each <rule> element consists of the following main childs:
+`<propertyA>`
+`<propertyB>`
+`<actionRuleSet>`
+`<defaultAction>`
 
-`<PROPERTYA>` and `<PROPERTYB>` define the two RDF properties that the rule will apply.
-`<ACTION_RULE_SET>` is a set of condition-action pairs with priority the order of appearance.
-`<DEFAULT_ACTION>` is the default fusion action to apply if no condition from the <ACTION_RULE_SET> is met.
+`<propertyA>` and `<propertyB>` define the two RDF properties that the rule will apply.
+`<actionRuleSet>` is a set of condition-action pairs with priority the order of appearance.
+`<defaultAction>` is the default fusion action to apply if no condition from the <actionRuleSet> is met.
 
-`<ACTION_RULE_SET>` element:
-This element consists of one or more `<ACTION_RULE>` child elements. 
-Each <ACTION_RULE> is a pair of a condition and a fusion action, namely `<CONDITION>`, `<ACTION>`.
-If the condition of an <ACTION_RULE> is met, then the fusion action of that <ACTION_RULE> is going to be applied and all the rest will be ignored, so the fusion action priority is the order of the <ACTION_RULE> appearance. 
+`<actionRuleSet>` element:
+This element consists of one or more `<actionRule>` child elements. 
+Each <actionRule> is a pair of a condition and a fusion action, namely `<condition>`, `<action>`.
+If the condition of an <actionRule> is met, then the fusion action of that <actionRule> is going to be applied and all the rest will be ignored, so the fusion action priority is the order of the <actionRule> appearance. 
 
-The `<CONDITION>` along with the `<ACTION>` are the most essential part of the configuration of the fusion process. 
+The `<condition>` along with the `<action>` are the most essential part of the configuration of the fusion process. 
 In order to construct a condition, we assemble a group of logical operations that contain functions to apply on the RDF properties defined above.
-We can define a logical operations by using the `<EXPRESSION>` tag as a child of a condition. 
-Then, inside the expression we can put together a combination `<AND>`, `<OR>` and `<NOT>` operations and as operands we can use `<FUNCTION>` elements containing a function or a nested <EXPRESSION> containing more logical operations.
+We can define a logical operations by using the `<expression>` tag as a child of a condition. 
+Then, inside the expression we can put together a combination `<and>`, `<or>` and `<not>` operations and as operands we can use `<function>` elements containing a function or a nested <expression> containing more logical operations.
 
 A sample rules.xml file could look like this: 
 
-<RULES>
+<rules>
 
-	<RULE>
-		<PROPERTYA>dateA</PROPERTYA>
-		<PROPERTYB>dateB</PROPERTYB>
-		<ACTION_RULE_SET>
-			<ACTION_RULE>
-				<CONDITION>
-					<EXPRESSION>
-						<FUNCTION>isKnownDate(B)</FUNCTION>
-					</EXPRESSION>
-				</CONDITION>
-				<ACTION>Keep Right</ACTION>
-			</ACTION_RULE>			
-			<ACTION_RULE>
-				<CONDITION>
-					<EXPRESSION>
-						<NOT>
-							<FUNCTION>isKnownDate(A)</FUNCTION>
-						</NOT>
-					</EXPRESSION>
-				</CONDITION>
-				<ACTION>Keep Both</ACTION>
-			</ACTION_RULE>		
-		</ACTION_RULE_SET>
-		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
-	</RULE>
-	<RULE>
-		<PROPERTYA>phoneA</PROPERTYA>
-		<PROPERTYB>phoneB</PROPERTYB>
-		<ACTION_RULE_SET>
-			<ACTION_RULE>
-				<CONDITION>
-					<FUNCTION>isSamePhoneNumber(A,B)</FUNCTION>
-				</CONDITION>
-				<ACTION>Keep Left</ACTION>
-			</ACTION_RULE>		
-		</ACTION_RULE_SET>
-		<DEFAULT_ACTION>Keep Left</DEFAULT_ACTION>
-	</RULE>	
+	<rule>
+		<propertyA>dateA</propertyA>
+		<propertyB>dateB</propertyB>
+		<actionRuleSet>
+			<actionRule>
+				<condition>
+					<expression>
+						<function>isKnownDate(B)</function>
+					</expression>
+				</condition>
+				<action>Keep Right</action>
+			</actionRule>			
+			<actionRule>
+				<condition>
+					<expression>
+						<not>
+							<function>isKnownDate(A)</function>
+						</not>
+					</expression>
+				</condition>
+				<action>Keep Both</action>
+			</actionRule>		
+		</actionRuleSet>
+		<defaultAction>Keep Left</defaultAction>
+	</rule>
+	<rule>
+		<propertyA>phoneA</propertyA>
+		<propertyB>phoneB</propertyB>
+		<actionRuleSet>
+			<actionRule>
+				<condition>
+					<function>isSamePhoneNumber(A,B)</function>
+				</condition>
+				<action>Keep Left</action>
+			</actionRule>		
+		</actionRuleSet>
+		<defaultAction>Keep Left</defaultAction>
+	</rule>	
 	
-</RULES>
+</rules>
 
 ### Available functions:
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
-| isDateKnownFormat      | A or B | Date | isDateKnowFormat(A)
-| isValidDate      | A or B and format | Date | isValidDate(A, DD/MM/YYYY)
-| isGeometryMoreComplicated | A or B |  Geometry | isGeometryMoreComplicated(B)
-| isLiteralAbbreviation | A or B | Literal | isLiteralAbbreviation(B) 
-| isPhoneNumberParsable | A or B | Phone | isPhoneNumberParsable(A) 
-| isSamePhoneNumber | A and B | Phone | isSamePhoneNumber(A,B)  
-| isSamePhoneNumberUsingExitCode | A,B and digits | Phone | isSamePhoneNumberUsingExitCode(A,B,0030)  
-| exists | model, property | Property | exists(A,http&#58;//www.w3.org/2000/01/rdf-schema#label)  
+| isDateKnownFormat      | a or b | Date | isDateKnowFormat(a)
+| isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
+| isGeometryMoreComplicated | a or b |  Geometry | isGeometryMoreComplicated(b)
+| isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
+| isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
+| isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
+| isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  
+| exists | model, property | Property | exists(a,http&#58;//www.w3.org/2000/01/rdf-schema#label)  
 
 
 ### Available fusion actions:
