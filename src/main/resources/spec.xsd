@@ -3,8 +3,36 @@
 <xs:element name="specification">	
   <xs:complexType>
     <xs:sequence>
-		<xs:element name="inputFormat" type="xs:string"/>
-		<xs:element name="outputFormat" type="xs:string"/>
+		<xs:element name="inputFormat">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value="NT"/>
+			  <xs:enumeration value="TTL"/>
+			  <xs:enumeration value="RDF"/>
+			  <xs:enumeration value="OWL"/>
+			  <xs:enumeration value="JSONLD"/>			  
+			  <xs:enumeration value="RJ"/>
+			  <xs:enumeration value="TRIG"/>
+			  <xs:enumeration value="NQ"/>
+			  <xs:enumeration value="TRIX"/>
+			</xs:restriction>
+		  </xs:simpleType>
+		</xs:element>
+		<xs:element name="outputFormat">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value="NT"/>
+			  <xs:enumeration value="TTL"/>
+			  <xs:enumeration value="RDF"/>
+			  <xs:enumeration value="OWL"/>
+			  <xs:enumeration value="JSONLD"/>			  
+			  <xs:enumeration value="RJ"/>
+			  <xs:enumeration value="TRIG"/>
+			  <xs:enumeration value="NQ"/>
+			  <xs:enumeration value="TRIX"/>
+			</xs:restriction>
+		  </xs:simpleType>
+		</xs:element>		
 		<xs:element name="left">
 		  <xs:complexType>
 			<xs:sequence>
@@ -37,7 +65,15 @@
 			<xs:sequence>
 			  <xs:element name="id" type="xs:string"/>
 			  <xs:element name="resourceURI" type="xs:anyURI"/>
-			  <xs:element name="mergeWith" type="xs:string"/>			  
+			  <xs:element name="mergeWith">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				    <xs:enumeration value="left"/>
+				    <xs:enumeration value="right"/>
+				    <xs:enumeration value="new"/>
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>				  
 			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>

@@ -3,7 +3,15 @@
   <xs:element name="rules">
     <xs:complexType>
       <xs:sequence>
-		<xs:element name="defaultDatasetAction" type="xs:string"/>
+		<xs:element name="defaultDatasetAction">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value="keep-left"/>
+			  <xs:enumeration value="keep-right"/>
+			  <xs:enumeration value="keep-both"/>
+		    </xs:restriction>
+		  </xs:simpleType>
+		</xs:element>
         <xs:element name="rule" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
@@ -49,14 +57,38 @@
 								</xs:sequence>
 							  </xs:complexType>
 						  </xs:element> 							  
-                          <xs:element name="action" type="xs:string"/>
+                          <xs:element name="action">
+							  <xs:simpleType>
+								<xs:restriction base="xs:string">
+								  <xs:enumeration value="keep-left"/>
+								  <xs:enumeration value="keep-right"/>
+								  <xs:enumeration value="keep-both"/>
+								  <xs:enumeration value="keep-more-points"/>
+								  <xs:enumeration value="keep-more-points-and-shift"/>
+								  <xs:enumeration value="shift-left-geometry"/>
+								  <xs:enumeration value="shift-right-geometry"/>
+								</xs:restriction>
+							  </xs:simpleType>
+						  </xs:element>                          
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element type="xs:string" name="defaultAction"/>
+              <xs:element name="defaultAction">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+					<xs:enumeration value="keep-left"/>
+					<xs:enumeration value="keep-right"/>
+					<xs:enumeration value="keep-both"/>
+					<xs:enumeration value="keep-more-points"/>
+					<xs:enumeration value="keep-more-points-and-shift"/>
+					<xs:enumeration value="shift-left-geometry"/>
+					<xs:enumeration value="shift-right-geometry"/>
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>     
             </xs:sequence>
           </xs:complexType>
         </xs:element>

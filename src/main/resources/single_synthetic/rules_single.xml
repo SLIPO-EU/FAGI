@@ -1,5 +1,5 @@
 <rules>
-	<defaultDatasetAction>Keep Right</defaultDatasetAction>	
+	<defaultDatasetAction>keep-right</defaultDatasetAction>	
 	<rule>
 		<propertyA>label</propertyA>
 		<propertyB>label</propertyB>
