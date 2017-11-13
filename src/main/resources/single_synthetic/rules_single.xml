@@ -8,15 +8,15 @@
 				<condition>
 					<function>isLiteralAbbreviation(b)</function>
 				</condition>
-				<action>Keep Right</action>
+				<action>keep-right</action>
 			</actionRule>
 		</actionRuleSet>
-		<defaultAction>Keep Left</defaultAction>
+		<defaultAction>keep-left</defaultAction>
 	</rule>	
 	<rule>
 		<propertyA>wkt</propertyA>
 		<propertyB>wkt</propertyB>
-		<defaultAction>Keep Right</defaultAction>
+		<defaultAction>keep-right</defaultAction>
 	</rule>		
 	<rule>
 		<propertyA>http://purl.org/dc/terms/modified</propertyA>
@@ -30,9 +30,9 @@
 						</not>
 					</expression>
 				</condition>
-				<action>Keep Left</action>
+				<action>keep-left</action>
 			</actionRule>
 		</actionRuleSet>
-		<defaultAction>Keep Right</defaultAction>
+		<defaultAction>keep-right</defaultAction>
 	</rule>
 </rules>

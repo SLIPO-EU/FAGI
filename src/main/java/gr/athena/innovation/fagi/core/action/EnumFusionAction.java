@@ -129,13 +129,13 @@ public enum EnumFusionAction {
     public String toString() {
       switch(this) {
         case UNDEFINED: return "undefined";
-        case KEEP_LEFT: return "Keep Left";
-        case KEEP_RIGHT: return "Keep Right";
-        case KEEP_BOTH: return "Keep Both";
-        case KEEP_MORE_POINTS: return "Keep More Points";
-        case KEEP_MORE_POINTS_AND_SHIFT: return "Keep More Points And Shift";
-        case SHIFT_LEFT_GEOMETRY: return "Shift Left Geometry";
-        case SHIFT_RIGHT_GEOMETRY: return "Shift Right Geometry";
+        case KEEP_LEFT: return "keep-left";
+        case KEEP_RIGHT: return "keep-right";
+        case KEEP_BOTH: return "keep-both";
+        case KEEP_MORE_POINTS: return "keep-more-points";
+        case KEEP_MORE_POINTS_AND_SHIFT: return "keep-more-points-and-shift";
+        case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";
+        case SHIFT_RIGHT_GEOMETRY: return "shift-right-geometry";
         default: throw new IllegalArgumentException();
       }
     }     
