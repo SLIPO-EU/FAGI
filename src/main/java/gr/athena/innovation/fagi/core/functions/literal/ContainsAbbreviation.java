@@ -65,15 +65,15 @@ public class ContainsAbbreviation implements IFunction, IFunctionSingleParameter
     
     /**
      * Returns an array of tokens. Utilizes regex to find words. It applies a regex
-     * {@code}(\w)+{@code} over the input text to extract words from a given character
-     * sequence. Implementation taken from org.apache.commons.text.similarity
+     * {@code}(\s)+{@code} over the input text to extract words from a given character
+     * sequence. Implementation modified from org.apache.commons.text.similarity
      *
      * @param text input text
      * @return array of tokens
      */
     public static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
-        final Pattern pattern = Pattern.compile("(\\w)+");
+        final Pattern pattern = Pattern.compile("\\s+");
         final Matcher matcher = pattern.matcher(text.toString());
         final List<String> tokens = new ArrayList<>();
         while (matcher.find()) {
