@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
-import gr.athena.innovation.fagi.core.functions.literal.ContainsAbbreviation;
+import gr.athena.innovation.fagi.core.functions.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.jena.ext.com.google.common.collect.Lists;
 
 /**
  * Uses a combination of the other available normalizations and similarity functions.
@@ -28,8 +28,17 @@ public class MultipleGenericNormalizer implements INormalizer{
      * @return the normalized literalA or an empty string if the initial literalA or the produced normalized value is blank.
      */
     public String normalize(String literalA, String literalB){
+        
+        String normalizedLiteral = literalA;
+        
+        //First recover abbreviations if possible.
+        AbbreviationResolver resolver = new AbbreviationResolver();
+        String possibleAbbreviation = resolver.getAbbreviation(literalA, literalB);
+        
+        //normalized literal has abbreviation replaced if it is known or can be recovered from literalB.
+
         //remove punctuation except parenthesis
-        String normalizedLiteral = literalA.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
+        normalizedLiteral = literalA.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
 
         //transform to lowercase
         normalizedLiteral = normalizedLiteral.toLowerCase();
@@ -43,9 +52,9 @@ public class MultipleGenericNormalizer implements INormalizer{
 
         //try to replace abbreviation with full string if matches
         IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
-        ContainsAbbreviation contains = new ContainsAbbreviation();
+        
 
-        String possibleAbbreviation = contains.getAbbreviation(literalA);
+        
 
         if(!possibleAbbreviation.equals("")){ //getAbbreviation could not find abbreviation
             //recover full words of possible abbreviation from literalB.
