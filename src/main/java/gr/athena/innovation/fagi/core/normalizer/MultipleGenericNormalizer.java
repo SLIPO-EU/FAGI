@@ -32,7 +32,7 @@ public class MultipleGenericNormalizer implements INormalizer{
         String normalizedLiteral = literalA;
         
         //First recover abbreviations if possible.
-        AbbreviationResolver resolver = new AbbreviationResolver();
+        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
         String possibleAbbreviation = resolver.getAbbreviation(literalA, literalB);
         
         //normalized literal has abbreviation replaced if it is known or can be recovered from literalB.

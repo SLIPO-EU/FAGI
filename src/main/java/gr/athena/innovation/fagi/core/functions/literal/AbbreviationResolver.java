@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
+import com.google.common.base.CharMatcher;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ public class AbbreviationResolver{
 
     private static AbbreviationResolver abbreviationResolver;
     private static Map<String, String> abbreviations;
-    
+
+    private AbbreviationResolver(){}
+
     public static AbbreviationResolver getInstance() {
         //lazy init
         if(abbreviationResolver == null){
@@ -31,7 +34,7 @@ public class AbbreviationResolver{
         }
         return abbreviationResolver;
     }
-    
+
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AbbreviationResolver.class);
 
     public static void setKnownAbbreviations(Map<String, String> knownAbbreviations) {
@@ -65,7 +68,7 @@ public class AbbreviationResolver{
      * 
      * @param literalA the first literal that may contain abbreviation.
      * @param literalB the second literal which helps at the abbreviation discovery.
-     * @return return the abbreviation token.
+     * @return return the abbreviation token or null.
      */
     public String getAbbreviation(String literalA, String literalB){
         logger.trace("getAbbreviation of: " + literalA);
@@ -86,6 +89,7 @@ public class AbbreviationResolver{
                 //check if the word contains two or more dots.
                 if(word.indexOf(".", word.indexOf(".") + 1) != -1){ 
                     if(chars.length < 8){
+                        //return the word if it is less than 8 characters including dots.
                         return word;
                     }
                 }
@@ -94,7 +98,12 @@ public class AbbreviationResolver{
                 //We are interested for this word if it ends with a dot and has 4 chars or less. 
                 //If it does, we check against literalB in order to discover if the abbreviation candidate is indeed an abbreviation.
                 if(word.endsWith(".") && chars.length <= 5){
-                    
+
+                    char[] upperCaseChars = CharMatcher.javaUpperCase().retainFrom(word).toCharArray();
+                    if(upperCaseChars.length>1){
+                        return word;
+                    }
+
                     //trying unique common prefix from word B
                     //http://www.geeksforgeeks.org/find-shortest-unique-prefix-every-word-given-list-set-2-using-sorting/
                     for(String wordB : wordsB){
@@ -103,7 +112,7 @@ public class AbbreviationResolver{
                         }
                     }
                     
-                    if(chars.length<=4){
+                    if(chars.length<=4 && upperCaseChars.length==chars.length-1){
                         return word;
                     }
                 }

@@ -2,6 +2,8 @@ package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.functions.FunctionRegistry;
+import gr.athena.innovation.fagi.core.functions.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
@@ -12,11 +14,17 @@ import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
+import gr.athena.innovation.fagi.utils.ResourceFileLoader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +47,7 @@ public class FagiInstance {
     }
     
     public void run() throws ParserConfigurationException, SAXException, IOException, ParseException, 
-            com.vividsolutions.jts.io.ParseException, WrongInputException{
+            com.vividsolutions.jts.io.ParseException, WrongInputException, ApplicationException{
 
         long startTimeInput = System.currentTimeMillis();
         //Validate input
@@ -77,6 +85,12 @@ public class FagiInstance {
         genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());
 
         long stopTimeReadFiles = System.currentTimeMillis();
+
+        //Load resources
+        ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
+        Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
+
+        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
