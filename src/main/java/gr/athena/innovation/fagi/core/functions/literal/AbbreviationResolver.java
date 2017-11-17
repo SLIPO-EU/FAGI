@@ -4,6 +4,7 @@ import com.google.common.base.CharMatcher;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -23,7 +24,7 @@ public class AbbreviationResolver{
 
     private AbbreviationResolver(){}
 
-    public static AbbreviationResolver getInstance() {
+    public static AbbreviationResolver getInstance() throws ApplicationException{
         //lazy init
         if(abbreviationResolver == null){
             abbreviationResolver= new AbbreviationResolver();
@@ -42,6 +43,17 @@ public class AbbreviationResolver{
     }
     
     /**
+     * Returns the full text of a known abbreviation. Returns null if the abbreviation is not found.
+     * 
+     * @param abbreviation
+     * @return returns the full text of the given abbreviation if exists in the known abbreviation or null otherwise.
+     */
+    public String getKnownAbbreviation(String abbreviation){
+        logger.trace("Get known abbreviation: " + abbreviation);     
+        return abbreviations.get(abbreviation);
+    }
+    
+    /**
      * Checks if the given literal contains an abbreviation by using a regular expression from the SpecificationConstants. 
      * Basically a modification of {@link IsLiteralAbbreviation} but the check is done against all the words in the literal.
      * 
@@ -49,12 +61,12 @@ public class AbbreviationResolver{
      * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
     public boolean containsAbbreviation(String literal){
-        logger.trace("Evaluating literal: " + literal);     
+        logger.trace("check if literal contains abbreviation: " + literal);     
 
         String[] words = tokenize(literal);
         for (String word : words) {
             if (!StringUtils.isBlank(word)) {
-                boolean matches = word.matches(SpecificationConstants.Regex.ABBR_REGEX2);
+                boolean matches = word.matches(SpecificationConstants.Regex.ABBR_REGEX3);
                 if(matches){
                     return true;
                 }
@@ -67,7 +79,7 @@ public class AbbreviationResolver{
      * Return the abbreviation token within the given String if exists. Returns null otherwise.  
      * 
      * @param literalA the first literal that may contain abbreviation.
-     * @param literalB the second literal which helps at the abbreviation discovery.
+     * @param literalB the second literal which helps at the abbreviation discovery if anything else fails.
      * @return return the abbreviation token or null.
      */
     public String getAbbreviation(String literalA, String literalB){
@@ -188,21 +200,15 @@ public class AbbreviationResolver{
     }
     
     /**
-     * Returns an array of tokens. Utilizes regex to find words. It applies a regex
-     * {@code}(\s)+{@code} over the input text to extract words from a given character
-     * sequence. Implementation modified from org.apache.commons.text.similarity
+     * Returns an array of tokens extracted from the given text by whitespace.
      *
      * @param text input text
      * @return array of tokens
      */
     public static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
-        final Pattern pattern = Pattern.compile("\\s+");
-        final Matcher matcher = pattern.matcher(text.toString());
-        final List<String> tokens = new ArrayList<>();
-        while (matcher.find()) {
-            tokens.add(matcher.group(0));
-        }
-        return tokens.toArray(new String[0]);
+        
+        String[] split = text.toString().split("\\s+");
+        return split;
     }  
 }

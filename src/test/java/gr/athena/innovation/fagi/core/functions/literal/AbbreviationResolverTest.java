@@ -1,8 +1,12 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.utils.ResourceFileLoader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -13,6 +17,8 @@ import org.junit.BeforeClass;
  */
 public class AbbreviationResolverTest {
     
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AbbreviationResolverTest.class);
+
     @BeforeClass
     public static void setUpClass() throws IOException {
         
@@ -28,24 +34,44 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testGetInstance() {
-        System.out.println("getInstance");
-        AbbreviationResolver expResult = null;
-        AbbreviationResolver result = AbbreviationResolver.getInstance();
-        //assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        logger.info("getInstance");
+        try{
+            AbbreviationResolver.getInstance();
+        } catch(ApplicationException ex){
+            logger.error(ex);
+            fail("AbbreviationResolver is not initialized with knownAbbreviations.");
+        }
     }
+    
+    /**
+     * Test of getInstance method, of class AbbreviationResolver.
+     */
+    @Test
+    public void testGetKnownAbbreviation() {
+        logger.info("getInstance");
 
+        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        String result = resolver.getKnownAbbreviation("Dr.");
+        String expResult = "Doctor";
+        assertEquals(expResult, result);
+
+    }
+    
     /**
      * Test of setKnownAbbreviations method, of class AbbreviationResolver.
      */
     @Test
     public void testSetKnownAbbreviations() {
-        //System.out.println("setKnownAbbreviations");
-        //Map<String, String> knownAbbreviations = null;
-        //AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        
+        ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
+
+        try {
+            Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
+            assertFalse(knownAbbreviations.isEmpty());
+        } catch (IOException | ApplicationException ex) {
+            logger.error(ex);
+            fail("AbbreviationResolver could not be initialized with knownAbbreviations");
+        }
     }
 
     /**
@@ -53,14 +79,12 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testContainsAbbreviation() {
-        System.out.println("containsAbbreviation");
-        String literal = "literal";
-        AbbreviationResolver instance = AbbreviationResolver.getInstance();
-        boolean expResult = false;
-        boolean result = instance.containsAbbreviation(literal);
-        //assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        logger.info("containsAbbreviation");
+        String literal = "this literal contains an abbreviation at the end: A.B.B.R.";
+        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        boolean expResult = true;
+        boolean result = resolver.containsAbbreviation(literal);
+        assertEquals(expResult, result);
     }
 
     /**
@@ -68,11 +92,11 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testGetAbbreviation() {
-        System.out.println("getAbbreviation");
-        String literalA = "literalA";
-        String literalB = "literalB";
+        logger.info("getAbbreviation");
+        String literalA = "this literal contains an abbreviation at the end: A.B.B.R.";
+        String literalB = "the literalB that has the expanded abbreviation aa bb bbb rrr";
         AbbreviationResolver instance = AbbreviationResolver.getInstance();
-        String expResult = "result";
+        String expResult = "A.B.B.R.";
         String result = instance.getAbbreviation(literalA, literalB);
         //assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
@@ -84,7 +108,7 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testRecoverAbbreviation() {
-        System.out.println("recoverAbbreviation");
+        logger.info("recoverAbbreviation");
         String abbreviation = "abbr";
         String text = "text";
         AbbreviationResolver instance = AbbreviationResolver.getInstance();
@@ -100,7 +124,7 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testTokenize() {
-        System.out.println("tokenize");
+        logger.info("tokenize");
         CharSequence text = "text";
         String[] expResult = null;
         String[] result = AbbreviationResolver.tokenize(text);

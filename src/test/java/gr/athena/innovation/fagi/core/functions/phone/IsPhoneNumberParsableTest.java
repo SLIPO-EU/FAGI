@@ -14,7 +14,9 @@ import static org.junit.Assert.*;
  * @author nkarag
  */
 public class IsPhoneNumberParsableTest {
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsPhoneNumberParsableTest.class);    
+    
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsPhoneNumberParsableTest.class);
+    
     public IsPhoneNumberParsableTest() {
     }
     
