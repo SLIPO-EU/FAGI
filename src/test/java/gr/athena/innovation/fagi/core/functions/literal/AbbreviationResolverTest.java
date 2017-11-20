@@ -4,8 +4,6 @@ import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import static org.junit.Assert.*;

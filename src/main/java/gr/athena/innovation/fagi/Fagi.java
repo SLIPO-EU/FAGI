@@ -2,13 +2,9 @@ package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
-import java.io.IOException;
-import java.text.ParseException;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.xml.sax.SAXException;
 
 /**
  * Main class of the application. 
