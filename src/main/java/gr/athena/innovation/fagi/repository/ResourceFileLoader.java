@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.utils;
+package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.io.BufferedReader;
@@ -39,7 +39,7 @@ public class ResourceFileLoader {
     }
     
     public Map<String, String> getKnownAbbreviationsMap() throws IOException, ApplicationException{
-        InputStream inputStream = getClass().getResourceAsStream("/abbreviations.txt");
+        InputStream inputStream = getClass().getResourceAsStream("/name_abbreviations.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         
         BufferedReader reader = new BufferedReader(inputStreamReader);

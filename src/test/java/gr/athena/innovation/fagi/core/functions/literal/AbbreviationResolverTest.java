@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
-import gr.athena.innovation.fagi.utils.ResourceFileLoader;
+import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -54,7 +54,6 @@ public class AbbreviationResolverTest {
         String result = resolver.getKnownAbbreviation("Dr.");
         String expResult = "Doctor";
         assertEquals(expResult, result);
-
     }
     
     /**
@@ -93,14 +92,21 @@ public class AbbreviationResolverTest {
     @Test
     public void testGetAbbreviation() {
         logger.info("getAbbreviation");
-        String literalA = "this literal contains an abbreviation at the end: A.B.B.R.";
-        String literalB = "the literalB that has the expanded abbreviation aa bb bbb rrr";
-        AbbreviationResolver instance = AbbreviationResolver.getInstance();
-        String expResult = "A.B.B.R.";
-        String result = instance.getAbbreviation(literalA, literalB);
-        //assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        String literal1a = "this literal contains an abbreviation at the end: A.B.B.R.";
+        String literal1b = "this literal is irrelevant";
+        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        String expResult1 = "A.B.B.R.";
+        String result1 = resolver.getAbbreviation(literal1a, literal1b);
+        assertEquals(expResult1, result1);
+
+        String literal2a = "This literal contains an abbreviation at the end: ABBR.";
+        String literal2b = "This contains the expanded abbreviation aa bb bbb rrr of the above literal.";
+
+        String expResult2 = "ABBR.";
+        String result2 = resolver.getAbbreviation(literal2a, literal2b);
+        logger.warn(result2);
+        assertEquals(expResult2, result2);
+        
     }
 
     /**
@@ -125,12 +131,10 @@ public class AbbreviationResolverTest {
     @Test
     public void testTokenize() {
         logger.info("tokenize");
-        CharSequence text = "text";
-        String[] expResult = null;
+        CharSequence text = "tokenize on white-spaces and get&result of size 8.";
+        String[] expResult = {"tokenize","on", "white-spaces", "and", "get&result", "of", "size", "8."};
         String[] result = AbbreviationResolver.tokenize(text);
-        //assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        assertArrayEquals(expResult, result);
     }
     
 }

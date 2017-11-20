@@ -87,7 +87,9 @@ public class AbbreviationResolver{
 
         String[] wordsA = tokenize(literalA);
         String[] wordsB = tokenize(literalB);
+        
         for (String word : wordsA) {
+            logger.trace("word: " + word);
             if (StringUtils.isBlank(word)) {
                 continue;
             }
@@ -95,10 +97,21 @@ public class AbbreviationResolver{
             String resolved = abbreviations.get(word);
 
             if(resolved != null){
+                logger.trace("\n\nabbreviation \"" + word + "\" is a known abbreviation. Full text is " + resolved);
                 return word;
             }
 
             char[] chars = word.toCharArray();
+
+            int upper = 0;
+            for(char ch : chars){
+                if(Character.isUpperCase(ch)){
+                    upper++;
+                    if(upper > 1){
+                        return word;
+                    }
+                }
+            }
 
             //check if the word contains two or more dots.
             if(word.indexOf(".", word.indexOf(".") + 1) != -1){ 
@@ -112,8 +125,9 @@ public class AbbreviationResolver{
             //We are interested for this word if it ends with a dot and has 4 chars or less. 
             //If it does, we check against literalB in order to discover if the abbreviation candidate is indeed an abbreviation.
             if(!(word.endsWith(".") && chars.length <= 5)){
-                return null;
-            }            
+                continue;
+                //return null;
+            }
 
             char[] upperCaseChars = CharMatcher.javaUpperCase().retainFrom(word).toCharArray();
             if(upperCaseChars.length>1){
@@ -124,27 +138,30 @@ public class AbbreviationResolver{
                 return word;
             }                    
 
-            int carret;
-            for(int i=0; i<wordsB.length; i++){
-
-                if(wordsB[i].startsWith(String.valueOf(chars[0]))){
-                    carret = i;
-                    if((wordsB.length - carret) > chars.length){
-                        for(int j=1; j<chars.length; j++){
-                            if(!wordsB[carret+j].startsWith(String.valueOf(chars[j]))){
-                                break;
-                            }
-                        }
-                    } else {
-                        return null;
-                    }              
-                }
-            }
-            return word;
+            return recognizeAbbreviationFrom(wordsB, chars, word);
         }
         return null;
     }
 
+    private String recognizeAbbreviationFrom(String[] wordsB, char[] chars, String word) {
+        int carret;
+        for(int i=0; i<wordsB.length; i++){
+            if(wordsB[i].startsWith(String.valueOf(chars[0]))){
+                carret = i;
+                if((wordsB.length - carret) > chars.length){
+                    for(int j=1; j<chars.length; j++){
+                        if(!wordsB[carret+j].startsWith(String.valueOf(chars[j]))){
+                            break;
+                        }
+                    }
+                } else {
+                    return null;
+                }
+            }
+        }
+        return word;
+    }
+    
     /**
      * Recovers the full text of the given abbreviation from the provided text or from known abbreviations.
      * Returns null if it fails to find the match. 

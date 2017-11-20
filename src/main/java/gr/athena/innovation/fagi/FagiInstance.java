@@ -14,7 +14,7 @@ import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
-import gr.athena.innovation.fagi.utils.ResourceFileLoader;
+import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
