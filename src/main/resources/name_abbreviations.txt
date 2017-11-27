@@ -1,2 +1,2 @@
-avn=avenue
+avn.=avenue
 Dr.=Doctor
