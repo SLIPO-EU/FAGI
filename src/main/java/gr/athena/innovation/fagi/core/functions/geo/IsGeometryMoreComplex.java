@@ -7,7 +7,7 @@ import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
  *
  * @author nkarag
  */
-public class IsGeometryMoreComplicated implements IFunction, IFunctionTwoParameters{
+public class IsGeometryMoreComplex implements IFunction, IFunctionTwoParameters{
 
     @Override
     public boolean evaluate(String valueA, String valueB) {

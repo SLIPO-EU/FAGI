@@ -4,7 +4,7 @@ import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.functions.property.Exists;
 import gr.athena.innovation.fagi.core.functions.date.IsValidDate;
-import gr.athena.innovation.fagi.core.functions.geo.IsGeometryMoreComplicated;
+import gr.athena.innovation.fagi.core.functions.geo.IsGeometryMoreComplex;
 import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
@@ -38,7 +38,7 @@ public class FunctionRegistry {
         IsValidDate isValidDate = new IsValidDate();
 
         //geo
-        IsGeometryMoreComplicated isGeometryMoreComplicated = new IsGeometryMoreComplicated();
+        IsGeometryMoreComplex isGeometryMoreComplex = new IsGeometryMoreComplex();
         
         //literal
         IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
@@ -56,7 +56,7 @@ public class FunctionRegistry {
         functionMap.put(isValidDate.getName(), isValidDate);
 
         //geo
-        functionMap.put(isGeometryMoreComplicated.getName(), isGeometryMoreComplicated);
+        functionMap.put(isGeometryMoreComplex.getName(), isGeometryMoreComplex);
         
         //literal
         functionMap.put(isLiteralAbbreviation.getName(), isLiteralAbbreviation);

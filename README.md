@@ -116,7 +116,7 @@ A sample rules.xml file could look like this:
 | ------------- |:-------------:| :-----:|:-----:|
 | isDateKnownFormat      | a or b | Date | isDateKnowFormat(a)
 | isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
-| isGeometryMoreComplicated | a or b |  Geometry | isGeometryMoreComplicated(b)
+| isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
