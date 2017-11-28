@@ -6,6 +6,8 @@ import gr.athena.innovation.fagi.core.functions.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
+import gr.athena.innovation.fagi.preview.QualityViewer;
+import gr.athena.innovation.fagi.quality.MetricSelector;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -36,6 +38,7 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
+    private final boolean qualityOn = false;
     
     public FagiInstance(String specXml, String rulesXml){
         this.specXml = specXml;
@@ -92,6 +95,14 @@ public class FagiInstance {
         long startTimeFusion = System.currentTimeMillis();
         List<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
 
+        //Produce quality metric results for previewing, if enabled
+        if(qualityOn){
+            
+            MetricSelector metricSelector = new MetricSelector();
+            QualityViewer qualityViewer = new QualityViewer(interlinkedEntitiesList);
+            qualityViewer.printResults(fusionSpecification.getPathOutput() + "_quality.txt", fusionSpecification, metricSelector);
+        }        
+        
         Fuser fuser = new Fuser(interlinkedEntitiesList);
         fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, functionRegistry.getFunctionMap());
 
