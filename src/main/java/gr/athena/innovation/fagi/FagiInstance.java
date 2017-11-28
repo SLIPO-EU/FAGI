@@ -93,17 +93,18 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-        List<InterlinkedPair> interlinkedEntitiesList = new ArrayList<>();
+        List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
 
         //Produce quality metric results for previewing, if enabled
         if(qualityOn){
-            
+
             MetricSelector metricSelector = new MetricSelector();
-            QualityViewer qualityViewer = new QualityViewer(interlinkedEntitiesList);
-            qualityViewer.printResults(fusionSpecification.getPathOutput() + "_quality.txt", fusionSpecification, metricSelector);
-        }        
-        
-        Fuser fuser = new Fuser(interlinkedEntitiesList);
+            QualityViewer qualityViewer = new QualityViewer(interlinkedEntities);
+            qualityViewer.printResults(fusionSpecification.getPathOutput() + "_quality.txt", 
+                    fusionSpecification, ruleCatalog, metricSelector);
+        }
+
+        Fuser fuser = new Fuser(interlinkedEntities);
         fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, functionRegistry.getFunctionMap());
 
         long stopTimeFusion = System.currentTimeMillis();
@@ -111,14 +112,14 @@ public class FagiInstance {
         //Combine result datasets and write to file
         long startTimeWrite = System.currentTimeMillis();
 
-        fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntitiesList, ruleCatalog.getDefaultDatasetAction());
+        fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntities, ruleCatalog.getDefaultDatasetAction());
 
         long stopTimeWrite = System.currentTimeMillis();
 
         logger.info(fusionSpecification.toString());
 
         logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-        logger.info("Interlinked: " + interlinkedEntitiesList.size() + ", Fused: " + fuser.getFusedPairsCount() 
+        logger.info("Interlinked: " + interlinkedEntities.size() + ", Fused: " + fuser.getFusedPairsCount() 
                 + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());        
         logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput-startTimeInput) + "ms.");
         logger.info("Datasets loaded in " + (stopTimeReadFiles-startTimeReadFiles) + "ms.");

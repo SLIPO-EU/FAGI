@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.preview;
 
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import gr.athena.innovation.fagi.core.similarity.Levenshtein;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
@@ -10,6 +11,7 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.Metadata;
 import gr.athena.innovation.fagi.model.RightModel;
 import gr.athena.innovation.fagi.quality.MetricSelector;
+import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedWriter;
@@ -34,21 +36,21 @@ public class QualityViewer {
     private final List<InterlinkedPair> interlinkedEntitiesList;
     private int pairsNotFound = 0;
     private int pairsChecked = 0;
-    
+
     public QualityViewer(List<InterlinkedPair> interlinkedEntitiesList) {
         this.interlinkedEntitiesList = interlinkedEntitiesList;
     }
-    
-    public void printResults(String path, FusionSpecification fusionSpecification, MetricSelector metricSelector) throws ParseException, IOException{
+
+    public void printResults(String path, FusionSpecification fusionSpecification, 
+            RuleCatalog ruleCatalog, MetricSelector metricSelector) throws ParseException, IOException{
+
         pairsNotFound = 0;
-        WKTReader wellKnownTextReader = new WKTReader();
 
         Model left = LeftModel.getLeftModel().getModel();
         Model right = RightModel.getRightModel().getModel();
         LinksModel links = LinksModel.getLinksModel();
-        
+
         BufferedWriter output = new BufferedWriter(new FileWriter(path, true));
-        
 
         for (Link link : links.getLinks()){
 
@@ -62,25 +64,25 @@ public class QualityViewer {
 
             InterlinkedPair pair = new InterlinkedPair();
 
-            Entity entityA = constructEntity(modelA, link.getNodeA(), wellKnownTextReader);
-            Entity entityB = constructEntity(modelB, link.getNodeB(), wellKnownTextReader);
-            
+            Entity entityA = constructEntity(modelA, link.getNodeA());
+            Entity entityB = constructEntity(modelB, link.getNodeB());
+
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
-            
+            //Levenshtein.computeDistance(entityA., path, pairsChecked)
+
             pairsChecked++;
             interlinkedEntitiesList.add(pair);
+
             output.append(entityA.getResourceURI() + " " +  entityB.getResourceURI() 
                     + metricSelector.getCurrentMetric() + ": " + metricSelector.getMetricValue());
             output.newLine();
-            
+
         }
         setPairsNotFound(pairsNotFound);
-        
-        
     }
     
-    private Entity constructEntity(Model model, String resourceURI, WKTReader wellKnownTextReader) throws ParseException {
+    private Entity constructEntity(Model model, String resourceURI) throws ParseException {
         
         Entity entity = new Entity();
         Metadata metadata = new Metadata(model);
