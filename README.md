@@ -118,6 +118,7 @@ A sample rules.xml file could look like this:
 | isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
 | isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
+| isSameNormalized | a and b | Literal | isSameNormalized(a,b) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
 | isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  

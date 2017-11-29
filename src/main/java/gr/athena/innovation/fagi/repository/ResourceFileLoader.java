@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.repository;
 
+import com.google.common.io.Files;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -7,6 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,9 +26,9 @@ public class ResourceFileLoader {
         final int right = 1;
 
         TreeMap<String, String> map = new TreeMap<>();
-        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(file)))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(file)))) {
             String line;
-            while ((line = bfr.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 if (!line.startsWith("#") && !line.isEmpty()) {
                     String[] pair = line.trim().split("=");
                     if(!(pair.length == 2)){
@@ -37,7 +41,7 @@ public class ResourceFileLoader {
         }
         return map;
     }
-    
+
     public Map<String, String> getKnownAbbreviationsMap() throws IOException, ApplicationException{
         InputStream inputStream = getClass().getResourceAsStream("/name_abbreviations.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -58,4 +62,19 @@ public class ResourceFileLoader {
         }
         return map;
     }
+
+    public List<String> getRDFProperties() throws IOException, ApplicationException{
+        InputStream inputStream = getClass().getResourceAsStream("/rdf_properties.txt");
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+
+        List<String> properties = new ArrayList<>();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            properties.add(line);
+        }
+        return properties;   
+    }       
 }

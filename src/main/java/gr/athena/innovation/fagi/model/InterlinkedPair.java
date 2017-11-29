@@ -325,6 +325,7 @@ public class InterlinkedPair {
     }
     
     private Property getRDFPropertyFromString(String property){
+        //TODO: remove aliases of properties
         Property propertyRDF;
         if(property.equalsIgnoreCase("label")){
             propertyRDF = ResourceFactory.createProperty(SpecificationConstants.LABEL);
@@ -336,7 +337,7 @@ public class InterlinkedPair {
             propertyRDF = ResourceFactory.createProperty(property);
         }
         return propertyRDF;
-    }    
+    }
 
     private String resolveFusedEntityURI(EnumDatasetAction defaultDatasetAction) {
         String resourceURI;
