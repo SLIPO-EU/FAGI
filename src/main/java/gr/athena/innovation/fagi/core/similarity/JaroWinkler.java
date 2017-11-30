@@ -41,5 +41,19 @@ public final class JaroWinkler {
 
             return roundedResult;
         }
+    }
+    
+    /**
+     * Computes the Jaro Winkler Distance using the complement of 
+     * {@link #computeSimilarity(double) computeSimilarity}.
+     * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">
+     * http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance</a>.
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @return the distance. Range is between [0,1].
+     */
+    public static double computeDistance(String a, String b){
+        return 1 - computeSimilarity(a,b);
     }    
 }

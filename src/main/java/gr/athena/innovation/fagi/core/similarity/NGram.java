@@ -36,5 +36,30 @@ public class NGram {
         float result = n.getDistance(a, b);
         
         return result;
+    }
+    
+    /**
+     * Creates a 2-Gram similarity measure using n-grams of size 2.
+     * The similarity is computed using the complement of 2-Gram distance.
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @return the computed 2-gram similarity.
+     */
+    public static float computeSimilarity(String a, String b){
+        return 1 - computeDistance(a, b);
+    }
+    
+    /**
+     * Creates an N-Gram similarity measure using n-grams of the given size.
+     * The similarity is computed using the complement of 2-Gram distance.
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @param size the size of the n-grams similarity measure.
+     * @return the computed n-gram similarity.
+     */
+    public static float computeSimilarity(String a, String b, int size){
+        return 1 - computeDistance(a, b, size);
     }    
 }

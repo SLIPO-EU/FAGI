@@ -64,6 +64,20 @@ public final class Levenshtein {
             return 1;
         }
     }
+
+    /**
+     * Returns the complement of Levenshtein Distance using the method 
+     * {@link #computeDistance(double) computeDistance}. 
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @param threshold the threshold, must not be negative, 
+     * may be null if the desired similarity should be computed without a threshold.
+     * @return the normalized similarity result. Returns 0.0 if the similarity is greater than the threshold.
+     */
+    public static double computeSimilarity(String a, String b, Integer threshold){
+        return 1 - computeDistance(a, b, threshold);
+    }
     
     /**
      * Compute the number of insertions needed to change one string into another.

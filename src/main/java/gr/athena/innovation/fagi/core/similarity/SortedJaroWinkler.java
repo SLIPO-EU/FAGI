@@ -9,7 +9,7 @@ import gr.athena.innovation.fagi.core.normalizer.generic.AlphabeticalNormalizer;
 public class SortedJaroWinkler {
     
     /**
-     * Computes a version of Jaro-Winkler by sorting the words of each string alphabetically. 
+     * Computes a version of Jaro-Winkler Similarity by sorting the words of each string alphabetically. 
      * 
      * @param a the first string.
      * @param b the second string.
@@ -25,5 +25,17 @@ public class SortedJaroWinkler {
         double result = JaroWinkler.computeSimilarity(sortedA, sortedB);
         
         return result;
+    }
+    
+    /**
+     * Computes a version of Jaro-Winkler Distance by using the complement of
+     * {@link #computeSimilarity(double) computeSimilarity}.
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @return the result score.
+     */
+    public static double computeDistance(String a, String b){
+        return 1 - computeSimilarity(a, b);
     }    
 }

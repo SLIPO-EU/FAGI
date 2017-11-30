@@ -25,8 +25,9 @@ import org.apache.commons.lang3.Validate;
  * @author nkarag
  */
 public class PermutedJaroWinkler {
+    
     /**
-     * Computes the permuted version of Jaro-Winkler. 
+     * Computes the permuted version of Jaro-Winkler similarity. 
      * 
      * @param a the first string.
      * @param b the second string.
@@ -78,6 +79,18 @@ public class PermutedJaroWinkler {
         }
 
         return maxSimilarity;
+    }
+    
+    /**
+     * Computes the permuted version of Jaro-Winkler distance, using the complement of 
+     * {@link #computeSimilarity(double) computeSimilarity}. 
+     * 
+     * @param a the first string.
+     * @param b the second string.
+     * @return the result score.
+     */
+    public double computeDistance(String a, String b){
+        return 1 - computeSimilarity(a,b);
     }
     
     /**

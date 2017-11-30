@@ -30,23 +30,23 @@ import org.xml.sax.SAXException;
 
 /**
  * Reads the specification and rules, validates input and starts the fusion process.
- * 
+ *
  * @author nkarag
  */
 public class FagiInstance {
-    
+
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    private final boolean qualityOn = false;
-    
-    public FagiInstance(String specXml, String rulesXml){
+    private final boolean qualityOn = true;
+
+    public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
         this.rulesXml = rulesXml;
     }
-    
-    public void run() throws ParserConfigurationException, SAXException, IOException, ParseException, 
-            com.vividsolutions.jts.io.ParseException, WrongInputException, ApplicationException{
+
+    public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
+            com.vividsolutions.jts.io.ParseException, WrongInputException, ApplicationException {
 
         long startTimeInput = System.currentTimeMillis();
         //Validate input
@@ -58,13 +58,13 @@ public class FagiInstance {
 
         logger.info("Validating input..");
 
-        if(!validator.isValidInput()){
+        if (!validator.isValidInput()) {
             logger.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
 
         logger.info("XML files seem valid.");
-        
+
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpecification = specificationParser.parse(specXml);
@@ -97,7 +97,7 @@ public class FagiInstance {
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
 
         //Produce quality metric results for previewing, if enabled
-        if(qualityOn){
+        if (qualityOn) {
 
             MetricSelector metricSelector = new MetricSelector();
             QualityViewer qualityViewer = new QualityViewer(interlinkedEntities, ruleCatalog, metricSelector, fusionSpecification);
@@ -119,13 +119,13 @@ public class FagiInstance {
         logger.info(fusionSpecification.toString());
 
         logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-        logger.info("Interlinked: " + interlinkedEntities.size() + ", Fused: " + fuser.getFusedPairsCount() 
-                + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());        
-        logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput-startTimeInput) + "ms.");
-        logger.info("Datasets loaded in " + (stopTimeReadFiles-startTimeReadFiles) + "ms.");
+        logger.info("Interlinked: " + interlinkedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
+                + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
+        logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
+        logger.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
         logger.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
         logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
         logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
-        logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");  
+        logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");
     }
 }
