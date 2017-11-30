@@ -80,7 +80,7 @@ A sample rules.xml file could look like this:
 						<function>isKnownDate(b)</function>
 					</expression>
 				</condition>
-				<action>Keep Right</action>
+				<action>keep-right</action>
 			</actionRule>			
 			<actionRule>
 				<condition>
@@ -90,10 +90,10 @@ A sample rules.xml file could look like this:
 						</not>
 					</expression>
 				</condition>
-				<action>Keep Both</action>
+				<action>keep-both</action>
 			</actionRule>		
 		</actionRuleSet>
-		<defaultAction>Keep Left</defaultAction>
+		<defaultAction>keep-left</defaultAction>
 	</rule>
 	<rule>
 		<propertyA>phoneA</propertyA>
@@ -103,10 +103,10 @@ A sample rules.xml file could look like this:
 				<condition>
 					<function>isSamePhoneNumber(a,b)</function>
 				</condition>
-				<action>Keep Left</action>
+				<action>keep-left</action>
 			</actionRule>		
 		</actionRuleSet>
-		<defaultAction>Keep Left</defaultAction>
+		<defaultAction>keep-left</defaultAction>
 	</rule>	
 	
 </rules>
