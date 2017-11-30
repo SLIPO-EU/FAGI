@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
-import gr.athena.innovation.fagi.core.functions.literal.AbbreviationResolver;
-import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
 import java.util.List;

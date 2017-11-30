@@ -1,13 +1,13 @@
 package gr.athena.innovation.fagi.rule.model;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
-import gr.athena.innovation.fagi.core.functions.date.IsValidDate;
-import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
-import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
-import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
-import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
+import gr.athena.innovation.fagi.core.function.date.IsValidDate;
+import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.util.List;
 import java.util.Map;

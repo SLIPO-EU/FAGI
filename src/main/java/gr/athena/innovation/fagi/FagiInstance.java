@@ -1,8 +1,8 @@
 package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.Fuser;
-import gr.athena.innovation.fagi.core.functions.FunctionRegistry;
-import gr.athena.innovation.fagi.core.functions.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.FunctionRegistry;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;

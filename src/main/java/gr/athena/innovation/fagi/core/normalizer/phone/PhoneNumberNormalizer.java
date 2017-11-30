@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer.phone;
 
-import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
+import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import org.apache.commons.lang3.StringUtils;
 import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 

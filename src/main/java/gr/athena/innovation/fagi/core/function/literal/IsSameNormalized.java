@@ -1,7 +1,7 @@
-package gr.athena.innovation.fagi.core.functions.literal;
+package gr.athena.innovation.fagi.core.function.literal;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
+import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import gr.athena.innovation.fagi.core.normalizer.MultipleGenericNormalizer;
 import org.apache.logging.log4j.LogManager;
 

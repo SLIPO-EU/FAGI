@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions.literal;
+package gr.athena.innovation.fagi.core.function.literal;
 
 import com.google.common.base.CharMatcher;
 import gr.athena.innovation.fagi.exception.ApplicationException;

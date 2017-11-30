@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions;
+package gr.athena.innovation.fagi.core.function;
 
 /**
  * Base interface for a condition function

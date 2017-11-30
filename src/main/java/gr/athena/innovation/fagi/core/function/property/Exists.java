@@ -1,7 +1,7 @@
-package gr.athena.innovation.fagi.core.functions.property;
+package gr.athena.innovation.fagi.core.function.property;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
+import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import java.io.ByteArrayInputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

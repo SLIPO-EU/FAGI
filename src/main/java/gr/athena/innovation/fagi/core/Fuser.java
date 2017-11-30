@@ -3,7 +3,7 @@ package gr.athena.innovation.fagi.core;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
-import gr.athena.innovation.fagi.core.functions.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;

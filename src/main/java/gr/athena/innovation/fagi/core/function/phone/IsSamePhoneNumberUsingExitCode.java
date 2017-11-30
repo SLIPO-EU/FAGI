@@ -1,14 +1,15 @@
-package gr.athena.innovation.fagi.core.functions.phone;
+package gr.athena.innovation.fagi.core.function.phone;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
+import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 
 /**
- *
+ * Class for evaluating phone numbers using country's exit code digits. 
+ * 
  * @author nkarag
  */
-public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
+public class IsSamePhoneNumberUsingExitCode implements IFunction, IFunctionThreeParameters{
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the
@@ -16,10 +17,11 @@ public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
      * 
      * @param number1
      * @param number2
+     * @param exitCodeDigits digits to replace the "+" symbol in an international telephone number. 
      * @return true if the numbers are the same or false otherwise.
      */
     @Override
-    public boolean evaluate(String number1, String number2){
+    public boolean evaluate(String number1, String number2, String exitCodeDigits){
         boolean isSame;
         if(number1.equals(number2)){
             isSame = true;
@@ -27,17 +29,17 @@ public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
             
             PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
             //TODO: using normalized values without asking the user here.
-            String normalizedNumber1 = phoneNumberNormalizer.normalize(number1, null);
-            String normalizedNumber2 = phoneNumberNormalizer.normalize(number2, null);
+            String normalizedNumber1 = phoneNumberNormalizer.normalize(number1, exitCodeDigits);
+            String normalizedNumber2 = phoneNumberNormalizer.normalize(number2, exitCodeDigits);
             
             isSame = normalizedNumber1.equals(normalizedNumber2);
         }
         
         return isSame;
-    }
+    }    
 
     @Override
-    public String getName(){
+    public String getName() {
         String className = this.getClass().getSimpleName().toLowerCase();
         return className;
     }

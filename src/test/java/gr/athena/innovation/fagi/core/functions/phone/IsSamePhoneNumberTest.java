@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.functions.phone;
 
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;

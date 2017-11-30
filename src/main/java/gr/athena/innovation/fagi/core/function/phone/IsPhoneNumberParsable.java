@@ -1,7 +1,7 @@
-package gr.athena.innovation.fagi.core.functions.phone;
+package gr.athena.innovation.fagi.core.function.phone;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.functions.IFunctionSingleParameter;
+import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 
 /**
  *

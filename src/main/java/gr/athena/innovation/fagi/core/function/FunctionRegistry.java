@@ -1,14 +1,14 @@
-package gr.athena.innovation.fagi.core.functions;
+package gr.athena.innovation.fagi.core.function;
 
-import gr.athena.innovation.fagi.core.functions.literal.IsLiteralAbbreviation;
-import gr.athena.innovation.fagi.core.functions.date.IsDateKnownFormat;
-import gr.athena.innovation.fagi.core.functions.property.Exists;
-import gr.athena.innovation.fagi.core.functions.date.IsValidDate;
-import gr.athena.innovation.fagi.core.functions.geo.IsGeometryMoreComplex;
-import gr.athena.innovation.fagi.core.functions.literal.IsSameNormalized;
-import gr.athena.innovation.fagi.core.functions.phone.IsPhoneNumberParsable;
-import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumber;
-import gr.athena.innovation.fagi.core.functions.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
+import gr.athena.innovation.fagi.core.function.property.Exists;
+import gr.athena.innovation.fagi.core.function.date.IsValidDate;
+import gr.athena.innovation.fagi.core.function.geo.IsGeometryMoreComplex;
+import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
+import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.util.HashMap;
 import java.util.Map;

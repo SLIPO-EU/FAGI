@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;

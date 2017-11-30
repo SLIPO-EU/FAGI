@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.rule;
 
 import gr.athena.innovation.fagi.rule.model.Rule;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
-import gr.athena.innovation.fagi.core.functions.FunctionRegistry;
+import gr.athena.innovation.fagi.core.function.FunctionRegistry;
 import java.util.ArrayList;
 import java.util.List;
 

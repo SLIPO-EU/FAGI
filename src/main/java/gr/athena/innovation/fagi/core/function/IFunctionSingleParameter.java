@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions;
+package gr.athena.innovation.fagi.core.function;
 
 /**
  * Interface for a condition function that takes a single parameter as input.

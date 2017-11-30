@@ -1,7 +1,7 @@
-package gr.athena.innovation.fagi.core.functions.geo;
+package gr.athena.innovation.fagi.core.function.geo;
 
-import gr.athena.innovation.fagi.core.functions.IFunction;
-import gr.athena.innovation.fagi.core.functions.IFunctionTwoParameters;
+import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 
 /**
  *
