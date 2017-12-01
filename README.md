@@ -113,7 +113,7 @@ A sample rules.xml file could look like this:
 
 ### Available functions:
 
-* **isDateKnownFormat:** Checks if the given date String is written as a known format. The known formats are defined at the [specification](../blob/master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java)
+* **isDateKnownFormat:** Checks if the given date String is written as a known format. The known formats are defined at the [specification](../master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java)
 * **isValidDate:** Evaluates the given date against the target format.
 * **isGeometryMoreComplex:** Checks if the first geometry has more points than the second.
 * **isLiteralAbbreviation:** Checks if the given literal is or contains an abbreviation of some form.
