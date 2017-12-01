@@ -112,6 +112,17 @@ A sample rules.xml file could look like this:
 </rules>
 
 ### Available functions:
+
+* **isDateKnownFormat:** Checks if the given date String is written as a known format. The known formats are defined at the [specification](../blob/master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java)
+* **isValidDate:** Evaluates the given date against the target format.
+* **isGeometryMoreComplex:** Checks if the first geometry has more points than the second.
+* **isLiteralAbbreviation:** Checks if the given literal is or contains an abbreviation of some form.
+* **isSameNormalized:** Checks if the two given literals are same. It normalizes the two literals and checks again if the first check fails.
+* **isPhoneNumberParsable:** Checks if the given phone number is consisted of only numbers or contains special character and/or exit code.
+* **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
+* **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
+* **exists:** Checks if the given property exists in the model of the given entity.
+
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
 | isDateKnownFormat      | a or b | Date | isDateKnownFormat(a)
