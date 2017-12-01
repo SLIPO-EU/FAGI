@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
@@ -62,7 +61,6 @@ public class Fuser implements IFuser{
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException{
         
         linkedEntitiesNotFoundInDataset = 0;
-        WKTReader wellKnownTextReader = new WKTReader();
 
         Model left = LeftModel.getLeftModel().getModel();
         Model right = RightModel.getRightModel().getModel();
@@ -80,8 +78,8 @@ public class Fuser implements IFuser{
 
             InterlinkedPair pair = new InterlinkedPair();
 
-            Entity entityA = constructEntity(modelA, link.getNodeA(), wellKnownTextReader);
-            Entity entityB = constructEntity(modelB, link.getNodeB(), wellKnownTextReader);
+            Entity entityA = constructEntity(modelA, link.getNodeA());
+            Entity entityB = constructEntity(modelB, link.getNodeB());
             
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
@@ -155,7 +153,7 @@ public class Fuser implements IFuser{
         }
     }
     
-    private Entity constructEntity(Model model, String resourceURI, WKTReader wellKnownTextReader) throws ParseException {
+    private Entity constructEntity(Model model, String resourceURI) throws ParseException {
         
         Entity entity = new Entity();
         Metadata metadata = new Metadata(model);
