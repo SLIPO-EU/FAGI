@@ -26,7 +26,7 @@ public class AbbreviationResolverTest {
 
         AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);        
         
-    }    
+    }
 
     /**
      * Test of getInstance method, of class AbbreviationResolver.

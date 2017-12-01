@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.normalizer;
 
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.normalizer.generic.AlphabeticalNormalizer;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,19 @@ public class MultipleGenericNormalizer implements INormalizer{
         AbbreviationResolver resolver = AbbreviationResolver.getInstance();
         String possibleAbbreviation = resolver.getAbbreviation(literalA, literalB);
         
+        String recoveredAbbr = null;
+        if(possibleAbbreviation != null){
+            recoveredAbbr = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
+        }
+        
+        if(recoveredAbbr != null){
+            normalizedLiteral = normalizedLiteral.replace(recoveredAbbr, literalA);
+        }
+        
         //normalized literal has abbreviation replaced if it is known or can be recovered from literalB.
 
         //remove punctuation except parenthesis
-        normalizedLiteral = literalA.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
+        normalizedLiteral = normalizedLiteral.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
 
         //transform to lowercase
         normalizedLiteral = normalizedLiteral.toLowerCase();
@@ -44,34 +54,18 @@ public class MultipleGenericNormalizer implements INormalizer{
         //remove special character except parenthesis
         normalizedLiteral = normalizedLiteral.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX, " ");
 
-        //for abbreviations:
-        //tokenize with spaces. 
-        //
-
-        //try to replace abbreviation with full string if matches
-        IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
-        
-
-        
-
-        if(!possibleAbbreviation.equals("")){ //getAbbreviation could not find abbreviation
-            //recover full words of possible abbreviation from literalB.
-            //replace possible abbreviation in literal A with full words
-            String recoveredAbbreviation = recoverAbbreviation(possibleAbbreviation, literalB);
-            
-        }
-
-        if(isLiteralAbbreviation.evaluate(literalA)){
-            //TODO: update abbreviation recognition with the new rules
-
-        }
-
         //sort string alphabetically
+        
+        AlphabeticalNormalizer an = new AlphabeticalNormalizer();
+        normalizedLiteral = an.normalize(normalizedLiteral);
+
         //identify special/frequent terms:
         //-If both contain them -> map these terms to each other and produce an individual score for the final similarity.
         //-If only one contains them -> exclude it and assign a small weight for the mismatch
         //Optionally concatenate all words of each string for specific distance measures.
 
+        //
+        
         if(StringUtils.isBlank(literalA)){
             return "";
         } else {

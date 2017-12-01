@@ -53,10 +53,10 @@ public class QualityViewer {
         int index = 0;
         for(String rdfProperty : rdfProperties){
             String propertyPath;
-            
+
             File propertyFile = new File(fusionSpecification.getPathOutput());
             File parentDir = propertyFile.getParentFile();
-            
+
             String filename;
             if(rdfProperty.lastIndexOf("#") != -1){
                 filename = rdfProperty.substring(rdfProperty.lastIndexOf("#") + 1);

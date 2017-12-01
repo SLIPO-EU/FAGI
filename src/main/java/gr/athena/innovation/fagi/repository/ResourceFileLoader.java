@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.repository;
 
-import com.google.common.io.Files;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,10 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -43,7 +43,7 @@ public class ResourceFileLoader {
     }
 
     public Map<String, String> getKnownAbbreviationsMap() throws IOException, ApplicationException{
-        InputStream inputStream = getClass().getResourceAsStream("/name_abbreviations.txt");
+        InputStream inputStream = getClass().getResourceAsStream("/matching/name_abbreviations.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         
         BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -64,7 +64,7 @@ public class ResourceFileLoader {
     }
 
     public List<String> getRDFProperties() throws IOException, ApplicationException{
-        InputStream inputStream = getClass().getResourceAsStream("/rdf_properties.txt");
+        InputStream inputStream = getClass().getResourceAsStream("/matching/rdf_properties.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         
         BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -76,5 +76,20 @@ public class ResourceFileLoader {
             properties.add(line);
         }
         return properties;   
-    }       
+    }
+    
+    public Set<String> getSpecialTerms() throws IOException, ApplicationException{
+        InputStream inputStream = getClass().getResourceAsStream("/matching/special_terms.txt");
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+
+        Set<String> specialTerms = new HashSet<>();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            specialTerms.add(line);
+        }
+        return specialTerms;   
+    }      
 }

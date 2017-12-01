@@ -89,6 +89,7 @@ public class FagiInstance {
         ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
         List<String> rdfProperties = resourceFileLoader.getRDFProperties();
+        Set<String> specialTerms = resourceFileLoader.getSpecialTerms();
 
         AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
 
@@ -98,7 +99,6 @@ public class FagiInstance {
 
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-
             MetricSelector metricSelector = new MetricSelector();
             QualityViewer qualityViewer = new QualityViewer(interlinkedEntities, ruleCatalog, metricSelector, fusionSpecification);
             qualityViewer.printSimilarityResults(rdfProperties);

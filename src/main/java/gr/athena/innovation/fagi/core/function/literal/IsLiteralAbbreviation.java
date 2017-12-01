@@ -46,8 +46,8 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
         //> Exploit the rebus principle (eg. inb4 "in before", NRG "energy")       
 
         if (!StringUtils.isBlank(literal)) {
-            boolean matches = literal.matches(SpecificationConstants.Regex.ABBR_REGEX2);
-            return matches;
+            AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+            return resolver.containsAbbreviation(literal);
         } else {
             return false;
         }

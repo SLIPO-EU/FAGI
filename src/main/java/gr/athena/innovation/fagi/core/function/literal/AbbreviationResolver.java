@@ -59,16 +59,8 @@ public class AbbreviationResolver{
     public boolean containsAbbreviation(String literal){
         logger.trace("check if literal contains abbreviation: " + literal);     
 
-        String[] words = tokenize(literal);
-        for (String word : words) {
-            if (!StringUtils.isBlank(word)) {
-                boolean matches = word.matches(SpecificationConstants.Regex.ABBR_REGEX3);
-                if(matches){
-                    return true;
-                }
-            }
-        }
-        return false;
+        String recognized = getAbbreviation(literal, " - ");
+        return recognized != null;
     }
 
     /**
