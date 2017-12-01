@@ -1,3 +1,5 @@
 school
 street
 bar
+restaurant
+(restaurant)
