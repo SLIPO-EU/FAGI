@@ -114,7 +114,7 @@ A sample rules.xml file could look like this:
 ### Available functions:
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
-| isDateKnownFormat      | a or b | Date | isDateKnowFormat(a)
+| isDateKnownFormat      | a or b | Date | isDateKnownFormat(a)
 | isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
 | isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 

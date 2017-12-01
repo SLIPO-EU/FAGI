@@ -2,7 +2,6 @@ package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
-import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
