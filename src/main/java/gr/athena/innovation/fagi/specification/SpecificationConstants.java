@@ -113,5 +113,6 @@ public class SpecificationConstants {
         public static final String NORMALIZE_ALPHABETICALLY = "alphabeticalnormalizer";
         public static final String TO_LOWER_CASE = "tolowercase";
         public static final String REMOVE_SPECIAL_CHARACTERS = "removespecialcharacters";
+        public static final String MULTIPLE_NORMALIZER = "multiplegenericnormalizer";
     }
 }

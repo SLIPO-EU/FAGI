@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Uses a combination of the other available normalizations and similarity functions. Produces normalized literals for
@@ -23,6 +24,8 @@ import org.apache.commons.lang3.Validate;
  */
 public class MultipleGenericNormalizer implements INormalizer {
 
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(MultipleGenericNormalizer.class);
+    
     /**
      * Normalize literalA using the other available normalizations and optionally information from literalB.
      *
@@ -88,16 +91,17 @@ public class MultipleGenericNormalizer implements INormalizer {
 
         String recoveredAbbr = null;
         if (possibleAbbreviation != null) {
-            recoveredAbbr = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
-        }
 
-        if (recoveredAbbr != null) {
-            normalizedLiteral = normalizedLiteral.replace(recoveredAbbr, literalA);
+            recoveredAbbr = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
+
+            if (recoveredAbbr != null) {
+                literalA = literalA.replace(possibleAbbreviation, recoveredAbbr);
+            }
         }
 
         //normalized literal has abbreviation replaced if it is known or can be recovered from literalB.
         //remove punctuation except parenthesis
-        normalizedLiteral = normalizedLiteral.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
+        normalizedLiteral = literalA.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
 
         //transform to lowercase
         normalizedLiteral = normalizedLiteral.toLowerCase();

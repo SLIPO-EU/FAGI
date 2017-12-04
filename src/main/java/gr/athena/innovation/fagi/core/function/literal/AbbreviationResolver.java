@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.function.literal;
 
 import com.google.common.base.CharMatcher;
 import gr.athena.innovation.fagi.exception.ApplicationException;
+import java.util.Arrays;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -189,7 +190,10 @@ public class AbbreviationResolver {
                         if (wordsB[carret + j].toLowerCase().startsWith(String.valueOf(abbreviationChars[j]))) {
                             full[j] = wordsB[carret + j];
                             if (j == abbreviationChars.length - 1) {
-                                return String.join(" ", full);
+                                boolean hasNull = Arrays.asList(full).contains(null);
+                                if(!hasNull){
+                                    return String.join(" ", full);
+                                }
                             }
                         }
                     }
@@ -198,7 +202,13 @@ public class AbbreviationResolver {
                 }
             }
         }
-        return String.join(" ", full);
+        
+        boolean hasNull = Arrays.asList(full).contains(null);
+        if(!hasNull){
+            return String.join(" ", full);
+        } else {
+            return null;
+        }
     }
 
     /**
