@@ -38,7 +38,7 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    private final boolean qualityOn = true;
+    private final boolean qualityOn = false;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -103,8 +103,8 @@ public class FagiInstance {
             QualityViewer qualityViewer = new QualityViewer(interlinkedEntities, ruleCatalog, metricSelector, fusionSpecification);
             qualityViewer.printSimilarityResults(rdfProperties);
             
-            //path of csv, path for similarity results
-            qualityViewer.fromCSV("", "");
+            //path of csv, path of similarity results
+            //qualityViewer.fromCSV("", "");
         }
 
         Fuser fuser = new Fuser(interlinkedEntities);
