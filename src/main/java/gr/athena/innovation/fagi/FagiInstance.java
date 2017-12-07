@@ -102,6 +102,9 @@ public class FagiInstance {
             MetricSelector metricSelector = new MetricSelector();
             QualityViewer qualityViewer = new QualityViewer(interlinkedEntities, ruleCatalog, metricSelector, fusionSpecification);
             qualityViewer.printSimilarityResults(rdfProperties);
+            
+            //path of csv, path for similarity results
+            qualityViewer.fromCSV("", "");
         }
 
         Fuser fuser = new Fuser(interlinkedEntities);
