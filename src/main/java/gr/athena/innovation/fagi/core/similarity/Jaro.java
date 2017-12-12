@@ -6,7 +6,8 @@ import java.math.RoundingMode;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class providing methods for computing Jaro Similarity and Jaro Distance.
+ * 
  * @author nkarag
  */
 public class Jaro {

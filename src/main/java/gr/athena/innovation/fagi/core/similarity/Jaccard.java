@@ -4,7 +4,8 @@ import org.apache.commons.text.similarity.JaccardDistance;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 /**
- *
+ * Class providing methods for computing Jaccard Distance and Jaccard Similarity.
+ * 
  * @author nkarag
  */
 public class Jaccard {

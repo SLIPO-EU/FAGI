@@ -67,9 +67,9 @@ public class MultipleGenericNormalizer implements INormalizer {
         //-If only one contains them -> exclude it and assign a small weight for the mismatch
         setA.stream().forEach((token) -> {
             if (terms.contains(token) && setB.contains(token)) {
-                weightedLiteral.putTerm(token, 1.0);
+                weightedLiteral.putTerm(token, 0.9);
             } else if (terms.contains(token)) {
-                weightedLiteral.putTerm(token, 0.1);
+                weightedLiteral.putTerm(token, 0.2);
             }
         });
 
@@ -78,6 +78,11 @@ public class MultipleGenericNormalizer implements INormalizer {
 
         //TODO:
         //Optionally concatenate all words of each string for specific distance measures.
+        
+        //concatenate mismatced to use with a single weight
+        weightedLiteral.setMisMatched(weightedLiteral.getTermsLiteral());
+        weightedLiteral.setMisMatchedWeight(0.5);
+        
         return weightedLiteral;
     }
 
