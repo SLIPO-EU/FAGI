@@ -131,7 +131,7 @@ public class QualityViewer {
     public void fromCSV(String path, String outputPath) throws FileNotFoundException, IOException{
         String csvFile = path;
         String line = "";
-        String cvsSplitBy = ",";
+        String cvsSplitBy = "#";
 
         BufferedReader br = new BufferedReader(new FileReader(csvFile));
         int i = 0;
@@ -147,69 +147,73 @@ public class QualityViewer {
             file.createNewFile();                
         }
             
-        BufferedWriter namesWriter = new BufferedWriter(new FileWriter(file, true));
         int l = 0;
-        while ((line = br.readLine()) != null) {
-
-            //skip first line of csv
-            if(l == 0){
+        //try {
+            BufferedWriter namesWriter = new BufferedWriter(new FileWriter(file, true));
+            l = 0;
+            while ((line = br.readLine()) != null) {
+                
+                //skip first line of csv
+                if(l == 0){
+                    l++;
+                    continue;
+                }
+                
+                // use comma as separator
+                String[] spl = line.split(cvsSplitBy);
+                
+                //StringBuffer sb = new StringBuffer("");
+                
+                if(spl.length < 22){
+                    continue;
+                }
+                String idA = spl[0];
+                String idB = spl[1];
+                
+                //String distanceMeters = spl[2];
+                
+                String nameA = spl[3];
+                String nameB = spl[4];
+                
+                //String nameFusionAction = spl[5];
+                
+                String streetA = spl[6];
+                String streetB = spl[7];
+                
+                //String streetFusionAction = spl[8];
+                
+                String streetNumberA = spl[9];
+                String streetNumberB = spl[10];
+                
+                String phoneA = spl[11];
+                String phoneB = spl[12];
+                
+                //String phoneFusionAction = spl[13];
+                
+                String emailA = spl[14];
+                String emailB = spl[15];
+                
+                //String emailFusionAction = spl[16];
+                
+                String websiteA = spl[17];
+                String websiteB = spl[18];
+                
+                //String websiteFusionAction = spl[19];
+                
+                //String score = spl[20];
+                //String names1 = spl[21];
+                
+                String acceptance = spl[22];
+                
+                String namesLine = getPropertyLine(idA, idB, nameA, nameB, acceptance);
+                
+                namesWriter.append(namesLine);
+                namesWriter.newLine();
+                
                 l++;
-                continue;
-            }
-            
-            // use comma as separator
-            String[] spl = line.split(cvsSplitBy);
-
-            //StringBuffer sb = new StringBuffer("");
-            
-            if(spl.length < 22){
-                continue;
-            }
-            String idA = spl[0];
-            String idB = spl[1];
-
-            //String distanceMeters = spl[2];
-            
-            String nameA = spl[3];
-            String nameB = spl[4];
-            
-            //String nameFusionAction = spl[5];
-            
-            String streetA = spl[6];
-            String streetB = spl[7];
-            
-            //String streetFusionAction = spl[8];
-            
-            String streetNumberA = spl[9];
-            String streetNumberB = spl[10];
-            
-            String phoneA = spl[11];
-            String phoneB = spl[12];
-            
-            //String phoneFusionAction = spl[13];
-            
-            String emailA = spl[14];
-            String emailB = spl[15];  
-            
-            //String emailFusionAction = spl[16];
-
-            String websiteA = spl[17];
-            String websiteB = spl[18]; 
-            
-            //String websiteFusionAction = spl[19];
-            
-            //String score = spl[20];
-            //String names1 = spl[21];
-            
-            String acceptance = spl[22];
-      
-            String namesLine = getPropertyLine(idA, idB, nameA, nameB, acceptance);
-
-            namesWriter.append(namesLine);
-            namesWriter.newLine();
-
-            l++;
-        } 
+                }
+            //} catch(Exception ex){  
+            //}
         logger.info("Total lines: " + l);
     }
 

@@ -107,13 +107,14 @@ public class MultipleGenericNormalizer implements INormalizer {
         normalizedLiteral = normalizedLiteral.toLowerCase();
 
         //remove special character except parenthesis
+        //TODO: characters like ö are treated as non word. Change regex
         normalizedLiteral = normalizedLiteral.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX, " ");
 
         //sort string alphabetically
         AlphabeticalNormalizer normalizer = new AlphabeticalNormalizer();
 
+        //Add step for computing similarity before the transformation to weigted Literals.
         return normalizer.normalize(normalizedLiteral);
-
     }
 
     //tokenize on all non word characters
