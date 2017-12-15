@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.specification;
 
 import java.math.BigDecimal;
+import java.text.Collator;
 
 /**
  * Class with the specification constants used across the application.
@@ -47,6 +48,8 @@ public class SpecificationConstants {
 
     public static final String A = "a";
     public static final String B = "b";
+    
+    public static final int COLLATOR_STRENGTH = Collator.TERTIARY;
 
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
