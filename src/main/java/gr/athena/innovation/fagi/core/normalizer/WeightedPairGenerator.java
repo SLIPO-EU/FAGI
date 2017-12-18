@@ -2,7 +2,6 @@ package gr.athena.innovation.fagi.core.normalizer;
 
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
-import static gr.athena.innovation.fagi.core.normalizer.MultipleGenericNormalizer.tokenize;
 import gr.athena.innovation.fagi.core.normalizer.generic.AlphabeticalNormalizer;
 import gr.athena.innovation.fagi.model.WeightedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;

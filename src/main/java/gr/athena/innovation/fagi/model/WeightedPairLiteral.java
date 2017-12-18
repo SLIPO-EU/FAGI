@@ -10,14 +10,20 @@ import java.util.List;
  */
 public class WeightedPairLiteral {
 
+    private static final char CONNECTOR = ' ';
+    
     private String baseValueA;
     private String baseValueB;
     private double baseWeight;
-    private String mismatchA;
-    private String mismatchB;
     private List<LinkedTerm> linkedTerms = new ArrayList();
+    
     private List<String> mismatchTokensA = new ArrayList();
     private List<String> mismatchTokensB = new ArrayList();
+    private double mismatchWeight;
+    
+    private List<String> uniqueSpecialTermsA = new ArrayList();
+    private List<String> uniqueSpecialTermsB = new ArrayList();
+    private double specialTermsWeight;
     
     public String getBaseValueA() {
         return baseValueA;
@@ -33,22 +39,6 @@ public class WeightedPairLiteral {
 
     public void setBaseValueB(String baseValueB) {
         this.baseValueB = baseValueB;
-    }
-
-    public String getMismatchA() {
-        return mismatchA;
-    }
-
-    public void setMismatchA(String mismatchA) {
-        this.mismatchA = mismatchA;
-    }
-
-    public String getMismatchB() {
-        return mismatchB;
-    }
-
-    public void setMismatchB(String mismatchB) {
-        this.mismatchB = mismatchB;
     }
 
     public List<LinkedTerm> getLinkedTerms() {
@@ -93,5 +83,118 @@ public class WeightedPairLiteral {
 
     public void setBaseWeight(double baseWeight) {
         this.baseWeight = baseWeight;
+    } 
+
+    public void setUniqueSpecialTermsA(List<String> uniqueSpecialTermsA) {
+        this.uniqueSpecialTermsA = uniqueSpecialTermsA;
+    }
+
+    public void setUniqueSpecialTermsB(List<String> uniqueSpecialTermsB) {
+        this.uniqueSpecialTermsB = uniqueSpecialTermsB;
+    }
+    
+    public void addUniqueSpecialTermA(String specialA) {
+        uniqueSpecialTermsA.add(specialA);
+    }  
+    
+    public List<String> getUniqueSpecialTermsA() {
+        return uniqueSpecialTermsA;
+    }
+
+    public void addUniqueSpecialTermB(String specialB) {
+        uniqueSpecialTermsB.add(specialB);
+    }  
+    
+    public List<String> getUniqueSpecialTermsB() {
+        return uniqueSpecialTermsB;
+    }
+
+    public String mismatchToStringA(){
+
+        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        
+        mismatchTokensA.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
+
+    public String mismatchToStringB(){
+
+        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        
+        mismatchTokensB.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
+
+    public String specialTermsToStringA(){
+
+        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        
+        uniqueSpecialTermsA.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
+
+    public String specialTermsToStringB(){
+
+        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        
+        uniqueSpecialTermsB.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
+    
+    public String getCompleteA(){
+
+        StringBuilder sb = new StringBuilder(baseValueA).append(CONNECTOR);
+        
+        mismatchTokensA.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+
+        uniqueSpecialTermsA.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
+    
+    public String getCompleteB(){
+        StringBuilder sb = new StringBuilder(baseValueB).append(CONNECTOR);
+        
+        mismatchTokensB.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+
+        uniqueSpecialTermsB.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();        
+    }
+
+    public double getMismatchWeight() {
+        return mismatchWeight;
+    }
+
+    public void setMismatchWeight(double mismatchWeight) {
+        this.mismatchWeight = mismatchWeight;
+    }
+
+    public double getSpecialTermsWeight() {
+        return specialTermsWeight;
+    }
+
+    public void setSpecialTermsWeight(double specialTermsWeight) {
+        this.specialTermsWeight = specialTermsWeight;
     }
 }

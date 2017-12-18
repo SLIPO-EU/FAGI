@@ -79,6 +79,7 @@ public class SpecificationConstants {
         public static final String UPPER_CASE_2 = "^(.*?[A-Z]){2,}";
         public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
         public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
+        public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX_2 = "[^\\p{L}\\p{Nd}]+";
         public static final String PUNCTUATION_EXCEPT_PARENTHESIS_REGEX = "[\\p{Punct}&&[^()]]";
         
     }    
