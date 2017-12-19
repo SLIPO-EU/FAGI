@@ -24,7 +24,7 @@ public class AbbreviationResolverTest {
         ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
 
-        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);        
+        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
         
     }
 

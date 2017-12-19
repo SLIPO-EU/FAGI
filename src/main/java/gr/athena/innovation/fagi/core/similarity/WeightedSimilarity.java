@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import java.util.List;
+import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -149,7 +150,7 @@ public class WeightedSimilarity {
         String baseB = pair.getBaseValueB();
         double baseWeight = pair.getBaseWeight();
         
-        List<LinkedTerm> terms = pair.getLinkedTerms();
+        Set<LinkedTerm> terms = pair.getLinkedTerms();
         
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();

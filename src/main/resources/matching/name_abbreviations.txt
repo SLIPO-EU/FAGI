@@ -1,2 +1,3 @@
 avn.=avenue
 Dr.=Doctor
+St.=street

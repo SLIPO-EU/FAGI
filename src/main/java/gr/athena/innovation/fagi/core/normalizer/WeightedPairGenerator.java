@@ -58,8 +58,8 @@ public class WeightedPairGenerator {
             }
         });
 
-        weightedPairLiteral.setBaseValueA(normalizedA);
-        weightedPairLiteral.setBaseValueB(normalizedB);
+        weightedPairLiteral.setBaseValueA(normalizedA.trim());
+        weightedPairLiteral.setBaseValueB(normalizedB.trim());
         
         weightedLiteral.setBaseLiteral(normalizedA);
         weightedLiteral.setBaseWeight(0.5);

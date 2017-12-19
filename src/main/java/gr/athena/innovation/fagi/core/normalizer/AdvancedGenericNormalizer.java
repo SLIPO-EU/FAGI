@@ -10,21 +10,27 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  * @author nkarag
  */
 public class AdvancedGenericNormalizer {
-
+    
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizer.class);
+    
+    private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
+    
     private final double baseWeight = 0.5;
-    private final double linkedWeight = 0.8;
-    private final double mismatchWeight = 0.2;
+    private final double linkedWeight = 0.1;
+    private final double mismatchWeight = 0.4;
 
     /**
      *
@@ -69,74 +75,97 @@ public class AdvancedGenericNormalizer {
         return weightedPair;
     }
 
-    private WeightedPairLiteral assignMismatch(WeightedPairLiteral weightedPairLiteral, String[] tokensA, 
-            String[] tokensB, Locale locale) {
+    private WeightedPairLiteral assignMismatch(WeightedPairLiteral weightedPairLiteral, String[] tokensAar, 
+            String[] tokensBar, Locale locale) {
 
-        if(locale == null){
-            locale = Locale.ENGLISH;
-        }
-        
-        Collator enCollator = Collator.getInstance(locale);
-        enCollator.setStrength(SpecificationConstants.COLLATOR_STRENGTH);
+        Collator collator = resolveCollator(locale);
 
         List<String> mismatchA = new ArrayList<>();
         List<String> mismatchB = new ArrayList<>();
-
+        
+        List<String> tokensA = new LinkedList<>(Arrays.asList(tokensAar));
+        List<String> tokensB = new LinkedList<>(Arrays.asList(tokensBar));
+        
         StringBuilder a = new StringBuilder();
         StringBuilder b = new StringBuilder();
 
         int carret_i = 0;
         int carret_j = 0;
 
-        for (int i = 0; i < tokensA.length; i++) {
-            //TODO: add possible offsets to mismatch list
-            String ta = tokensA[carret_i];
-            String tb = tokensB[carret_j];
+        int br = 0;
+        
+        while(br < tokensA.size() + tokensB.size()) {
 
-            int compareResult = enCollator.compare(ta, tb);
+            String ta = tokensA.get(carret_i);
+            String tb = tokensB.get(carret_j);
+            
+            int compareResult = collator.compare(ta, tb);
 
             if (compareResult == 0) {
 
-                a.append(ta).append(" ");
-                b.append(tb).append(" ");
+                a.append(ta).append(CONNECTOR);
+                b.append(tb).append(CONNECTOR);
 
                 carret_i++;
                 carret_j++;
 
-                if (carret_i > tokensA.length - 1) {
+                if (carret_j > tokensA.size() - 1) {
 
+                    appendOffSets(carret_j, b, tokensB);
+                    
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
 
-                } else if (carret_j > tokensB.length - 1) {
+                } else if (carret_i > tokensB.size() - 1) {
+                    
+                    appendOffSets(carret_i, a, tokensA);
+                    
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
             } else if (compareResult > 0) {
-
-                mismatchA.add(ta);
-
-                carret_i++;
-
-                if (carret_i > tokensA.length - 1) {
-                    return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
-                }
-
-            } else {
 
                 mismatchB.add(tb);
 
                 carret_j++;
 
-                if (carret_j > tokensB.length - 1) {
+                if (carret_j > tokensA.size() - 1) {
+                    
+                    appendOffSets(carret_j, b, tokensB);
+                    
+                    return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
+                }
+
+            } else {
+
+                mismatchA.add(ta);
+                
+                carret_i++;
+
+                if (carret_i > tokensB.size() - 1) {
+                    
+                    appendOffSets(carret_i, a, tokensA);
+                    
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
             }
+            br++;
         }
 
         return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
     }
 
+    private Collator resolveCollator(Locale locale) {
+        if(locale == null){
+            locale = Locale.ENGLISH;
+        }
+        Collator collator = Collator.getInstance(locale);
+        collator.setStrength(SpecificationConstants.COLLATOR_STRENGTH);
+        
+        return collator;
+    }
+
     private List<String> getTokenList(String text) {
-        return Arrays.asList(tokenize(text));
+        List<String> tokens = new LinkedList<>(Arrays.asList(tokenize(text)));
+        return tokens;
     }
 
     private WeightedPairLiteral getWeightedPairLiteral(WeightedPairLiteral weightedPairLiteral,
@@ -144,8 +173,8 @@ public class AdvancedGenericNormalizer {
 
         weightedPairLiteral.setMismatchTokensA(mismatchA);
         weightedPairLiteral.setMismatchTokensB(mismatchB);
-        weightedPairLiteral.setBaseValueA(a.toString());
-        weightedPairLiteral.setBaseValueB(b.toString());
+        weightedPairLiteral.setBaseValueA(a.toString().trim());
+        weightedPairLiteral.setBaseValueB(b.toString().trim());
 
         return weightedPairLiteral;
     }
@@ -157,7 +186,7 @@ public class AdvancedGenericNormalizer {
         String[] split = text.toString().split("\\s+");
         return split;
     }
-
+    
     private void addLinkedTerm(WeightedPairLiteral weightedPairLiteral, List<String> tokens, String token) {
         LinkedTerm linkedTerm = new LinkedTerm();
         linkedTerm.setTerm(token);
@@ -196,5 +225,12 @@ public class AdvancedGenericNormalizer {
                 }
             }
         });
+    }
+    
+    private void appendOffSets(int carret, StringBuilder builder, List<String> tokens) {
+        while(carret < tokens.size()-1){
+            builder.append(tokens.get(carret)).append(CONNECTOR);
+            carret++;
+        }
     }
 }

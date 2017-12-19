@@ -1,7 +1,10 @@
 package gr.athena.innovation.fagi.model;
 
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Class representing a pair of two literals.
@@ -10,12 +13,12 @@ import java.util.List;
  */
 public class WeightedPairLiteral {
 
-    private static final char CONNECTOR = ' ';
+    private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
     
     private String baseValueA;
     private String baseValueB;
     private double baseWeight;
-    private List<LinkedTerm> linkedTerms = new ArrayList();
+    private Set<LinkedTerm> linkedTerms = new HashSet();
     
     private List<String> mismatchTokensA = new ArrayList();
     private List<String> mismatchTokensB = new ArrayList();
@@ -41,11 +44,11 @@ public class WeightedPairLiteral {
         this.baseValueB = baseValueB;
     }
 
-    public List<LinkedTerm> getLinkedTerms() {
+    public Set<LinkedTerm> getLinkedTerms() {
         return linkedTerms;
     }
 
-    public void setLinkedTerms(List<LinkedTerm> linkedTerms) {
+    public void setLinkedTerms(Set<LinkedTerm> linkedTerms) {
         this.linkedTerms = linkedTerms;
     }
     
@@ -164,6 +167,10 @@ public class WeightedPairLiteral {
         uniqueSpecialTermsA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
+
+        linkedTerms.stream().forEach((token) -> {
+            sb.append(token.getTerm()).append(CONNECTOR);
+        });
         
         return sb.toString();
     }
@@ -177,6 +184,10 @@ public class WeightedPairLiteral {
 
         uniqueSpecialTermsB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
+        });
+        
+        linkedTerms.stream().forEach((token) -> {
+            sb.append(token.getTerm()).append(CONNECTOR);
         });
         
         return sb.toString();        

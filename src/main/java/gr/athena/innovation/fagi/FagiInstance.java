@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi;
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.function.FunctionRegistry;
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.TermResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
@@ -92,6 +93,7 @@ public class FagiInstance {
         Set<String> specialTerms = resourceFileLoader.getSpecialTerms();
 
         AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
+        TermResolver.setTerms(specialTerms);
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
