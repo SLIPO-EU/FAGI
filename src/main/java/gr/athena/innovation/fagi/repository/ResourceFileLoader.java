@@ -8,11 +8,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import org.apache.logging.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Class containing methods for loading resources.
@@ -21,7 +29,9 @@ import java.util.TreeMap;
  */
 public class ResourceFileLoader {
 
-    public static TreeMap<String, String> getProperties(String file) throws IOException, ApplicationException {
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ResourceFileLoader.class);
+    
+    public static Map<String, String> getProperties(String file) throws IOException, ApplicationException {
         final int left = 0;
         final int right = 1;
 
@@ -39,7 +49,7 @@ public class ResourceFileLoader {
                 }
             }
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     public Map<String, String> getKnownAbbreviationsMap() throws IOException, ApplicationException {
@@ -60,7 +70,7 @@ public class ResourceFileLoader {
                 map.put(pair[left].trim(), pair[right].trim());
             }
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     public List<String> getRDFProperties() throws IOException, ApplicationException {
@@ -75,7 +85,7 @@ public class ResourceFileLoader {
         while ((line = reader.readLine()) != null) {
             properties.add(line);
         }
-        return properties;
+        return Collections.unmodifiableList(properties);
     }
 
     public Set<String> getSpecialTerms() throws IOException, ApplicationException {
@@ -90,6 +100,31 @@ public class ResourceFileLoader {
         while ((line = reader.readLine()) != null) {
             specialTerms.add(line);
         }
-        return specialTerms;
+        
+        return Collections.unmodifiableSet(specialTerms);
     }
+    
+    public Map<String, String> getExitCodes() throws IOException, ApplicationException, ParseException {
+        InputStream inputStream = getClass().getResourceAsStream("/matching/country_codes.json");
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        
+        JSONParser parser = new JSONParser();
+        
+        Map<String, String> codes = new HashMap<>();
+        
+        Object obj = parser.parse(reader);
+
+        JSONArray codeArray = (JSONArray) obj;
+
+        Iterator<JSONObject> iterator = codeArray.iterator();
+        while (iterator.hasNext()) {
+            JSONObject jsonObject = iterator.next();
+            String countryCode = (String) jsonObject.get("code");
+            String callingCode = (String) jsonObject.get("callingCode");
+            codes.put(countryCode, callingCode);
+        }
+        return Collections.unmodifiableMap(codes);
+    }    
 }

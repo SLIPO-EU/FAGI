@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.function.FunctionRegistry;
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
+import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
@@ -47,7 +48,8 @@ public class FagiInstance {
     }
 
     public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
-            com.vividsolutions.jts.io.ParseException, WrongInputException, ApplicationException {
+            com.vividsolutions.jts.io.ParseException, WrongInputException, 
+            ApplicationException, org.json.simple.parser.ParseException {
 
         long startTimeInput = System.currentTimeMillis();
         //Validate input
@@ -91,9 +93,11 @@ public class FagiInstance {
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
         List<String> rdfProperties = resourceFileLoader.getRDFProperties();
         Set<String> specialTerms = resourceFileLoader.getSpecialTerms();
+        Map<String, String> codes = resourceFileLoader.getExitCodes();
 
         AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
         TermResolver.setTerms(specialTerms);
+        CallingCodeResolver.setCodes(codes);
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
