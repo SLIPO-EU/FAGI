@@ -9,7 +9,6 @@ import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -43,18 +42,6 @@ public class AdvancedGenericNormalizerTest {
         AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
         TermResolver.setTerms(specialTerms);        
     }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of getWeightedPair method, of class AdvancedGenericNormalizer.
@@ -75,8 +62,7 @@ public class AdvancedGenericNormalizerTest {
         NormalizedLiteral normalizedLiteralB = new NormalizedLiteral();
         normalizedLiteralB.setIsNormalized(true);
         normalizedLiteralB.setLiteral("bar ccc Ddd Eee");
-        normalizedLiteralB.setNormalized("bar ccc ddd eee");        
-        
+        normalizedLiteralB.setNormalized("bar ccc ddd eee");
         
         Set<LinkedTerm> linkedTerms = new HashSet<>();
         

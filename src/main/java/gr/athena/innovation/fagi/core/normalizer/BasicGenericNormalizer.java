@@ -35,7 +35,7 @@ public class BasicGenericNormalizer {
         return createNormalizedLiteral(literalA, tempString);
     }
 
-    //1)Recover abbreviation if possible
+    //1)Recover abbreviation if possible. Returns the whole literalA.
     private String getAbbreviation(String literalA, String literalB) {
 
         AbbreviationResolver resolver = AbbreviationResolver.getInstance();
