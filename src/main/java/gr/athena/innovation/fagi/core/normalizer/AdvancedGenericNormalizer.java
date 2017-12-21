@@ -33,11 +33,17 @@ public class AdvancedGenericNormalizer {
     private final double mismatchWeight = 0.4;
 
     /**
-     *
+     * Executes some custom steps in order to produce a weighted normalized pair of literals. 
+     * The input is already normalized literals using the basic normalization. 
+     * Custom steps include:
+     * Comparing word by word and recognize alphabetical mismatches based on Collator strength. 
+     * Partitioning the words in different categories (base, mismatch, linked terms) with additional weights.
+     * Mismatches and linked terms are excluded from each base literal.
+
      * @param normalizedLiteralA
      * @param normalizedLiteralB
      * @param locale
-     * @return
+     * @return the weighted pair literal.
      */
     public WeightedPairLiteral getWeightedPair(NormalizedLiteral normalizedLiteralA, 
             NormalizedLiteral normalizedLiteralB, Locale locale) {
@@ -71,6 +77,9 @@ public class AdvancedGenericNormalizer {
 
         //custom alphabetical re-ordering, assign mismatches
         WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral, tokenize(baseA), tokenize(baseB), locale);
+        
+        //TODO:
+        //Optionally concatenate all words of each string for specific distance measures.
         
         return weightedPair;
     }
@@ -109,15 +118,15 @@ public class AdvancedGenericNormalizer {
                 carret_i++;
                 carret_j++;
 
-                if (carret_j > tokensA.size() - 1) {
+                if (carret_j > tokensB.size() - 1) {
 
-                    appendOffSets(carret_j, b, tokensB);
+                    appendOffSets(carret_i, a, tokensA);
                     
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
 
-                } else if (carret_i > tokensB.size() - 1) {
+                } else if (carret_i > tokensA.size() - 1) {
                     
-                    appendOffSets(carret_i, a, tokensA);
+                    appendOffSets(carret_j, b, tokensB);
                     
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
@@ -127,7 +136,7 @@ public class AdvancedGenericNormalizer {
 
                 carret_j++;
 
-                if (carret_j > tokensA.size() - 1) {
+                if (carret_j > tokensB.size() - 1) {
                     
                     appendOffSets(carret_j, b, tokensB);
                     
@@ -140,7 +149,7 @@ public class AdvancedGenericNormalizer {
                 
                 carret_i++;
 
-                if (carret_i > tokensB.size() - 1) {
+                if (carret_i > tokensA.size() - 1) {
                     
                     appendOffSets(carret_i, a, tokensA);
                     
@@ -171,6 +180,8 @@ public class AdvancedGenericNormalizer {
     private WeightedPairLiteral getWeightedPairLiteral(WeightedPairLiteral weightedPairLiteral,
             List<String> mismatchA, List<String> mismatchB, StringBuilder a, StringBuilder b) {
 
+        logger.info("\nA: " + a.toString() + " mismatch: " + mismatchA);
+        logger.info("\nB: " + b.toString() + " mismatch: " + mismatchB);
         weightedPairLiteral.setMismatchTokensA(mismatchA);
         weightedPairLiteral.setMismatchTokensB(mismatchB);
         weightedPairLiteral.setBaseValueA(a.toString().trim());

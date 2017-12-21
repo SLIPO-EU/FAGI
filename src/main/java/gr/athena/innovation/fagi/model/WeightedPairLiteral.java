@@ -158,7 +158,9 @@ public class WeightedPairLiteral {
     
     public String getCompleteA(){
 
-        StringBuilder sb = new StringBuilder(baseValueA).append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(baseValueA).append(CONNECTOR);
         
         mismatchTokensA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
@@ -176,7 +178,9 @@ public class WeightedPairLiteral {
     }
     
     public String getCompleteB(){
-        StringBuilder sb = new StringBuilder(baseValueB).append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(baseValueB).append(CONNECTOR);
         
         mismatchTokensB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);

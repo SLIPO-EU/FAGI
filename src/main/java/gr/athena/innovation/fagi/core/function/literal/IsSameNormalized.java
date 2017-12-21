@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
-import gr.athena.innovation.fagi.core.normalizer.MultipleGenericNormalizer;
+import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -27,8 +27,8 @@ public class IsSameNormalized implements IFunction, IFunctionTwoParameters{
         if(literalA.equals(literalB)){
             return true;
         }
-        
-        MultipleGenericNormalizer normalizer = new MultipleGenericNormalizer();
+
+        BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
         
         String a = normalizer.normalize(literalA, literalB);
         String b = normalizer.normalize(literalB, literalA);

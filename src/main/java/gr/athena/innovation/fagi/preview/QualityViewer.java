@@ -3,14 +3,12 @@ package gr.athena.innovation.fagi.preview;
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
-import gr.athena.innovation.fagi.core.normalizer.MultipleGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
 import gr.athena.innovation.fagi.core.similarity.Jaro;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.Levenshtein;
 import gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric;
 import gr.athena.innovation.fagi.core.similarity.NGram;
-import gr.athena.innovation.fagi.core.similarity.PermutedJaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.SortedJaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
@@ -19,7 +17,6 @@ import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.RightModel;
-import gr.athena.innovation.fagi.model.WeightedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.quality.MetricSelector;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
@@ -110,9 +107,10 @@ public class QualityViewer {
                 String literalB = SparqlRepository.getObjectOfProperty(rdfProperty, modelB);
 
                 //logger.info("Literals: {}, {}", literalA, literalB);
-                MultipleGenericNormalizer mgn = new MultipleGenericNormalizer();
-                String a = mgn.normalize(literalA, literalB);
-                String b = mgn.normalize(literalB, literalA);
+
+                BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
+                String a = normalizer.normalize(literalA, literalB);
+                String b = normalizer.normalize(literalB, literalA);
 
                 //PermutedJaroWinkler per = new PermutedJaroWinkler();
                 String line = link.getNodeA() + " " + link.getNodeB() + "\n" + rdfProperty
@@ -135,10 +133,10 @@ public class QualityViewer {
         }
     }
 
-    public void fromCSV(String path, String outputPath) throws FileNotFoundException, IOException {
+    public void fromCSV(String path, String outputPath, Locale locale) throws FileNotFoundException, IOException {
         String csvFile = path;
-        String line = "";
-        String cvsSplitBy = "#";
+        String line;
+        String cvsSplitBy = ",";
 
         BufferedReader br = new BufferedReader(new FileReader(csvFile));
         int i = 0;
@@ -156,13 +154,14 @@ public class QualityViewer {
         }
 
         int l = 0;
-        //try {
         BufferedWriter namesWriter = new BufferedWriter(new FileWriter(file, true));
+        try {
+        
         l = 0;
         while ((line = br.readLine()) != null) {
 
-            //skip first line of csv
-            if (l == 0) {
+            //skip first two lines of csv
+            if (l < 2) {
                 l++;
                 continue;
             }
@@ -206,26 +205,22 @@ public class QualityViewer {
             //String names1 = spl[21];
             String acceptance = spl[22];
 
-            String namesLine = getPropertyLine(idA, idB, nameA, nameB, acceptance);
-
+            String namesLine = getPropertyLine(idA, idB, nameA, nameB, locale, acceptance);
+            logger.warn(namesLine);
             namesWriter.append(namesLine);
             namesWriter.newLine();
 
             l++;
         }
-        //} catch(Exception ex){  
-        //}
+        namesWriter.close();
+        } catch(Exception ex){  
+            namesWriter.close();
+        }
         logger.info("Total lines: " + l);
     }
 
-    private String getPropertyLine(String idA, String idB, String propertyA, String propertyB, String acceptance) {
-
-        Locale locale = Locale.GERMAN;
-        String a = getNormalized(propertyA, propertyB);
-        String b = getNormalized(propertyB, propertyA);
-        
-        WeightedLiteral weightedA = getWeightedLiteral(a, b);
-        WeightedLiteral weightedB = getWeightedLiteral(b, a);
+    private String getPropertyLine(String idA, String idB, String propertyA, String propertyB, 
+            Locale locale, String acceptance) {
         
         NormalizedLiteral basicA = getBasicNormalization(propertyA, propertyB, locale);
         NormalizedLiteral basicB = getBasicNormalization(propertyB, propertyA, locale);
@@ -241,25 +236,22 @@ public class QualityViewer {
                 + " \nJaroWinkler          :" + JaroWinkler.computeSimilarity(propertyA, propertyB)
                 + " \nSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(propertyA, propertyB)
                 //+ " \nPermJaroWinkler      :" + per.computeDistance(literalA, literalB) //too slow                        
-                + " \nbasic normalized: " + basicA + " <--> " + basicB
+                + " \nbasic normalized: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
                 + " \nLevenstein           :" + WeightedSimilarity.computeNormalized(basicA, basicB, "levenshtein")
-                + " \n2Gram                :" + WeightedSimilarity.computeNormalized(basicA, basicB, "2gram")
+                + " \n2Gram                :" + WeightedSimilarity.computeNormalized(basicA, basicB, "2Gram")
                 + " \nCosine               :" + WeightedSimilarity.computeNormalized(basicA, basicB, "cosine")
                 + " \nLongestCommonSubseq  :" + WeightedSimilarity.computeNormalized(basicA, basicB, "longestcommonsubsequence")
                 + " \nJaro                 :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jaro")
                 + " \nJaroWinkler          :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jarowinkler")
                 + " \nSortedJaroWinkler    :" + WeightedSimilarity.computeNormalized(basicA, basicB, "sortedjarowinkler")
                 + " \ncustom normalized: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
-                + " \nJaroWinklerNormalized:" + JaroWinkler.computeSimilarity(a, b)
-                + " \nJaroNormalized       :" + Jaro.computeSimilarity(a, b)
-                + " \nweighted: " + weightedA.toString() + " <--> " + weightedB.toString()
                 + " \nLevenstein           :" + WeightedSimilarity.computeDistance(normalizedPair, "levenshtein")
-                + " \n2Gram                :" + WeightedSimilarity.computeDistance(normalizedPair, "2gram")
-                + " \nCosine               :" + WeightedSimilarity.computeDistance(normalizedPair, "cosine")
-                + " \nLongestCommonSubseq  :" + WeightedSimilarity.computeDistance(normalizedPair, "longestcommonsubsequence")
-                + " \nJaro                 :" + WeightedSimilarity.computeDistance(normalizedPair, "jaro")
-                + " \nJaroWinkler          :" + WeightedSimilarity.computeDistance(normalizedPair, "jarowinkler")
-                + " \nSortedJaroWinkler    :" + WeightedSimilarity.computeDistance(normalizedPair, "sortedjarowinkler")                        
+                + " \n2Gram                :" + WeightedSimilarity.computeDistance(normalizedPair, "2Gram")
+//                + " \nCosine               :" + WeightedSimilarity.computeDistance(normalizedPair, "cosine")
+//                + " \nLongestCommonSubseq  :" + WeightedSimilarity.computeDistance(normalizedPair, "longestcommonsubsequence")
+//                + " \nJaro                 :" + WeightedSimilarity.computeDistance(normalizedPair, "jaro")
+//                + " \nJaroWinkler          :" + WeightedSimilarity.computeDistance(normalizedPair, "jarowinkler")
+//                + " \nSortedJaroWinkler    :" + WeightedSimilarity.computeDistance(normalizedPair, "sortedjarowinkler")                        
                 + " \n" + acceptance + "\n";
         return namesLine;
     }
@@ -274,17 +266,6 @@ public class QualityViewer {
         AdvancedGenericNormalizer agn = new AdvancedGenericNormalizer();
         WeightedPairLiteral weightedPairLiteral = agn.getWeightedPair(normA, normB, locale);
         return weightedPairLiteral;
-    }
-    
-    private String getNormalized(String literalA, String literalB) {
-        MultipleGenericNormalizer mgn = new MultipleGenericNormalizer();
-        return mgn.normalize(literalA, literalB);
-    }
-
-    private WeightedLiteral getWeightedLiteral(String normalizedA, String normalizedB) {
-        MultipleGenericNormalizer mgn = new MultipleGenericNormalizer();
-        
-        return mgn.getWeightedLiteral(normalizedA, normalizedB);
     }
     
     private Model constructEntityMetadataModel(String node, Model sourceModel, int depth) {

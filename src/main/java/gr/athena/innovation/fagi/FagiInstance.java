@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,6 +42,8 @@ public class FagiInstance {
     private final String specXml;
     private final String rulesXml;
     private final boolean qualityOn = false;
+    //private final Locale locale = Locale.GERMAN;
+    private final Locale locale = Locale.ENGLISH;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -110,7 +113,7 @@ public class FagiInstance {
             qualityViewer.printSimilarityResults(rdfProperties);
             
             //path of csv, path of similarity results
-            //qualityViewer.fromCSV("", "");
+            qualityViewer.fromCSV("", "", locale);
         }
 
         Fuser fuser = new Fuser(interlinkedEntities);
