@@ -49,7 +49,7 @@ public class SpecificationConstants {
     public static final String A = "a";
     public static final String B = "b";
     
-    public static final int COLLATOR_STRENGTH = Collator.TERTIARY;
+    public static final int COLLATOR_STRENGTH = Collator.IDENTICAL;
     public static final int CONNECTOR = ' ';
 
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
