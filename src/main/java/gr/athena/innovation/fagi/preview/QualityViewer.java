@@ -133,10 +133,11 @@ public class QualityViewer {
         }
     }
 
-    public void fromCSV(String path, String outputPath, Locale locale) throws FileNotFoundException, IOException {
+    public void fromCSV(String path, String outputPath) throws FileNotFoundException, IOException {
         String csvFile = path;
         String line;
-        String cvsSplitBy = ",";
+        String cvsSplitBy = "\\^";
+        Locale locale = fusionSpecification.getLocale();
 
         BufferedReader br = new BufferedReader(new FileReader(csvFile));
         int i = 0;
@@ -157,64 +158,67 @@ public class QualityViewer {
         BufferedWriter namesWriter = new BufferedWriter(new FileWriter(file, true));
         try {
         
-        l = 0;
-        while ((line = br.readLine()) != null) {
+            l = 0;
+            while ((line = br.readLine()) != null) {
 
-            //skip first two lines of csv
-            if (l < 2) {
+                //skip first two lines of csv
+                if (l < 2) {
+                    l++;
+                    continue;
+                }
+
+                // use comma as separator
+                String[] spl = line.split(cvsSplitBy);
+
+                //StringBuffer sb = new StringBuffer("");
+                if (spl.length < 22) {
+                    continue;
+                }
+                String idA = spl[0];
+                String idB = spl[1];
+
+                //String distanceMeters = spl[2];
+
+                String nameA = spl[3];
+                String nameB = spl[4];
+                //String nameFusionAction = spl[5];
+
+                String streetA = spl[6];
+                String streetB = spl[7];
+                //String streetFusionAction = spl[8];
+
+                String streetNumberA = spl[9];
+                String streetNumberB = spl[10];
+
+                String phoneA = spl[11];
+                String phoneB = spl[12];
+                //String phoneFusionAction = spl[13];
+
+                String emailA = spl[14];
+                String emailB = spl[15];
+                //String emailFusionAction = spl[16];
+
+                String websiteA = spl[17];
+                String websiteB = spl[18];
+                //String websiteFusionAction = spl[19];
+
+                //String score = spl[20];
+                //String names1 = spl[21];
+                String acceptance = spl[22];
+
+                String namesLine = getPropertyLine(idA, idB, nameA, nameB, locale, acceptance);
+
+                namesWriter.append(namesLine);
+                namesWriter.newLine();
+
                 l++;
-                continue;
             }
-
-            // use comma as separator
-            String[] spl = line.split(cvsSplitBy);
-
-            //StringBuffer sb = new StringBuffer("");
-            if (spl.length < 22) {
-                continue;
-            }
-            String idA = spl[0];
-            String idB = spl[1];
-
-            //String distanceMeters = spl[2];
             
-            String nameA = spl[3];
-            String nameB = spl[4];
-            //String nameFusionAction = spl[5];
-            
-            String streetA = spl[6];
-            String streetB = spl[7];
-            //String streetFusionAction = spl[8];
-            
-            String streetNumberA = spl[9];
-            String streetNumberB = spl[10];
-
-            String phoneA = spl[11];
-            String phoneB = spl[12];
-            //String phoneFusionAction = spl[13];
-            
-            String emailA = spl[14];
-            String emailB = spl[15];
-            //String emailFusionAction = spl[16];
-            
-            String websiteA = spl[17];
-            String websiteB = spl[18];
-            //String websiteFusionAction = spl[19];
-            
-            //String score = spl[20];
-            //String names1 = spl[21];
-            String acceptance = spl[22];
-
-            String namesLine = getPropertyLine(idA, idB, nameA, nameB, locale, acceptance);
-            logger.warn(namesLine);
-            namesWriter.append(namesLine);
-            namesWriter.newLine();
-
-            l++;
-        }
-        namesWriter.close();
-        } catch(Exception ex){  
             namesWriter.close();
+            
+        } catch(IOException | RuntimeException ex){  
+            namesWriter.close();
+            throw new RuntimeException();
         }
         logger.info("Total lines: " + l);
     }
@@ -227,31 +231,39 @@ public class QualityViewer {
 
         WeightedPairLiteral normalizedPair = getAdvancedNormalization(basicA, basicB, locale);
         
-        String namesLine = idA + " " + idB + " Name\n" + propertyA + " <-> " + propertyB
-                + " \nLevenstein           :" + Levenshtein.computeSimilarity(propertyA, propertyB, null)
-                + " \n2Gram                :" + NGram.computeSimilarity(propertyA, propertyB, 2)
-                + " \nCosine               :" + Cosine.computeSimilarity(propertyA, propertyB)
-                + " \nLongestCommonSubseq  :" + LongestCommonSubsequenceMetric.computeSimilarity(propertyA, propertyB)
-                + " \nJaro                 :" + Jaro.computeSimilarity(propertyA, propertyB)
-                + " \nJaroWinkler          :" + JaroWinkler.computeSimilarity(propertyA, propertyB)
-                + " \nSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(propertyA, propertyB)
+        String namesLine = "id_a: " + idA + " id_b: " + idB + " property: Name"
+                + " \nOriginal values: " + propertyA + " <--> " + propertyB
+                + " \n\tLevenstein           :" + Levenshtein.computeSimilarity(propertyA, propertyB, null)
+                + " \n\t2Gram                :" + NGram.computeSimilarity(propertyA, propertyB, 2)
+                + " \n\tCosine               :" + Cosine.computeSimilarity(propertyA, propertyB)
+                + " \n\tLongestCommonSubseq  :" + LongestCommonSubsequenceMetric.computeSimilarity(propertyA, propertyB)
+                + " \n\tJaro                 :" + Jaro.computeSimilarity(propertyA, propertyB)
+                + " \n\tJaroWinkler          :" + JaroWinkler.computeSimilarity(propertyA, propertyB)
+                + " \n\tSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(propertyA, propertyB)
                 //+ " \nPermJaroWinkler      :" + per.computeDistance(literalA, literalB) //too slow                        
-                + " \nbasic normalized: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
-                + " \nLevenstein           :" + WeightedSimilarity.computeNormalized(basicA, basicB, "levenshtein")
-                + " \n2Gram                :" + WeightedSimilarity.computeNormalized(basicA, basicB, "2Gram")
-                + " \nCosine               :" + WeightedSimilarity.computeNormalized(basicA, basicB, "cosine")
-                + " \nLongestCommonSubseq  :" + WeightedSimilarity.computeNormalized(basicA, basicB, "longestcommonsubsequence")
-                + " \nJaro                 :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jaro")
-                + " \nJaroWinkler          :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jarowinkler")
-                + " \nSortedJaroWinkler    :" + WeightedSimilarity.computeNormalized(basicA, basicB, "sortedjarowinkler")
-                + " \ncustom normalized: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
-                + " \nLevenstein           :" + WeightedSimilarity.computeDistance(normalizedPair, "levenshtein")
-                + " \n2Gram                :" + WeightedSimilarity.computeDistance(normalizedPair, "2Gram")
-//                + " \nCosine               :" + WeightedSimilarity.computeDistance(normalizedPair, "cosine")
-//                + " \nLongestCommonSubseq  :" + WeightedSimilarity.computeDistance(normalizedPair, "longestcommonsubsequence")
-//                + " \nJaro                 :" + WeightedSimilarity.computeDistance(normalizedPair, "jaro")
-//                + " \nJaroWinkler          :" + WeightedSimilarity.computeDistance(normalizedPair, "jarowinkler")
-//                + " \nSortedJaroWinkler    :" + WeightedSimilarity.computeDistance(normalizedPair, "sortedjarowinkler")                        
+
+                + " \nSimple normalization: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
+                + " \n\tLevenstein           :" + WeightedSimilarity.computeNormalized(basicA, basicB, "levenshtein")
+                + " \n\t2Gram                :" + WeightedSimilarity.computeNormalized(basicA, basicB, "2Gram")
+                + " \n\tCosine               :" + WeightedSimilarity.computeNormalized(basicA, basicB, "cosine")
+                + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalized(basicA, basicB, "longestcommonsubsequence")
+                + " \n\tJaro                 :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jaro")
+                + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jarowinkler")
+                + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalized(basicA, basicB, "sortedjarowinkler")
+
+                + " \nCustom normalization full: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
+                + " \nBase: " + normalizedPair.getBaseValueA() + " <--> " + normalizedPair.getBaseValueB()
+                + " \nMismatch: " + normalizedPair.mismatchToStringA() + " <--> " + normalizedPair.mismatchToStringB()
+                + " \nSpecial terms: " + normalizedPair.specialTermsToStringA() + " <--> " + normalizedPair.specialTermsToStringB()
+                + " \nCommon terms: " + normalizedPair.commonTermsToString()
+                + " \n\tLevenstein           :" + WeightedSimilarity.computeDistance(normalizedPair, "levenshtein")
+                + " \n\t2Gram                :" + WeightedSimilarity.computeDistance(normalizedPair, "2Gram")
+                + " \n\tCosine               :" + WeightedSimilarity.computeNormalized(basicA, basicB, "cosine")
+                + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalized(basicA, basicB, "longestcommonsubsequence")
+                + " \n\tJaro                 :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jaro")
+                + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalized(basicA, basicB, "jarowinkler")
+                + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalized(basicA, basicB, "sortedjarowinkler")                
+                       
                 + " \n" + acceptance + "\n";
         return namesLine;
     }

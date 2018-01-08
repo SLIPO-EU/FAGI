@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.specification;
 
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,8 @@ public class FusionSpecification {
     private EnumTargetDataset finalDataset;
     private String outputRDFFormat;
     private String inputRDFFormat;
+    
+    private Locale locale = null;
 
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
@@ -190,6 +193,14 @@ public class FusionSpecification {
 
     public void setResourceUri(String resourceUri) {
         this.resourceUri = resourceUri;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
     
     @Override

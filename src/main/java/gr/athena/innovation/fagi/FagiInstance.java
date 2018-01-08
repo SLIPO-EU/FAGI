@@ -42,8 +42,6 @@ public class FagiInstance {
     private final String specXml;
     private final String rulesXml;
     private final boolean qualityOn = false;
-    //private final Locale locale = Locale.GERMAN;
-    private final Locale locale = Locale.ENGLISH;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -75,6 +73,9 @@ public class FagiInstance {
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpecification = specificationParser.parse(specXml);
 
+        //TODO: remove setLocale as soon as locale is implemented in fusion specification parser
+        fusionSpecification.setLocale(Locale.GERMAN);
+        
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
         ruleCatalog.setFunctionRegistry(functionRegistry);
@@ -113,7 +114,7 @@ public class FagiInstance {
             qualityViewer.printSimilarityResults(rdfProperties);
             
             //path of csv, path of similarity results
-            qualityViewer.fromCSV("", "", locale);
+            qualityViewer.fromCSV("", "");
         }
 
         Fuser fuser = new Fuser(interlinkedEntities);

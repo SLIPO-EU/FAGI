@@ -155,6 +155,17 @@ public class WeightedPairLiteral {
         
         return sb.toString();
     }
+
+    public String commonTermsToString(){
+
+        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        
+        linkedTerms.stream().forEach((token) -> {
+            sb.append(token).append(CONNECTOR);
+        });
+        
+        return sb.toString();
+    }
     
     public String getCompleteA(){
 

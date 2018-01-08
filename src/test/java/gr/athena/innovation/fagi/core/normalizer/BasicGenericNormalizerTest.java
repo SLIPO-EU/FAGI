@@ -83,7 +83,7 @@ public class BasicGenericNormalizerTest {
         String result1 = normalizer.normalize(literal1a, literal1b);
         assertEquals(expResult1, result1);
 
-        String literal2a = "Sur-name Word.";
+        String literal2a = "Surname Word.";
         String literal2b = "irrelevant literal";
         String expResult2 = "surname word";
         String result2 = normalizer.normalize(literal2a, literal2b);

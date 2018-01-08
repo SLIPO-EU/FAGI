@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -19,6 +20,9 @@ import org.apache.commons.lang3.Validate;
  */
 public class BasicGenericNormalizer implements INormalizer {
 
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(BasicGenericNormalizer.class);
+    private Locale locale = null;
+    
     /**
      * Normalize literalA using some basic steps information from literalB (in case of abbreviation recovery).
      *
@@ -33,6 +37,7 @@ public class BasicGenericNormalizer implements INormalizer {
     
     public NormalizedLiteral getNormalizedLiteral(String literalA, String literalB, Locale locale) {
 
+        
         String tempString;
 
         //1)
@@ -68,8 +73,9 @@ public class BasicGenericNormalizer implements INormalizer {
         //2)
         tempString = removePunctuation(literalAabbr);
 
-        //3)lowercase without using locale
-        tempString = tempString.toLowerCase();
+        //3)to lowercase using locale
+        logger.warn("tempString: " + tempString);
+        tempString = tempString.toLowerCase(getLocale());
 
         //4)remove special character except parenthesis
         tempString = removeSpecialCharacters(tempString);
@@ -100,29 +106,29 @@ public class BasicGenericNormalizer implements INormalizer {
     //2) 
     //remove punctuation except parenthesis
     private String removePunctuation(String text) {
-        return text.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, "");
+        String result = text.replaceAll(SpecificationConstants.Regex.PUNCTUATION_EXCEPT_PARENTHESIS_REGEX, " ");
+        return result;
     }
 
     //3) 
     //transform to lowercase
     private String toLowerCase(String text, Locale locale) {
-        if (locale == null) {
-            locale = Locale.ENGLISH;
-        }
         return text.toLowerCase(locale);
     }
 
     //4) 
     //remove special character except parenthesis
     private String removeSpecialCharacters(String text) {
-        return text.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX_2, " ");
+        String result = text.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX_2, " ");
+        return result;
     }
 
     //5) 
     //sort words alphabetically
     private String sortAlphabetically(String text) {
         AlphabeticalNormalizer normalizer = new AlphabeticalNormalizer();
-        return normalizer.normalize(text);
+        String result= normalizer.normalize(text);
+        return result;
     }
 
     private NormalizedLiteral createNormalizedLiteral(String original, String normalized) {
@@ -143,6 +149,18 @@ public class BasicGenericNormalizer implements INormalizer {
             tokens.add(matcher.group(0));
         }
         return tokens.toArray(new String[0]);
+    }
+    
+    public Locale getLocale() {
+        if(locale == null){
+            return Locale.ENGLISH;
+        } else {
+            return locale;
+        }
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
     
     @Override

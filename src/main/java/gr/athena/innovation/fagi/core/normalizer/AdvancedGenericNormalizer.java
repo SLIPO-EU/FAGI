@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
+import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.model.EnumEntity;
 import gr.athena.innovation.fagi.model.LinkedTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
@@ -107,10 +108,13 @@ public class AdvancedGenericNormalizer {
 
             String ta = tokensA.get(carret_i);
             String tb = tokensB.get(carret_j);
+
+            double result = JaroWinkler.computeSimilarity(ta, tb);
             
             int compareResult = collator.compare(ta, tb);
-
-            if (compareResult == 0) {
+            
+            //Using JaroWinkler to check similarity instead of Collator. Collator result is used on mismatch only
+            if (result > SpecificationConstants.NORM_THRESHOLD) {
 
                 a.append(ta).append(CONNECTOR);
                 b.append(tb).append(CONNECTOR);

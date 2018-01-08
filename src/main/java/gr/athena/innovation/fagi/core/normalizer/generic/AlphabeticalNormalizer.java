@@ -59,17 +59,24 @@ public class AlphabeticalNormalizer implements INormalizer{
      * @param text input text
      * @return array of tokens
      */
+//    private static String[] tokenize(final CharSequence text) {
+//        Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
+//        final Pattern pattern = Pattern.compile("\\s+");
+//        final Matcher matcher = pattern.matcher(text.toString());
+//        final List<String> tokens = new ArrayList<>();
+//        while (matcher.find()) {
+//            tokens.add(matcher.group(0));
+//        }
+//        return tokens.toArray(new String[0]);
+//    }
+    
+    //tokenize on whitespaces
     private static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
-        final Pattern pattern = Pattern.compile("(\\w)+");
-        final Matcher matcher = pattern.matcher(text.toString());
-        final List<String> tokens = new ArrayList<>();
-        while (matcher.find()) {
-            tokens.add(matcher.group(0));
-        }
-        return tokens.toArray(new String[0]);
-    }
 
+        String[] split = text.toString().split("\\s+");
+        return split;
+    }
     @Override
     public String getName(){
         String className = this.getClass().getSimpleName().toLowerCase();
