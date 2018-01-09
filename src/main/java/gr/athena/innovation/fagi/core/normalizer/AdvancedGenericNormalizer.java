@@ -28,10 +28,6 @@ public class AdvancedGenericNormalizer {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizer.class);
     
     private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
-    
-    private final double baseWeight = 0.5;
-    private final double linkedWeight = 0.1;
-    private final double mismatchWeight = 0.4;
 
     /**
      * Executes some custom steps in order to produce a weighted normalized pair of literals. 
@@ -73,8 +69,6 @@ public class AdvancedGenericNormalizer {
         
         String baseA = a.toString();
         String baseB = b.toString();
-
-        weightedPairLiteral.setBaseWeight(0.5);
 
         //custom alphabetical re-ordering, assign mismatches
         WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral, tokenize(baseA), tokenize(baseB), locale);
@@ -205,7 +199,6 @@ public class AdvancedGenericNormalizer {
     private void addLinkedTerm(WeightedPairLiteral weightedPairLiteral, List<String> tokens, String token) {
         LinkedTerm linkedTerm = new LinkedTerm();
         linkedTerm.setTerm(token);
-        linkedTerm.setWeight(linkedWeight);
 
         tokens.remove(token);
 

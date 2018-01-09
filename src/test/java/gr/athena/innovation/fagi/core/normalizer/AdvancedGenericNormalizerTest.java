@@ -65,7 +65,6 @@ public class AdvancedGenericNormalizerTest {
         
         LinkedTerm linkedTerm = new LinkedTerm();
         linkedTerm.setTerm("bar");
-        linkedTerm.setWeight(0.1);
         linkedTerms.add(linkedTerm);
         
         ArrayList<String> mismatchedA = new ArrayList<>();
@@ -87,7 +86,6 @@ public class AdvancedGenericNormalizerTest {
         expResult.setMismatchTokensA(mismatchedA);
         expResult.setMismatchTokensB(mismatchedB);
         
-        expResult.setMismatchWeight(0.5);
         expResult.setUniqueSpecialTermsA(uniqueSpecialsA);
         
         WeightedPairLiteral result = normalizer.getWeightedPair(normalizedLiteralA, normalizedLiteralB, locale);

@@ -56,6 +56,11 @@ public class SpecificationConstants {
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
 
+    public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
+                                    + "-spec requires the spec.xml file path\n"
+                                    + "-rules requires the rules.xml file path\n";
+
+    //similarity constants
     public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
     public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
     public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
@@ -64,12 +69,14 @@ public class SpecificationConstants {
     public static final double SIMILARITY_MIN = 0.001;
     public static final int ROUND_DECIMALS = 3;
     
-    public static final double NORM_THRESHOLD = 0.07;
-
-    public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
-                                    + "-spec requires the spec.xml file path\n"
-                                    + "-rules requires the rules.xml file path\n";
-
+    //evaluation
+    public static final double NORM_THRESHOLD = 0.7;
+    public static final double BASE_WEIGHT = 0.5;
+    public static final double MISMATCH_WEIGHT = 0.2;
+    public static final double SPECIAL_WEIGHT = 0.2;
+    public static final double LINKED_TERM_WEIGHT = 0.1;
+    
+    
     public class Regex {
 
         public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";

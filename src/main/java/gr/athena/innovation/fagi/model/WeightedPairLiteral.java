@@ -17,16 +17,14 @@ public class WeightedPairLiteral {
     
     private String baseValueA;
     private String baseValueB;
-    private double baseWeight;
     private Set<LinkedTerm> linkedTerms = new HashSet();
     
     private List<String> mismatchTokensA = new ArrayList();
     private List<String> mismatchTokensB = new ArrayList();
-    private double mismatchWeight;
     
+    //unique means they exist only in one entity name for each pair.
     private List<String> uniqueSpecialTermsA = new ArrayList();
     private List<String> uniqueSpecialTermsB = new ArrayList();
-    private double specialTermsWeight;
     
     public String getBaseValueA() {
         return baseValueA;
@@ -78,15 +76,7 @@ public class WeightedPairLiteral {
     
     public void addMismatchTokenB(String mismatchTokenB) {
         mismatchTokensB.add(mismatchTokenB);
-    }    
-
-    public double getBaseWeight() {
-        return baseWeight;
     }
-
-    public void setBaseWeight(double baseWeight) {
-        this.baseWeight = baseWeight;
-    } 
 
     public void setUniqueSpecialTermsA(List<String> uniqueSpecialTermsA) {
         this.uniqueSpecialTermsA = uniqueSpecialTermsA;
@@ -206,21 +196,5 @@ public class WeightedPairLiteral {
         });
         
         return sb.toString();        
-    }
-
-    public double getMismatchWeight() {
-        return mismatchWeight;
-    }
-
-    public void setMismatchWeight(double mismatchWeight) {
-        this.mismatchWeight = mismatchWeight;
-    }
-
-    public double getSpecialTermsWeight() {
-        return specialTermsWeight;
-    }
-
-    public void setSpecialTermsWeight(double specialTermsWeight) {
-        this.specialTermsWeight = specialTermsWeight;
     }
 }

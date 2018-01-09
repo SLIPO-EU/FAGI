@@ -43,6 +43,10 @@ public final class Cosine {
      */
     public static double computeSimilarity(String a, String b){
 
+        if(StringUtils.isBlank(a) || StringUtils.isBlank(b)){
+            return 0.0;
+        }
+        
         CosineSimilarity cosineSimilarity = new CosineSimilarity();
 
         //split string to words:
@@ -68,9 +72,9 @@ public final class Cosine {
         Double result = cosineSimilarity.cosineSimilarity(aVector, bVector);
 
         if(result > SpecificationConstants.SIMILARITY_MAX){
-            return 1;
+            return 1.0;
         } else if(result < SpecificationConstants.SIMILARITY_MIN){
-            return 0;
+            return 0.0;
         } else {
             double roundedResult = new BigDecimal(result).
                     setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();

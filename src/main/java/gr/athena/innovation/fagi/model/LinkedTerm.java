@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.model;
 
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Objects;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Objects;
 public class LinkedTerm {
 
     private String term;
-    private double weight;
+    private final double weight = SpecificationConstants.LINKED_TERM_WEIGHT;
 
     @Override
     public int hashCode() {
@@ -47,9 +48,5 @@ public class LinkedTerm {
 
     public double getWeight() {
         return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
     }
 }

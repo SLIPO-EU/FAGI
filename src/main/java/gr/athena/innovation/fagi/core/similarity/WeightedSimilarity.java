@@ -1,8 +1,10 @@
 package gr.athena.innovation.fagi.core.similarity;
 
+import gr.athena.innovation.fagi.model.CategoryWeight;
 import gr.athena.innovation.fagi.model.LinkedTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +56,6 @@ public class WeightedSimilarity {
             case "2Gram": {
                 return NGram.computeDistance(normalizedValueA, normalizedValueB, 2);
             }
-
             default:
                 logger.error("Similarity: \"" + distance + "\" does not exist for weighted literals.");
                 throw new RuntimeException();
@@ -112,92 +113,48 @@ public class WeightedSimilarity {
      * @param distance the distance.
      * @return the given distance using normalized literals.
      */    
-    public static double computeAdvancedNormarizedDistance(WeightedPairLiteral pair, String distance) {
+    public static double computeAdvancedNormarizedDistance(String distance, WeightedPairLiteral pair) {
         
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
-        double baseWeight = pair.getBaseWeight();
         
         Set<LinkedTerm> terms = pair.getLinkedTerms();
         
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
-        double mismatchWeight = pair.getMismatchWeight();
         
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
-        double specialsWeight = pair.getSpecialTermsWeight();
 
-        switch (distance) {
-            case "cosine": {
-                
-                double base = Cosine.computeDistance(baseA, baseB);
-                double specials = Cosine.computeDistance(specialsA, specialsB);
-                double mismatch = Cosine.computeDistance(mismatchA, mismatchB);
+        CategoryWeight categorySimilarity = new CategoryWeight(pair);
 
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "jaccard": {
-                
-                double base = Jaccard.computeDistance(baseA, baseB);
-                double specials = Jaccard.computeDistance(specialsA, specialsB);
-                double mismatch = Jaccard.computeDistance(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "levenshtein": {
-                
-                double base = Levenshtein.computeDistance(baseA, baseB, null);
-                double specials = Levenshtein.computeDistance(specialsA, specialsB, null);
-                double mismatch = Levenshtein.computeDistance(mismatchA, mismatchB, null);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "jaro": {
-                
-                double base = Jaro.computeDistance(baseA, baseB);
-                double specials = Jaro.computeDistance(specialsA, specialsB);
-                double mismatch = Jaro.computeDistance(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "jarowinkler": {
-                
-                double base = JaroWinkler.computeDistance(baseA, baseB);
-                double specials = JaroWinkler.computeDistance(specialsA, specialsB);
-                double mismatch = JaroWinkler.computeDistance(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "sortedjarowinkler": {
-                
-                double base = SortedJaroWinkler.computeDistance(baseA, baseB);
-                double specials = SortedJaroWinkler.computeDistance(specialsA, specialsB);
-                double mismatch = SortedJaroWinkler.computeDistance(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "longestcommonsubsequence": {
-                
-                double base = LongestCommonSubsequenceMetric.computeDistance(baseA, baseB);
-                double specials = LongestCommonSubsequenceMetric.computeDistance(specialsA, specialsB);
-                double mismatch = LongestCommonSubsequenceMetric.computeDistance(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-            case "2Gram": {
-                
-                double base = NGram.computeDistance(baseA, baseB, 2);
-                double specials = NGram.computeDistance(specialsA, specialsB, 2);
-                double mismatch = NGram.computeDistance(mismatchA, mismatchB, 2);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
-            }
-
-            default:
-                logger.error("Similarity: \"" + distance + "\" does not exist for weighted literals.");
-                throw new RuntimeException();
+        double baseSim;
+        double specialsSim;
+        double mismatchSim;
+        double termSim;
+        
+        baseSim = computeDistance(distance, baseA, baseB);
+        mismatchSim = computeDistance(distance, mismatchA, mismatchB);
+        specialsSim = computeDistance(distance, specialsA, specialsB);
+        termSim = 0;
+        
+        if(categorySimilarity.isZeroBaseSimilarity()){
+            baseSim = 0;
         }
+        
+        if(categorySimilarity.isEmptyMismatch()){
+            mismatchSim = baseSim;
+        }
+
+        if(categorySimilarity.isEmptySpecials()){
+            specialsSim = baseSim;
+        }
+        
+        if(!terms.isEmpty()){
+            termSim = 1.0;
+        }
+        
+        return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
     }
     
     /**
@@ -208,90 +165,144 @@ public class WeightedSimilarity {
      * @return the given distance using normalized literals.
      */    
     public static double computeAdvancedNormarizedSimilarity(WeightedPairLiteral pair, String similarity) {
-        
+
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
-        double baseWeight = pair.getBaseWeight();
         
         Set<LinkedTerm> terms = pair.getLinkedTerms();
         
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
-        double mismatchWeight = pair.getMismatchWeight();
         
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
-        double specialsWeight = pair.getSpecialTermsWeight();
 
+        CategoryWeight categorySimilarity = new CategoryWeight(pair);
+
+        double baseSim;
+        double specialsSim;
+        double mismatchSim;
+        double termSim;
+        
+        baseSim = computeSimilarity(similarity, baseA, baseB);
+        mismatchSim = computeSimilarity(similarity, mismatchA, mismatchB);
+        specialsSim = computeSimilarity(similarity, specialsA, specialsB);
+        termSim = 0;
+        
+        if(categorySimilarity.isZeroBaseSimilarity()){
+            baseSim = 0;
+        }
+        
+        if(categorySimilarity.isEmptyMismatch()){
+            mismatchSim = baseSim;
+        }
+
+        if(categorySimilarity.isEmptySpecials()){
+            specialsSim = baseSim;
+        }
+        
+        if(!terms.isEmpty()){
+            termSim = 1.0;
+        }
+        
+        return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
+    }
+
+    private static double computeSimilarity(String similarity, String a, String b){
+        
+        double result;
+        
         switch (similarity) {
             case "cosine": {
-                
-                double base = Cosine.computeSimilarity(baseA, baseB);
-                double specials = Cosine.computeSimilarity(specialsA, specialsB);
-                double mismatch = Cosine.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result = Cosine.computeSimilarity(a, b);
+                break;
             }
             case "jaccard": {
-                
-                double base = Jaccard.computeSimilarity(baseA, baseB);
-                double specials = Jaccard.computeSimilarity(specialsA, specialsB);
-                double mismatch = Jaccard.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  Jaccard.computeSimilarity(a, b);
+                break;
             }
             case "levenshtein": {
-                
-                double base = Levenshtein.computeSimilarity(baseA, baseB, null);
-                double specials = Levenshtein.computeSimilarity(specialsA, specialsB, null);
-                double mismatch = Levenshtein.computeSimilarity(mismatchA, mismatchB, null);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  Levenshtein.computeSimilarity(a, b, null);
+                break;
             }
             case "jaro": {
-                
-                double base = Jaro.computeSimilarity(baseA, baseB);
-                double specials = Jaro.computeSimilarity(specialsA, specialsB);
-                double mismatch = Jaro.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  Jaro.computeSimilarity(a, b);
+                break;
             }
             case "jarowinkler": {
-                
-                double base = JaroWinkler.computeSimilarity(baseA, baseB);
-                double specials = JaroWinkler.computeSimilarity(specialsA, specialsB);
-                double mismatch = JaroWinkler.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  JaroWinkler.computeSimilarity(a, b);
+                break;
             }
             case "sortedjarowinkler": {
-                
-                double base = SortedJaroWinkler.computeSimilarity(baseA, baseB);
-                double specials = SortedJaroWinkler.computeSimilarity(specialsA, specialsB);
-                double mismatch = SortedJaroWinkler.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  SortedJaroWinkler.computeSimilarity(a, b);
+                break;
             }
             case "longestcommonsubsequence": {
-                
-                double base = LongestCommonSubsequenceMetric.computeSimilarity(baseA, baseB);
-                double specials = LongestCommonSubsequenceMetric.computeSimilarity(specialsA, specialsB);
-                double mismatch = LongestCommonSubsequenceMetric.computeSimilarity(mismatchA, mismatchB);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  LongestCommonSubsequenceMetric.computeSimilarity(a, b);
+                break;
             }
             case "2Gram": {
-                
-                double base = NGram.computeSimilarity(baseA, baseB, 2);
-                double specials = NGram.computeSimilarity(specialsA, specialsB, 2);
-                double mismatch = NGram.computeSimilarity(mismatchA, mismatchB, 2);
-
-                return base * baseWeight + mismatch * mismatchWeight + specials * specialsWeight;
+                result =  NGram.computeSimilarity(a, b, 2);
+                break;
             }
-
             default:
                 logger.error("Similarity: \"" + similarity + "\" does not exist for weighted literals.");
                 throw new RuntimeException();
         }
-    }    
+        return result;
+    }
+
+    private static double computeDistance(String similarity, String a, String b){
+        
+        double result;
+        
+        switch (similarity) {
+            case "cosine": {
+                result = Cosine.computeDistance(a, b);
+                break;
+            }
+            case "jaccard": {
+                result =  Jaccard.computeDistance(a, b);
+                break;
+            }
+            case "levenshtein": {
+                result =  Levenshtein.computeDistance(a, b, null);
+                break;
+            }
+            case "jaro": {
+                result =  Jaro.computeDistance(a, b);
+                break;
+            }
+            case "jarowinkler": {
+                result =  JaroWinkler.computeDistance(a, b);
+                break;
+            }
+            case "sortedjarowinkler": {
+                result =  SortedJaroWinkler.computeDistance(a, b);
+                break;
+            }
+            case "longestcommonsubsequence": {
+                result =  LongestCommonSubsequenceMetric.computeDistance(a, b);
+                break;
+            }
+            case "2Gram": {
+                result =  NGram.computeDistance(a, b, 2);
+                break;
+            }
+            default:
+                logger.error("Similarity: \"" + similarity + "\" does not exist for weighted literals.");
+                throw new RuntimeException();
+        }
+        return result;
+    }
+    
+    private static double computeWeights(double baseSim, double mismatchSim, double specialsSim, double termSim) {
+        
+        double baseWeight = SpecificationConstants.BASE_WEIGHT;
+        double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
+        double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
+        double termWeight = SpecificationConstants.LINKED_TERM_WEIGHT;
+        
+        return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+    }
 }

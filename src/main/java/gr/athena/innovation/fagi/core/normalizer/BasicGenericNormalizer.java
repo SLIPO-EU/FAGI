@@ -74,7 +74,6 @@ public class BasicGenericNormalizer implements INormalizer {
         tempString = removePunctuation(literalAabbr);
 
         //3)to lowercase using locale
-        logger.warn("tempString: " + tempString);
         tempString = tempString.toLowerCase(getLocale());
 
         //4)remove special character except parenthesis
