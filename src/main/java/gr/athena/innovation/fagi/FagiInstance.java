@@ -8,6 +8,7 @@ import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
+import gr.athena.innovation.fagi.preview.QualityProcessor;
 import gr.athena.innovation.fagi.preview.QualityViewer;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
@@ -40,7 +41,7 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    private final boolean qualityOn = false;
+    private final boolean qualityOn = true;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -107,11 +108,17 @@ public class FagiInstance {
         
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-            QualityViewer qualityViewer = new QualityViewer(fusionSpecification);
-            qualityViewer.printSimilarityResults(rdfProperties);
+            //QualityViewer qualityViewer = new QualityViewer(fusionSpecification);
+            //qualityViewer.printSimilarityResults(rdfProperties);
             
-            //path of csv, path of similarity results
-            qualityViewer.fromCSV("", "");
+            //path of csv, path results results
+            QualityProcessor qualityProcessor = new QualityProcessor(fusionSpecification);
+            
+            String csvPath = "";
+            String resultsPath = "";
+            String propertName = "name";
+            
+            qualityProcessor.executeEvaluation(csvPath, resultsPath, propertName);
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
