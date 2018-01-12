@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.preview;
 
-import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
@@ -11,13 +10,8 @@ import gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric;
 import gr.athena.innovation.fagi.core.similarity.NGram;
 import gr.athena.innovation.fagi.core.similarity.SortedJaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
-import gr.athena.innovation.fagi.model.LeftModel;
-import gr.athena.innovation.fagi.model.Link;
-import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
-import gr.athena.innovation.fagi.model.RightModel;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
-import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
@@ -28,7 +22,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Locale;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -56,17 +49,19 @@ public class QualityProcessor {
 
     public void executeEvaluation(String csvPath, String resultsPath, String propertyName) throws FileNotFoundException, IOException {
 
-        for (double threshold = 0.1; threshold < 1; threshold += 0.05) {
+        //for (double threshold = 0.05; threshold < 1; threshold += 0.05) {
 
-            logger.warn(threshold);
-            executeThreshold(csvPath, resultsPath, propertyName, threshold);
+            //logger.warn(threshold);
+            Accuracy accuracy = new Accuracy();
+            
+            executeThreshold(csvPath, resultsPath, propertyName, 0.5, accuracy);
 
-        }
+        //}
 
         //executeThreshold(csvPath, resultsPath, propertyName);
     }
 
-    private void executeThreshold(String csvPath, String resultsPath, String propertyName, double threshold) throws FileNotFoundException, IOException{
+    private void executeThreshold(String csvPath, String resultsPath, String propertyName, double threshold, Accuracy accuracy) throws FileNotFoundException, IOException{
         String line;
         String cvsSplitBy = "\\^";
         Locale locale = fusionSpecification.getLocale();
@@ -139,7 +134,7 @@ public class QualityProcessor {
                 //String names1 = spl[21];
                 String acceptance = spl[22];
 
-                String pairOutputResult = computePairOutputResult(idA, idB, nameA, nameB, locale, acceptance, threshold);
+                String pairOutputResult = computePairOutputResult(idA, idB, nameA, nameB, locale, acceptance, threshold, accuracy);
 
                 namesWriter.append(pairOutputResult);
                 namesWriter.newLine();
@@ -157,7 +152,7 @@ public class QualityProcessor {
     }
 
     private String computePairOutputResult(String idA, String idB, String valueA, String valueB, 
-            Locale locale, String acceptance, double threshold) {
+            Locale locale, String acceptance, double threshold, Accuracy accuracy) {
         
         NormalizedLiteral basicA = getBasicNormalization(valueA, valueB, locale);
         NormalizedLiteral basicB = getBasicNormalization(valueB, valueA, locale);
@@ -173,71 +168,76 @@ public class QualityProcessor {
         double jaroWinkler = JaroWinkler.computeSimilarity(valueA, valueB);
         double jaroWinklerSorted = SortedJaroWinkler.computeSimilarity(valueA, valueB);
 
-        //todo: add accuracy counters
-        if((leven > threshold && acceptance.equals("ACCEPT")) || leven < threshold && acceptance.equals("REJECT")){
+        
+        int levenCompl = 0;
+        accuracy.setTotal(accuracy.getTotal()+1);
+        
 
+        if((leven > threshold && acceptance.equals("ACCEPT")) || leven < threshold && acceptance.equals("REJECT")){
+            accuracy.setLevenAccur(accuracy.getLevenAccur() + 1);
+        } else {
+            levenCompl++;
         }
         
         if((ngram2 > threshold && acceptance.equals("ACCEPT")) || ngram2 < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setNgram2Accur(accuracy.getNgram2Accur() + 1);
+        } 
 
         if((cosine > threshold && acceptance.equals("ACCEPT")) || cosine < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setCosineAccur(accuracy.getCosineAccur() + 1);
+        } 
 
         if((lqs > threshold && acceptance.equals("ACCEPT")) || lqs < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setLqsAccur(accuracy.getLqsAccur() + 1);
+        } 
 
         if((jaro > threshold && acceptance.equals("ACCEPT")) || jaro < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setJaroAccur(accuracy.getJaroAccur() + 1);
+        } 
 
         if((jaroWinkler > threshold && acceptance.equals("ACCEPT")) || jaroWinkler < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setJaroWinklerAccur(accuracy.getJaroWinklerAccur() + 1);
+        } 
 
         if((jaroWinklerSorted > threshold && acceptance.equals("ACCEPT")) || jaroWinklerSorted < threshold && acceptance.equals("REJECT")){
-
-        }
+            accuracy.setJaroWinklerSortedAccur(accuracy.getJaroWinklerSortedAccur() + 1);
+        } 
         
         
         String namesLine = "Threshold: " + threshold 
             +  "\nid_a: " + idA + " id_b: " + idB + " property: Name"             
             + " \nOriginal values: " + valueA + " <--> " + valueB
-            + " \n\tLevenstein           :" + Levenshtein.computeSimilarity(valueA, valueB, null)
-            + " \n\t2Gram                :" + NGram.computeSimilarity(valueA, valueB, 2)
-            + " \n\tCosine               :" + Cosine.computeSimilarity(valueA, valueB)
-            + " \n\tLongestCommonSubseq  :" + LongestCommonSubsequenceMetric.computeSimilarity(valueA, valueB)
-            + " \n\tJaro                 :" + Jaro.computeSimilarity(valueA, valueB)
-            + " \n\tJaroWinkler          :" + JaroWinkler.computeSimilarity(valueA, valueB)
-            + " \n\tSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(valueA, valueB)
-            //+ " \nPermJaroWinkler      :" + per.computeDistance(literalA, literalB) //too slow                        
+            + " \n\tLevenstein           :" + accuracy.getLevenAccur() + ", failed:" + levenCompl
+            + " \n\t2Gram                :" + accuracy.getNgram2Accur()
+            + " \n\tCosine               :" + accuracy.getCosineAccur()
+            + " \n\tLongestCommonSubseq  :" + accuracy.getLqsAccur()
+            + " \n\tJaro                 :" + accuracy.getJaroAccur()
+            + " \n\tJaroWinkler          :" + accuracy.getJaroWinklerAccur()
+            + " \n\tSortedJaroWinkler    :" + accuracy.getJaroWinklerSortedAccur();
 
-            + " \nSimple normalization: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "longestcommonsubsequence")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "sortedjarowinkler")
+//            + " \nSimple normalization: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
+//            + " \n\tLevenstein           :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "levenshtein")
+//            + " \n\t2Gram                :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "2Gram")
+//            + " \n\tCosine               :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "cosine")
+//            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "longestcommonsubsequence")
+//            + " \n\tJaro                 :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jaro")
+//            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jarowinkler")
+//            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "sortedjarowinkler")
+//
+//            + " \nCustom normalization full: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
+//            + " \nBase: " + normalizedPair.getBaseValueA() + " <--> " + normalizedPair.getBaseValueB()
+//            + " \nMismatch: " + normalizedPair.mismatchToStringA() + " <--> " + normalizedPair.mismatchToStringB()
+//            + " \nSpecial terms: " + normalizedPair.specialTermsToStringA() + " <--> " + normalizedPair.specialTermsToStringB()
+//            + " \nCommon terms: " + normalizedPair.commonTermsToString()
+//            + " \n\tLevenstein           :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "levenshtein")
+//            + " \n\t2Gram                :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram")
+//            + " \n\tCosine               :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine")
+//            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence")
+//            + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro")
+//            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler")
+//            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler")                
 
-            + " \nCustom normalization full: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
-            + " \nBase: " + normalizedPair.getBaseValueA() + " <--> " + normalizedPair.getBaseValueB()
-            + " \nMismatch: " + normalizedPair.mismatchToStringA() + " <--> " + normalizedPair.mismatchToStringB()
-            + " \nSpecial terms: " + normalizedPair.specialTermsToStringA() + " <--> " + normalizedPair.specialTermsToStringB()
-            + " \nCommon terms: " + normalizedPair.commonTermsToString()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler")                
-
-            + " \n" + acceptance + "\n";
+//            + " \n" + acceptance + "\n";
         return namesLine;
     }
     
