@@ -37,7 +37,6 @@ public class BasicGenericNormalizer implements INormalizer {
     
     public NormalizedLiteral getNormalizedLiteral(String literalA, String literalB, Locale locale) {
 
-        
         String tempString;
 
         //1)
@@ -58,7 +57,7 @@ public class BasicGenericNormalizer implements INormalizer {
 
         return createNormalizedLiteral(literalA, tempString);
     }
-    
+
     //Same steps with the getNormalizedLiteral, returns a string instead. 
     //This method is used by the 'normalize' method that is called from a rule function.
     //The above method returns a 'NormalizedLiteral' to be used for the custom normalization steps.
@@ -118,7 +117,8 @@ public class BasicGenericNormalizer implements INormalizer {
     //4) 
     //remove special character except parenthesis
     private String removeSpecialCharacters(String text) {
-        String result = text.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX_2, " ");
+        //String result = text.replaceAll(SpecificationConstants.Regex.NON_WORD_EXCEPT_PARENTHESIS_REGEX_2, " ");
+        String result = text.replaceAll(SpecificationConstants.Regex.SPECIAL_CHARS, " ");
         return result;
     }
 

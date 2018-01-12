@@ -79,15 +79,19 @@ public class SpecificationConstants {
     
     public class Regex {
 
+        //v0.1
         public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
         public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
         public static final String ABBR_REGEX3 = "\\b(?:[a-zA-Z]\\.){2,}";
         public static final String UPPER_CASE_2 = "^(.*?[A-Z]){2,}";
-        public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
-        public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
-        public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX_2 = "[^\\p{L}\\p{Nd}]+";
+        //public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
+        //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
+        //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX_2 = "[^\\p{L}\\p{Nd}]+";
         public static final String PUNCTUATION_EXCEPT_PARENTHESIS_REGEX = "[\\p{Punct}&&[^()]]";
         
+        //v0.2
+        //removes - _ / @ 
+        public static final String SPECIAL_CHARS = "[\\-\\_\\/\\@]";
     }    
     
     public static final String[] DATE_FORMATS = {
@@ -112,7 +116,9 @@ public class SpecificationConstants {
         public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
         public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplex";
-        public static final String IS_SAME_NORMALIZED = "issamenormalized";
+        //public static final String IS_SAME_NORMALIZED = "issamenormalized";
+        public static final String IS_SAME_SIMPLE_NORMALIZE = "issamesimplenormalize";
+        public static final String IS_SAME_CUSTOM_NORMALIZE = "issamecustomnormalize";
 
     }
 

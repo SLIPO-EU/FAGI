@@ -11,16 +11,13 @@ import gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric;
 import gr.athena.innovation.fagi.core.similarity.NGram;
 import gr.athena.innovation.fagi.core.similarity.SortedJaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
-import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.RightModel;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
-import gr.athena.innovation.fagi.quality.MetricSelector;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
-import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
@@ -51,8 +48,7 @@ public class QualityViewer {
     private static final Logger logger = LogManager.getLogger(QualityViewer.class);
     private final FusionSpecification fusionSpecification;
 
-    public QualityViewer(List<InterlinkedPair> interlinkedEntitiesList, RuleCatalog ruleCatalog,
-            MetricSelector metricSelector, FusionSpecification fusionSpecification) {
+    public QualityViewer(FusionSpecification fusionSpecification) {
 
         this.fusionSpecification = fusionSpecification;
     }

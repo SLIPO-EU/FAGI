@@ -5,6 +5,8 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.function.date.IsValidDate;
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
+import gr.athena.innovation.fagi.core.function.literal.IsSameCustomNormalize;
+import gr.athena.innovation.fagi.core.function.literal.IsSameSimpleNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
@@ -184,7 +186,26 @@ public class Condition {
                 //Use the third parameter as the exit code digits
                 String exitCodeDigits = function.getParameters()[2];
                 return isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits); 
-            }            
+            }
+            case SpecificationConstants.Functions.IS_SAME_SIMPLE_NORMALIZE:
+            {
+                
+                IsSameSimpleNormalize isSameSimpleNormalize 
+                        = (IsSameSimpleNormalize) functionMap.get(function.getName());
+                String threshold = function.getParameters()[2];
+                
+                
+                return isSameSimpleNormalize.evaluate(valueA, valueB, threshold); 
+            } 
+            case SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE:
+            {
+                
+                IsSameCustomNormalize isSameCustomNormalize 
+                        = (IsSameCustomNormalize) functionMap.get(function.getName());
+                String threshold = function.getParameters()[2];
+
+                return isSameCustomNormalize.evaluate(valueA, valueB, threshold); 
+            }              
             default:
                 throw new WrongInputException
                     ("Function used in rules.xml is malformed does not exist or currently not supported!" + function.getName());

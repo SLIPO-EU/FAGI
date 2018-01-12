@@ -9,7 +9,6 @@ import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.preview.QualityViewer;
-import gr.athena.innovation.fagi.quality.MetricSelector;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -105,18 +104,17 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-        List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
-
+        
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-            MetricSelector metricSelector = new MetricSelector();
-            QualityViewer qualityViewer = new QualityViewer(interlinkedEntities, ruleCatalog, metricSelector, fusionSpecification);
+            QualityViewer qualityViewer = new QualityViewer(fusionSpecification);
             qualityViewer.printSimilarityResults(rdfProperties);
             
             //path of csv, path of similarity results
             qualityViewer.fromCSV("", "");
         }
 
+        List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
         Fuser fuser = new Fuser(interlinkedEntities);
         fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, functionRegistry.getFunctionMap());
 

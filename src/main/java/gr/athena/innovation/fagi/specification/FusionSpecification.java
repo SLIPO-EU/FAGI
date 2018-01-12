@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.specification;
 
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,9 @@ import org.apache.logging.log4j.Logger;
 public class FusionSpecification {
     
     private static final Logger logger = LogManager.getLogger(FusionSpecification.class);
+    
+    private static FusionSpecification fusionSpecification;
+    
     private String idA;
     private String endpointA;
     private String pathA;
@@ -38,6 +42,18 @@ public class FusionSpecification {
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;    
 
+    private FusionSpecification() {
+    }
+
+    public static FusionSpecification getInstance() throws ApplicationException {
+        //lazy init
+        if (fusionSpecification == null) {
+            fusionSpecification = new FusionSpecification();
+        }
+
+        return fusionSpecification;
+    }
+    
     public void setPathA(String pathA) throws WrongInputException {
         
         if(StringUtils.isBlank(pathA)){
@@ -196,6 +212,9 @@ public class FusionSpecification {
     }
 
     public Locale getLocale() {
+        if(locale == null){
+            return Locale.ENGLISH;
+        }
         return locale;
     }
 

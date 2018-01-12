@@ -24,7 +24,7 @@ public class SpecificationParser {
     public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException{
         
         logger.info("Parsing Fusion Specification: " + fusionSpecificationPath);
-        FusionSpecification fusionSpecification = new FusionSpecification();
+        FusionSpecification fusionSpecification = FusionSpecification.getInstance();
         
         try {
 

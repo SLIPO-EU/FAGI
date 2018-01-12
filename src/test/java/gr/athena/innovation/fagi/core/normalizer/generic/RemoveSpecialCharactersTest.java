@@ -46,9 +46,9 @@ public class RemoveSpecialCharactersTest {
         
         RemoveSpecialCharacters removeSpecialCharacters = new RemoveSpecialCharacters();
         
-        String literal = "$@#i contain^^ m@any special characTers$";
+        String literal = "-_/@ contain m@any special characTers-";
         
-        String expResult = "   i contain   m any special characTers ";
+        String expResult = "     contain m any special characTers ";
         String result = removeSpecialCharacters.normalize(literal);
         assertEquals(expResult, result);
     }
