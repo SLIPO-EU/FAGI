@@ -42,7 +42,6 @@ public class JaroWinklerTest {
         
         double expResult6 = 1.0;
         double result6 = JaroWinkler.computeSimilarity("fog", "fog");
-        assertEquals(expResult6, result6, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult6, result6, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);       
     }
-    
 }

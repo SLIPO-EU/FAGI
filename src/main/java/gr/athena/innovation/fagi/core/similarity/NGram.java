@@ -17,6 +17,7 @@ public class NGram {
      * @return the computed 2-gram distance.
      */
     public static float computeDistance(String a, String b){
+        //TODO: distance is similarity
         NGramDistance n = new NGramDistance();
         float result = n.getDistance(a, b);
         

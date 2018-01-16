@@ -52,7 +52,7 @@ public class WeightedSimilarity {
             }
             case "longestcommonsubsequence": {
                 return LongestCommonSubsequenceMetric.computeDistance(normalizedValueA, normalizedValueB);
-            }
+            }          
             case "2Gram": {
                 return NGram.computeDistance(normalizedValueA, normalizedValueB, 2);
             }

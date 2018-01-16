@@ -5,76 +5,76 @@ package gr.athena.innovation.fagi.preview;
  * @author nkarag
  */
 public class Accuracy {
-    private int levenAccur = 0;
-    private int ngram2Accur = 0;
-    private int cosineAccur = 0;
-    private int lqsAccur = 0;
-    private int jaroAccur = 0;
-    private int jaroWinklerAccur = 0;
-    private int jaroWinklerSortedAccur = 0;
-    private int total = 0;
+    private int levenshteinCount = 0;
+    private int ngram2Count = 0;
+    private int cosineCount = 0;
+    private int lqsCount = 0;
+    private int jaroCount = 0;
+    private int jaroWinklerCount = 0;
+    private int jaroWinklerSortedCount = 0;
+    private int jaccardCount = 0;
 
-    public int getLevenAccur() {
-        return levenAccur;
+    public int getLevenshteinCount() {
+        return levenshteinCount;
     }
 
-    public void setLevenAccur(int levenAccur) {
-        this.levenAccur = levenAccur;
+    public void setLevenshteinCount(int levenshteinCount) {
+        this.levenshteinCount = levenshteinCount;
     }
 
-    public int getNgram2Accur() {
-        return ngram2Accur;
+    public int getNgram2Count() {
+        return ngram2Count;
     }
 
-    public void setNgram2Accur(int ngram2Accur) {
-        this.ngram2Accur = ngram2Accur;
+    public void setNgram2Count(int ngram2Count) {
+        this.ngram2Count = ngram2Count;
     }
 
-    public int getCosineAccur() {
-        return cosineAccur;
+    public int getCosineCount() {
+        return cosineCount;
     }
 
-    public void setCosineAccur(int cosineAccur) {
-        this.cosineAccur = cosineAccur;
+    public void setCosineCount(int cosineCount) {
+        this.cosineCount = cosineCount;
     }
 
-    public int getLqsAccur() {
-        return lqsAccur;
+    public int getLqsCount() {
+        return lqsCount;
     }
 
-    public void setLqsAccur(int lqsAccur) {
-        this.lqsAccur = lqsAccur;
+    public void setLqsCount(int lqsCount) {
+        this.lqsCount = lqsCount;
     }
 
-    public int getJaroAccur() {
-        return jaroAccur;
+    public int getJaroCount() {
+        return jaroCount;
     }
 
-    public void setJaroAccur(int jaroAccur) {
-        this.jaroAccur = jaroAccur;
+    public void setJaroCount(int jaroCount) {
+        this.jaroCount = jaroCount;
     }
 
-    public int getJaroWinklerAccur() {
-        return jaroWinklerAccur;
+    public int getJaroWinklerCount() {
+        return jaroWinklerCount;
     }
 
-    public void setJaroWinklerAccur(int jaroWinklerAccur) {
-        this.jaroWinklerAccur = jaroWinklerAccur;
+    public void setJaroWinklerCount(int jaroWinklerCount) {
+        this.jaroWinklerCount = jaroWinklerCount;
     }
 
-    public int getJaroWinklerSortedAccur() {
-        return jaroWinklerSortedAccur;
+    public int getJaroWinklerSortedCount() {
+        return jaroWinklerSortedCount;
     }
 
-    public void setJaroWinklerSortedAccur(int jaroWinklerSortedAccur) {
-        this.jaroWinklerSortedAccur = jaroWinklerSortedAccur;
+    public void setJaroWinklerSortedCount(int jaroWinklerSortedCount) {
+        this.jaroWinklerSortedCount = jaroWinklerSortedCount;
     }
 
-    public int getTotal() {
-        return total;
+    public int getJaccardCount() {
+        return jaccardCount;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public void setJaccardCount(int jaccardCount) {
+        this.jaccardCount = jaccardCount;
     }
 }
