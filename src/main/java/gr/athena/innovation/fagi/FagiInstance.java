@@ -114,13 +114,14 @@ public class FagiInstance {
 
             String csvPath = "";
             String resultsPath = "";
-            String propertName = "name_metrics_0.4";
+            String nameMetrics = "name_metrics_0.5.txt";
+            String nameSimilarities = "name_similarities_0.5.txt";
 
             SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
-            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath);            
+            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
 
             MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
-            metricProcessor.executeEvaluation(csvPath, resultsPath, propertName);
+            metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics);
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();

@@ -74,6 +74,7 @@ public class AdvancedGenericNormalizerTest {
         mismatchedA.add("aaa");
         mismatchedA.add("Doctor");
         mismatchedB.add("ddd");
+        mismatchedB.add("eee");
         
         ArrayList<String> uniqueSpecialsA = new ArrayList<>();
         //ArrayList<String> uniqueSpecialsB = new ArrayList<>();        

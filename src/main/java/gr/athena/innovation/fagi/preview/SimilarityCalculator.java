@@ -40,7 +40,7 @@ public class SimilarityCalculator {
         this.fusionSpecification = fusionSpecification;
     }
 
-    public void calculateCSVPairSimilarities(String path, String outputPath) throws FileNotFoundException, IOException {
+    public void calculateCSVPairSimilarities(String path, String outputPath, String propertName) throws FileNotFoundException, IOException {
         String csvFile = path;
         String line;
         String cvsSplitBy = "\\^";
@@ -49,7 +49,7 @@ public class SimilarityCalculator {
         BufferedReader br = new BufferedReader(new FileReader(csvFile));
         int i = 0;
 
-        String propertyPath = outputPath + "name.txt";
+        String propertyPath = outputPath + propertName;
         File file = new File(propertyPath);
 
         if (file.exists()) {

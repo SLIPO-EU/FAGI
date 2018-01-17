@@ -24,30 +24,28 @@ import org.apache.logging.log4j.LogManager;
  * @author nkarag
  */
 public class AdvancedGenericNormalizer {
-    
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizer.class);
-    
-    private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
-   
-    /**
-     * Executes some custom steps in order to produce a weighted normalized pair of literals. 
-     * The input is already normalized literals using the basic normalization. 
-     * Custom steps include:
-     * Comparing word by word and recognize alphabetical mismatches based on Collator strength. 
-     * Partitioning the words in different categories (base, mismatch, linked terms) with additional weights.
-     * Mismatches and linked terms are excluded from each base literal.
 
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizer.class);
+
+    private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
+
+    /**
+     * Executes some custom steps in order to produce a weighted normalized pair of literals. The input is already
+     * normalized literals using the basic normalization. Custom steps include: Comparing word by word and recognize
+     * alphabetical mismatches based on Collator strength. Partitioning the words in different categories (base,
+     * mismatch, linked terms) with additional weights. Mismatches and linked terms are excluded from each base literal.
+     *
      * @param normalizedLiteralA
      * @param normalizedLiteralB
      * @param locale
      * @return the weighted pair literal.
      */
-    public WeightedPairLiteral getWeightedPair(NormalizedLiteral normalizedLiteralA, 
+    public WeightedPairLiteral getWeightedPair(NormalizedLiteral normalizedLiteralA,
             NormalizedLiteral normalizedLiteralB, Locale locale) {
 
         StringBuilder aBuilder = new StringBuilder();
         StringBuilder bBuilder = new StringBuilder();
-        
+
         WeightedPairLiteral weightedPairLiteral = new WeightedPairLiteral();
 
         List<String> tokensA = getTokenList(normalizedLiteralA.getNormalized());
@@ -68,26 +66,25 @@ public class AdvancedGenericNormalizer {
         String normalizedB = bBuilder.toString();
 
         //custom alphabetical re-ordering, assign mismatches
-        WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral, 
+        WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral,
                 tokenize(normalizedA), tokenize(normalizedB), locale);
-        
+
         //TODO:
         //(Discuss) Optionally concatenate all words of each string for specific distance measures.
-        
         return weightedPair;
     }
 
-    private WeightedPairLiteral assignMismatch(WeightedPairLiteral weightedPairLiteral, String[] tokensAar, 
+    private WeightedPairLiteral assignMismatch(WeightedPairLiteral weightedPairLiteral, String[] tokensAar,
             String[] tokensBar, Locale locale) {
 
         Collator collator = resolveCollator(locale);
 
         List<String> mismatchA = new ArrayList<>();
         List<String> mismatchB = new ArrayList<>();
-        
+
         List<String> tokensA = new LinkedList<>(Arrays.asList(tokensAar));
         List<String> tokensB = new LinkedList<>(Arrays.asList(tokensBar));
-        
+
         StringBuilder a = new StringBuilder();
         StringBuilder b = new StringBuilder();
 
@@ -95,16 +92,16 @@ public class AdvancedGenericNormalizer {
         int carret_j = 0;
 
         int br = 0;
-        
-        while(br < tokensA.size() + tokensB.size()) {
+
+        while (br < tokensA.size() + tokensB.size()) {
 
             String ta = tokensA.get(carret_i);
             String tb = tokensB.get(carret_j);
 
             double result = JaroWinkler.computeSimilarity(ta, tb);
-            
+
             int compareResult = collator.compare(ta, tb);
-            
+
             //Using JaroWinkler to check similarity instead of Collator. Collator result is used on mismatch only
             if (result > SpecificationConstants.NORM_THRESHOLD) {
 
@@ -115,17 +112,15 @@ public class AdvancedGenericNormalizer {
                 carret_j++;
 
                 if (carret_j > tokensB.size() - 1) {
-
-                    appendOffSets(carret_i, a, tokensA);
-                    
-                    return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
-
-                } else if (carret_i > tokensA.size() - 1) {
-                    
-                    appendOffSets(carret_j, b, tokensB);
-                    
+                    appendBaseTokens(carret_i, a, tokensA);
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
+
+                if (carret_i > tokensA.size() - 1) {
+                    appendBaseTokens(carret_j, b, tokensB);
+                    return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
+                }
+
             } else if (compareResult > 0) {
 
                 mismatchB.add(tb);
@@ -133,22 +128,19 @@ public class AdvancedGenericNormalizer {
                 carret_j++;
 
                 if (carret_j > tokensB.size() - 1) {
-                    
-                    appendOffSets(carret_j, b, tokensB);
-                    
+                    appendMismatchOffSets(carret_i, mismatchA, tokensA);
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
 
             } else {
 
                 mismatchA.add(ta);
-                
+
                 carret_i++;
 
                 if (carret_i > tokensA.size() - 1) {
-                    
-                    appendOffSets(carret_i, a, tokensA);
-                    
+
+                    appendMismatchOffSets(carret_j, mismatchB, tokensB);
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
             }
@@ -159,12 +151,12 @@ public class AdvancedGenericNormalizer {
     }
 
     private Collator resolveCollator(Locale locale) {
-        if(locale == null){
+        if (locale == null) {
             locale = Locale.ENGLISH;
         }
         Collator collator = Collator.getInstance(locale);
         collator.setStrength(SpecificationConstants.COLLATOR_STRENGTH);
-        
+
         return collator;
     }
 
@@ -193,7 +185,7 @@ public class AdvancedGenericNormalizer {
         String[] split = text.toString().split("\\s+");
         return split;
     }
-    
+
     private void addLinkedTerm(WeightedPairLiteral weightedPairLiteral, List<String> tokens, String token) {
         LinkedTerm linkedTerm = new LinkedTerm();
         linkedTerm.setTerm(token);
@@ -206,22 +198,22 @@ public class AdvancedGenericNormalizer {
     private void appendTokens(List<String> tokens, StringBuilder builder) {
         tokens.stream().forEach((tok) -> {
             builder.append(tok).append(" ");
-        });        
+        });
     }
 
     //identify special/frequent terms:
     //-If both contain them -> map these terms to each other and produce an individual score for the final similarity.
     //-If only one contains them -> exclude it and assign a small weight for the mismatch
-    private void resolveTerms(WeightedPairLiteral weightedPairLiteral, 
-            Set<String> set, Set<String> helpSet, Set<String> terms, List<String> tokens, EnumEntity entity){
-        
+    private void resolveTerms(WeightedPairLiteral weightedPairLiteral,
+            Set<String> set, Set<String> helpSet, Set<String> terms, List<String> tokens, EnumEntity entity) {
+
         set.stream().forEach((String token) -> {
             if (terms.contains(token) && helpSet.contains(token)) {
                 addLinkedTerm(weightedPairLiteral, tokens, token);
             } else if (terms.contains(token) && !helpSet.contains(token)) {
                 tokens.remove(token);
-                
-                switch(entity) {
+
+                switch (entity) {
                     case LEFT:
                         weightedPairLiteral.addUniqueSpecialTermA(token);
                         break;
@@ -232,10 +224,17 @@ public class AdvancedGenericNormalizer {
             }
         });
     }
-    
-    private void appendOffSets(int carret, StringBuilder builder, List<String> tokens) {
-        while(carret < tokens.size()-1){
+
+    private void appendBaseTokens(int carret, StringBuilder builder, List<String> tokens) {
+        while (carret < tokens.size()) {
             builder.append(tokens.get(carret)).append(CONNECTOR);
+            carret++;
+        }
+    }
+
+    private void appendMismatchOffSets(int carret, List<String> mismatches, List<String> tokens) {
+        while (carret < tokens.size()) {
+            mismatches.add(tokens.get(carret));
             carret++;
         }
     }
