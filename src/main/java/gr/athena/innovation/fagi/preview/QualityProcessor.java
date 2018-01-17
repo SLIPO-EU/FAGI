@@ -14,7 +14,6 @@ import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
-import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,11 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -65,15 +59,13 @@ public class QualityProcessor {
         
         List<Double> init1 = new ArrayList<>();
         List<Double> init2 = new ArrayList<>();
+        
         aLevenPrecisionMap.put(ACCEPT, init1);
         aLevenPrecisionMap.put(REJECT, init2);
     }
 
-    public void executeEvaluation(String csvPath, String resultsPath, String propertyName) throws FileNotFoundException, IOException {
-
-        String line;
-        String cvsSplitBy = "\\^";
-        Locale locale = fusionSpecification.getLocale();
+    public void executeEvaluation(String csvPath, String resultsPath, String propertyName) 
+            throws FileNotFoundException, IOException {
 
         String propertyPath = resultsPath + propertyName + ".txt";
         File file = new File(propertyPath);
@@ -105,13 +97,13 @@ public class QualityProcessor {
                 Accuracy basicNormAccuracy = new Accuracy();
                 Accuracy advancedNormAccuracy = new Accuracy();
                 
-                executeThreshold(writer, csvPath, resultsPath, propertyName, thres, initialAccuracy, basicNormAccuracy, advancedNormAccuracy);
+                executeThreshold(writer, csvPath, thres, initialAccuracy, basicNormAccuracy, advancedNormAccuracy);
             }
         }
     }
 
-    private void executeThreshold(BufferedWriter writer, String csvPath, String resultsPath, String propertyName, 
-            double threshold, Accuracy initialAccuracy, Accuracy basicNormAccuracy, 
+    private void executeThreshold(BufferedWriter writer, String csvPath, double threshold, 
+            Accuracy initialAccuracy, Accuracy basicNormAccuracy, 
             Accuracy advancedNormAccuracy) throws FileNotFoundException, IOException{
         
         totalRows = 0;
@@ -200,6 +192,7 @@ public class QualityProcessor {
             double levenPrecision;
             double levenRecall;
             double harmonicMean;
+            
             if(levenPrecisionAcceptCounter == 0 && levenPrecisionRejectCounter == 0){
                 levenPrecision = 0;
                 levenRecall = 0;
@@ -425,51 +418,6 @@ public class QualityProcessor {
         } 
     }
     
-    private String getPropertyLine(String idA, String idB, String propertyA, String propertyB, 
-            Locale locale, String acceptance) {
-        
-        NormalizedLiteral basicA = getBasicNormalization(propertyA, propertyB, locale);
-        NormalizedLiteral basicB = getBasicNormalization(propertyB, propertyA, locale);
-
-        WeightedPairLiteral normalizedPair = getAdvancedNormalization(basicA, basicB, locale);
-        
-        String namesLine = "id_a: " + idA + " id_b: " + idB + " property: Name"
-            + " \nOriginal values: " + propertyA + " <--> " + propertyB
-            + " \n\tLevenstein           :" + Levenshtein.computeSimilarity(propertyA, propertyB, null)
-            + " \n\t2Gram                :" + NGram.computeSimilarity(propertyA, propertyB, 2)
-            + " \n\tCosine               :" + Cosine.computeSimilarity(propertyA, propertyB)
-            + " \n\tLongestCommonSubseq  :" + LongestCommonSubsequenceMetric.computeSimilarity(propertyA, propertyB)
-            + " \n\tJaro                 :" + Jaro.computeSimilarity(propertyA, propertyB)
-            + " \n\tJaroWinkler          :" + JaroWinkler.computeSimilarity(propertyA, propertyB)
-            + " \n\tSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(propertyA, propertyB)
-            //+ " \nPermJaroWinkler      :" + per.computeDistance(literalA, literalB) //too slow                        
-
-            + " \nSimple normalization: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "longestcommonsubsequence")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "sortedjarowinkler")
-
-            + " \nCustom normalization full: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
-            + " \nBase: " + normalizedPair.getBaseValueA() + " <--> " + normalizedPair.getBaseValueB()
-            + " \nMismatch: " + normalizedPair.mismatchToStringA() + " <--> " + normalizedPair.mismatchToStringB()
-            + " \nSpecial terms: " + normalizedPair.specialTermsToStringA() + " <--> " + normalizedPair.specialTermsToStringB()
-            + " \nCommon terms: " + normalizedPair.commonTermsToString()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler")                
-
-            + " \n" + acceptance + "\n";
-        return namesLine;
-    }
-    
     private NormalizedLiteral getBasicNormalization(String literalA, String literalB, Locale locale) {
         BasicGenericNormalizer bgn = new BasicGenericNormalizer();
         NormalizedLiteral normalizedLiteral = bgn.getNormalizedLiteral(literalA, literalB, locale);
@@ -480,15 +428,5 @@ public class QualityProcessor {
         AdvancedGenericNormalizer agn = new AdvancedGenericNormalizer();
         WeightedPairLiteral weightedPairLiteral = agn.getWeightedPair(normA, normB, locale);
         return weightedPairLiteral;
-    }
-    
-    private Model constructEntityMetadataModel(String node, Model sourceModel, int depth) {
-
-        String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
-        Query query = QueryFactory.create(q);
-        QueryExecution queryExecution = QueryExecutionFactory.create(query, sourceModel);
-        Model model = queryExecution.execConstruct();
-
-        return model;
     }
 }
