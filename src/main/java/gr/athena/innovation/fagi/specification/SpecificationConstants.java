@@ -70,7 +70,7 @@ public class SpecificationConstants {
     public static final int ROUND_DECIMALS = 3;
     
     //evaluation
-    public static final double NORM_THRESHOLD = 0.7;
+    public static final double NORM_THRESHOLD = 0.5;
     public static final double BASE_WEIGHT = 0.5;
     public static final double MISMATCH_WEIGHT = 0.2;
     public static final double SPECIAL_WEIGHT = 0.2;
