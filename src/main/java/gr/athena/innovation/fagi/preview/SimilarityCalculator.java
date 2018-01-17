@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.preview;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
+import gr.athena.innovation.fagi.core.similarity.Jaccard;
 import gr.athena.innovation.fagi.core.similarity.Jaro;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.Levenshtein;
@@ -144,6 +145,7 @@ public class SimilarityCalculator {
             + " \n\t2Gram                :" + NGram.computeSimilarity(propertyA, propertyB, 2)
             + " \n\tCosine               :" + Cosine.computeSimilarity(propertyA, propertyB)
             + " \n\tLongestCommonSubseq  :" + LongestCommonSubsequenceMetric.computeSimilarity(propertyA, propertyB)
+            + " \n\tJaccard              :" + Jaccard.computeSimilarity(propertyA, propertyB)
             + " \n\tJaro                 :" + Jaro.computeSimilarity(propertyA, propertyB)
             + " \n\tJaroWinkler          :" + JaroWinkler.computeSimilarity(propertyA, propertyB)
             + " \n\tSortedJaroWinkler    :" + SortedJaroWinkler.computeSimilarity(propertyA, propertyB)
@@ -154,6 +156,7 @@ public class SimilarityCalculator {
             + " \n\t2Gram                :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "2Gram")
             + " \n\tCosine               :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "cosine")
             + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "longestcommonsubsequence")
+            + " \n\tJaccard              :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jaccard")
             + " \n\tJaro                 :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jaro")
             + " \n\tJaroWinkler          :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "jarowinkler")
             + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeNormalizedSimilarity(basicA, basicB, "sortedjarowinkler")
@@ -167,6 +170,7 @@ public class SimilarityCalculator {
             + " \n\t2Gram                :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram")
             + " \n\tCosine               :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine")
             + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence")
+            + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaccard")
             + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro")
             + " \n\tJaroWinkler          :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler")
             + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler")                
