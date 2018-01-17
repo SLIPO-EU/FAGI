@@ -133,9 +133,9 @@ public class WeightedSimilarity {
         double mismatchSim;
         double termSim;
         
-        baseSim = computeDistance(distance, baseA, baseB);
-        mismatchSim = computeDistance(distance, mismatchA, mismatchB);
-        specialsSim = computeDistance(distance, specialsA, specialsB);
+        baseSim = computeBaseDistance(distance, baseA, baseB);
+        mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
+        specialsSim = computeBaseDistance(distance, specialsA, specialsB);
         termSim = 0;
         
         if(categorySimilarity.isZeroBaseSimilarity()){
@@ -184,9 +184,9 @@ public class WeightedSimilarity {
         double mismatchSim;
         double termSim;
         
-        baseSim = computeSimilarity(similarity, baseA, baseB);
-        mismatchSim = computeSimilarity(similarity, mismatchA, mismatchB);
-        specialsSim = computeSimilarity(similarity, specialsA, specialsB);
+        baseSim = computeBaseSimilarity(similarity, baseA, baseB);
+        mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
+        specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
         termSim = 0;
         
         if(categorySimilarity.isZeroBaseSimilarity()){
@@ -208,7 +208,7 @@ public class WeightedSimilarity {
         return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
     }
 
-    private static double computeSimilarity(String similarity, String a, String b){
+    private static double computeBaseSimilarity(String similarity, String a, String b){
         
         double result;
         
@@ -252,7 +252,7 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeDistance(String similarity, String a, String b){
+    private static double computeBaseDistance(String similarity, String a, String b){
         
         double result;
         
@@ -287,6 +287,100 @@ public class WeightedSimilarity {
             }
             case "2Gram": {
                 result =  NGram.computeDistance(a, b, 2);
+                break;
+            }
+            default:
+                logger.error("Similarity: \"" + similarity + "\" does not exist for weighted literals.");
+                throw new RuntimeException();
+        }
+        return result;
+    }
+
+    private static double computeMismatchDistance(String similarity, String a, String b){
+        
+        double result;
+        
+        switch (similarity) {
+            case "cosine": {
+                result = Cosine.computeDistance(a, b);
+                break;
+            }
+            case "jaccard": {
+                result =  Jaccard.computeDistance(a, b);
+                break;
+            }
+            case "levenshtein": {
+                result =  Levenshtein.computeDistance(a, b, null);
+                break;
+            }
+            case "jaro": {
+                //using levenshtein metric for mismatch terms for jaro
+                result =  Levenshtein.computeDistance(a, b, null);
+                break;
+            }
+            case "jarowinkler": {
+                //using levenshtein metric for mismatch terms for jaro-winkler
+                result =  Levenshtein.computeDistance(a, b, null);
+                break;
+            }
+            case "sortedjarowinkler": {
+                //using levenshtein metric for mismatch terms for sorted jaro-winkler
+                result =  Levenshtein.computeDistance(a, b, null);
+                break;
+            }
+            case "longestcommonsubsequence": {
+                result =  LongestCommonSubsequenceMetric.computeDistance(a, b);
+                break;
+            }
+            case "2Gram": {
+                result =  NGram.computeDistance(a, b, 2);
+                break;
+            }
+            default:
+                logger.error("Similarity: \"" + similarity + "\" does not exist for weighted literals.");
+                throw new RuntimeException();
+        }
+        return result;
+    }
+
+    private static double computeMismatchSimilarity(String similarity, String a, String b){
+        
+        double result;
+        
+        switch (similarity) {
+            case "cosine": {
+                result = Cosine.computeSimilarity(a, b);
+                break;
+            }
+            case "jaccard": {
+                result =  Jaccard.computeSimilarity(a, b);
+                break;
+            }
+            case "levenshtein": {
+                result =  Levenshtein.computeSimilarity(a, b, null);
+                break;
+            }
+            case "jaro": {
+                //using levenshtein metric for mismatch terms for jaro
+                result =  Levenshtein.computeSimilarity(a, b, null);
+                break;
+            }
+            case "jarowinkler": {
+                //using levenshtein metric for mismatch terms for jaro-winkler
+                result =  Levenshtein.computeSimilarity(a, b, null);
+                break;
+            }
+            case "sortedjarowinkler": {
+                //using levenshtein metric for mismatch terms for sorted jaro-winkler
+                result =  Levenshtein.computeSimilarity(a, b, null);
+                break;
+            }
+            case "longestcommonsubsequence": {
+                result =  LongestCommonSubsequenceMetric.computeSimilarity(a, b);
+                break;
+            }
+            case "2Gram": {
+                result =  NGram.computeSimilarity(a, b, 2);
                 break;
             }
             default:
