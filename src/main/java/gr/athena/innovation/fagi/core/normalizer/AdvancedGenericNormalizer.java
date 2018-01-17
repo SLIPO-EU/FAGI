@@ -45,36 +45,34 @@ public class AdvancedGenericNormalizer {
     public WeightedPairLiteral getWeightedPair(NormalizedLiteral normalizedLiteralA, 
             NormalizedLiteral normalizedLiteralB, Locale locale) {
 
+        StringBuilder aBuilder = new StringBuilder();
+        StringBuilder bBuilder = new StringBuilder();
+        
         WeightedPairLiteral weightedPairLiteral = new WeightedPairLiteral();
 
-        String normalizedA = normalizedLiteralA.getNormalized();
-        String normalizedB = normalizedLiteralB.getNormalized();
-
-        List<String> tokensA = getTokenList(normalizedA);
-        List<String> tokensB = getTokenList(normalizedB);
+        List<String> tokensA = getTokenList(normalizedLiteralA.getNormalized());
+        List<String> tokensB = getTokenList(normalizedLiteralB.getNormalized());
 
         Set<String> setA = new HashSet<>(tokensA);
         Set<String> setB = new HashSet<>(tokensB);
 
         Set<String> terms = TermResolver.getInstance().getTerms();
 
-        StringBuilder a = new StringBuilder();
-        StringBuilder b = new StringBuilder();
-
         resolveTerms(weightedPairLiteral, setA, setB, terms, tokensA, EnumEntity.LEFT);
         resolveTerms(weightedPairLiteral, setB, setA, terms, tokensB, EnumEntity.RIGHT);
 
-        appendTokens(tokensA, a);
-        appendTokens(tokensB, b);
-        
-        String baseA = a.toString();
-        String baseB = b.toString();
+        appendTokens(tokensA, aBuilder);
+        appendTokens(tokensB, bBuilder);
+
+        String normalizedA = aBuilder.toString();
+        String normalizedB = bBuilder.toString();
 
         //custom alphabetical re-ordering, assign mismatches
-        WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral, tokenize(baseA), tokenize(baseB), locale);
+        WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral, 
+                tokenize(normalizedA), tokenize(normalizedB), locale);
         
         //TODO:
-        //Optionally concatenate all words of each string for specific distance measures.
+        //(Discuss) Optionally concatenate all words of each string for specific distance measures.
         
         return weightedPair;
     }
@@ -217,7 +215,7 @@ public class AdvancedGenericNormalizer {
     private void resolveTerms(WeightedPairLiteral weightedPairLiteral, 
             Set<String> set, Set<String> helpSet, Set<String> terms, List<String> tokens, EnumEntity entity){
         
-        set.stream().forEach((token) -> {
+        set.stream().forEach((String token) -> {
             if (terms.contains(token) && helpSet.contains(token)) {
                 addLinkedTerm(weightedPairLiteral, tokens, token);
             } else if (terms.contains(token) && !helpSet.contains(token)) {

@@ -8,8 +8,9 @@ import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
-import gr.athena.innovation.fagi.preview.QualityProcessor;
-import gr.athena.innovation.fagi.preview.QualityViewer;
+import gr.athena.innovation.fagi.preview.SimilarityCalculator;
+import gr.athena.innovation.fagi.preview.MetricProcessor;
+import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -108,17 +109,18 @@ public class FagiInstance {
         
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-            //QualityViewer qualityViewer = new QualityViewer(fusionSpecification);
-            //qualityViewer.printSimilarityResults(rdfProperties);
-            
-            //path of csv, path results results
-            QualityProcessor qualityProcessor = new QualityProcessor(fusionSpecification);
-            
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            qualityViewer.printRDFSimilarityResults(rdfProperties);
+
             String csvPath = "";
             String resultsPath = "";
-            String propertName = "name";
-            
-            qualityProcessor.executeEvaluation(csvPath, resultsPath, propertName);
+            String propertName = "name_metrics_0.4";
+
+            SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
+            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath);            
+
+            MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
+            metricProcessor.executeEvaluation(csvPath, resultsPath, propertName);
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();

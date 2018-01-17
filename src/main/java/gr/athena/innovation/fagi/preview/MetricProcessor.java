@@ -35,9 +35,9 @@ import org.apache.logging.log4j.Logger;
  *
  * @author nkarag
  */
-public class QualityProcessor {
+public class MetricProcessor {
 
-    private static final Logger logger = LogManager.getLogger(QualityProcessor.class);
+    private static final Logger logger = LogManager.getLogger(MetricProcessor.class);
 
     private final FusionSpecification fusionSpecification;
     
@@ -53,7 +53,7 @@ public class QualityProcessor {
     //private List<Double> blevenList = new ArrayList<>();
     //private List<Double> clevenList = new ArrayList<>();
 
-    public QualityProcessor(FusionSpecification fusionSpecification) {
+    public MetricProcessor(FusionSpecification fusionSpecification) {
 
         this.fusionSpecification = fusionSpecification;
         
@@ -79,8 +79,6 @@ public class QualityProcessor {
             file.createNewFile();
         }     
 
-        int l = 0;
-        BufferedReader br = new BufferedReader(new FileReader(csvPath));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             
             double[] thresholds = 
