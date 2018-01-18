@@ -168,8 +168,6 @@ public class AdvancedGenericNormalizer {
     private WeightedPairLiteral getWeightedPairLiteral(WeightedPairLiteral weightedPairLiteral,
             List<String> mismatchA, List<String> mismatchB, StringBuilder a, StringBuilder b) {
 
-        logger.info("\nA: " + a.toString() + " mismatch: " + mismatchA);
-        logger.info("\nB: " + b.toString() + " mismatch: " + mismatchB);
         weightedPairLiteral.setMismatchTokensA(mismatchA);
         weightedPairLiteral.setMismatchTokensB(mismatchB);
         weightedPairLiteral.setBaseValueA(a.toString().trim());

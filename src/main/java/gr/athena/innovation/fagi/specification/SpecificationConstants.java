@@ -73,6 +73,7 @@ public class SpecificationConstants {
     public static final double NORM_THRESHOLD = 0.7;
     public static final double BASE_WEIGHT = 0.5;
     public static final double MISMATCH_WEIGHT = 0.2;
+    public static final double MERGED_BASE_MISMATCH_WEIGHT = BASE_WEIGHT + MISMATCH_WEIGHT;
     public static final double SPECIAL_WEIGHT = 0.2;
     public static final double LINKED_TERM_WEIGHT = 0.1;
     

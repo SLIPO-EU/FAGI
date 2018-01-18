@@ -180,25 +180,29 @@ public class WeightedSimilarity {
         CategoryWeight categorySimilarity = new CategoryWeight(pair);
 
         double baseSim;
-        double specialsSim;
         double mismatchSim;
+        double specialsSim;
         double termSim;
-        
+
         baseSim = computeBaseSimilarity(similarity, baseA, baseB);
         mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
         specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
         termSim = 0;
-        
+
         if(categorySimilarity.isZeroBaseSimilarity()){
             baseSim = 0;
         }
-        
+
         if(categorySimilarity.isEmptyMismatch()){
             mismatchSim = baseSim;
         }
 
         if(categorySimilarity.isEmptySpecials()){
-            specialsSim = baseSim;
+            if(categorySimilarity.isZeroBaseSimilarity()){
+                specialsSim = mismatchSim;
+            } else {
+                specialsSim = baseSim;
+            }
         }
         
         if(!terms.isEmpty()){
@@ -394,9 +398,14 @@ public class WeightedSimilarity {
         
         double baseWeight = SpecificationConstants.BASE_WEIGHT;
         double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
+        double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
         double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
         double termWeight = SpecificationConstants.LINKED_TERM_WEIGHT;
-        
-        return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+
+        if(baseSim == 0){
+            return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+        } else {
+            return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+        }
     }
 }
