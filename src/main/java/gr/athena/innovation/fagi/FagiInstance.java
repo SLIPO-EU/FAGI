@@ -116,6 +116,10 @@ public class FagiInstance {
             String resultsPath = "";
             String nameMetrics = "name_metrics_0.6.txt";
             String nameSimilarities = "name_similarities_0.6.txt";
+            
+            if(!resultsPath.endsWith("/")){
+                resultsPath = resultsPath + "/";
+            }
 
             SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
             similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
