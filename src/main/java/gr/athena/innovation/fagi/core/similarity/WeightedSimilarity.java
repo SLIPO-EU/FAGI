@@ -6,19 +6,21 @@ import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Utility class for computing the available distances when using weighted literals.
- * 
- * 
+ *
+ *
  * @author nkarag
  */
 public class WeightedSimilarity {
 
     private static final Logger logger = LogManager.getLogger(WeightedSimilarity.class);
-    
+
     /**
      * Computes the provided distance for the given normalized literals.
      *
@@ -52,7 +54,7 @@ public class WeightedSimilarity {
             }
             case "longestcommonsubsequence": {
                 return LongestCommonSubsequenceMetric.computeDistance(normalizedValueA, normalizedValueB);
-            }          
+            }
             case "2Gram": {
                 return NGram.computeDistance(normalizedValueA, normalizedValueB, 2);
             }
@@ -105,24 +107,24 @@ public class WeightedSimilarity {
                 throw new RuntimeException();
         }
     }
-    
+
     /**
      * Computes the provided distance for the given custom normalized literals.
      *
      * @param pair the pair of custom normalized literals
      * @param distance the distance.
      * @return the given distance using normalized literals.
-     */    
+     */
     public static double computeAdvancedNormarizedDistance(String distance, WeightedPairLiteral pair) {
-        
+
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
-        
+
         Set<LinkedTerm> terms = pair.getLinkedTerms();
-        
+
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
-        
+
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
@@ -132,48 +134,48 @@ public class WeightedSimilarity {
         double specialsSim;
         double mismatchSim;
         double termSim;
-        
+
         baseSim = computeBaseDistance(distance, baseA, baseB);
         mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
         specialsSim = computeBaseDistance(distance, specialsA, specialsB);
         termSim = 0;
-        
-        if(categorySimilarity.isZeroBaseSimilarity()){
+
+        if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 0;
         }
-        
-        if(categorySimilarity.isEmptyMismatch()){
+
+        if (categorySimilarity.isEmptyMismatch()) {
             mismatchSim = baseSim;
         }
 
-        if(categorySimilarity.isEmptySpecials()){
+        if (categorySimilarity.isEmptySpecials()) {
             specialsSim = baseSim;
         }
-        
-        if(!terms.isEmpty()){
+
+        if (!terms.isEmpty()) {
             termSim = 1.0;
         }
-        
+
         return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
     }
-    
+
     /**
      * Computes the provided similarity for the given custom normalized literals.
      *
      * @param pair the pair of custom normalized literals
      * @param similarity the similarity.
      * @return the given distance using normalized literals.
-     */    
+     */
     public static double computeAdvancedNormarizedSimilarity(WeightedPairLiteral pair, String similarity) {
 
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
-        
+
         Set<LinkedTerm> terms = pair.getLinkedTerms();
-        
+
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
-        
+
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
@@ -189,64 +191,67 @@ public class WeightedSimilarity {
         specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
         termSim = 0;
 
-        if(categorySimilarity.isZeroBaseSimilarity()){
+        if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 0;
         }
 
-        if(categorySimilarity.isEmptyMismatch()){
+        if (categorySimilarity.isEmptyMismatch()) {
             mismatchSim = baseSim;
         }
 
-        if(categorySimilarity.isEmptySpecials()){
-            if(categorySimilarity.isZeroBaseSimilarity()){
+        if (categorySimilarity.isEmptySpecials()) {
+            if (categorySimilarity.isZeroBaseSimilarity()) {
                 specialsSim = mismatchSim;
             } else {
                 specialsSim = baseSim;
             }
         }
-        
-        if(!terms.isEmpty()){
+
+        if (!terms.isEmpty()) {
             termSim = 1.0;
         }
-        
+
         return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
     }
 
-    private static double computeBaseSimilarity(String similarity, String a, String b){
-        
+    private static double computeBaseSimilarity(String similarity, String a, String b) {
+
         double result;
-        
+
         switch (similarity) {
             case "cosine": {
                 result = Cosine.computeSimilarity(a, b);
                 break;
             }
             case "jaccard": {
-                result =  Jaccard.computeSimilarity(a, b);
+                result = Jaccard.computeSimilarity(a, b);
                 break;
             }
             case "levenshtein": {
-                result =  Levenshtein.computeSimilarity(a, b, null);
+                result = Levenshtein.computeSimilarity(a, b, null);
                 break;
             }
             case "jaro": {
-                result =  Jaro.computeSimilarity(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = computeJaroSimilarityPerWord(a, b);
                 break;
             }
             case "jarowinkler": {
-                result =  JaroWinkler.computeSimilarity(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = computeJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "sortedjarowinkler": {
-                result =  SortedJaroWinkler.computeSimilarity(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = computeSortedJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "longestcommonsubsequence": {
-                result =  LongestCommonSubsequenceMetric.computeSimilarity(a, b);
+                result = LongestCommonSubsequenceMetric.computeSimilarity(a, b);
                 break;
             }
             case "2Gram": {
-                result =  NGram.computeSimilarity(a, b, 2);
+                result = NGram.computeSimilarity(a, b, 2);
                 break;
             }
             default:
@@ -256,41 +261,44 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeBaseDistance(String similarity, String a, String b){
-        
+    private static double computeBaseDistance(String similarity, String a, String b) {
+
         double result;
-        
+
         switch (similarity) {
             case "cosine": {
                 result = Cosine.computeDistance(a, b);
                 break;
             }
             case "jaccard": {
-                result =  Jaccard.computeDistance(a, b);
+                result = Jaccard.computeDistance(a, b);
                 break;
             }
             case "levenshtein": {
-                result =  Levenshtein.computeDistance(a, b, null);
+                result = Levenshtein.computeDistance(a, b, null);
                 break;
             }
             case "jaro": {
-                result =  Jaro.computeDistance(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = 1 - computeJaroSimilarityPerWord(a, b);
                 break;
             }
             case "jarowinkler": {
-                result =  JaroWinkler.computeDistance(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = 1 - computeJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "sortedjarowinkler": {
-                result =  SortedJaroWinkler.computeDistance(a, b);
+                //compute per word and average. (The base category contains only matched words)
+                result = 1 - computeSortedJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "longestcommonsubsequence": {
-                result =  LongestCommonSubsequenceMetric.computeDistance(a, b);
+                result = LongestCommonSubsequenceMetric.computeDistance(a, b);
                 break;
             }
             case "2Gram": {
-                result =  NGram.computeDistance(a, b, 2);
+                result = NGram.computeDistance(a, b, 2);
                 break;
             }
             default:
@@ -300,44 +308,44 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeMismatchDistance(String similarity, String a, String b){
-        
+    private static double computeMismatchDistance(String similarity, String a, String b) {
+
         double result;
-        
+
         switch (similarity) {
             case "cosine": {
                 result = Cosine.computeDistance(a, b);
                 break;
             }
             case "jaccard": {
-                result =  Jaccard.computeDistance(a, b);
+                result = Jaccard.computeDistance(a, b);
                 break;
             }
             case "levenshtein": {
-                result =  Levenshtein.computeDistance(a, b, null);
+                result = Levenshtein.computeDistance(a, b, null);
                 break;
             }
             case "jaro": {
                 //using levenshtein metric for mismatch terms for jaro
-                result =  Levenshtein.computeDistance(a, b, null);
+                result = Levenshtein.computeDistance(a, b, null);
                 break;
             }
             case "jarowinkler": {
                 //using levenshtein metric for mismatch terms for jaro-winkler
-                result =  Levenshtein.computeDistance(a, b, null);
+                result = Levenshtein.computeDistance(a, b, null);
                 break;
             }
             case "sortedjarowinkler": {
                 //using levenshtein metric for mismatch terms for sorted jaro-winkler
-                result =  Levenshtein.computeDistance(a, b, null);
+                result = Levenshtein.computeDistance(a, b, null);
                 break;
             }
             case "longestcommonsubsequence": {
-                result =  LongestCommonSubsequenceMetric.computeDistance(a, b);
+                result = LongestCommonSubsequenceMetric.computeDistance(a, b);
                 break;
             }
             case "2Gram": {
-                result =  NGram.computeDistance(a, b, 2);
+                result = NGram.computeDistance(a, b, 2);
                 break;
             }
             default:
@@ -347,44 +355,44 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeMismatchSimilarity(String similarity, String a, String b){
-        
+    private static double computeMismatchSimilarity(String similarity, String a, String b) {
+
         double result;
-        
+
         switch (similarity) {
             case "cosine": {
                 result = Cosine.computeSimilarity(a, b);
                 break;
             }
             case "jaccard": {
-                result =  Jaccard.computeSimilarity(a, b);
+                result = Jaccard.computeSimilarity(a, b);
                 break;
             }
             case "levenshtein": {
-                result =  Levenshtein.computeSimilarity(a, b, null);
+                result = Levenshtein.computeSimilarity(a, b, null);
                 break;
             }
             case "jaro": {
                 //using levenshtein metric for mismatch terms for jaro
-                result =  Levenshtein.computeSimilarity(a, b, null);
+                result = Levenshtein.computeSimilarity(a, b, null);
                 break;
             }
             case "jarowinkler": {
                 //using levenshtein metric for mismatch terms for jaro-winkler
-                result =  Levenshtein.computeSimilarity(a, b, null);
+                result = Levenshtein.computeSimilarity(a, b, null);
                 break;
             }
             case "sortedjarowinkler": {
                 //using levenshtein metric for mismatch terms for sorted jaro-winkler
-                result =  Levenshtein.computeSimilarity(a, b, null);
+                result = Levenshtein.computeSimilarity(a, b, null);
                 break;
             }
             case "longestcommonsubsequence": {
-                result =  LongestCommonSubsequenceMetric.computeSimilarity(a, b);
+                result = LongestCommonSubsequenceMetric.computeSimilarity(a, b);
                 break;
             }
             case "2Gram": {
-                result =  NGram.computeSimilarity(a, b, 2);
+                result = NGram.computeSimilarity(a, b, 2);
                 break;
             }
             default:
@@ -393,19 +401,86 @@ public class WeightedSimilarity {
         }
         return result;
     }
-    
+
     private static double computeWeights(double baseSim, double mismatchSim, double specialsSim, double termSim) {
-        
+
         double baseWeight = SpecificationConstants.BASE_WEIGHT;
         double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
         double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
         double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
         double termWeight = SpecificationConstants.LINKED_TERM_WEIGHT;
 
-        if(baseSim == 0){
-            return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+        if (baseSim == 0) {
+            return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
         } else {
-            return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim*termWeight;
+            return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
         }
+    }
+    
+    private static double computeJaroSimilarityPerWord(String a, String b) {
+        double result;
+        //compute per word and average. (The base category contains only matched words)
+        String[] tokensA = tokenize(a);
+        String[] tokensB = tokenize(b);
+        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
+            double sum = 0;
+            
+            for (int i = 0; i < tokensA.length; i++) {
+                sum = sum + Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+            }
+            
+            result = sum / (double) tokensA.length;
+            
+        } else {
+            result = Jaro.computeSimilarity(a, b);
+        }
+        return result;
+    }
+
+    private static double computeJaroWinklerSimilarityPerWord(String a, String b) {
+        double result;
+        //compute per word and average. (The base category contains only matched words)
+        String[] tokensA = tokenize(a);
+        String[] tokensB = tokenize(b);
+        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
+            double sum = 0;
+            
+            for (int i = 0; i < tokensA.length; i++) {
+                sum = sum + JaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
+            }
+            
+            result = sum / (double) tokensA.length;
+            
+        } else {
+            result = JaroWinkler.computeSimilarity(a, b);
+        }
+        return result;
+    }
+
+    private static double computeSortedJaroWinklerSimilarityPerWord(String a, String b) {
+        double result;
+        //compute per word and average. (The base category contains only matched words)
+        String[] tokensA = tokenize(a);
+        String[] tokensB = tokenize(b);
+        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
+            double sum = 0;
+            
+            for (int i = 0; i < tokensA.length; i++) {
+                sum = sum + SortedJaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
+            }
+            
+            result = sum / (double) tokensA.length;
+            
+        } else {
+            result = SortedJaroWinkler.computeSimilarity(a, b);
+        }
+        return result;
+    }
+    
+    private static String[] tokenize(final CharSequence text) {
+        Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
+
+        String[] split = text.toString().split("\\s+");
+        return split;
     }
 }
