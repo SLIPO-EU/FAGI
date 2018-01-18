@@ -114,8 +114,8 @@ public class FagiInstance {
 
             String csvPath = "";
             String resultsPath = "";
-            String nameMetrics = "name_metrics_0.5.txt";
-            String nameSimilarities = "name_similarities_0.5.txt";
+            String nameMetrics = "name_metrics_0.6.txt";
+            String nameSimilarities = "name_similarities_0.6.txt";
 
             SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
             similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            

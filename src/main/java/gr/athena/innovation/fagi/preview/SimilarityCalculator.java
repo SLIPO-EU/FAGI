@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric;
 import gr.athena.innovation.fagi.core.similarity.NGram;
 import gr.athena.innovation.fagi.core.similarity.SortedJaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
@@ -126,7 +127,7 @@ public class SimilarityCalculator {
             
         } catch(IOException | RuntimeException ex){  
             namesWriter.close();
-            throw new RuntimeException();
+            throw new ApplicationException(ex.getMessage());
         }
         logger.info("Total lines: " + l);
     }
@@ -170,7 +171,7 @@ public class SimilarityCalculator {
             + " \n\t2Gram                :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram")
             + " \n\tCosine               :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine")
             + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaccard")
+            + " \n\tJaccard                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaccard")
             + " \n\tJaro                 :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro")
             + " \n\tJaroWinkler          :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler")
             + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler")                

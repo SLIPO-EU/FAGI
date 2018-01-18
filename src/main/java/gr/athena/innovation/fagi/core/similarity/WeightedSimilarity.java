@@ -418,6 +418,11 @@ public class WeightedSimilarity {
     }
     
     private static double computeJaroSimilarityPerWord(String a, String b) {
+        
+        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+            return 0;
+        }
+        
         double result;
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
@@ -438,6 +443,11 @@ public class WeightedSimilarity {
     }
 
     private static double computeJaroWinklerSimilarityPerWord(String a, String b) {
+        
+        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+            return 0;
+        }
+        
         double result;
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
@@ -458,6 +468,11 @@ public class WeightedSimilarity {
     }
 
     private static double computeSortedJaroWinklerSimilarityPerWord(String a, String b) {
+        
+        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+            return 0;
+        }
+        
         double result;
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
