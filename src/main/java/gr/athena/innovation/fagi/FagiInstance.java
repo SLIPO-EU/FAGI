@@ -114,8 +114,8 @@ public class FagiInstance {
 
             String csvPath = "";
             String resultsPath = "";
-            String nameMetrics = "name_metrics_0.8.txt";
-            String nameSimilarities = "name_similarities_0.8.txt";
+            String nameMetrics = "name_metrics_1.0.csv";
+            String nameSimilarities = "name_similarities_1.0.txt";
             
             if(!resultsPath.endsWith("/")){
                 resultsPath = resultsPath + "/";

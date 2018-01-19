@@ -47,7 +47,8 @@ public class MetricProcessor {
     private static final String ACCEPT = "ACCEPT";
     private static final String REJECT = "REJECT";
     private int totalRows = 0;
-    double optimalThresholdLeven;
+    
+    Accuracy optimalAccuracy = new Accuracy();
     
     private Map<String, List<Double>> aLevenPrecisionMap = new HashMap<>();
     private Map<String, List<Double>> bLevenPrecisionMap = new HashMap<>();
@@ -80,6 +81,8 @@ public class MetricProcessor {
     private Map<String, List<Double>> aSortedJaroWinklerPrecisionMap = new HashMap<>();
     private Map<String, List<Double>> bSortedJaroWinklerPrecisionMap = new HashMap<>();
     private Map<String, List<Double>> cSortedJaroWinklerPrecisionMap = new HashMap<>(); 
+    
+    private Threshold optimalThreshold = new Threshold();
     
     public MetricProcessor(FusionSpecification fusionSpecification) {
 
@@ -146,7 +149,7 @@ public class MetricProcessor {
     public void executeEvaluation(String csvPath, String resultsPath, String propertyName) 
             throws FileNotFoundException, IOException {
 
-        String propertyPath = resultsPath + propertyName + ".txt";
+        String propertyPath = resultsPath + propertyName;
         File file = new File(propertyPath);
 
         if (file.exists()) {
@@ -202,9 +205,10 @@ public class MetricProcessor {
                 Accuracy aAccuracy = new Accuracy();
                 Accuracy bAccuracy = new Accuracy();
                 Accuracy cAccuracy = new Accuracy();
-                
+
                 executeThreshold(writer, csvPath, thres, aAccuracy, bAccuracy, cAccuracy);
             }
+            logger.debug(optimalThreshold.toString());
         }
     }
 
@@ -499,43 +503,44 @@ public class MetricProcessor {
     }
 
     private String aScores(double threshold, double aLevenAccuracy, double aLevenPrecision, double aLevenRecall, double aLevenHarmonicMean, double aNGramAccuracy, double aNGramPrecision, double aNGramRecall, double aNGramHarmonicMean, double aCosineAccuracy, double aCosinePrecision, double aCosineRecall, double aCosineHarmonicMean, double aLqsAccuracy, double aLqsPrecision, double aLqsRecall, double aLqsHarmonicMean, double aJaccardAccuracy, double aJaccardPrecision, double aJaccardRecall, double aJaccardHarmonicMean, double aJaroAccuracy, double aJaroPrecision, double aJaroRecall, double aJaroHarmonicMean, double aJaroWinklerAccuracy, double aJaroWinklerPrecision, double aJaroWinklerRecall, double aJaroWinklerHarmonicMean, double aSortedJaroWinklerAccuracy, double aSortedJaroWinklerPrecision, double aSortedJaroWinklerRecall, double aSortedJaroWinklerHarmonicMean) {
-        String initialScores = " Total: " + totalRows
+        String scores = "Total: " + totalRows
                 +  "\nMetric_Threshold " + threshold + SEP + "Accuracy" + SEP +"Precision"+ SEP + "Recall" + SEP + "harmonicMean"
-                + " \n\tLevenstein_a" + threshold + "           :"+ SEP + aLevenAccuracy + SEP + aLevenPrecision +  SEP + aLevenRecall + SEP + aLevenHarmonicMean
-                + " \n\t2Gram_a" + threshold + "                :"+ SEP + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
-                + " \n\tCosine_a" + threshold + "               :"+ SEP + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
-                + " \n\tLongestCommonSubseq_a" + threshold + "  :"+ SEP + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
-                + " \n\tJaccard_a" + threshold + "              :"+ SEP + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
-                + " \n\tJaro_a" + threshold + "                 :"+ SEP + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
-                + " \n\tJaroWinkler_a" + threshold + "          :"+ SEP + aJaroWinklerAccuracy + SEP + aJaroWinklerPrecision +  SEP + aJaroWinklerRecall + SEP + aJaroWinklerHarmonicMean
-                + " \n\tSortedJaroWinkler_a" + threshold + "    :"+ SEP + aSortedJaroWinklerAccuracy + SEP + aSortedJaroWinklerPrecision +  SEP + aSortedJaroWinklerRecall + SEP + aSortedJaroWinklerHarmonicMean;
-        return initialScores;
+                + " \nLevenstein_a" + threshold + SEP + aLevenAccuracy + SEP + aLevenPrecision +  SEP + aLevenRecall + SEP + aLevenHarmonicMean
+                + " \n2Gram_a" + threshold + SEP + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
+                + " \nCosine_a" + threshold + SEP + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
+                + " \nLongestCommonSubseq_a"+ threshold + SEP + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
+                + " \nJaccard_a" + threshold + SEP + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
+                + " \nJaro_a" + threshold + SEP + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
+                + " \nJaroWinkler_a" + threshold + SEP + aJaroWinklerAccuracy + SEP + aJaroWinklerPrecision +  SEP + aJaroWinklerRecall + SEP + aJaroWinklerHarmonicMean
+                + " \nSortedJaroWinkler_a" + threshold + SEP + aSortedJaroWinklerAccuracy + SEP + aSortedJaroWinklerPrecision +  SEP + aSortedJaroWinklerRecall + SEP + aSortedJaroWinklerHarmonicMean;
+        return scores;
     }
 
     private String bScores(double threshold, double bLevenAccuracy, double bLevenPrecision, double bLevenRecall, double bLevenHarmonicMean, double bNGramAccuracy, double bNGramPrecision, double bNGramRecall, double bNGramHarmonicMean, double bCosineAccuracy, double bCosinePrecision, double bCosineRecall, double bCosineHarmonicMean, double bLqsAccuracy, double bLqsPrecision, double bLqsRecall, double bLqsHarmonicMean, double bJaccardAccuracy, double bJaccardPrecision, double bJaccardRecall, double bJaccardHarmonicMean, double bJaroAccuracy, double bJaroPrecision, double bJaroRecall, double bJaroHarmonicMean, double bJaroWinklerAccuracy, double bJaroWinklerPrecision, double bJaroWinklerRecall, double bJaroWinklerHarmonicMean, double bSortedJaroWinklerAccuracy, double bSortedJaroWinklerPrecision, double bSortedJaroWinklerRecall, double bSortedJaroWinklerHarmonicMean) {
-        String basicNormScores =
-                " \n\tLevenstein_b" + threshold + "             :"+ SEP + bLevenAccuracy + SEP + bLevenPrecision +  SEP + bLevenRecall + SEP + bLevenHarmonicMean
-                + " \n\t2Gram_b" + threshold + "                :"+ SEP + bNGramAccuracy + SEP + bNGramPrecision +  SEP + bNGramRecall + SEP + bNGramHarmonicMean
-                + " \n\tCosine_b" + threshold + "               :"+ SEP + bCosineAccuracy + SEP + bCosinePrecision +  SEP + bCosineRecall + SEP + bCosineHarmonicMean
-                + " \n\tLongestCommonSubseq_b" + threshold + "  :"+ SEP + bLqsAccuracy + SEP + bLqsPrecision +  SEP + bLqsRecall + SEP + bLqsHarmonicMean
-                + " \n\tJaccard_b" + threshold + "              :"+ SEP + bJaccardAccuracy + SEP + bJaccardPrecision +  SEP + bJaccardRecall + SEP + bJaccardHarmonicMean
-                + " \n\tJaro_b" + threshold + "                 :"+ SEP + bJaroAccuracy + SEP + bJaroPrecision +  SEP + bJaroRecall + SEP + bJaroHarmonicMean
-                + " \n\tJaroWinkler_b" + threshold + "          :"+ SEP + bJaroWinklerAccuracy + SEP + bJaroWinklerPrecision +  SEP + bJaroWinklerRecall + SEP + bJaroWinklerHarmonicMean
-                + " \n\tSortedJaroWinkler_b" + threshold + "    :"+ SEP + bSortedJaroWinklerAccuracy + SEP + bSortedJaroWinklerPrecision +  SEP + bSortedJaroWinklerRecall + SEP + bSortedJaroWinklerHarmonicMean;
-        return basicNormScores;
+        String scores =
+                  " \nLevenstein_b" + threshold + SEP + bLevenAccuracy + SEP + bLevenPrecision +  SEP + bLevenRecall + SEP + bLevenHarmonicMean
+                + " \n2Gram_b" + threshold + SEP + bNGramAccuracy + SEP + bNGramPrecision +  SEP + bNGramRecall + SEP + bNGramHarmonicMean
+                + " \nCosine_b" + threshold + SEP + bCosineAccuracy + SEP + bCosinePrecision +  SEP + bCosineRecall + SEP + bCosineHarmonicMean
+                + " \nLongestCommonSubseq_b" + threshold + SEP + bLqsAccuracy + SEP + bLqsPrecision +  SEP + bLqsRecall + SEP + bLqsHarmonicMean
+                + " \nJaccard_b" + threshold + SEP + bJaccardAccuracy + SEP + bJaccardPrecision +  SEP + bJaccardRecall + SEP + bJaccardHarmonicMean
+                + " \nJaro_b" + threshold + SEP + bJaroAccuracy + SEP + bJaroPrecision +  SEP + bJaroRecall + SEP + bJaroHarmonicMean
+                + " \nJaroWinkler_b" + threshold + SEP + bJaroWinklerAccuracy + SEP + bJaroWinklerPrecision +  SEP + bJaroWinklerRecall + SEP + bJaroWinklerHarmonicMean
+                + " \nSortedJaroWinkler_b" + threshold + SEP + bSortedJaroWinklerAccuracy + SEP + bSortedJaroWinklerPrecision +  SEP + bSortedJaroWinklerRecall + SEP + bSortedJaroWinklerHarmonicMean;
+        return scores;
     }
 
     private String cScores(double threshold, double cLevenAccuracy, double cLevenPrecision, double cLevenRecall, double cLevenHarmonicMean, double cNGramAccuracy, double cNGramPrecision, double cNGramRecall, double cNGramHarmonicMean, double cCosineAccuracy, double cCosinePrecision, double cCosineRecall, double cCosineHarmonicMean, double cLqsAccuracy, double cLqsPrecision, double cLqsRecall, double cLqsHarmonicMean, double cJaccardAccuracy, double cJaccardPrecision, double cJaccardRecall, double cJaccardHarmonicMean, double cJaroAccuracy, double cJaroPrecision, double cJaroRecall, double cJaroHarmonicMean, double cJaroWinklerAccuracy, double cJaroWinklerPrecision, double cJaroWinklerRecall, double cJaroWinklerHarmonicMean, double cSortedJaroWinklerAccuracy, double cSortedJaroWinklerPrecision, double cSortedJaroWinklerRecall, double cSortedJaroWinklerHarmonicMean) {
-        String advancedNormScores =
-                " \n\tLevenstein_c" + threshold + "             :"+ SEP + cLevenAccuracy + SEP + cLevenPrecision +  SEP + cLevenRecall + SEP + cLevenHarmonicMean
-                + " \n\t2Gram_c" + threshold + "                :"+ SEP + cNGramAccuracy + SEP + cNGramPrecision +  SEP + cNGramRecall + SEP + cNGramHarmonicMean
-                + " \n\tCosine_c" + threshold + "               :"+ SEP + cCosineAccuracy + SEP + cCosinePrecision +  SEP + cCosineRecall + SEP + cCosineHarmonicMean
-                + " \n\tLongestCommonSubseq_c" + threshold + "  :"+ SEP + cLqsAccuracy + SEP + cLqsPrecision +  SEP + cLqsRecall + SEP + cLqsHarmonicMean
-                + " \n\tJaccard_c" + threshold + "              :"+ SEP + cJaccardAccuracy + SEP + cJaccardPrecision +  SEP + cJaccardRecall + SEP + cJaccardHarmonicMean
-                + " \n\tJaro_c" + threshold + "                 :"+ SEP + cJaroAccuracy + SEP + cJaroPrecision +  SEP + cJaroRecall + SEP + cJaroHarmonicMean
-                + " \n\tJaroWinkler_c" + threshold + "          :"+ SEP + cJaroWinklerAccuracy + SEP + cJaroWinklerPrecision +  SEP + cJaroWinklerRecall + SEP + cJaroWinklerHarmonicMean
-                + " \n\tSortedJaroWinkler_c" + threshold + "    :"+ SEP + cSortedJaroWinklerAccuracy + SEP + cSortedJaroWinklerPrecision +  SEP + cSortedJaroWinklerRecall + SEP + cSortedJaroWinklerHarmonicMean;
-        return advancedNormScores;
+        String scores =
+                " \n\tLevenstein_c" + threshold + SEP + cLevenAccuracy + SEP + cLevenPrecision +  SEP + cLevenRecall + SEP + cLevenHarmonicMean
+                + " \n2Gram_c" + threshold + SEP + cNGramAccuracy + SEP + cNGramPrecision +  SEP + cNGramRecall + SEP + cNGramHarmonicMean
+                + " \nCosine_c" + threshold + SEP + cCosineAccuracy + SEP + cCosinePrecision +  SEP + cCosineRecall + SEP + cCosineHarmonicMean
+                + " \nLongestCommonSubseq_c"+ threshold + SEP + cLqsAccuracy + SEP + cLqsPrecision +  SEP + cLqsRecall + SEP + cLqsHarmonicMean
+                + " \nJaccard_c" + threshold + SEP + cJaccardAccuracy + SEP + cJaccardPrecision +  SEP + cJaccardRecall + SEP + cJaccardHarmonicMean
+                + " \nJaro_c" + threshold + SEP + cJaroAccuracy + SEP + cJaroPrecision +  SEP + cJaroRecall + SEP + cJaroHarmonicMean
+                + " \nJaroWinkler_c" + threshold + SEP + cJaroWinklerAccuracy + SEP + cJaroWinklerPrecision +  SEP + cJaroWinklerRecall + SEP + cJaroWinklerHarmonicMean
+                + " \nSortedJaroWinkler_c" + threshold + SEP + cSortedJaroWinklerAccuracy + SEP + cSortedJaroWinklerPrecision +  SEP + cSortedJaroWinklerRecall + SEP + cSortedJaroWinklerHarmonicMean;
+
+        return scores;
     }
 
     private void computePairOutputResult(String valueA, String valueB, 
@@ -709,6 +714,72 @@ public class MetricProcessor {
         if((cSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || cSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaroWinklerSortedCount(cAccuracy.getJaroWinklerSortedCount() + 1);
         } 
+        
+        
+        //find best accuracy in order to set optimal threshold
+        int maxAccuracyLeven = getMaxAccuracy(aAccuracy.getLevenshteinCount(), 
+                bAccuracy.getLevenshteinCount(), cAccuracy.getLevenshteinCount());
+        
+        int maxAccuracyNGram = getMaxAccuracy(aAccuracy.getNgram2Count(), 
+                    bAccuracy.getNgram2Count(), cAccuracy.getNgram2Count());
+        
+        int maxAccuracyCosine = getMaxAccuracy(aAccuracy.getCosineCount(), 
+                bAccuracy.getCosineCount(), cAccuracy.getCosineCount());
+
+        int maxAccuracyLqs = getMaxAccuracy(aAccuracy.getLqsCount(), 
+                bAccuracy.getLqsCount(), cAccuracy.getLqsCount());
+
+        int maxAccuracyJaccard = getMaxAccuracy(aAccuracy.getJaccardCount(), 
+                bAccuracy.getJaccardCount(), cAccuracy.getJaccardCount());
+
+        int maxAccuracyJaro = getMaxAccuracy(aAccuracy.getJaroCount(), 
+                bAccuracy.getJaroCount(), cAccuracy.getJaroCount());
+
+        int maxAccuracyJaroWinkler = getMaxAccuracy(aAccuracy.getJaroWinklerCount(), 
+                bAccuracy.getJaroWinklerCount(), cAccuracy.getJaroWinklerCount());
+
+        int maxAccuracySortedJaroWinkler = getMaxAccuracy(aAccuracy.getJaroWinklerSortedCount(), 
+                bAccuracy.getJaroWinklerSortedCount(), cAccuracy.getJaroWinklerSortedCount());
+        
+        if(maxAccuracyLeven > optimalAccuracy.getLevenshteinCount()){
+            optimalAccuracy.setLevenshteinCount(maxAccuracyLeven);
+            optimalThreshold.setLevenshtein(threshold);
+        }
+        
+        if(maxAccuracyNGram > optimalAccuracy.getNgram2Count()){
+            optimalAccuracy.setNgram2Count(maxAccuracyNGram);
+            optimalThreshold.setNgram2(threshold);
+        }
+        
+        if(maxAccuracyCosine > optimalAccuracy.getCosineCount()){
+            optimalAccuracy.setCosineCount(maxAccuracyCosine);
+            optimalThreshold.setCosine(threshold);
+        } 
+        
+        if(maxAccuracyLqs > optimalAccuracy.getLqsCount()){
+            optimalAccuracy.setLqsCount(maxAccuracyLqs);
+            optimalThreshold.setLqs(threshold);
+        }  
+        
+        if(maxAccuracyJaccard > optimalAccuracy.getJaccardCount()){
+            optimalAccuracy.setJaccardCount(maxAccuracyJaccard);
+            optimalThreshold.setJaccard(threshold);
+        }
+        
+        if(maxAccuracyJaro > optimalAccuracy.getJaroCount()){
+            optimalAccuracy.setJaroCount(maxAccuracyJaro);
+            optimalThreshold.setJaro(threshold);
+        }  
+        
+        if(maxAccuracyJaroWinkler > optimalAccuracy.getJaroWinklerCount()){
+            optimalAccuracy.setJaroWinklerCount(maxAccuracyJaroWinkler);
+            optimalThreshold.setJaroWinkler(threshold);
+        } 
+        
+        if(maxAccuracySortedJaroWinkler > optimalAccuracy.getJaroWinklerSortedCount()){
+            optimalAccuracy.setJaroWinklerSortedCount(maxAccuracySortedJaroWinkler);
+            optimalThreshold.setSortedJaroWinkler(threshold);
+        }         
     }
 
     private NormalizedLiteral getBasicNormalization(String literalA, String literalB, Locale locale) {
@@ -792,5 +863,9 @@ public class MetricProcessor {
             }
         }
         return counter;
+    }
+
+    private int getMaxAccuracy(int aAccuracy, int bAccuracy, int cAccuracy) {
+        return  Math.max(Math.max(aAccuracy,bAccuracy),cAccuracy);
     }
 }
