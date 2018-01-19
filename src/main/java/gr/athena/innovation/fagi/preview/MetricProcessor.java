@@ -468,7 +468,7 @@ public class MetricProcessor {
             writer.append(aScores);
             writer.newLine();
             
-            String basicNormScores = bScores(threshold, bLevenAccuracy, bLevenPrecision, bLevenRecall, 
+            String bScores = bScores(threshold, bLevenAccuracy, bLevenPrecision, bLevenRecall, 
                                     bLevenHarmonicMean, bNGramAccuracy, bNGramPrecision, bNGramRecall, 
                                     bNGramHarmonicMean, bCosineAccuracy, bCosinePrecision, bCosineRecall, 
                                     bCosineHarmonicMean, bLqsAccuracy, bLqsPrecision, bLqsRecall, bLqsHarmonicMean, 
@@ -478,7 +478,7 @@ public class MetricProcessor {
                                     bSortedJaroWinklerAccuracy, bSortedJaroWinklerPrecision, bSortedJaroWinklerRecall, 
                                     bSortedJaroWinklerHarmonicMean);            
 
-            writer.append(basicNormScores);
+            writer.append(bScores);
             writer.newLine();
 
             String cScores = cScores(threshold, cLevenAccuracy, cLevenPrecision, cLevenRecall, cLevenHarmonicMean, 
@@ -644,7 +644,6 @@ public class MetricProcessor {
         } 
         
         
-        
         //basic norm
         
         if((bLeven > threshold && acceptance.equals(ACCEPT)) || bLeven < threshold && acceptance.equals(REJECT)){
@@ -678,7 +677,6 @@ public class MetricProcessor {
         if((bSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || bSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaroWinklerSortedCount(bAccuracy.getJaroWinklerSortedCount() + 1);
         } 
-        
         
         
         //advanced norm

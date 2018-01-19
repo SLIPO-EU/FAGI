@@ -103,7 +103,7 @@ public class AdvancedGenericNormalizer {
             int compareResult = collator.compare(ta, tb);
 
             //Using JaroWinkler to check similarity instead of Collator. Collator result is used on mismatch only
-            if (result > SpecificationConstants.NORM_THRESHOLD) {
+            if (result > SpecificationConstants.MISMATCH_THRESHOLD) {
 
                 a.append(ta).append(CONNECTOR);
                 b.append(tb).append(CONNECTOR);
@@ -112,12 +112,11 @@ public class AdvancedGenericNormalizer {
                 carret_j++;
 
                 if (carret_j > tokensB.size() - 1) {
-                    appendBaseTokens(carret_i, a, tokensA);
+                    appendMismatchOffSets(carret_i, mismatchA, tokensA);
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
-                }
-
-                if (carret_i > tokensA.size() - 1) {
-                    appendBaseTokens(carret_j, b, tokensB);
+                } else if (carret_i > tokensA.size() - 1) {
+                    
+                    appendMismatchOffSets(carret_j, mismatchB, tokensB);
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
 
@@ -223,17 +222,11 @@ public class AdvancedGenericNormalizer {
         });
     }
 
-    private void appendBaseTokens(int carret, StringBuilder builder, List<String> tokens) {
-        while (carret < tokens.size()) {
-            builder.append(tokens.get(carret)).append(CONNECTOR);
-            carret++;
-        }
-    }
-
     private void appendMismatchOffSets(int carret, List<String> mismatches, List<String> tokens) {
-        while (carret < tokens.size()) {
-            mismatches.add(tokens.get(carret));
-            carret++;
+        int c = carret;
+        while (c < tokens.size()) {
+            mismatches.add(tokens.get(c));
+            c++;
         }
     }
 }

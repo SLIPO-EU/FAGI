@@ -104,57 +104,57 @@ public class WeightedPairLiteral {
 
     public String mismatchToStringA(){
 
-        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
         
         mismatchTokensA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public String mismatchToStringB(){
 
-        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
         
         mismatchTokensB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public String specialTermsToStringA(){
 
-        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
         
         uniqueSpecialTermsA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public String specialTermsToStringB(){
 
-        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
         
         uniqueSpecialTermsB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     public String commonTermsToString(){
 
-        StringBuilder sb = new StringBuilder().append(CONNECTOR);
+        StringBuilder sb = new StringBuilder();
         
         linkedTerms.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
     
     public String getCompleteA(){
@@ -175,7 +175,7 @@ public class WeightedPairLiteral {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
-        return sb.toString();
+        return sb.toString().trim();
     }
     
     public String getCompleteB(){
@@ -195,6 +195,6 @@ public class WeightedPairLiteral {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
-        return sb.toString();        
+        return sb.toString().trim();        
     }
 }

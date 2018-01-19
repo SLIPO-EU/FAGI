@@ -135,28 +135,41 @@ public class WeightedSimilarity {
         double mismatchSim;
         double termSim;
 
-        baseSim = computeBaseDistance(distance, baseA, baseB);
-        mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
-        specialsSim = computeBaseDistance(distance, specialsA, specialsB);
-        termSim = 0;
+        termSim = 1;
 
         if (categorySimilarity.isZeroBaseSimilarity()) {
-            baseSim = 0;
+            baseSim = 1;
+        } else {
+            baseSim = computeBaseDistance(distance, baseA, baseB);
         }
 
         if (categorySimilarity.isEmptyMismatch()) {
             mismatchSim = baseSim;
+        } else {
+            mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
         }
 
         if (categorySimilarity.isEmptySpecials()) {
-            specialsSim = baseSim;
+            if (categorySimilarity.isZeroBaseSimilarity()) {
+                specialsSim = mismatchSim;
+            } else {
+                specialsSim = baseSim;
+            }
+        } else {
+            specialsSim = computeBaseDistance(distance, specialsA, specialsB);
         }
 
         if (!terms.isEmpty()) {
-            termSim = 1.0;
+            termSim = 0.0;
+        } else {
+            if (categorySimilarity.isZeroBaseSimilarity()) {
+                termSim = mismatchSim;
+            } else {
+                termSim = baseSim;
+            }            
         }
 
-        return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
+        return computeWeights(categorySimilarity,baseSim, mismatchSim, specialsSim, termSim);
     }
 
     /**
@@ -186,17 +199,20 @@ public class WeightedSimilarity {
         double specialsSim;
         double termSim;
 
-        baseSim = computeBaseSimilarity(similarity, baseA, baseB);
-        mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
-        specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
-        termSim = 0;
+//        baseSim = computeBaseSimilarity(similarity, baseA, baseB);
+//        mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
+//        specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
 
         if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 0;
+        } else {
+            baseSim = computeBaseSimilarity(similarity, baseA, baseB);
         }
 
         if (categorySimilarity.isEmptyMismatch()) {
             mismatchSim = baseSim;
+        } else {
+            mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
         }
 
         if (categorySimilarity.isEmptySpecials()) {
@@ -205,13 +221,21 @@ public class WeightedSimilarity {
             } else {
                 specialsSim = baseSim;
             }
+        } else {
+            specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
         }
 
         if (!terms.isEmpty()) {
             termSim = 1.0;
+        } else {
+            if (categorySimilarity.isZeroBaseSimilarity()) {
+                termSim = mismatchSim;
+            } else {
+                termSim = baseSim;
+            }            
         }
 
-        return computeWeights(baseSim, mismatchSim, specialsSim, termSim);
+        return computeWeights(categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
     }
 
     private static double computeBaseSimilarity(String similarity, String a, String b) {
@@ -402,7 +426,7 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeWeights(double baseSim, double mismatchSim, double specialsSim, double termSim) {
+    private static double computeWeights(CategoryWeight categorySimilarity, double baseSim, double mismatchSim, double specialsSim, double termSim) {
 
         double baseWeight = SpecificationConstants.BASE_WEIGHT;
         double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
@@ -410,7 +434,7 @@ public class WeightedSimilarity {
         double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
         double termWeight = SpecificationConstants.LINKED_TERM_WEIGHT;
 
-        if (baseSim == 0) {
+        if (categorySimilarity.isZeroBaseSimilarity()) {
             return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
         } else {
             return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;

@@ -38,7 +38,7 @@ public class SortedJaroWinklerTest {
         String d = "efghm mnop";
         double expResult4 = 0.5;
         double result4 = SortedJaroWinkler.computeSimilarity(c, d);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);   
+        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
     }
     
 }

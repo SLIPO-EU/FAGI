@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.model;
 
+import java.util.List;
+
 /**
  *
  * @author nkarag
@@ -15,11 +17,11 @@ public class CategoryWeight {
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
         
-        String mismatchA = pair.mismatchToStringA();
-        String mismatchB = pair.mismatchToStringB();
+        List<String> mismatchA = pair.getMismatchTokensA();
+        List<String> mismatchB = pair.getMismatchTokensB();
         
-        String specialsA = pair.specialTermsToStringA();
-        String specialsB = pair.specialTermsToStringB();
+        List<String> specialsA = pair.getUniqueSpecialTermsA();
+        List<String> specialsB = pair.getUniqueSpecialTermsB();
         
         if(baseA.isEmpty() || baseB.isEmpty()){
             zeroBaseSimilarity = true;
