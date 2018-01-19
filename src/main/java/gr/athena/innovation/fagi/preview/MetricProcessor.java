@@ -59,7 +59,11 @@ public class MetricProcessor {
 
     private Map<String, List<Double>> aCosinePrecisionMap = new HashMap<>();
     private Map<String, List<Double>> bCosinePrecisionMap = new HashMap<>();
-    private Map<String, List<Double>> cCosinePrecisionMap = new HashMap<>();   
+    private Map<String, List<Double>> cCosinePrecisionMap = new HashMap<>(); 
+    
+    private Map<String, List<Double>> aLqsPrecisionMap = new HashMap<>();
+    private Map<String, List<Double>> bLqsPrecisionMap = new HashMap<>();
+    private Map<String, List<Double>> cLqsPrecisionMap = new HashMap<>();      
     
     public MetricProcessor(FusionSpecification fusionSpecification) {
 
@@ -84,7 +88,14 @@ public class MetricProcessor {
         bCosinePrecisionMap.put(ACCEPT, new ArrayList<>());
         bCosinePrecisionMap.put(REJECT, new ArrayList<>());
         cCosinePrecisionMap.put(ACCEPT, new ArrayList<>());
-        cCosinePrecisionMap.put(REJECT, new ArrayList<>());         
+        cCosinePrecisionMap.put(REJECT, new ArrayList<>());
+        
+        aLqsPrecisionMap.put(ACCEPT, new ArrayList<>());
+        aLqsPrecisionMap.put(REJECT, new ArrayList<>());
+        bLqsPrecisionMap.put(ACCEPT, new ArrayList<>());
+        bLqsPrecisionMap.put(REJECT, new ArrayList<>());
+        cLqsPrecisionMap.put(ACCEPT, new ArrayList<>());
+        cLqsPrecisionMap.put(REJECT, new ArrayList<>());        
         
     }
 
@@ -121,6 +132,10 @@ public class MetricProcessor {
                 clearPrecisionMapLists(aCosinePrecisionMap);
                 clearPrecisionMapLists(bCosinePrecisionMap);
                 clearPrecisionMapLists(cCosinePrecisionMap);
+
+                clearPrecisionMapLists(aLqsPrecisionMap);
+                clearPrecisionMapLists(bLqsPrecisionMap);
+                clearPrecisionMapLists(cLqsPrecisionMap);
                 
                 double thres = thresholds[i];
                 
@@ -220,6 +235,13 @@ public class MetricProcessor {
             int bCosinePrecisionRejectCounter = count(bCosinePrecisionMap.get(REJECT), threshold);
             int cCosinePrecisionAcceptCounter = count(cCosinePrecisionMap.get(ACCEPT), threshold);
             int cCosinePrecisionRejectCounter = count(cCosinePrecisionMap.get(REJECT), threshold);
+
+            int aLqsPrecisionAcceptCounter = count(aLqsPrecisionMap.get(ACCEPT), threshold);
+            int aLqsPrecisionRejectCounter = count(aLqsPrecisionMap.get(REJECT), threshold);
+            int bLqsPrecisionAcceptCounter = count(bLqsPrecisionMap.get(ACCEPT), threshold);
+            int bLqsPrecisionRejectCounter = count(bLqsPrecisionMap.get(REJECT), threshold);
+            int cLqsPrecisionAcceptCounter = count(cLqsPrecisionMap.get(ACCEPT), threshold);
+            int cLqsPrecisionRejectCounter = count(cLqsPrecisionMap.get(REJECT), threshold);
             
             double aLevenAccuracy = calculateAccuracy(aAccuracy.getLevenshteinCount(), totalRows);
             double aLevenPrecision = calculatePrecision(aLevenPrecisionAcceptCounter, aLevenPrecisionRejectCounter);
@@ -265,6 +287,21 @@ public class MetricProcessor {
             double cCosinePrecision = calculatePrecision(cCosinePrecisionAcceptCounter, cCosinePrecisionRejectCounter);
             double cCosineRecall= calculateRecall(cCosinePrecisionAcceptCounter, cCosinePrecisionMap);
             double cCosineHarmonicMean = calculateHarmonicMean(cCosinePrecision, cCosineRecall);
+
+            double aLqsAccuracy = calculateAccuracy(aAccuracy.getLqsCount(), totalRows);
+            double aLqsPrecision = calculatePrecision(aLqsPrecisionAcceptCounter, aLqsPrecisionRejectCounter);
+            double aLqsRecall= calculateRecall(aLqsPrecisionAcceptCounter, aLqsPrecisionMap);
+            double aLqsHarmonicMean = calculateHarmonicMean(aLqsPrecision, aLqsRecall);
+
+            double bLqsAccuracy = calculateAccuracy(bAccuracy.getLqsCount(), totalRows);
+            double bLqsPrecision = calculatePrecision(bLqsPrecisionAcceptCounter, bLqsPrecisionRejectCounter);
+            double bLqsRecall= calculateRecall(bLqsPrecisionAcceptCounter, bLqsPrecisionMap);
+            double bLqsHarmonicMean = calculateHarmonicMean(bLqsPrecision, bLqsRecall);
+
+            double cLqsAccuracy = calculateAccuracy(cAccuracy.getLqsCount(), totalRows);
+            double cLqsPrecision = calculatePrecision(cLqsPrecisionAcceptCounter, cLqsPrecisionRejectCounter);
+            double cLqsRecall= calculateRecall(cLqsPrecisionAcceptCounter, cLqsPrecisionMap);
+            double cLqsHarmonicMean = calculateHarmonicMean(cLqsPrecision, cLqsRecall);
             
             double precision = 0;
             double recall = 0;
@@ -280,7 +317,7 @@ public class MetricProcessor {
                 + " \n\tLevenstein_a" + threshold + "           :" + aLevenAccuracy + SEP + aLevenPrecision +  SEP + aLevenRecall + SEP + aLevenHarmonicMean
                 + " \n\t2Gram_a" + threshold + "                :" + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
                 + " \n\tCosine_a" + threshold + "               :" + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
-                + " \n\tLongestCommonSubseq_a" + threshold + "  :" + aAccuracy.getLqsCount() + SEP + precision +  SEP + recall
+                + " \n\tLongestCommonSubseq_a" + threshold + "  :" + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
                 + " \n\tJaccard_a" + threshold + "              :" + aAccuracy.getJaccardCount() + SEP + precision +  SEP + recall
                 + " \n\tJaro_a" + threshold + "                 :" + aAccuracy.getJaroCount() + SEP + precision +  SEP + recall
                 + " \n\tJaroWinkler_a" + threshold + "          :" + aAccuracy.getJaroWinklerCount() + SEP + precision +  SEP + recall
@@ -293,7 +330,7 @@ public class MetricProcessor {
                   " \n\tLevenstein_b" + threshold + "           :" + bLevenAccuracy + SEP + bLevenPrecision +  SEP + bLevenRecall + SEP + bLevenHarmonicMean
                 + " \n\t2Gram_b" + threshold + "                :" + bNGramAccuracy + SEP + bNGramPrecision +  SEP + bNGramRecall + SEP + bNGramHarmonicMean
                 + " \n\tCosine_b" + threshold + "               :" + bCosineAccuracy + SEP + bCosinePrecision +  SEP + bCosineRecall + SEP + bCosineHarmonicMean 
-                + " \n\tLongestCommonSubseq_b" + threshold + "  :" + bAccuracy.getLqsCount() + SEP + basicPrecision +  SEP + basicRecall 
+                + " \n\tLongestCommonSubseq_b" + threshold + "  :" + bLqsAccuracy + SEP + bLqsPrecision +  SEP + bLqsRecall + SEP + bLqsHarmonicMean
                 + " \n\tJaccard_b" + threshold + "              :" + bAccuracy.getJaccardCount() + SEP + basicPrecision +  SEP + basicRecall 
                 + " \n\tJaro_b" + threshold + "                 :" + bAccuracy.getJaroCount() + SEP + basicPrecision +  SEP + basicRecall 
                 + " \n\tJaroWinkler_b" + threshold + "          :" + bAccuracy.getJaroWinklerCount() + SEP + basicPrecision +  SEP + basicRecall 
@@ -306,7 +343,7 @@ public class MetricProcessor {
                   " \n\tLevenstein_c" + threshold + "           :" + cLevenAccuracy + SEP + cLevenPrecision +  SEP + cLevenRecall + SEP + cLevenHarmonicMean
                 + " \n\t2Gram_c" + threshold + "                :" + cNGramAccuracy + SEP + cNGramPrecision +  SEP + cNGramRecall + SEP + cNGramHarmonicMean 
                 + " \n\tCosine_c" + threshold + "               :" + cCosineAccuracy + SEP + cCosinePrecision +  SEP + cCosineRecall + SEP + cCosineHarmonicMean 
-                + " \n\tLongestCommonSubseq_c" + threshold + "  :" + cAccuracy.getLqsCount() + SEP + advancedPrecision +  SEP + advancedRecall 
+                + " \n\tLongestCommonSubseq_c" + threshold + "  :" + cLqsAccuracy + SEP + cLqsPrecision +  SEP + cLqsRecall + SEP + cLqsHarmonicMean
                 + " \n\tJaccard_c" + threshold + "              :" + cAccuracy.getJaccardCount() + SEP + advancedPrecision +  SEP + advancedRecall         
                 + " \n\tJaro_c" + threshold + "                 :" + cAccuracy.getJaroCount() + SEP + advancedPrecision +  SEP + advancedRecall 
                 + " \n\tJaroWinkler_c" + threshold + "          :" + cAccuracy.getJaroWinklerCount() + SEP + advancedPrecision +  SEP + advancedRecall 
@@ -341,7 +378,7 @@ public class MetricProcessor {
         double aLeven = Levenshtein.computeSimilarity(valueA, valueB, null);
         double aNGram = NGram.computeSimilarity(valueA, valueB, 2);
         double aCosine = Cosine.computeSimilarity(valueA, valueB);
-        double lqs = LongestCommonSubsequenceMetric.computeSimilarity(valueA, valueB);
+        double aLqs = LongestCommonSubsequenceMetric.computeSimilarity(valueA, valueB);
         double jac = Jaccard.computeSimilarity(valueA, valueB);
         double jaro = Jaro.computeSimilarity(valueA, valueB);
         double jaroWinkler = JaroWinkler.computeSimilarity(valueA, valueB);
@@ -350,11 +387,12 @@ public class MetricProcessor {
         constructPrecisionMap(aLevenPrecisionMap, acceptance, aLeven);
         constructPrecisionMap(aNGramPrecisionMap, acceptance, aNGram);
         constructPrecisionMap(aCosinePrecisionMap, acceptance, aCosine);
+        constructPrecisionMap(aLqsPrecisionMap, acceptance, aLqs);
 
         double bLeven = Levenshtein.computeSimilarity(basicNormA, basicNormB, null);
         double bNGram = NGram.computeSimilarity(basicNormA, basicNormB, 2);
         double bCosine = Cosine.computeSimilarity(basicNormA, basicNormB);
-        double basicLqs = LongestCommonSubsequenceMetric.computeSimilarity(basicNormA, basicNormB);
+        double bLqs = LongestCommonSubsequenceMetric.computeSimilarity(basicNormA, basicNormB);
         double basicJac = Jaccard.computeSimilarity(basicNormA, basicNormB);
         double basicJaro = Jaro.computeSimilarity(basicNormA, basicNormB);
         double basicJaroWinkler = JaroWinkler.computeSimilarity(basicNormA, basicNormB);
@@ -363,11 +401,12 @@ public class MetricProcessor {
         constructPrecisionMap(bLevenPrecisionMap, acceptance, bLeven);
         constructPrecisionMap(bNGramPrecisionMap, acceptance, bNGram);
         constructPrecisionMap(bCosinePrecisionMap, acceptance, bCosine);
+        constructPrecisionMap(bLqsPrecisionMap, acceptance, bLqs);
                 
         double cLeven = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "levenshtein");
         double cNGram = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram");
         double cCosine = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine");
-        double advancedLqs = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence");
+        double cLqs = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence");
         double advancedJac = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaccard");
         double advancedJaro = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro");
         double advancedJaroWinkler = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler");
@@ -376,6 +415,7 @@ public class MetricProcessor {
         constructPrecisionMap(cLevenPrecisionMap, acceptance, cLeven);
         constructPrecisionMap(cNGramPrecisionMap, acceptance, cNGram);
         constructPrecisionMap(cCosinePrecisionMap, acceptance, cCosine);
+        constructPrecisionMap(cLqsPrecisionMap, acceptance, cLqs);
                 
         if((aLeven > threshold && acceptance.equals(ACCEPT)) || aLeven < threshold && acceptance.equals(REJECT)){
             aAccuracy.setLevenshteinCount(aAccuracy.getLevenshteinCount() + 1);
@@ -389,7 +429,7 @@ public class MetricProcessor {
             aAccuracy.setCosineCount(aAccuracy.getCosineCount() + 1);
         } 
 
-        if((lqs > threshold && acceptance.equals(ACCEPT)) || lqs < threshold && acceptance.equals(REJECT)){
+        if((aLqs > threshold && acceptance.equals(ACCEPT)) || aLqs < threshold && acceptance.equals(REJECT)){
             aAccuracy.setLqsCount(aAccuracy.getLqsCount() + 1);
         } 
 
@@ -425,7 +465,7 @@ public class MetricProcessor {
             bAccuracy.setCosineCount(bAccuracy.getCosineCount() + 1);
         } 
 
-        if((basicLqs > threshold && acceptance.equals(ACCEPT)) || basicLqs < threshold && acceptance.equals(REJECT)){
+        if((bLqs > threshold && acceptance.equals(ACCEPT)) || bLqs < threshold && acceptance.equals(REJECT)){
             bAccuracy.setLqsCount(bAccuracy.getLqsCount() + 1);
         } 
         
@@ -461,7 +501,7 @@ public class MetricProcessor {
             cAccuracy.setCosineCount(cAccuracy.getCosineCount() + 1);
         } 
 
-        if((advancedLqs > threshold && acceptance.equals(ACCEPT)) || advancedLqs < threshold && acceptance.equals(REJECT)){
+        if((cLqs > threshold && acceptance.equals(ACCEPT)) || cLqs < threshold && acceptance.equals(REJECT)){
             cAccuracy.setLqsCount(cAccuracy.getLqsCount() + 1);
         } 
         
