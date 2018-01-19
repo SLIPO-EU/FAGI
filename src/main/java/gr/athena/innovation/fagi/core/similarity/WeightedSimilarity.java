@@ -350,18 +350,15 @@ public class WeightedSimilarity {
                 break;
             }
             case "jaro": {
-                //using levenshtein metric for mismatch terms for jaro
-                result = Levenshtein.computeDistance(a, b, null);
+                result = 1 - computeJaroSimilarityPerWord(a, b);
                 break;
             }
             case "jarowinkler": {
-                //using levenshtein metric for mismatch terms for jaro-winkler
-                result = Levenshtein.computeDistance(a, b, null);
+                result = 1 - computeJaroSimilarityPerWord(a, b);
                 break;
             }
             case "sortedjarowinkler": {
-                //using levenshtein metric for mismatch terms for sorted jaro-winkler
-                result = Levenshtein.computeDistance(a, b, null);
+                result = 1 - computeSortedJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "longestcommonsubsequence": {
@@ -397,18 +394,15 @@ public class WeightedSimilarity {
                 break;
             }
             case "jaro": {
-                //using levenshtein metric for mismatch terms for jaro
-                result = Levenshtein.computeSimilarity(a, b, null);
+                result = computeJaroSimilarityPerWord(a, b);
                 break;
             }
             case "jarowinkler": {
-                //using levenshtein metric for mismatch terms for jaro-winkler
-                result = Levenshtein.computeSimilarity(a, b, null);
+                result = computeJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "sortedjarowinkler": {
-                //using levenshtein metric for mismatch terms for sorted jaro-winkler
-                result = Levenshtein.computeSimilarity(a, b, null);
+                result = computeSortedJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "longestcommonsubsequence": {
@@ -447,23 +441,48 @@ public class WeightedSimilarity {
             return 0;
         }
         
-        double result;
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
         String[] tokensB = tokenize(b);
-        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
-            double sum = 0;
-            
-            for (int i = 0; i < tokensA.length; i++) {
-                sum = sum + Jaro.computeSimilarity(tokensA[i], tokensB[i]);
-            }
-            
-            result = sum / (double) tokensA.length;
-            
+        
+        double sum = 0;
+        int minLen;
+        int maxLen;
+        boolean isAmax;
+
+        if(tokensA.length > tokensB.length){
+            maxLen = tokensA.length;
+            minLen = tokensB.length;
+            isAmax = true;
         } else {
-            result = Jaro.computeSimilarity(a, b);
+            isAmax = false;
+            maxLen = tokensB.length;
+            minLen = tokensA.length;
         }
-        return result;
+
+        double denom = 0;
+        
+        for (int i = 0; i < maxLen; i++) {
+
+            if(i < minLen){
+
+                int tempLenA = tokensA[i].length();
+                int tempLenB = tokensB[i].length();
+                double averageLen =(tempLenA + tempLenB)/2;
+                denom = denom + averageLen;
+
+                sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+
+            } else {
+                if(isAmax){
+                    denom = denom + tokensA[i].length()/2;
+                } else {
+                    denom = denom + tokensB[i].length()/2;
+                }
+            }
+        }
+
+        return sum / (double) denom;
     }
 
     private static double computeJaroWinklerSimilarityPerWord(String a, String b) {
@@ -471,24 +490,48 @@ public class WeightedSimilarity {
         if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
             return 0;
         }
-        
-        double result;
+
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
         String[] tokensB = tokenize(b);
-        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
-            double sum = 0;
-            
-            for (int i = 0; i < tokensA.length; i++) {
-                sum = sum + JaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
-            }
-            
-            result = sum / (double) tokensA.length;
-            
+        double sum = 0;
+        int minLen;
+        int maxLen;
+        boolean isAmax;
+
+        if(tokensA.length > tokensB.length){
+            maxLen = tokensA.length;
+            minLen = tokensB.length;
+            isAmax = true;
         } else {
-            result = JaroWinkler.computeSimilarity(a, b);
+            isAmax = false;
+            maxLen = tokensB.length;
+            minLen = tokensA.length;
         }
-        return result;
+
+        double denom = 0;
+        
+        for (int i = 0; i < maxLen; i++) {
+
+            if(i < minLen){
+
+                int tempLenA = tokensA[i].length();
+                int tempLenB = tokensB[i].length();
+                double averageLen =(tempLenA + tempLenB)/2;
+                denom = denom + averageLen;
+
+                sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+
+            } else {
+                if(isAmax){
+                    denom = denom + tokensA[i].length()/2;
+                } else {
+                    denom = denom + tokensB[i].length()/2;
+                }
+            }
+        }
+
+        return sum / (double) denom;
     }
 
     private static double computeSortedJaroWinklerSimilarityPerWord(String a, String b) {
@@ -496,24 +539,49 @@ public class WeightedSimilarity {
         if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
             return 0;
         }
-        
-        double result;
+
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
         String[] tokensB = tokenize(b);
-        if ((tokensA.length == tokensB.length) && tokensA.length != 0) {
-            double sum = 0;
-            
-            for (int i = 0; i < tokensA.length; i++) {
-                sum = sum + SortedJaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
-            }
-            
-            result = sum / (double) tokensA.length;
-            
+        
+        double sum = 0;
+        int minLen;
+        int maxLen;
+        boolean isAmax;
+
+        if(tokensA.length > tokensB.length){
+            maxLen = tokensA.length;
+            minLen = tokensB.length;
+            isAmax = true;
         } else {
-            result = SortedJaroWinkler.computeSimilarity(a, b);
+            isAmax = false;
+            maxLen = tokensB.length;
+            minLen = tokensA.length;
         }
-        return result;
+
+        double denom = 0;
+        
+        for (int i = 0; i < maxLen; i++) {
+
+            if(i < minLen){
+
+                int tempLenA = tokensA[i].length();
+                int tempLenB = tokensB[i].length();
+                double averageLen =(tempLenA + tempLenB)/2;
+                denom = denom + averageLen;
+
+                sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+
+            } else {
+                if(isAmax){
+                    denom = denom + tokensA[i].length()/2;
+                } else {
+                    denom = denom + tokensB[i].length()/2;
+                }
+            }
+        }
+
+        return sum / (double) denom;
     }
     
     private static String[] tokenize(final CharSequence text) {
