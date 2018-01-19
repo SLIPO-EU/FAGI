@@ -68,6 +68,10 @@ public class MetricProcessor {
     private Map<String, List<Double>> aJaccardPrecisionMap = new HashMap<>();
     private Map<String, List<Double>> bJaccardPrecisionMap = new HashMap<>();
     private Map<String, List<Double>> cJaccardPrecisionMap = new HashMap<>();   
+
+    private Map<String, List<Double>> aJaroPrecisionMap = new HashMap<>();
+    private Map<String, List<Double>> bJaroPrecisionMap = new HashMap<>();
+    private Map<String, List<Double>> cJaroPrecisionMap = new HashMap<>(); 
     
     public MetricProcessor(FusionSpecification fusionSpecification) {
 
@@ -107,6 +111,13 @@ public class MetricProcessor {
         bJaccardPrecisionMap.put(REJECT, new ArrayList<>());
         cJaccardPrecisionMap.put(ACCEPT, new ArrayList<>());
         cJaccardPrecisionMap.put(REJECT, new ArrayList<>()); 
+
+        aJaroPrecisionMap.put(ACCEPT, new ArrayList<>());
+        aJaroPrecisionMap.put(REJECT, new ArrayList<>());
+        bJaroPrecisionMap.put(ACCEPT, new ArrayList<>());
+        bJaroPrecisionMap.put(REJECT, new ArrayList<>());
+        cJaroPrecisionMap.put(ACCEPT, new ArrayList<>());
+        cJaroPrecisionMap.put(REJECT, new ArrayList<>()); 
         
     }
 
@@ -151,6 +162,10 @@ public class MetricProcessor {
                 clearPrecisionMapLists(aJaccardPrecisionMap);
                 clearPrecisionMapLists(bJaccardPrecisionMap);
                 clearPrecisionMapLists(cJaccardPrecisionMap);
+
+                clearPrecisionMapLists(aJaroPrecisionMap);
+                clearPrecisionMapLists(bJaroPrecisionMap);
+                clearPrecisionMapLists(cJaroPrecisionMap);
                 
                 double thres = thresholds[i];
                 
@@ -264,6 +279,13 @@ public class MetricProcessor {
             int bJaccardPrecisionRejectCounter = count(bJaccardPrecisionMap.get(REJECT), threshold);
             int cJaccardPrecisionAcceptCounter = count(cJaccardPrecisionMap.get(ACCEPT), threshold);
             int cJaccardPrecisionRejectCounter = count(cJaccardPrecisionMap.get(REJECT), threshold);
+
+            int aJaroPrecisionAcceptCounter = count(aJaroPrecisionMap.get(ACCEPT), threshold);
+            int aJaroPrecisionRejectCounter = count(aJaroPrecisionMap.get(REJECT), threshold);
+            int bJaroPrecisionAcceptCounter = count(bJaroPrecisionMap.get(ACCEPT), threshold);
+            int bJaroPrecisionRejectCounter = count(bJaroPrecisionMap.get(REJECT), threshold);
+            int cJaroPrecisionAcceptCounter = count(cJaroPrecisionMap.get(ACCEPT), threshold);
+            int cJaroPrecisionRejectCounter = count(cJaroPrecisionMap.get(REJECT), threshold);
             
             double aLevenAccuracy = calculateAccuracy(aAccuracy.getLevenshteinCount(), totalRows);
             double aLevenPrecision = calculatePrecision(aLevenPrecisionAcceptCounter, aLevenPrecisionRejectCounter);
@@ -339,6 +361,21 @@ public class MetricProcessor {
             double cJaccardPrecision = calculatePrecision(cJaccardPrecisionAcceptCounter, cJaccardPrecisionRejectCounter);
             double cJaccardRecall= calculateRecall(cJaccardPrecisionAcceptCounter, cJaccardPrecisionMap);
             double cJaccardHarmonicMean = calculateHarmonicMean(cJaccardPrecision, cJaccardRecall);
+
+            double aJaroAccuracy = calculateAccuracy(aAccuracy.getJaroCount(), totalRows);
+            double aJaroPrecision = calculatePrecision(aJaroPrecisionAcceptCounter, aJaroPrecisionRejectCounter);
+            double aJaroRecall= calculateRecall(aJaroPrecisionAcceptCounter, aJaroPrecisionMap);
+            double aJaroHarmonicMean = calculateHarmonicMean(aJaroPrecision, aJaroRecall);
+
+            double bJaroAccuracy = calculateAccuracy(bAccuracy.getJaroCount(), totalRows);
+            double bJaroPrecision = calculatePrecision(bJaroPrecisionAcceptCounter, bJaroPrecisionRejectCounter);
+            double bJaroRecall= calculateRecall(bJaroPrecisionAcceptCounter, bJaroPrecisionMap);
+            double bJaroHarmonicMean = calculateHarmonicMean(bJaroPrecision, bJaroRecall);
+
+            double cJaroAccuracy = calculateAccuracy(cAccuracy.getJaroCount(), totalRows);
+            double cJaroPrecision = calculatePrecision(cJaroPrecisionAcceptCounter, cJaroPrecisionRejectCounter);
+            double cJaroRecall= calculateRecall(cJaroPrecisionAcceptCounter, cJaroPrecisionMap);
+            double cJaroHarmonicMean = calculateHarmonicMean(cJaroPrecision, cJaroRecall);
             
             double precision = 0;
             double recall = 0;
@@ -355,8 +392,8 @@ public class MetricProcessor {
                 + " \n\t2Gram_a" + threshold + "                :" + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
                 + " \n\tCosine_a" + threshold + "               :" + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
                 + " \n\tLongestCommonSubseq_a" + threshold + "  :" + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
-                + " \n\tJaccard_a" + threshold + "              :" + + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
-                + " \n\tJaro_a" + threshold + "                 :" + aAccuracy.getJaroCount() + SEP + precision +  SEP + recall
+                + " \n\tJaccard_a" + threshold + "              :" + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
+                + " \n\tJaro_a" + threshold + "                 :" + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
                 + " \n\tJaroWinkler_a" + threshold + "          :" + aAccuracy.getJaroWinklerCount() + SEP + precision +  SEP + recall
                 + " \n\tSortedJaroWinkler_a" + threshold + "    :" + aAccuracy.getJaroWinklerSortedCount() + SEP + precision +  SEP + recall;
             
@@ -369,7 +406,7 @@ public class MetricProcessor {
                 + " \n\tCosine_b" + threshold + "               :" + bCosineAccuracy + SEP + bCosinePrecision +  SEP + bCosineRecall + SEP + bCosineHarmonicMean 
                 + " \n\tLongestCommonSubseq_b" + threshold + "  :" + bLqsAccuracy + SEP + bLqsPrecision +  SEP + bLqsRecall + SEP + bLqsHarmonicMean
                 + " \n\tJaccard_b" + threshold + "              :" + bJaccardAccuracy + SEP + bJaccardPrecision +  SEP + bJaccardRecall + SEP + bJaccardHarmonicMean
-                + " \n\tJaro_b" + threshold + "                 :" + bAccuracy.getJaroCount() + SEP + basicPrecision +  SEP + basicRecall 
+                + " \n\tJaro_b" + threshold + "                 :" + bJaroAccuracy + SEP + bJaroPrecision +  SEP + bJaroRecall + SEP + bJaroHarmonicMean
                 + " \n\tJaroWinkler_b" + threshold + "          :" + bAccuracy.getJaroWinklerCount() + SEP + basicPrecision +  SEP + basicRecall 
                 + " \n\tSortedJaroWinkler_b" + threshold + "    :" + bAccuracy.getJaroWinklerSortedCount() + SEP + basicPrecision +  SEP + basicRecall ;            
 
@@ -382,7 +419,7 @@ public class MetricProcessor {
                 + " \n\tCosine_c" + threshold + "               :" + cCosineAccuracy + SEP + cCosinePrecision +  SEP + cCosineRecall + SEP + cCosineHarmonicMean 
                 + " \n\tLongestCommonSubseq_c" + threshold + "  :" + cLqsAccuracy + SEP + cLqsPrecision +  SEP + cLqsRecall + SEP + cLqsHarmonicMean
                 + " \n\tJaccard_c" + threshold + "              :" + cJaccardAccuracy + SEP + cJaccardPrecision +  SEP + cJaccardRecall + SEP + cJaccardHarmonicMean         
-                + " \n\tJaro_c" + threshold + "                 :" + cAccuracy.getJaroCount() + SEP + advancedPrecision +  SEP + advancedRecall 
+                + " \n\tJaro_c" + threshold + "                 :" + cJaroAccuracy + SEP + cJaroPrecision +  SEP + cJaroRecall + SEP + cJaroHarmonicMean 
                 + " \n\tJaroWinkler_c" + threshold + "          :" + cAccuracy.getJaroWinklerCount() + SEP + advancedPrecision +  SEP + advancedRecall 
                 + " \n\tSortedJaroWinkle_c" + threshold + "     :" + cAccuracy.getJaroWinklerSortedCount() + SEP + advancedPrecision +  SEP + advancedRecall ;            
 
@@ -417,7 +454,7 @@ public class MetricProcessor {
         double aCosine = Cosine.computeSimilarity(valueA, valueB);
         double aLqs = LongestCommonSubsequenceMetric.computeSimilarity(valueA, valueB);
         double aJaccard = Jaccard.computeSimilarity(valueA, valueB);
-        double jaro = Jaro.computeSimilarity(valueA, valueB);
+        double aJaro = Jaro.computeSimilarity(valueA, valueB);
         double jaroWinkler = JaroWinkler.computeSimilarity(valueA, valueB);
         double jaroWinklerSorted = SortedJaroWinkler.computeSimilarity(valueA, valueB);
 
@@ -426,13 +463,14 @@ public class MetricProcessor {
         constructPrecisionMap(aCosinePrecisionMap, acceptance, aCosine);
         constructPrecisionMap(aLqsPrecisionMap, acceptance, aLqs);
         constructPrecisionMap(aJaccardPrecisionMap, acceptance, aJaccard);
+        constructPrecisionMap(aJaroPrecisionMap, acceptance, aJaro);
 
         double bLeven = Levenshtein.computeSimilarity(basicNormA, basicNormB, null);
         double bNGram = NGram.computeSimilarity(basicNormA, basicNormB, 2);
         double bCosine = Cosine.computeSimilarity(basicNormA, basicNormB);
         double bLqs = LongestCommonSubsequenceMetric.computeSimilarity(basicNormA, basicNormB);
         double bJaccard = Jaccard.computeSimilarity(basicNormA, basicNormB);
-        double basicJaro = Jaro.computeSimilarity(basicNormA, basicNormB);
+        double bJaro = Jaro.computeSimilarity(basicNormA, basicNormB);
         double basicJaroWinkler = JaroWinkler.computeSimilarity(basicNormA, basicNormB);
         double basicJaroWinklerSorted = SortedJaroWinkler.computeSimilarity(basicNormA, basicNormB);
         
@@ -441,13 +479,14 @@ public class MetricProcessor {
         constructPrecisionMap(bCosinePrecisionMap, acceptance, bCosine);
         constructPrecisionMap(bLqsPrecisionMap, acceptance, bLqs);
         constructPrecisionMap(bJaccardPrecisionMap, acceptance, bJaccard);
+        constructPrecisionMap(bJaroPrecisionMap, acceptance, bJaro);
                 
         double cLeven = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "levenshtein");
         double cNGram = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "2Gram");
         double cCosine = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "cosine");
         double cLqs = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "longestcommonsubsequence");
         double cJaccard = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaccard");
-        double advancedJaro = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro");
+        double cJaro = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jaro");
         double advancedJaroWinkler = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "jarowinkler");
         double advancedJaroWinklerSorted = WeightedSimilarity.computeAdvancedNormarizedSimilarity(normalizedPair, "sortedjarowinkler");
         
@@ -456,6 +495,7 @@ public class MetricProcessor {
         constructPrecisionMap(cCosinePrecisionMap, acceptance, cCosine);
         constructPrecisionMap(cLqsPrecisionMap, acceptance, cLqs);
         constructPrecisionMap(cJaccardPrecisionMap, acceptance, cJaccard);
+        constructPrecisionMap(cJaroPrecisionMap, acceptance, cJaro);
                 
         if((aLeven > threshold && acceptance.equals(ACCEPT)) || aLeven < threshold && acceptance.equals(REJECT)){
             aAccuracy.setLevenshteinCount(aAccuracy.getLevenshteinCount() + 1);
@@ -477,7 +517,7 @@ public class MetricProcessor {
             aAccuracy.setJaccardCount(aAccuracy.getJaccardCount() + 1);
         }
         
-        if((jaro > threshold && acceptance.equals(ACCEPT)) || jaro < threshold && acceptance.equals(REJECT)){
+        if((aJaro > threshold && acceptance.equals(ACCEPT)) || aJaro < threshold && acceptance.equals(REJECT)){
             aAccuracy.setJaroCount(aAccuracy.getJaroCount() + 1);
         } 
 
@@ -513,7 +553,7 @@ public class MetricProcessor {
             bAccuracy.setJaccardCount(bAccuracy.getJaccardCount() + 1);
         }
         
-        if((basicJaro > threshold && acceptance.equals(ACCEPT)) || basicJaro < threshold && acceptance.equals(REJECT)){
+        if((bJaro > threshold && acceptance.equals(ACCEPT)) || bJaro < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaroCount(bAccuracy.getJaroCount() + 1);
         } 
 
@@ -549,7 +589,7 @@ public class MetricProcessor {
             cAccuracy.setJaccardCount(cAccuracy.getJaccardCount() + 1);
         }
         
-        if((advancedJaro > threshold && acceptance.equals(ACCEPT)) || advancedJaro < threshold && acceptance.equals(REJECT)){
+        if((cJaro > threshold && acceptance.equals(ACCEPT)) || cJaro < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaroCount(cAccuracy.getJaroCount() + 1);
         } 
 
