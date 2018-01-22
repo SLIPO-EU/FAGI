@@ -3,7 +3,7 @@ package gr.athena.innovation.fagi.core.normalizer;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.model.EnumEntity;
-import gr.athena.innovation.fagi.model.LinkedTerm;
+import gr.athena.innovation.fagi.model.CommonSpecialTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -184,7 +184,7 @@ public class AdvancedGenericNormalizer {
     }
 
     private void addLinkedTerm(WeightedPairLiteral weightedPairLiteral, List<String> tokens, String token) {
-        LinkedTerm linkedTerm = new LinkedTerm();
+        CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
         linkedTerm.setTerm(token);
 
         tokens.remove(token);

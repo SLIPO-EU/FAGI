@@ -75,7 +75,7 @@ public class SpecificationConstants {
     public static final double MISMATCH_WEIGHT = 0.3;
     public static final double MERGED_BASE_MISMATCH_WEIGHT = BASE_WEIGHT + MISMATCH_WEIGHT;
     public static final double SPECIAL_WEIGHT = 0.0;
-    public static final double LINKED_TERM_WEIGHT = 0.0;
+    public static final double COMMON_SPECIAL_TERM_WEIGHT = 0.0;
     
     
     public class Regex {

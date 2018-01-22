@@ -531,7 +531,7 @@ public class MetricProcessor {
 
     private String cScores(double threshold, double cLevenAccuracy, double cLevenPrecision, double cLevenRecall, double cLevenHarmonicMean, double cNGramAccuracy, double cNGramPrecision, double cNGramRecall, double cNGramHarmonicMean, double cCosineAccuracy, double cCosinePrecision, double cCosineRecall, double cCosineHarmonicMean, double cLqsAccuracy, double cLqsPrecision, double cLqsRecall, double cLqsHarmonicMean, double cJaccardAccuracy, double cJaccardPrecision, double cJaccardRecall, double cJaccardHarmonicMean, double cJaroAccuracy, double cJaroPrecision, double cJaroRecall, double cJaroHarmonicMean, double cJaroWinklerAccuracy, double cJaroWinklerPrecision, double cJaroWinklerRecall, double cJaroWinklerHarmonicMean, double cSortedJaroWinklerAccuracy, double cSortedJaroWinklerPrecision, double cSortedJaroWinklerRecall, double cSortedJaroWinklerHarmonicMean) {
         String scores =
-                " \n\tLevenstein_c" + threshold + SEP + cLevenAccuracy + SEP + cLevenPrecision +  SEP + cLevenRecall + SEP + cLevenHarmonicMean
+                  " \nLevenstein_c" + threshold + SEP + cLevenAccuracy + SEP + cLevenPrecision +  SEP + cLevenRecall + SEP + cLevenHarmonicMean
                 + " \n2Gram_c" + threshold + SEP + cNGramAccuracy + SEP + cNGramPrecision +  SEP + cNGramRecall + SEP + cNGramHarmonicMean
                 + " \nCosine_c" + threshold + SEP + cCosineAccuracy + SEP + cCosinePrecision +  SEP + cCosineRecall + SEP + cCosineHarmonicMean
                 + " \nLongestCommonSubseq_c"+ threshold + SEP + cLqsAccuracy + SEP + cLqsPrecision +  SEP + cLqsRecall + SEP + cLqsHarmonicMean

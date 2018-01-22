@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi.core.normalizer;
 
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
-import gr.athena.innovation.fagi.model.LinkedTerm;
+import gr.athena.innovation.fagi.model.CommonSpecialTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
@@ -61,9 +61,9 @@ public class AdvancedGenericNormalizerTest {
         normalizedLiteralB.setLiteral("bar ccc Ddd Eee");
         normalizedLiteralB.setNormalized("bar ccc ddd eee");
         
-        Set<LinkedTerm> linkedTerms = new HashSet<>();
+        Set<CommonSpecialTerm> linkedTerms = new HashSet<>();
         
-        LinkedTerm linkedTerm = new LinkedTerm();
+        CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
         linkedTerm.setTerm("bar");
         linkedTerms.add(linkedTerm);
         
@@ -81,13 +81,13 @@ public class AdvancedGenericNormalizerTest {
         uniqueSpecialsA.add("street");
         
         WeightedPairLiteral expResult = new WeightedPairLiteral();
-        expResult.setLinkedTerms(linkedTerms);
+        expResult.setCommonSpecialTerms(linkedTerms);
         expResult.setBaseValueA("ccc");
         expResult.setBaseValueB("ccc");
         expResult.setMismatchTokensA(mismatchedA);
         expResult.setMismatchTokensB(mismatchedB);
         
-        expResult.setUniqueSpecialTermsA(uniqueSpecialsA);
+        expResult.setSpecialTermsA(uniqueSpecialsA);
         
         WeightedPairLiteral result = normalizer.getWeightedPair(normalizedLiteralA, normalizedLiteralB, locale);
         
@@ -95,7 +95,7 @@ public class AdvancedGenericNormalizerTest {
         
         assertEquals(expResult.getBaseValueB(), result.getBaseValueB());
 
-        assertEquals(expResult.getLinkedTerms(), result.getLinkedTerms());
+        assertEquals(expResult.getCommonSpecialTerms(), result.getCommonSpecialTerms());
         
         assertEquals(expResult.getMismatchTokensA(), result.getMismatchTokensA());
         

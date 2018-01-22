@@ -20,8 +20,8 @@ public class CategoryWeight {
         List<String> mismatchA = pair.getMismatchTokensA();
         List<String> mismatchB = pair.getMismatchTokensB();
         
-        List<String> specialsA = pair.getUniqueSpecialTermsA();
-        List<String> specialsB = pair.getUniqueSpecialTermsB();
+        List<String> specialsA = pair.getSpecialTermsA();
+        List<String> specialsB = pair.getSpecialTermsB();
         
         if(baseA.isEmpty() || baseB.isEmpty()){
             zeroBaseSimilarity = true;

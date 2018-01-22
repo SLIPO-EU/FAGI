@@ -17,14 +17,14 @@ public class WeightedPairLiteral {
     
     private String baseValueA;
     private String baseValueB;
-    private Set<LinkedTerm> linkedTerms = new HashSet();
+    private Set<CommonSpecialTerm> commonSpecialTerms = new HashSet();
     
     private List<String> mismatchTokensA = new ArrayList();
     private List<String> mismatchTokensB = new ArrayList();
     
     //unique means they exist only in one entity name for each pair.
-    private List<String> uniqueSpecialTermsA = new ArrayList();
-    private List<String> uniqueSpecialTermsB = new ArrayList();
+    private List<String> specialTermsA = new ArrayList();
+    private List<String> specialTermsB = new ArrayList();
     
     public String getBaseValueA() {
         return baseValueA;
@@ -42,16 +42,16 @@ public class WeightedPairLiteral {
         this.baseValueB = baseValueB;
     }
 
-    public Set<LinkedTerm> getLinkedTerms() {
-        return linkedTerms;
+    public Set<CommonSpecialTerm> getCommonSpecialTerms() {
+        return commonSpecialTerms;
     }
 
-    public void setLinkedTerms(Set<LinkedTerm> linkedTerms) {
-        this.linkedTerms = linkedTerms;
+    public void setCommonSpecialTerms(Set<CommonSpecialTerm> commonSpecialTerms) {
+        this.commonSpecialTerms = commonSpecialTerms;
     }
     
-    public void addLinkedTerm(LinkedTerm linkedTerm) {
-        linkedTerms.add(linkedTerm);
+    public void addLinkedTerm(CommonSpecialTerm linkedTerm) {
+        commonSpecialTerms.add(linkedTerm);
     }
 
     public List<String> getMismatchTokensA() {
@@ -78,28 +78,28 @@ public class WeightedPairLiteral {
         mismatchTokensB.add(mismatchTokenB);
     }
 
-    public void setUniqueSpecialTermsA(List<String> uniqueSpecialTermsA) {
-        this.uniqueSpecialTermsA = uniqueSpecialTermsA;
+    public void setSpecialTermsA(List<String> specialTermsA) {
+        this.specialTermsA = specialTermsA;
     }
 
-    public void setUniqueSpecialTermsB(List<String> uniqueSpecialTermsB) {
-        this.uniqueSpecialTermsB = uniqueSpecialTermsB;
+    public void setSpecialTermsB(List<String> specialTermsB) {
+        this.specialTermsB = specialTermsB;
     }
     
     public void addUniqueSpecialTermA(String specialA) {
-        uniqueSpecialTermsA.add(specialA);
+        specialTermsA.add(specialA);
     }  
     
-    public List<String> getUniqueSpecialTermsA() {
-        return uniqueSpecialTermsA;
+    public List<String> getSpecialTermsA() {
+        return specialTermsA;
     }
 
     public void addUniqueSpecialTermB(String specialB) {
-        uniqueSpecialTermsB.add(specialB);
+        specialTermsB.add(specialB);
     }  
     
-    public List<String> getUniqueSpecialTermsB() {
-        return uniqueSpecialTermsB;
+    public List<String> getSpecialTermsB() {
+        return specialTermsB;
     }
 
     public String mismatchToStringA(){
@@ -128,7 +128,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        uniqueSpecialTermsA.stream().forEach((token) -> {
+        specialTermsA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -139,7 +139,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        uniqueSpecialTermsB.stream().forEach((token) -> {
+        specialTermsB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -150,7 +150,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        linkedTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -167,11 +167,11 @@ public class WeightedPairLiteral {
             sb.append(token).append(CONNECTOR);
         });
 
-        uniqueSpecialTermsA.stream().forEach((token) -> {
+        specialTermsA.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
 
-        linkedTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((token) -> {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
@@ -187,11 +187,11 @@ public class WeightedPairLiteral {
             sb.append(token).append(CONNECTOR);
         });
 
-        uniqueSpecialTermsB.stream().forEach((token) -> {
+        specialTermsB.stream().forEach((token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        linkedTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((token) -> {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         

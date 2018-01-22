@@ -8,10 +8,10 @@ import java.util.Objects;
  * 
  * @author nkarag
  */
-public class LinkedTerm {
+public class CommonSpecialTerm {
 
     private String term;
-    private final double weight = SpecificationConstants.LINKED_TERM_WEIGHT;
+    private final double weight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
 
     @Override
     public int hashCode() {
@@ -31,7 +31,7 @@ public class LinkedTerm {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final LinkedTerm other = (LinkedTerm) obj;
+        final CommonSpecialTerm other = (CommonSpecialTerm) obj;
         if (!Objects.equals(this.term, other.term)) {
             return false;
         }

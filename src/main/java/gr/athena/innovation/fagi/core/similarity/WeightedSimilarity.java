@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.core.similarity;
 
 import gr.athena.innovation.fagi.model.CategoryWeight;
-import gr.athena.innovation.fagi.model.LinkedTerm;
+import gr.athena.innovation.fagi.model.CommonSpecialTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -120,7 +120,7 @@ public class WeightedSimilarity {
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
 
-        Set<LinkedTerm> terms = pair.getLinkedTerms();
+        Set<CommonSpecialTerm> terms = pair.getCommonSpecialTerms();
 
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
@@ -184,7 +184,7 @@ public class WeightedSimilarity {
         String baseA = pair.getBaseValueA();
         String baseB = pair.getBaseValueB();
 
-        Set<LinkedTerm> terms = pair.getLinkedTerms();
+        Set<CommonSpecialTerm> terms = pair.getCommonSpecialTerms();
 
         String mismatchA = pair.mismatchToStringA();
         String mismatchB = pair.mismatchToStringB();
@@ -354,7 +354,7 @@ public class WeightedSimilarity {
                 break;
             }
             case "jarowinkler": {
-                result = 1 - computeJaroSimilarityPerWord(a, b);
+                result = 1 - computeJaroWinklerSimilarityPerWord(a, b);
                 break;
             }
             case "sortedjarowinkler": {
@@ -426,7 +426,7 @@ public class WeightedSimilarity {
         double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
         double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
         double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
-        double termWeight = SpecificationConstants.LINKED_TERM_WEIGHT;
+        double termWeight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
 
         if (categorySimilarity.isZeroBaseSimilarity()) {
             return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
