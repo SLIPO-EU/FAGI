@@ -21,8 +21,7 @@ public class WeightedPairLiteral {
     
     private List<String> mismatchTokensA = new ArrayList();
     private List<String> mismatchTokensB = new ArrayList();
-    
-    //unique means they exist only in one entity name for each pair.
+
     private List<String> specialTermsA = new ArrayList();
     private List<String> specialTermsB = new ArrayList();
     

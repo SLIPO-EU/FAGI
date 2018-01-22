@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 public class WeightedSimilarity {
 
     private static final Logger logger = LogManager.getLogger(WeightedSimilarity.class);
+    
+    private static boolean useLengths = true;
 
     /**
      * Computes the provided distance for the given normalized literals.
@@ -169,7 +171,7 @@ public class WeightedSimilarity {
             }            
         }
 
-        return computeWeights(categorySimilarity,baseSim, mismatchSim, specialsSim, termSim);
+        return computeWeights(pair, categorySimilarity,baseSim, mismatchSim, specialsSim, termSim);
     }
 
     /**
@@ -235,7 +237,7 @@ public class WeightedSimilarity {
             }            
         }
 
-        return computeWeights(categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
+        return computeWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
     }
 
     private static double computeBaseSimilarity(String similarity, String a, String b) {
@@ -420,18 +422,51 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeWeights(CategoryWeight categorySimilarity, double baseSim, double mismatchSim, double specialsSim, double termSim) {
+    private static double computeWeights(WeightedPairLiteral pair, CategoryWeight categorySimilarity, 
+            double baseSim, double mismatchSim, double specialsSim, double termSim) {
 
         double baseWeight = SpecificationConstants.BASE_WEIGHT;
         double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
         double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
-        double specialsWeight = SpecificationConstants.SPECIAL_WEIGHT;
+        double specialsWeight = SpecificationConstants.SPECIAL_TERMS_WEIGHT;
         double termWeight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
 
-        if (categorySimilarity.isZeroBaseSimilarity()) {
-            return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
+        if(useLengths){
+
+            int b1Length = pair.getBaseValueA().length();
+            int b2Length = pair.getBaseValueB().length();
+            
+            int m1Length = pair.mismatchToStringA().length();
+            int m2Length = pair.mismatchToStringB().length();
+            
+            int s1Length = pair.specialTermsToStringA().length();
+            int s2Length = pair.specialTermsToStringB().length();
+            
+            int commonTermLength = pair.commonTermsToString().length();
+            
+            double baseLen = Math.sqrt(b1Length + b2Length);
+            double mismatchLen = Math.sqrt(m1Length + m2Length);
+            double specialsLen = Math.sqrt(s1Length + s2Length);
+            double commonTermLen = Math.sqrt(2 * commonTermLength);
+
+            double base =  baseLen * baseSim * baseWeight;
+            double mismatch = mismatchLen * mismatchSim * mismatchWeight;
+            double merged = mismatchLen * mismatchSim * mergedBaseMismatchWeight;
+            double specialTerm = specialsLen * specialsSim * specialsWeight;
+            double commonTerm = commonTermLen * termSim * termWeight;
+
+            if (categorySimilarity.isZeroBaseSimilarity()) {
+                return (merged + specialTerm + commonTerm) / (mismatchLen + specialsLen + commonTermLen);
+            } else {
+                return (base + mismatch + specialTerm + commonTerm) / (baseLen + mismatchLen + specialsLen + commonTermLen);
+            }
+            
         } else {
-            return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
+            if (categorySimilarity.isZeroBaseSimilarity()) {
+                return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
+            } else {
+                return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
+            }            
         }
     }
     

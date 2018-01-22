@@ -106,17 +106,17 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-        
+
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
-            qualityViewer.printRDFSimilarityResults(rdfProperties);
+            //RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            //qualityViewer.printRDFSimilarityResults(rdfProperties);
 
             String csvPath = "";
             String resultsPath = "";
-            String nameMetrics = "name_metrics_1.3.csv";
-            String nameSimilarities = "name_similarities_1.3.txt";
-            
+            String nameMetrics = "name_metrics_1.5b.csv";
+            String nameSimilarities = "name_similarities_1.5b.txt";
+
             if(!resultsPath.endsWith("/")){
                 resultsPath = resultsPath + "/";
             }
