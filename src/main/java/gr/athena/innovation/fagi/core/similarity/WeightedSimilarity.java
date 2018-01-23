@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 public class WeightedSimilarity {
 
     private static final Logger logger = LogManager.getLogger(WeightedSimilarity.class);
-    
+
     private static boolean useLengths = true;
 
     /**
@@ -137,16 +137,14 @@ public class WeightedSimilarity {
         double mismatchSim;
         double termSim;
 
-        termSim = 1;
-
         if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 1;
         } else {
             baseSim = computeBaseDistance(distance, baseA, baseB);
         }
 
-        if (categorySimilarity.isEmptyMismatch()) {
-            mismatchSim = baseSim;
+        if (categorySimilarity.isHalfEmptyMismatch() || categorySimilarity.isFullEmptyMismatch()) {
+            mismatchSim = 0;
         } else {
             mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
         }
@@ -163,15 +161,13 @@ public class WeightedSimilarity {
 
         if (!terms.isEmpty()) {
             termSim = 0.0;
+        } else if (categorySimilarity.isZeroBaseSimilarity()) {
+            termSim = mismatchSim;
         } else {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
-                termSim = mismatchSim;
-            } else {
-                termSim = baseSim;
-            }            
+            termSim = baseSim;
         }
 
-        return computeWeights(pair, categorySimilarity,baseSim, mismatchSim, specialsSim, termSim);
+        return computeWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
     }
 
     /**
@@ -204,14 +200,13 @@ public class WeightedSimilarity {
 //        baseSim = computeBaseSimilarity(similarity, baseA, baseB);
 //        mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
 //        specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
-
         if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 0;
         } else {
             baseSim = computeBaseSimilarity(similarity, baseA, baseB);
         }
 
-        if (categorySimilarity.isEmptyMismatch()) {
+        if (categorySimilarity.isHalfEmptyMismatch()) {
             mismatchSim = baseSim;
         } else {
             mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
@@ -229,12 +224,10 @@ public class WeightedSimilarity {
 
         if (!terms.isEmpty()) {
             termSim = 1.0;
+        } else if (categorySimilarity.isZeroBaseSimilarity()) {
+            termSim = mismatchSim;
         } else {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
-                termSim = mismatchSim;
-            } else {
-                termSim = baseSim;
-            }            
+            termSim = baseSim;
         }
 
         return computeWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
@@ -422,7 +415,7 @@ public class WeightedSimilarity {
         return result;
     }
 
-    private static double computeWeights(WeightedPairLiteral pair, CategoryWeight categorySimilarity, 
+    private static double computeWeights(WeightedPairLiteral pair, CategoryWeight categorySimilarity,
             double baseSim, double mismatchSim, double specialsSim, double termSim) {
 
         double baseWeight = SpecificationConstants.BASE_WEIGHT;
@@ -431,61 +424,94 @@ public class WeightedSimilarity {
         double specialsWeight = SpecificationConstants.SPECIAL_TERMS_WEIGHT;
         double termWeight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
 
-        if(useLengths){
+        if (useLengths) {
 
             int b1Length = pair.getBaseValueA().length();
             int b2Length = pair.getBaseValueB().length();
-            
+
             int m1Length = pair.mismatchToStringA().length();
             int m2Length = pair.mismatchToStringB().length();
-            
+
             int s1Length = pair.specialTermsToStringA().length();
             int s2Length = pair.specialTermsToStringB().length();
-            
+
             int commonTermLength = pair.commonTermsToString().length();
-            
-            double baseLen = Math.sqrt(b1Length + b2Length);
-            double mismatchLen = Math.sqrt(m1Length + m2Length);
-            double specialsLen = Math.sqrt(s1Length + s2Length);
-            double commonTermLen = Math.sqrt(2 * commonTermLength);
 
-            double base =  baseLen * baseSim * baseWeight;
-            double mismatch = mismatchLen * mismatchSim * mismatchWeight;
-            double merged = mismatchLen * mismatchSim * mergedBaseMismatchWeight;
-            double specialTerm = specialsLen * specialsSim * specialsWeight;
-            double commonTerm = commonTermLen * termSim * termWeight;
+            double baseWR = getWeightR(b1Length, b2Length, categorySimilarity.isZeroBaseSimilarity());
+            double mismatchWR = getWeightR(m1Length, m2Length, categorySimilarity.isHalfEmptyMismatch());
+            double specialsWR = getWeightR(s1Length, s2Length, categorySimilarity.isEmptySpecials());
+            double commonTermWR = getWeightR(commonTermLength, commonTermLength, categorySimilarity.isEmptyCommon());
+
+            double result;
 
             if (categorySimilarity.isZeroBaseSimilarity()) {
-                return (merged + specialTerm + commonTerm) / (mismatchLen + specialsLen + commonTermLen);
+
+                double merged = mismatchWR * mismatchSim * mergedBaseMismatchWeight;
+                double specialTerm = specialsWR * specialsSim * specialsWeight;
+                double commonTerm = commonTermWR * termSim * termWeight;        
+                
+                result = (merged + specialTerm + commonTerm) / (mergedBaseMismatchWeight * mismatchWR + specialsWR + commonTermWR);
+                
+            } else if (categorySimilarity.isFullEmptyMismatch()) {
+                
+                double base = baseWR * baseSim * mergedBaseMismatchWeight;
+                double specialTerm = specialsWR * specialsSim * specialsWeight;
+                double commonTerm = commonTermWR * termSim * termWeight;
+
+                result = (base + specialTerm + commonTerm)
+                        / (mergedBaseMismatchWeight * baseWR + specialsWeight * specialsWR + termWeight * commonTermWR);
+                
+            } else if (categorySimilarity.isHalfEmptyMismatch()) {
+                
+                double base = baseWR * baseSim * baseWeight;
+                double specialTerm = specialsWR * specialsSim * specialsWeight;
+                double commonTerm = commonTermWR * termSim * termWeight;
+                
+                result = (base + specialTerm + commonTerm)
+                        / (baseWeight * baseWR + mismatchWeight * mismatchWR + specialsWeight * specialsWR + termWeight * commonTermWR);
             } else {
-                return (base + mismatch + specialTerm + commonTerm) / (baseLen + mismatchLen + specialsLen + commonTermLen);
+                
+                double base = baseWR * baseSim * baseWeight;
+                double mismatch = mismatchWR * mismatchSim * mismatchWeight;
+                double specialTerm = specialsWR * specialsSim * specialsWeight;
+                double commonTerm = commonTermWR * termSim * termWeight;
+                
+                result = (base + mismatch + specialTerm + commonTerm)
+                        / (baseWeight * baseWR + mismatchWeight * mismatchWR + specialsWeight * specialsWR + termWeight * commonTermWR);
             }
-            
+            return result;
+
+        } else if (categorySimilarity.isZeroBaseSimilarity()) {
+            return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
         } else {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
-                return mismatchSim * mergedBaseMismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
-            } else {
-                return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
-            }            
+            return baseSim * baseWeight + mismatchSim * mismatchWeight + specialsSim * specialsWeight + termSim * termWeight;
         }
     }
-    
+
+    private static double getWeightR(int length1, int length2, boolean zeroSim) {
+        if (zeroSim) {
+            return 0;
+        } else {
+            return Math.sqrt(length1 + length2);
+        }
+    }
+
     private static double computeJaroSimilarityPerWord(String a, String b) {
-        
-        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
             return 0;
         }
-        
+
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
         String[] tokensB = tokenize(b);
-        
+
         double sum = 0;
         int minLen;
         int maxLen;
         boolean isAmax;
 
-        if(tokensA.length > tokensB.length){
+        if (tokensA.length > tokensB.length) {
             maxLen = tokensA.length;
             minLen = tokensB.length;
             isAmax = true;
@@ -496,24 +522,22 @@ public class WeightedSimilarity {
         }
 
         double denom = 0;
-        
+
         for (int i = 0; i < maxLen; i++) {
 
-            if(i < minLen){
+            if (i < minLen) {
 
                 int tempLenA = tokensA[i].length();
                 int tempLenB = tokensB[i].length();
-                double averageLen =(tempLenA + tempLenB)/2;
+                double averageLen = (tempLenA + tempLenB) / 2;
                 denom = denom + averageLen;
 
                 sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
 
+            } else if (isAmax) {
+                denom = denom + tokensA[i].length() / 2;
             } else {
-                if(isAmax){
-                    denom = denom + tokensA[i].length()/2;
-                } else {
-                    denom = denom + tokensB[i].length()/2;
-                }
+                denom = denom + tokensB[i].length() / 2;
             }
         }
 
@@ -521,8 +545,8 @@ public class WeightedSimilarity {
     }
 
     private static double computeJaroWinklerSimilarityPerWord(String a, String b) {
-        
-        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
             return 0;
         }
 
@@ -534,7 +558,7 @@ public class WeightedSimilarity {
         int maxLen;
         boolean isAmax;
 
-        if(tokensA.length > tokensB.length){
+        if (tokensA.length > tokensB.length) {
             maxLen = tokensA.length;
             minLen = tokensB.length;
             isAmax = true;
@@ -545,24 +569,22 @@ public class WeightedSimilarity {
         }
 
         double denom = 0;
-        
+
         for (int i = 0; i < maxLen; i++) {
 
-            if(i < minLen){
+            if (i < minLen) {
 
                 int tempLenA = tokensA[i].length();
                 int tempLenB = tokensB[i].length();
-                double averageLen =(tempLenA + tempLenB)/2;
+                double averageLen = (tempLenA + tempLenB) / 2;
                 denom = denom + averageLen;
 
                 sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
 
+            } else if (isAmax) {
+                denom = denom + tokensA[i].length() / 2;
             } else {
-                if(isAmax){
-                    denom = denom + tokensA[i].length()/2;
-                } else {
-                    denom = denom + tokensB[i].length()/2;
-                }
+                denom = denom + tokensB[i].length() / 2;
             }
         }
 
@@ -570,21 +592,21 @@ public class WeightedSimilarity {
     }
 
     private static double computeSortedJaroWinklerSimilarityPerWord(String a, String b) {
-        
-        if(StringUtils.isBlank(a) ||  StringUtils.isBlank(b)){
+
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
             return 0;
         }
 
         //compute per word and average. (The base category contains only matched words)
         String[] tokensA = tokenize(a);
         String[] tokensB = tokenize(b);
-        
+
         double sum = 0;
         int minLen;
         int maxLen;
         boolean isAmax;
 
-        if(tokensA.length > tokensB.length){
+        if (tokensA.length > tokensB.length) {
             maxLen = tokensA.length;
             minLen = tokensB.length;
             isAmax = true;
@@ -595,30 +617,28 @@ public class WeightedSimilarity {
         }
 
         double denom = 0;
-        
+
         for (int i = 0; i < maxLen; i++) {
 
-            if(i < minLen){
+            if (i < minLen) {
 
                 int tempLenA = tokensA[i].length();
                 int tempLenB = tokensB[i].length();
-                double averageLen =(tempLenA + tempLenB)/2;
+                double averageLen = (tempLenA + tempLenB) / 2;
                 denom = denom + averageLen;
 
                 sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
 
+            } else if (isAmax) {
+                denom = denom + tokensA[i].length() / 2;
             } else {
-                if(isAmax){
-                    denom = denom + tokensA[i].length()/2;
-                } else {
-                    denom = denom + tokensB[i].length()/2;
-                }
+                denom = denom + tokensB[i].length() / 2;
             }
         }
 
         return sum / (double) denom;
     }
-    
+
     private static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
 

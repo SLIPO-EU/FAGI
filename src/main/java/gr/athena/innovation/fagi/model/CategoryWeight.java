@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.model;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -8,10 +9,12 @@ import java.util.List;
  */
 public class CategoryWeight {
     
-    private boolean emptyMismatch = false;
+    private boolean halfEmptyMismatch = false;
+    private boolean fullEmptyMismatch = false;
     private boolean emptySpecials = false;
+    private boolean emptyCommon = false;
     private boolean zeroBaseSimilarity = false;
-
+    
     public CategoryWeight(WeightedPairLiteral pair) {
         
         String baseA = pair.getBaseValueA();
@@ -23,21 +26,31 @@ public class CategoryWeight {
         List<String> specialsA = pair.getSpecialTermsA();
         List<String> specialsB = pair.getSpecialTermsB();
         
+        Set<CommonSpecialTerm> common = pair.getCommonSpecialTerms();
+        
         if(baseA.isEmpty() || baseB.isEmpty()){
             zeroBaseSimilarity = true;
         }
 
-        if(mismatchA.isEmpty() && mismatchB.isEmpty()){
-            emptyMismatch = true;
+        if((mismatchA.isEmpty() && !mismatchB.isEmpty())|| (!mismatchA.isEmpty() && mismatchB.isEmpty())){
+            halfEmptyMismatch = true;
         }
 
-        if(specialsA.isEmpty() && specialsB.isEmpty()){
+        if(mismatchA.isEmpty() && mismatchB.isEmpty()){
+            fullEmptyMismatch = true;
+        }
+        
+        if(specialsA.isEmpty() || specialsB.isEmpty()){
             emptySpecials = true;
+        } 
+        
+        if(common.isEmpty()){
+            emptyCommon = true;
         }        
     }
 
-    public boolean isEmptyMismatch() {
-        return emptyMismatch;
+    public boolean isHalfEmptyMismatch() {
+        return halfEmptyMismatch;
     }
 
     public boolean isEmptySpecials() {
@@ -46,5 +59,13 @@ public class CategoryWeight {
 
     public boolean isZeroBaseSimilarity() {
         return zeroBaseSimilarity;
+    }
+
+    public boolean isEmptyCommon() {
+        return emptyCommon;
+    }
+
+    public boolean isFullEmptyMismatch() {
+        return fullEmptyMismatch;
     }
 }
