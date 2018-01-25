@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
 import gr.athena.innovation.fagi.model.CommonSpecialTerm;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
@@ -36,7 +36,7 @@ public class AdvancedGenericNormalizerTest {
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
         Set<String> specialTerms = resourceFileLoader.getSpecialTerms();
 
-        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
         TermResolver.setTerms(specialTerms);        
     }
 
@@ -53,37 +53,36 @@ public class AdvancedGenericNormalizerTest {
         
         NormalizedLiteral normalizedLiteralA = new NormalizedLiteral();
         normalizedLiteralA.setIsNormalized(true);
-        normalizedLiteralA.setLiteral("Aaa Bar Ccc Dr. St.");
-        normalizedLiteralA.setNormalized("aaa bar ccc Doctor street");
+        normalizedLiteralA.setLiteral("Aaa Bar mismatch Ccc  ");
+        normalizedLiteralA.setNormalized("aaa bar ccc mismatch test");
         
         NormalizedLiteral normalizedLiteralB = new NormalizedLiteral();
         normalizedLiteralB.setIsNormalized(true);
-        normalizedLiteralB.setLiteral("bar ccc Ddd Eee");
-        normalizedLiteralB.setNormalized("bar ccc ddd eee");
+        normalizedLiteralB.setLiteral("bar ccc test Eee");
+        normalizedLiteralB.setNormalized("bar ccc eee test");
         
-        Set<CommonSpecialTerm> linkedTerms = new HashSet<>();
+        //Set<CommonSpecialTerm> linkedTerms = new HashSet<>();
         
-        CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
-        linkedTerm.setTerm("bar");
-        linkedTerms.add(linkedTerm);
+        //CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
+        //linkedTerm.setTerm("bar");
+        //linkedTerms.add(linkedTerm);
         
         ArrayList<String> mismatchedA = new ArrayList<>();
         ArrayList<String> mismatchedB = new ArrayList<>();
         
         //TODO - check again mismatches with several examples
         mismatchedA.add("aaa");
-        mismatchedA.add("Doctor");
-        mismatchedB.add("ddd");
+        mismatchedA.add("mismatch");
         mismatchedB.add("eee");
         
         ArrayList<String> uniqueSpecialsA = new ArrayList<>();
         //ArrayList<String> uniqueSpecialsB = new ArrayList<>();        
-        uniqueSpecialsA.add("street");
+        //uniqueSpecialsA.add("street");
         
         WeightedPairLiteral expResult = new WeightedPairLiteral();
-        expResult.setCommonSpecialTerms(linkedTerms);
-        expResult.setBaseValueA("ccc");
-        expResult.setBaseValueB("ccc");
+        //expResult.setCommonSpecialTerms(linkedTerms);
+        expResult.setBaseValueA("bar ccc test");
+        expResult.setBaseValueB("bar ccc test");
         expResult.setMismatchTokensA(mismatchedA);
         expResult.setMismatchTokensB(mismatchedB);
         
@@ -95,7 +94,7 @@ public class AdvancedGenericNormalizerTest {
         
         assertEquals(expResult.getBaseValueB(), result.getBaseValueB());
 
-        assertEquals(expResult.getCommonSpecialTerms(), result.getCommonSpecialTerms());
+        //assertEquals(expResult.getCommonSpecialTerms(), result.getCommonSpecialTerms());
         
         assertEquals(expResult.getMismatchTokensA(), result.getMismatchTokensA());
         

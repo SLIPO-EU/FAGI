@@ -2,7 +2,7 @@ package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.function.FunctionRegistry;
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
 import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
@@ -52,6 +52,8 @@ public class FagiInstance {
     public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
             com.vividsolutions.jts.io.ParseException, WrongInputException, 
             ApplicationException, org.json.simple.parser.ParseException {
+        
+        Locale locale = Locale.GERMANY;
 
         long startTimeInput = System.currentTimeMillis();
         //Validate input
@@ -75,7 +77,7 @@ public class FagiInstance {
         FusionSpecification fusionSpecification = specificationParser.parse(specXml);
 
         //TODO: remove setLocale as soon as locale is implemented in fusion specification parser
-        fusionSpecification.setLocale(Locale.GERMAN);
+        fusionSpecification.setLocale(locale);
         
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
@@ -100,7 +102,8 @@ public class FagiInstance {
         Set<String> specialTerms = resourceFileLoader.getSpecialTerms();
         Map<String, String> codes = resourceFileLoader.getExitCodes();
 
-        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setLocale(locale);
         TermResolver.setTerms(specialTerms);
         CallingCodeResolver.setCodes(codes);
 
@@ -114,8 +117,8 @@ public class FagiInstance {
 
             String csvPath = "";
             String resultsPath = "";
-            String nameMetrics = "name_metrics_1.8b.csv";
-            String nameSimilarities = "name_similarities_1.8b.txt";
+            String nameMetrics = "name_metrics_2.1a.csv";
+            String nameSimilarities = "name_similarities_2.1a.txt";
 
             if(!resultsPath.endsWith("/")){
                 resultsPath = resultsPath + "/";

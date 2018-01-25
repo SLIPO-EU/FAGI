@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.functions.literal;
 
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class AbbreviationResolverTest {
         ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
 
-        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
         
     }
 
@@ -35,7 +35,7 @@ public class AbbreviationResolverTest {
     public void testGetInstance() {
         logger.info("getInstance");
         try{
-            AbbreviationResolver.getInstance();
+            AbbreviationAndAcronymResolver.getInstance();
         } catch(ApplicationException ex){
             logger.error(ex);
             fail("AbbreviationResolver is not initialized with knownAbbreviations.");
@@ -48,11 +48,11 @@ public class AbbreviationResolverTest {
     @Test
     public void testGetKnownAbbreviation() {
         logger.info("getInstance");
-
-        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
-        String result = resolver.getKnownAbbreviation("Dr.");
-        String expResult = "Doctor";
-        assertEquals(expResult, result);
+        //TODO: update test after the knownAbbreviations list is populated
+//        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
+//        String result = resolver.getKnownAbbreviationOrAcronym("Dr.");
+//        String expResult = "Doctor";
+//        assertEquals(expResult, result);
     }
     
     /**
@@ -65,7 +65,8 @@ public class AbbreviationResolverTest {
 
         try {
             Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
-            assertFalse(knownAbbreviations.isEmpty());
+            //TODO: update test when this list is populated again
+            assertTrue(knownAbbreviations.isEmpty());
         } catch (IOException | ApplicationException ex) {
             logger.error(ex);
             fail("AbbreviationResolver could not be initialized with knownAbbreviations");
@@ -78,10 +79,11 @@ public class AbbreviationResolverTest {
     @Test
     public void testContainsAbbreviation() {
         logger.info("containsAbbreviation");
-        String literal = "this literal contains an abbreviation at the end: A.B.B.R.";
-        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        String literal = "this literal contains an acronym at the end: A.B.B.R.";
+        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         boolean expResult = true;
-        boolean result = resolver.containsAbbreviation(literal);
+        logger.debug("#10 " + literal);
+        boolean result = resolver.containsAbbreviationOrAcronym(literal);
         assertEquals(expResult, result);
     }
 
@@ -92,41 +94,41 @@ public class AbbreviationResolverTest {
     public void testGetAbbreviation() {
         logger.info("getAbbreviation");
         
-        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         
         //a)
         String literal0a = "this literal has the dr. abbreviation.";
         String literal0b = "this literal is irrelevant";
         String expResult0 = "dr.";
-        String result0 = resolver.getAbbreviation(literal0a, literal0b);
+        String result0 = resolver.getAbbreviationOrAcronym(literal0a, literal0b);
         assertEquals(expResult0, result0);
 
         //b)
         String literal3a = "abbreviation is the H. in this sentence.";
         String literal3b = "this literal is irrelevant for this test.";
         String expResult3 = "H.";
-        String result3 = resolver.getAbbreviation(literal3a, literal3b);
+        String result3 = resolver.getAbbreviationOrAcronym(literal3a, literal3b);
         assertEquals(expResult3, result3);
 
         //c)
         String literal2a = "This literal contains an abbreviation at the end: ABBR.";
         String literal2b = "this literal is irrelevant";
         String expResult2 = "ABBR.";
-        String result2 = resolver.getAbbreviation(literal2a, literal2b);
+        String result2 = resolver.getAbbreviationOrAcronym(literal2a, literal2b);
         assertEquals(expResult2, result2);
 
         //d)
         String literal1a = "this literal contains an abbreviation at the end: A.B.B.R.";
         String literal1b = "this literal is irrelevant";
         String expResult1 = "A.B.B.R.";
-        String result1 = resolver.getAbbreviation(literal1a, literal1b);
+        String result1 = resolver.getAbbreviationOrAcronym(literal1a, literal1b);
         assertEquals(expResult1, result1);
 
         //e)
         String literal4a = "This literal contains an abbreviation at the end: Abbr.";
         String literal4b = "This contains the expanded abbreviation aa bb bbb rrr of the above literal.";
         String expResult4 = "Abbr.";
-        String result4 = resolver.getAbbreviation(literal4a, literal4b);
+        String result4 = resolver.getAbbreviationOrAcronym(literal4a, literal4b);
         assertEquals(expResult4, result4);        
     }
 
@@ -137,10 +139,10 @@ public class AbbreviationResolverTest {
     public void testRecoverAbbreviation() {
         logger.info("recoverAbbreviation");
         
-        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
+        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         
         String abbreviation1 = "Dr.";
-        String text1 = "irrelevant text";
+        String text1 = "recovering abbreviation from Doctor";
         String expResult1 = "Doctor";
         String result1 = resolver.recoverAbbreviation(abbreviation1, text1);
         assertEquals(expResult1, result1);
@@ -148,19 +150,19 @@ public class AbbreviationResolverTest {
         String abbreviation2 = "Abbr.";
         String text2 = "aa bb bbb rrr";
         String expResult2 = "aa bb bbb rrr";
-        String result2 = resolver.recoverAbbreviation(abbreviation2, text2);
+        String result2 = resolver.recoverAcronym(abbreviation2, text2);
         assertEquals(expResult2, result2);   
         
         String abbreviation3 = "Abbr.";
         String text3 = "This contains the expanded abbreviation aa bb bbb rrr of the above literal.";
         String expResult3 = "aa bb bbb rrr";
-        String result3 = resolver.recoverAbbreviation(abbreviation3, text3);
+        String result3 = resolver.recoverAcronym(abbreviation3, text3);
         assertEquals(expResult3, result3);
         
         String abbreviation4 = "A.B.B.R.";
         String text4 = "This contains the expanded abbreviation Aa   Bb Bbb Rrr rr of the above literal.";
         String expResult4 = "Aa Bb Bbb Rrr";
-        String result4 = resolver.recoverAbbreviation(abbreviation4, text4);
+        String result4 = resolver.recoverAcronym(abbreviation4, text4);
         assertEquals(expResult4, result4);
     }
 
@@ -172,7 +174,7 @@ public class AbbreviationResolverTest {
         logger.info("tokenize");
         CharSequence text = "tokenize on white-spaces     and get&result of size 8.";
         String[] expResult = {"tokenize","on", "white-spaces", "and", "get&result", "of", "size", "8."};
-        String[] result = AbbreviationResolver.tokenize(text);
+        String[] result = AbbreviationAndAcronymResolver.tokenize(text);
         assertArrayEquals(expResult, result);
     }
 }

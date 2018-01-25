@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.core.normalizer.generic.AlphabeticalNormalizer;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -85,16 +85,23 @@ public class BasicGenericNormalizer implements INormalizer {
     //1)Recover abbreviation if possible. Returns the whole literalA.
     private String getAbbreviation(String literalA, String literalB) {
 
-        AbbreviationResolver resolver = AbbreviationResolver.getInstance();
-        String possibleAbbreviation = resolver.getAbbreviation(literalA, literalB);
+        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
+        String possibleAbbreviation = resolver.getAbbreviationOrAcronym(literalA, literalB);
 
-        String recoveredAbbr;
+        String recoveredAcronym;
+        String recoveredAbbreviation;
         if (possibleAbbreviation != null) {
 
-            recoveredAbbr = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
+            recoveredAcronym = resolver.recoverAcronym(possibleAbbreviation, literalB);
+            
+            recoveredAbbreviation = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
 
-            if (recoveredAbbr != null) {
-                literalA = literalA.replace(possibleAbbreviation, recoveredAbbr);
+            if (recoveredAcronym != null) {
+                literalA = literalA.replace(possibleAbbreviation, recoveredAcronym);
+            }
+            
+            if (recoveredAbbreviation != null) {
+                literalA = literalA.replace(possibleAbbreviation, recoveredAbbreviation);
             }
         }
 

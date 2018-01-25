@@ -197,9 +197,6 @@ public class WeightedSimilarity {
         double specialsSim;
         double termSim;
 
-//        baseSim = computeBaseSimilarity(similarity, baseA, baseB);
-//        mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
-//        specialsSim = computeBaseSimilarity(similarity, specialsA, specialsB);
         if (categorySimilarity.isZeroBaseSimilarity()) {
             baseSim = 0;
         } else {
@@ -438,7 +435,7 @@ public class WeightedSimilarity {
             int commonTermLength = pair.commonTermsToString().length();
 
             double baseWR = getWeightR(b1Length, b2Length, categorySimilarity.isZeroBaseSimilarity());
-            double mismatchWR = getWeightR(m1Length, m2Length, categorySimilarity.isHalfEmptyMismatch());
+            double mismatchWR = getWeightR(m1Length, m2Length, categorySimilarity.isFullEmptyMismatch());
             double specialsWR = getWeightR(s1Length, s2Length, categorySimilarity.isEmptySpecials());
             double commonTermWR = getWeightR(commonTermLength, commonTermLength, categorySimilarity.isEmptyCommon());
 

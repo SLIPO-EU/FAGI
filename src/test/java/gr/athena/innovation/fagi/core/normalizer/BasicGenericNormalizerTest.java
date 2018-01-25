@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationResolver;
+import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
@@ -36,7 +36,8 @@ public class BasicGenericNormalizerTest {
             logger.error(ex);
         }
         
-        AbbreviationResolver.setKnownAbbreviations(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setLocale(Locale.GERMAN);
     }
 
     /**
@@ -46,21 +47,21 @@ public class BasicGenericNormalizerTest {
     public void testGetNormalizedLiteral() {
         logger.info("getNormalizedLiteral");
         
-        String literalA = "bbb aaa ccc Dr.";
-        String literalB = "aaa bbb ddd";
+        String literalA = "bobab aaaba Dr. cacc";
+        String literalB = "aaaba bbab Doktor";
         
-        Locale locale = Locale.ENGLISH;
+        Locale locale = Locale.GERMAN;
         
         BasicGenericNormalizer instance = new BasicGenericNormalizer();
         
         NormalizedLiteral expResult = new NormalizedLiteral();
         
         expResult.setLiteral(literalA);
-        expResult.setNormalized("aaa bbb ccc doctor");
+        expResult.setNormalized("aaaba bobab cacc doktor");
         expResult.setIsNormalized(true);
         
         NormalizedLiteral result = instance.getNormalizedLiteral(literalA, literalB, locale);
-        
+
         assertEquals(expResult.getNormalized(), result.getNormalized());
         
         assertEquals(expResult.isIsNormalized(), result.isIsNormalized());
@@ -95,8 +96,7 @@ public class BasicGenericNormalizerTest {
         String expResult3 = "aaa abbreviation bb bbb containing rrr sentence";
         String result3 = normalizer.normalize(literal3a, literal3b);
         logger.warn(result3);
-        assertEquals(expResult3, result3); 
-                       
+        assertEquals(expResult3, result3);
         
     }
 

@@ -91,9 +91,9 @@ public class AdvancedGenericNormalizer {
         int carret_i = 0;
         int carret_j = 0;
 
-        int br = 0;
+        int breakCondition = 0;
 
-        while (br < tokensA.size() + tokensB.size()) {
+        while (breakCondition < tokensA.size() + tokensB.size()) {
 
             String ta = tokensA.get(carret_i);
             String tb = tokensB.get(carret_j);
@@ -143,7 +143,7 @@ public class AdvancedGenericNormalizer {
                     return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
                 }
             }
-            br++;
+            breakCondition++;
         }
 
         return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
