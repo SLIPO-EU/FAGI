@@ -53,7 +53,7 @@ public class FagiInstance {
             com.vividsolutions.jts.io.ParseException, WrongInputException, 
             ApplicationException, org.json.simple.parser.ParseException {
         
-        Locale locale = Locale.GERMANY;
+        Locale locale = Locale.GERMAN;
 
         long startTimeInput = System.currentTimeMillis();
         //Validate input

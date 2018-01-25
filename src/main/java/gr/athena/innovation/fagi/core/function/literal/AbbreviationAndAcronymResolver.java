@@ -3,7 +3,9 @@ package gr.athena.innovation.fagi.core.function.literal;
 import com.google.common.base.CharMatcher;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -62,9 +64,10 @@ public class AbbreviationAndAcronymResolver {
      */
     public boolean containsAbbreviationOrAcronym(String literal) {
         logger.trace("check if literal contains abbreviation/acronym: " + literal);
-        String recognized = getAbbreviationOrAcronym(literal, " - ");
+        List<String> recognized = getAbbreviationOrAcronym(literal, " - ");
         
-        return recognized != null;
+        return !recognized.isEmpty();
+
     }
 
     /**
@@ -74,12 +77,13 @@ public class AbbreviationAndAcronymResolver {
      * @param literalB the second literal which helps at the abbreviation/acronym discovery if anything else fails.
      * @return return the abbreviation/acronym token or null.
      */
-    public String getAbbreviationOrAcronym(String literalA, String literalB) {
+    public List<String> getAbbreviationOrAcronym(String literalA, String literalB) {
         logger.trace("getAbbreviationOrAcronym of: " + literalA);
 
         String[] wordsA = tokenize(literalA);
         String[] wordsB = tokenize(literalB);
 
+        List<String> possibleAbbreviations = new ArrayList<>();
         for (String word : wordsA) {
 
             if (StringUtils.isBlank(word)) {
@@ -91,21 +95,24 @@ public class AbbreviationAndAcronymResolver {
 
             if (resolved != null) {
                 logger.trace("\n\nabbreviation/acronym \"" + word + "\" is a known abbreviation/acronym. Full text is " + resolved);
-                return word;
+                possibleAbbreviations.add(word);
+                continue;
             }
 
             //b) Check if it is a non-standard abbreviation/acronym (single character capitalized token).
             char[] chars = word.toCharArray();
             if (chars.length == 1 && Character.isUpperCase(chars[0])) {
                 logger.trace(word + " is a single capitalized character.");
-                return word;
+                possibleAbbreviations.add(word);
+                continue;
             }
 
             //c) Check if the word contain more than one capitalized characters.
             char[] upperCaseChars = CharMatcher.javaUpperCase().retainFrom(word).toCharArray();
             if (upperCaseChars.length > 1) {
                 logger.trace(word + " uppercase characters more than 1.");
-                return word;
+                possibleAbbreviations.add(word);
+                continue;
             }
 
             //d) Check if the word contains two or more dots and has less than 8 characters
@@ -113,7 +120,8 @@ public class AbbreviationAndAcronymResolver {
                 if (chars.length < 8) {
                     //return the word if it is less than 8 characters including dots.
                     logger.trace(word + " has less than 8 chars including dots.");
-                    return word;
+                    possibleAbbreviations.add(word);
+                    continue;
                 }
             }
 
@@ -124,15 +132,21 @@ public class AbbreviationAndAcronymResolver {
             //is indeed an abbreviation or acronym.
             String result = null;
             if((chars.length <= 4 && vowelsCount(chars) == 0) || word.endsWith(".") && chars.length <= 5){
-                return word;
+                possibleAbbreviations.add(word);
+                continue;
                 //return recognizeAbbreviationFrom(wordsB, chars, word);
             } 
             
             if(result != null && word.endsWith(".") && chars.length <= 5){
-                return recognizeAcronymFrom(wordsB, chars, word);
+                possibleAbbreviations.add(recognizeAcronymFrom(wordsB, chars, word));
             }
         }
-        return null;
+        
+        if(possibleAbbreviations.isEmpty()){
+            return new ArrayList<>();
+        } else {
+            return possibleAbbreviations;
+        }
     }
 
     private String recognizeAcronymFrom(String[] wordsB, char[] chars, String word) {

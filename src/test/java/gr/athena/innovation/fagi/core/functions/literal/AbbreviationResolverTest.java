@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymRes
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
@@ -100,36 +101,42 @@ public class AbbreviationResolverTest {
         String literal0a = "this literal has the dr. abbreviation.";
         String literal0b = "this literal is irrelevant";
         String expResult0 = "dr.";
-        String result0 = resolver.getAbbreviationOrAcronym(literal0a, literal0b);
+        
+        List<String> results0 = resolver.getAbbreviationOrAcronym(literal0a, literal0b);
+        String result0 = results0.get(0);
         assertEquals(expResult0, result0);
 
         //b)
         String literal3a = "abbreviation is the H. in this sentence.";
         String literal3b = "this literal is irrelevant for this test.";
         String expResult3 = "H.";
-        String result3 = resolver.getAbbreviationOrAcronym(literal3a, literal3b);
+        List<String> results3 = resolver.getAbbreviationOrAcronym(literal3a, literal3b);
+        String result3 = results3.get(0);
         assertEquals(expResult3, result3);
 
         //c)
         String literal2a = "This literal contains an abbreviation at the end: ABBR.";
         String literal2b = "this literal is irrelevant";
         String expResult2 = "ABBR.";
-        String result2 = resolver.getAbbreviationOrAcronym(literal2a, literal2b);
+        List<String> results2 = resolver.getAbbreviationOrAcronym(literal2a, literal2b);
+        String result2 = results2.get(0);
         assertEquals(expResult2, result2);
 
         //d)
         String literal1a = "this literal contains an abbreviation at the end: A.B.B.R.";
         String literal1b = "this literal is irrelevant";
         String expResult1 = "A.B.B.R.";
-        String result1 = resolver.getAbbreviationOrAcronym(literal1a, literal1b);
+        List<String> results1 = resolver.getAbbreviationOrAcronym(literal1a, literal1b);
+        String result1 = results1.get(0);
         assertEquals(expResult1, result1);
 
         //e)
         String literal4a = "This literal contains an abbreviation at the end: Abbr.";
         String literal4b = "This contains the expanded abbreviation aa bb bbb rrr of the above literal.";
         String expResult4 = "Abbr.";
-        String result4 = resolver.getAbbreviationOrAcronym(literal4a, literal4b);
-        assertEquals(expResult4, result4);        
+        List<String> results4 = resolver.getAbbreviationOrAcronym(literal4a, literal4b);
+        String result4 = results4.get(0);
+        assertEquals(expResult4, result4);    
     }
 
     /**

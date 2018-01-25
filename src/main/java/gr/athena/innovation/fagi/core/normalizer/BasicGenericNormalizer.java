@@ -86,25 +86,30 @@ public class BasicGenericNormalizer implements INormalizer {
     private String getAbbreviation(String literalA, String literalB) {
 
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
-        String possibleAbbreviation = resolver.getAbbreviationOrAcronym(literalA, literalB);
+        List<String> possibleAbbreviations = resolver.getAbbreviationOrAcronym(literalA, literalB);
+        
+        if(possibleAbbreviations.isEmpty()){
+            return literalA;
+        }
+        
+        for(String possibleAbbreviation : possibleAbbreviations){
+            String recoveredAcronym;
+            String recoveredAbbreviation;
+            if (possibleAbbreviation != null) {
 
-        String recoveredAcronym;
-        String recoveredAbbreviation;
-        if (possibleAbbreviation != null) {
+                recoveredAcronym = resolver.recoverAcronym(possibleAbbreviation, literalB);
 
-            recoveredAcronym = resolver.recoverAcronym(possibleAbbreviation, literalB);
-            
-            recoveredAbbreviation = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
+                recoveredAbbreviation = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
 
-            if (recoveredAcronym != null) {
-                literalA = literalA.replace(possibleAbbreviation, recoveredAcronym);
-            }
-            
-            if (recoveredAbbreviation != null) {
-                literalA = literalA.replace(possibleAbbreviation, recoveredAbbreviation);
+                if (recoveredAcronym != null) {
+                    literalA = literalA.replace(possibleAbbreviation, recoveredAcronym);
+                }
+
+                if (recoveredAbbreviation != null) {
+                    literalA = literalA.replace(possibleAbbreviation, recoveredAbbreviation);
+                }
             }
         }
-
         return literalA;
     }
 
