@@ -42,7 +42,7 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    private final boolean qualityOn = false;
+    private final boolean qualityOn = true;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -117,8 +117,8 @@ public class FagiInstance {
 
             String csvPath = "";
             String resultsPath = "";
-            String nameMetrics = "name_metrics_2.1b.csv";
-            String nameSimilarities = "name_similarities_2.1b.txt";
+            String nameMetrics = "name_metrics_2.1c.csv";
+            String nameSimilarities = "name_similarities_2.1c.txt";
 
             if(!resultsPath.endsWith("/")){
                 resultsPath = resultsPath + "/";

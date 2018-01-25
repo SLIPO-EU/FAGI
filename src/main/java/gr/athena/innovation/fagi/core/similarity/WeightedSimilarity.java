@@ -784,7 +784,7 @@ public class WeightedSimilarity {
                 double averageLen = (tempLenA + tempLenB) / 2;
                 denom = denom + averageLen;
 
-                sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+                sum = sum + averageLen * JaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
 
             } else if (isAmax) {
                 denom = denom + tokensA[i].length() / 2;
@@ -832,7 +832,7 @@ public class WeightedSimilarity {
                 double averageLen = (tempLenA + tempLenB) / 2;
                 denom = denom + averageLen;
 
-                sum = sum + averageLen * Jaro.computeSimilarity(tokensA[i], tokensB[i]);
+                sum = sum + averageLen * SortedJaroWinkler.computeSimilarity(tokensA[i], tokensB[i]);
 
             } else if (isAmax) {
                 denom = denom + tokensA[i].length() / 2;
