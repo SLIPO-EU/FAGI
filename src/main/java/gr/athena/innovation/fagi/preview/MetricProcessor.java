@@ -455,7 +455,7 @@ public class MetricProcessor {
             double cNGramHarmonicMean = calculateHarmonicMean(cNGramPrecision, cNGramRecall);
 
             double dNGramAccuracy = calculateAccuracy(dAccuracy.getNgram2Count(), totalRows);
-            double dNGramPrecision = calculatePrecision(dNGramPrecisionAcceptCounter, cNGramPrecisionRejectCounter);
+            double dNGramPrecision = calculatePrecision(dNGramPrecisionAcceptCounter, dNGramPrecisionRejectCounter);
             double dNGramRecall= calculateRecall(dNGramPrecisionAcceptCounter, dNGramPrecisionMap);
             double dNGramHarmonicMean = calculateHarmonicMean(dNGramPrecision, dNGramRecall);
             
@@ -978,6 +978,7 @@ public class MetricProcessor {
         precisionMap.get(ACCEPT).clear();
         precisionMap.get(REJECT).clear();
     }
+    
     private double calculateAccuracy(int count, int rows) {
         if(rows == 0){
             logger.warn("Could not calculate accuracy. No rows found.");

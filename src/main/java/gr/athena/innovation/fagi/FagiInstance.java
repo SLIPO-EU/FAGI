@@ -119,7 +119,7 @@ public class FagiInstance {
             
             //on version change all weights update (along with notes)
             String version = "v2.2d";
-            String resultsPath = "/evaluation/" + version + "/";
+            String resultsPath = "evaluation/" + version + "/";
             String nameMetrics = "name_metrics_" + version + ".csv";
             String nameSimilarities = "name_similarities_" + version + ".txt";
             String thresholds = "optimalThresholds_" + version + ".txt";
