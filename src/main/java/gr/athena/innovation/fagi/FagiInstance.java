@@ -8,6 +8,7 @@ import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
+import gr.athena.innovation.fagi.preview.FrequencyCalculator;
 import gr.athena.innovation.fagi.preview.SimilarityCalculator;
 import gr.athena.innovation.fagi.preview.MetricProcessor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
@@ -112,18 +113,24 @@ public class FagiInstance {
 
         //Produce quality metric results for previewing, if enabled
         if (qualityOn) {
-            //RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
-            //qualityViewer.printRDFSimilarityResults(rdfProperties);
-
             String csvPath = "";
             
             //on version change all weights update (along with notes)
             String version = "v2.2d";
-            String resultsPath = "evaluation/" + version + "/";
+            String evaluationPath = "/evaluation/";
+            String resultsPath = evaluationPath + version + "/";
             String nameMetrics = "name_metrics_" + version + ".csv";
             String nameSimilarities = "name_similarities_" + version + ".txt";
             String thresholds = "optimalThresholds_" + version + ".txt";
-                
+            
+            FrequencyCalculator fq = new FrequencyCalculator();
+            fq.setLocale(locale);
+            fq.setProperty(new StringBuilder("<http://slipo.eu/def#nameValue>"));
+            fq.countFrequencies("", evaluationPath + "freq.txt");
+            
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            qualityViewer.printRDFSimilarityResults(rdfProperties);
+
             setWeights(version);
 
             String baseW = SpecificationConstants.BASE_WEIGHT.toString();
