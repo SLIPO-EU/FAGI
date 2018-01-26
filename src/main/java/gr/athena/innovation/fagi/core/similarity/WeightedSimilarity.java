@@ -130,44 +130,44 @@ public class WeightedSimilarity {
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
-        CategoryWeight categorySimilarity = new CategoryWeight(pair);
+        CategoryWeight categoryWeight = new CategoryWeight(pair);
 
-        double baseSim;
-        double specialsSim;
-        double mismatchSim;
-        double termSim;
+        double baseDis;
+        double specialsDis;
+        double mismatchDis;
+        double termDis;
 
-        if (categorySimilarity.isZeroBaseSimilarity()) {
-            baseSim = 1;
+        if (categoryWeight.isZeroBaseSimilarity()) {
+            baseDis = 1;
         } else {
-            baseSim = computeBaseDistance(distance, baseA, baseB);
+            baseDis = computeBaseDistance(distance, baseA, baseB);
         }
 
-        if (categorySimilarity.isHalfEmptyMismatch() || categorySimilarity.isFullEmptyMismatch()) {
-            mismatchSim = 0;
+        if (categoryWeight.isHalfEmptyMismatch() || categoryWeight.isFullEmptyMismatch()) {
+            mismatchDis = 1;
         } else {
-            mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
+            mismatchDis = computeMismatchDistance(distance, mismatchA, mismatchB);
         }
 
-        if (categorySimilarity.isEmptySpecials()) {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
-                specialsSim = mismatchSim;
+        if (categoryWeight.isEmptySpecials()) {
+            if (categoryWeight.isZeroBaseSimilarity()) {
+                specialsDis = mismatchDis;
             } else {
-                specialsSim = baseSim;
+                specialsDis = baseDis;
             }
         } else {
-            specialsSim = computeBaseDistance(distance, specialsA, specialsB);
+            specialsDis = computeBaseDistance(distance, specialsA, specialsB);
         }
 
         if (!terms.isEmpty()) {
-            termSim = 0.0;
-        } else if (categorySimilarity.isZeroBaseSimilarity()) {
-            termSim = mismatchSim;
+            termDis = 0.0;
+        } else if (categoryWeight.isZeroBaseSimilarity()) {
+            termDis = mismatchDis;
         } else {
-            termSim = baseSim;
+            termDis = baseDis;
         }
 
-        return computeCWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
+        return computeCWeights(pair, categoryWeight, baseDis, mismatchDis, specialsDis, termDis);
     }
 
     /**
@@ -190,44 +190,44 @@ public class WeightedSimilarity {
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
-        CategoryWeight categorySimilarity = new CategoryWeight(pair);
+        CategoryWeight categoryWeight = new CategoryWeight(pair);
 
-        double baseSim;
-        double specialsSim;
-        double mismatchSim;
-        double termSim;
+        double baseDis;
+        double specialsDis;
+        double mismatchDis;
+        double termDis;
 
-        if (categorySimilarity.isZeroBaseSimilarity()) {
-            baseSim = 1;
+        if (categoryWeight.isZeroBaseSimilarity()) {
+            baseDis = 1;
         } else {
-            baseSim = computeBaseDistance(distance, baseA, baseB);
+            baseDis = computeBaseDistance(distance, baseA, baseB);
         }
 
-        if (categorySimilarity.isHalfEmptyMismatch() || categorySimilarity.isFullEmptyMismatch()) {
-            mismatchSim = 0;
+        if (categoryWeight.isHalfEmptyMismatch() || categoryWeight.isFullEmptyMismatch()) {
+            mismatchDis = 1;
         } else {
-            mismatchSim = computeMismatchDistance(distance, mismatchA, mismatchB);
+            mismatchDis = computeMismatchDistance(distance, mismatchA, mismatchB);
         }
 
-        if (categorySimilarity.isEmptySpecials()) {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
-                specialsSim = mismatchSim;
+        if (categoryWeight.isEmptySpecials()) {
+            if (categoryWeight.isZeroBaseSimilarity()) {
+                specialsDis = mismatchDis;
             } else {
-                specialsSim = baseSim;
+                specialsDis = baseDis;
             }
         } else {
-            specialsSim = computeBaseDistance(distance, specialsA, specialsB);
+            specialsDis = computeBaseDistance(distance, specialsA, specialsB);
         }
 
         if (!terms.isEmpty()) {
-            termSim = 0.0;
-        } else if (categorySimilarity.isZeroBaseSimilarity()) {
-            termSim = mismatchSim;
+            termDis = 0.0;
+        } else if (categoryWeight.isZeroBaseSimilarity()) {
+            termDis = mismatchDis;
         } else {
-            termSim = baseSim;
+            termDis = baseDis;
         }
 
-        return computeDWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
+        return computeDWeights(pair, categoryWeight, baseDis, mismatchDis, specialsDis, termDis);
     }
     
     /**
@@ -250,27 +250,27 @@ public class WeightedSimilarity {
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
-        CategoryWeight categorySimilarity = new CategoryWeight(pair);
+        CategoryWeight categoryWeight = new CategoryWeight(pair);
 
         double baseSim;
         double mismatchSim;
         double specialsSim;
         double termSim;
 
-        if (categorySimilarity.isZeroBaseSimilarity()) {
+        if (categoryWeight.isZeroBaseSimilarity()) {
             baseSim = 0;
         } else {
             baseSim = computeBaseSimilarity(similarity, baseA, baseB);
         }
 
-        if (categorySimilarity.isHalfEmptyMismatch()) {
-            mismatchSim = baseSim;
+        if (categoryWeight.isHalfEmptyMismatch() || categoryWeight.isFullEmptyMismatch()) {
+            mismatchSim = 0;
         } else {
             mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
         }
 
-        if (categorySimilarity.isEmptySpecials()) {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
+        if (categoryWeight.isEmptySpecials()) {
+            if (categoryWeight.isZeroBaseSimilarity()) {
                 specialsSim = mismatchSim;
             } else {
                 specialsSim = baseSim;
@@ -281,13 +281,13 @@ public class WeightedSimilarity {
 
         if (!terms.isEmpty()) {
             termSim = 1.0;
-        } else if (categorySimilarity.isZeroBaseSimilarity()) {
+        } else if (categoryWeight.isZeroBaseSimilarity()) {
             termSim = mismatchSim;
         } else {
             termSim = baseSim;
         }
 
-        return computeCWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
+        return computeCWeights(pair, categoryWeight, baseSim, mismatchSim, specialsSim, termSim);
     }
 
     /**
@@ -310,27 +310,27 @@ public class WeightedSimilarity {
         String specialsA = pair.specialTermsToStringA();
         String specialsB = pair.specialTermsToStringB();
 
-        CategoryWeight categorySimilarity = new CategoryWeight(pair);
+        CategoryWeight categoryWeight = new CategoryWeight(pair);
 
         double baseSim;
         double mismatchSim;
         double specialsSim;
         double termSim;
 
-        if (categorySimilarity.isZeroBaseSimilarity()) {
+        if (categoryWeight.isZeroBaseSimilarity()) {
             baseSim = 0;
         } else {
             baseSim = computeBaseSimilarity(similarity, baseA, baseB);
         }
 
-        if (categorySimilarity.isHalfEmptyMismatch()) {
-            mismatchSim = baseSim;
+        if (categoryWeight.isHalfEmptyMismatch() || categoryWeight.isFullEmptyMismatch()) {
+            mismatchSim = 0;
         } else {
             mismatchSim = computeMismatchSimilarity(similarity, mismatchA, mismatchB);
         }
 
-        if (categorySimilarity.isEmptySpecials()) {
-            if (categorySimilarity.isZeroBaseSimilarity()) {
+        if (categoryWeight.isEmptySpecials()) {
+            if (categoryWeight.isZeroBaseSimilarity()) {
                 specialsSim = mismatchSim;
             } else {
                 specialsSim = baseSim;
@@ -341,13 +341,13 @@ public class WeightedSimilarity {
 
         if (!terms.isEmpty()) {
             termSim = 1.0;
-        } else if (categorySimilarity.isZeroBaseSimilarity()) {
+        } else if (categoryWeight.isZeroBaseSimilarity()) {
             termSim = mismatchSim;
         } else {
             termSim = baseSim;
         }
 
-        return computeDWeights(pair, categorySimilarity, baseSim, mismatchSim, specialsSim, termSim);
+        return computeDWeights(pair, categoryWeight, baseSim, mismatchSim, specialsSim, termSim);
     }
     
     private static double computeBaseSimilarity(String similarity, String a, String b) {
@@ -697,7 +697,8 @@ public class WeightedSimilarity {
         if (zeroSim) {
             return 0;
         } else {
-            return Math.sqrt(length1 + length2);
+            return (length1 + length2);
+            //return Math.sqrt(length1 + length2);
         }
     }
 

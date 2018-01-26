@@ -169,22 +169,22 @@ public class MetricProcessor {
         dSortedJaroWinklerPrecisionMap.put(REJECT, new ArrayList<>());         
     }
 
-    public void executeEvaluation(String csvPath, String resultsPath, String propertyName) 
-            throws FileNotFoundException, IOException {
+    public void executeEvaluation(String csvPath, String resultsPath, String propertyName, String thresholdsFilename, 
+            String notes) throws FileNotFoundException, IOException {
 
         String propertyPath = resultsPath + propertyName;
-        File file = new File(propertyPath);
+        File metricsFile = new File(propertyPath);
 
-        if (file.exists()) {
+        if (metricsFile.exists()) {
             //clear contents
             PrintWriter pw = new PrintWriter(propertyPath);
             pw.close();
         } else {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
+            metricsFile.getParentFile().mkdirs();
+            metricsFile.createNewFile();
         }     
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        try (BufferedWriter metricsWriter = new BufferedWriter(new FileWriter(metricsFile, true))) {
             
             double[] thresholds = 
                 {0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.30, 0.325, 0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5, 
@@ -239,9 +239,42 @@ public class MetricProcessor {
                 Accuracy cAccuracy = new Accuracy();
                 Accuracy dAccuracy = new Accuracy();
 
-                executeThreshold(writer, csvPath, thres, aAccuracy, bAccuracy, cAccuracy, dAccuracy);
+                executeThreshold(metricsWriter, csvPath, thres, aAccuracy, bAccuracy, cAccuracy, dAccuracy);
             }
-            logger.debug(optimalThreshold.toString());
+            
+            String thresholdsPath = resultsPath + thresholdsFilename;
+            File thresholdsFile = new File(thresholdsPath);
+
+            if (thresholdsFile.exists()) {
+                //clear contents
+                PrintWriter pw = new PrintWriter(thresholdsPath);
+                pw.close();
+            } else {
+                thresholdsFile.getParentFile().mkdirs();
+                thresholdsFile.createNewFile();
+            }
+            
+            try (BufferedWriter thresholdWriter = new BufferedWriter(new FileWriter(thresholdsFile, true))) {
+                thresholdWriter.append(optimalThreshold.toString());
+                thresholdWriter.newLine();
+            }
+            
+            String notesPath = resultsPath + "notes.txt";
+            File notesFile = new File(notesPath);
+
+            if (notesFile.exists()) {
+                //clear contents
+                PrintWriter pw = new PrintWriter(notesPath);
+                pw.close();
+            } else {
+                notesFile.getParentFile().mkdirs();
+                notesFile.createNewFile();
+            }
+
+            try (BufferedWriter notesWriter = new BufferedWriter(new FileWriter(notesFile, true))) {
+                notesWriter.append(notes);
+                notesWriter.newLine();
+            }
         }
     }
 
@@ -625,7 +658,7 @@ public class MetricProcessor {
                 + " \n2Gram_" + ind + threshold + SEP + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
                 + " \nCosine_" + ind + threshold + SEP + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
                 + " \nLongestCommonSubseq_" + ind + threshold + SEP + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
-                + " \nJaccard_" + ind + threshold + SEP + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
+                //+ " \nJaccard_" + ind + threshold + SEP + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
                 + " \nJaro_a" + ind + threshold + SEP + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
                 + " \nJaroWinkler_" + ind + threshold + SEP + aJaroWinklerAccuracy + SEP + aJaroWinklerPrecision +  SEP + aJaroWinklerRecall + SEP + aJaroWinklerHarmonicMean
                 + " \nSortedJaroWinkler_" + ind + threshold + SEP + aSortedJaroWinklerAccuracy + SEP + aSortedJaroWinklerPrecision +  SEP + aSortedJaroWinklerRecall + SEP + aSortedJaroWinklerHarmonicMean;

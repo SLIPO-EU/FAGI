@@ -116,9 +116,26 @@ public class FagiInstance {
             //qualityViewer.printRDFSimilarityResults(rdfProperties);
 
             String csvPath = "";
-            String resultsPath = "";
-            String nameMetrics = "name_metrics_2.1c.csv";
-            String nameSimilarities = "name_similarities_2.1c.txt";
+            
+            //on version change all weights update (along with notes)
+            String version = "v2.2d";
+            String resultsPath = "/evaluation/" + version + "/";
+            String nameMetrics = "name_metrics_" + version + ".csv";
+            String nameSimilarities = "name_similarities_" + version + ".txt";
+            String thresholds = "optimalThresholds_" + version + ".txt";
+                
+            setWeights(version);
+
+            String baseW = SpecificationConstants.BASE_WEIGHT.toString();
+            String misW = SpecificationConstants.MISMATCH_WEIGHT.toString();
+            String spW = SpecificationConstants.SPECIAL_TERMS_WEIGHT.toString();
+            String comW = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT.toString();  
+
+            String notes = "JaroWinkler mismatch threshold (collator): 0.75\n" +
+                           "Base weight: " + baseW + "\n" +
+                           "mismatch weight: " + misW + "\n" +
+                           "special terms weight: " + spW + "\n" +
+                           "common special terms weight: " + comW + "\n";
 
             if(!resultsPath.endsWith("/")){
                 resultsPath = resultsPath + "/";
@@ -128,7 +145,8 @@ public class FagiInstance {
             similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
 
             MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
-            metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics);
+            metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
+            
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
@@ -155,5 +173,44 @@ public class FagiInstance {
         logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
         logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
         logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");
+    }
+
+    private void setWeights(String version) {
+        if(version.endsWith("a")){
+            SpecificationConstants.BASE_WEIGHT = 0.5;
+            SpecificationConstants.MISMATCH_WEIGHT = 0.5;
+            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
+            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+        } else if(version.endsWith("b")){
+            SpecificationConstants.BASE_WEIGHT = 0.6;
+            SpecificationConstants.MISMATCH_WEIGHT = 0.4;
+            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
+            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+        } else if(version.endsWith("c")){
+            SpecificationConstants.BASE_WEIGHT = 0.7;
+            SpecificationConstants.MISMATCH_WEIGHT = 0.3;
+            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
+            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+        } else if(version.endsWith("d")){
+            SpecificationConstants.BASE_WEIGHT = 0.8;
+            SpecificationConstants.MISMATCH_WEIGHT = 0.2;
+            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
+            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+        } else {
+            SpecificationConstants.BASE_WEIGHT = 0.7;
+            SpecificationConstants.MISMATCH_WEIGHT = 0.3;
+            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
+            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+        }
     }
 }

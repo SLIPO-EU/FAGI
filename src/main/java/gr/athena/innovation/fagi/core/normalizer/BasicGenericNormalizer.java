@@ -97,16 +97,18 @@ public class BasicGenericNormalizer implements INormalizer {
             String recoveredAbbreviation;
             if (possibleAbbreviation != null) {
 
-                recoveredAcronym = resolver.recoverAcronym(possibleAbbreviation, literalB);
-
                 recoveredAbbreviation = resolver.recoverAbbreviation(possibleAbbreviation, literalB);
-
-                if (recoveredAcronym != null) {
-                    literalA = literalA.replace(possibleAbbreviation, recoveredAcronym);
-                }
-
+                
                 if (recoveredAbbreviation != null) {
                     literalA = literalA.replace(possibleAbbreviation, recoveredAbbreviation);
+                }
+                
+                if(recoveredAbbreviation == null){
+                    recoveredAcronym = resolver.recoverAcronym(possibleAbbreviation, literalB);
+                    
+                    if (recoveredAcronym != null) {
+                        literalA = literalA.replace(possibleAbbreviation, recoveredAcronym);
+                    }                    
                 }
             }
         }
