@@ -1,5 +1,6 @@
-package gr.athena.innovation.fagi.preview;
+package gr.athena.innovation.fagi.evaluation;
 
+import gr.athena.innovation.fagi.evaluation.Accuracy;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;

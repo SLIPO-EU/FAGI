@@ -1,9 +1,9 @@
-package gr.athena.innovation.fagi.preview;
+package gr.athena.innovation.fagi.evaluation;
 
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
-import gr.athena.innovation.fagi.core.similarity.Jaccard;
+//import gr.athena.innovation.fagi.core.similarity.Jaccard;
 import gr.athena.innovation.fagi.core.similarity.Jaro;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.Levenshtein;
@@ -14,6 +14,7 @@ import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
+import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

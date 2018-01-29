@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.preview;
+package gr.athena.innovation.fagi.evaluation;
 
 /**
  *
