@@ -12,6 +12,8 @@ import gr.athena.innovation.fagi.preview.FrequencyCounter;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
+import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
+import gr.athena.innovation.fagi.preview.StatisticsCollector;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -44,7 +46,7 @@ public class FagiInstance {
     private final String specXml;
     private final String rulesXml;
     private final boolean runEvaluation = false;
-    private final boolean showPreview = true;
+    private final boolean showPreview = false;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -111,17 +113,20 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-        
+
         if(showPreview){
+            StatisticsCollector stats = new RDFStatisticsCollector();
+            stats.collect();
+            
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
             qualityViewer.printRDFSimilarityResults(rdfProperties);
-            
+
             FrequencyCounter fq = new FrequencyCounter(fusionSpecification);
             fq.setLocale(locale);
             fq.setProperties(rdfProperties);
-            fq.extractPropertyFrequenciesFrom("");            
+            fq.extractPropertyFrequenciesFrom("");
         }
-        
+
         //Produce quality metric results for previewing, if enabled
         if (runEvaluation) {
             String csvPath = "";

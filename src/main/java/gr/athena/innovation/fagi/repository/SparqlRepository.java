@@ -1,6 +1,13 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.util.List;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -45,10 +52,10 @@ public class SparqlRepository {
         }
         return rdfObjectValue;
     }
-    
+
     public static String getObjectOfProperty(String property, Model model) {
         String rdfObjectValue = null;
-        
+
         Property p = ResourceFactory.createProperty(property);
         List<RDFNode> objectList = model.listObjectsOfProperty(p).toList();
 
@@ -74,25 +81,48 @@ public class SparqlRepository {
         }
         return rdfObjectValue;
     }
-    
+
     public static Literal getObjectOfProperty(Resource r, Property p, Model model) {
 
         Statement statement = model.getProperty(r, p);
 
         return statement.getLiteral();
     }
-    
+
     public static Literal getObjectOfProperty(String resource, String property, Model model) {
 
         Resource s = ResourceFactory.createResource(resource);
         Property p = ResourceFactory.createProperty(property);
         Statement statement = model.getProperty(s, p);
 
-        if(statement == null){
+        if (statement == null) {
             logger.debug("Could not find " + property + " for " + resource);
             return null;
         }
-        
+
         return statement.getLiteral();
-    }    
+    }
+
+    public static int countDistinctPRoperties(Model model) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countDistinctProperties(countVar);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
 }

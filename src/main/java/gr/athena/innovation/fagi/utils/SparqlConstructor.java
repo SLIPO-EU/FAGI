@@ -133,4 +133,11 @@ public class SparqlConstructor {
                         + "}";
         return query;
     }
+    
+    public static String countDistinctProperties(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?p) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o}";
+        return query;
+    }    
 }

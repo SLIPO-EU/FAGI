@@ -172,16 +172,4 @@ public class AbbreviationResolverTest {
         String result4 = resolver.recoverAcronym(abbreviation4, text4);
         assertEquals(expResult4, result4);
     }
-
-    /**
-     * Test of tokenize method, of class AbbreviationResolver.
-     */
-    @Test
-    public void testTokenize() {
-        logger.info("tokenize");
-        CharSequence text = "tokenize on white-spaces     and get&result of size 8.";
-        String[] expResult = {"tokenize","on", "white-spaces", "and", "get&result", "of", "size", "8."};
-        String[] result = AbbreviationAndAcronymResolver.tokenize(text);
-        assertArrayEquals(expResult, result);
-    }
 }
