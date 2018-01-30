@@ -43,7 +43,8 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    private final boolean qualityOn = false;
+    private final boolean runEvaluation = false;
+    private final boolean showPreview = true;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -110,26 +111,28 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
-
+        
+        if(showPreview){
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            qualityViewer.printRDFSimilarityResults(rdfProperties);
+            
+            FrequencyCounter fq = new FrequencyCounter(fusionSpecification);
+            fq.setLocale(locale);
+            fq.setProperties(rdfProperties);
+            fq.extractPropertyFrequenciesFrom("");            
+        }
+        
         //Produce quality metric results for previewing, if enabled
-        if (qualityOn) {
+        if (runEvaluation) {
             String csvPath = "";
             
-            //on version change all weights update (along with notes)
+            //on version change, all weights update (along with notes)
             String version = "v2.3a";
-            String evaluationPath = "/evaluation/";
+            String evaluationPath = "";
             String resultsPath = evaluationPath + version + "/";
             String nameMetrics = "name_metrics_" + version + ".csv";
             String nameSimilarities = "name_similarities_" + version + ".txt";
             String thresholds = "optimalThresholds_" + version + ".txt";
-            
-            FrequencyCounter fq = new FrequencyCounter();
-            fq.setLocale(locale);
-            fq.setProperty(new StringBuilder("<http://slipo.eu/def#nameValue>"));
-            fq.extractFrequencyToFile("", evaluationPath + "freq.txt");
-            
-            //RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
-            //qualityViewer.printRDFSimilarityResults(rdfProperties);
 
             setWeights(version);
 
@@ -148,12 +151,11 @@ public class FagiInstance {
                 resultsPath = resultsPath + "/";
             }
 
-            //SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
-            //similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
+            SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
+            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
 
-            //MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
-            //metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
-            
+            MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
+            metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();

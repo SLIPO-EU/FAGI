@@ -372,14 +372,13 @@ public class AbbreviationAndAcronymResolver {
         String vowels = SpecificationConstants.LOWERCASE_VOWELS;
         return vowels.indexOf(c) >= 0;
     }
-    
-    /**
-     * Returns an array of tokens extracted from the given text by whitespace.
-     *
-     * @param text input text
-     * @return array of tokens
-     */
-    public static String[] tokenize(final CharSequence text) {
+
+    //tokenize on whitespace
+    private static String[] tokenize(final CharSequence text) {
+        if(text == null){
+            return new String[]{};
+        }
+        
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
 
         String[] split = text.toString().split("\\s+");

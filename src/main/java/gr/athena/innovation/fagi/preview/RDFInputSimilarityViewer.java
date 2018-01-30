@@ -93,8 +93,12 @@ public class RDFInputSimilarityViewer {
 
                 String literalA = SparqlRepository.getObjectOfProperty(rdfProperty, modelA);
                 String literalB = SparqlRepository.getObjectOfProperty(rdfProperty, modelB);
+                
+                if(literalA == null && literalB == null){
+                    continue;
+                }
 
-                //logger.info("Literals: {}, {}", literalA, literalB);
+                logger.info("Literals: {}, {}", literalA, literalB);
 
                 BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
                 String a = normalizer.normalize(literalA, literalB);

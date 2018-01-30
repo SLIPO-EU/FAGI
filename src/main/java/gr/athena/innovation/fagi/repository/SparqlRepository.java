@@ -61,7 +61,7 @@ public class SparqlRepository {
                 return null;
             }
         } else if (objectList.size() > 1) {
-            //Possible duplicate triple. Happens with synthetic data. Returns the first literal
+            //Possible duplicate triple. Happens with synthetic data. Return the first literal
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
                 return object.toString();

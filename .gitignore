@@ -1,8 +1,9 @@
 .svn*
-.DS_Store
+*.DS_Store
+*.nt
+*.csv
+*.txt
 util
 target
-Credentials.java
-SVM_models
 nbactions.xml
 /nbproject/
