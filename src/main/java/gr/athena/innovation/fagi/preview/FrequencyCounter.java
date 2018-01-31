@@ -32,9 +32,11 @@ public class FrequencyCounter {
     private Locale locale;
     private List<String> properties;
     private final FusionSpecification fusionSpecification;
+    private final int frequentTopK;
 
-    public FrequencyCounter(FusionSpecification fusionSpecification) {
+    public FrequencyCounter(FusionSpecification fusionSpecification, int frequentTopK) {
         this.fusionSpecification = fusionSpecification;
+        this.frequentTopK = frequentTopK;
     }
 
     public void extractPropertyFrequenciesFrom(String inputFilename) throws IOException {
@@ -80,6 +82,7 @@ public class FrequencyCounter {
         logger.warn("property " + property);
         BufferedWriter writer = null;
         try {
+            
             BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFilename));
             writer = new BufferedWriter(new FileWriter(outputFilename, true));
             String line;
@@ -102,7 +105,7 @@ public class FrequencyCounter {
                 }
             }
 
-            Map<String, Integer> frequency = freq.getTopKFrequency(100);
+            Map<String, Integer> frequency = freq.getTopKFrequency(frequentTopK);
 
             //title with the name of the property
             writer.append("# " + property);
@@ -115,7 +118,7 @@ public class FrequencyCounter {
             }
 
             writer.close();
-            
+
         } catch (IOException | RuntimeException ex) {
             if (writer != null) {
                 writer.close();

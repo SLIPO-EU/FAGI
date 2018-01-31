@@ -10,17 +10,29 @@ import org.apache.logging.log4j.Logger;
  * @author nkarag
  */
 public class RDFStatisticsCollector implements StatisticsCollector{
-    
+
     private static final Logger logger = LogManager.getLogger(RDFStatisticsCollector.class);
-    
+
     @Override
-    public void collect(){
-        countDistinctProperties();
+    public StatisticsContainer collect(){
+        
+        StatisticsContainer container = new StatisticsContainer();
+        
+        int distinctProperties = countDistinctProperties();
+        //int frequentCategoryValues = countCategoryFrequency();
+        
+        container.setDistinctProperties(distinctProperties);
+        //container.setCategoryFrequency(frequentCategoryValues);
+        
+        return container;
     }
-    
-    private void countDistinctProperties(){
-        logger.debug("counting..");
-        int la = SparqlRepository.countDistinctPRoperties(LeftModel.getLeftModel().getModel());
+
+    private int countDistinctProperties(){
+        int distinctProperties = SparqlRepository.countDistinctPRoperties(LeftModel.getLeftModel().getModel());
+        return distinctProperties;
     }
-    
+
+    private void countCategoryFrequency(){
+
+    }
 }

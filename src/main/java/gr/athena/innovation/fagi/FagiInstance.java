@@ -14,6 +14,8 @@ import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsCollector;
+import gr.athena.innovation.fagi.preview.StatisticsContainer;
+import gr.athena.innovation.fagi.preview.StatisticsExporter;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -54,9 +56,9 @@ public class FagiInstance {
     }
 
     public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
-            com.vividsolutions.jts.io.ParseException, WrongInputException, 
+            com.vividsolutions.jts.io.ParseException, WrongInputException,
             ApplicationException, org.json.simple.parser.ParseException {
-        
+
         Locale locale = Locale.GERMAN;
 
         long startTimeInput = System.currentTimeMillis();
@@ -82,7 +84,7 @@ public class FagiInstance {
 
         //TODO: remove setLocale as soon as locale is implemented in fusion specification parser
         fusionSpecification.setLocale(locale);
-        
+
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
         ruleCatalog.setFunctionRegistry(functionRegistry);
@@ -114,14 +116,19 @@ public class FagiInstance {
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
 
-        if(showPreview){
-            StatisticsCollector stats = new RDFStatisticsCollector();
-            stats.collect();
-            
+        if (showPreview) {
+            StatisticsCollector collector = new RDFStatisticsCollector();
+            StatisticsContainer container = collector.collect();
+
+            StatisticsExporter exporter = new StatisticsExporter();
+            //exporter.exportStatistics(container, "");
+
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
             qualityViewer.printRDFSimilarityResults(rdfProperties);
 
-            FrequencyCounter fq = new FrequencyCounter(fusionSpecification);
+            int frequentTopK = 200;
+            FrequencyCounter fq = new FrequencyCounter(fusionSpecification, frequentTopK);
+
             fq.setLocale(locale);
             fq.setProperties(rdfProperties);
             fq.extractPropertyFrequenciesFrom("");
@@ -130,7 +137,7 @@ public class FagiInstance {
         //Produce quality metric results for previewing, if enabled
         if (runEvaluation) {
             String csvPath = "";
-            
+
             //on version change, all weights update (along with notes)
             String version = "v2.3a";
             String evaluationPath = "";
@@ -144,20 +151,20 @@ public class FagiInstance {
             String baseW = SpecificationConstants.BASE_WEIGHT.toString();
             String misW = SpecificationConstants.MISMATCH_WEIGHT.toString();
             String spW = SpecificationConstants.SPECIAL_TERMS_WEIGHT.toString();
-            String comW = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT.toString();  
+            String comW = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT.toString();
 
-            String notes = "JaroWinkler mismatch threshold (collator): 0.75\n" +
-                           "Base weight: " + baseW + "\n" +
-                           "mismatch weight: " + misW + "\n" +
-                           "special terms weight: " + spW + "\n" +
-                           "common special terms weight: " + comW + "\n";
+            String notes = "JaroWinkler mismatch threshold (collator): 0.75\n"
+                    + "Base weight: " + baseW + "\n"
+                    + "mismatch weight: " + misW + "\n"
+                    + "special terms weight: " + spW + "\n"
+                    + "common special terms weight: " + comW + "\n";
 
-            if(!resultsPath.endsWith("/")){
+            if (!resultsPath.endsWith("/")) {
                 resultsPath = resultsPath + "/";
             }
 
             SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
-            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);            
+            similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);
 
             MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
             metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
@@ -190,28 +197,28 @@ public class FagiInstance {
     }
 
     private void setWeights(String version) {
-        if(version.endsWith("a")){
+        if (version.endsWith("a")) {
             SpecificationConstants.BASE_WEIGHT = 0.5;
             SpecificationConstants.MISMATCH_WEIGHT = 0.5;
             SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
                     = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
             SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
             SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
-        } else if(version.endsWith("b")){
+        } else if (version.endsWith("b")) {
             SpecificationConstants.BASE_WEIGHT = 0.6;
             SpecificationConstants.MISMATCH_WEIGHT = 0.4;
             SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
                     = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
             SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
             SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
-        } else if(version.endsWith("c")){
+        } else if (version.endsWith("c")) {
             SpecificationConstants.BASE_WEIGHT = 0.7;
             SpecificationConstants.MISMATCH_WEIGHT = 0.3;
             SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
                     = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
             SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
             SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
-        } else if(version.endsWith("d")){
+        } else if (version.endsWith("d")) {
             SpecificationConstants.BASE_WEIGHT = 0.8;
             SpecificationConstants.MISMATCH_WEIGHT = 0.2;
             SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT

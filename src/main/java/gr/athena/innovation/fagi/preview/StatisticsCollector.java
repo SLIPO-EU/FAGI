@@ -6,5 +6,5 @@ package gr.athena.innovation.fagi.preview;
  */
 public interface StatisticsCollector {
     
-    public void collect();
+    public StatisticsContainer collect();
 }
