@@ -8,7 +8,7 @@ import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
-import gr.athena.innovation.fagi.preview.FrequencyCounter;
+import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
@@ -117,6 +117,7 @@ public class FagiInstance {
         long startTimeFusion = System.currentTimeMillis();
 
         if (showPreview) {
+
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
 
@@ -126,12 +127,13 @@ public class FagiInstance {
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
             qualityViewer.printRDFSimilarityResults(rdfProperties);
 
-            int frequentTopK = 200;
-            FrequencyCounter fq = new FrequencyCounter(fusionSpecification, frequentTopK);
+            int frequentTopK = 0;
+            FileFrequencyCounter fq = new FileFrequencyCounter(fusionSpecification, frequentTopK);
 
             fq.setLocale(locale);
             fq.setProperties(rdfProperties);
-            fq.extractPropertyFrequenciesFrom("");
+            fq.export("");
+
         }
 
         //Produce quality metric results for previewing, if enabled

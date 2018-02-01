@@ -23,16 +23,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         container.setDistinctProperties(distinctProperties);
         //container.setCategoryFrequency(frequentCategoryValues);
-        
+
         return container;
     }
 
     private int countDistinctProperties(){
-        int distinctProperties = SparqlRepository.countDistinctPRoperties(LeftModel.getLeftModel().getModel());
+        int distinctProperties = SparqlRepository.countDistinctProperties(LeftModel.getLeftModel().getModel());
         return distinctProperties;
-    }
-
-    private void countCategoryFrequency(){
-
     }
 }

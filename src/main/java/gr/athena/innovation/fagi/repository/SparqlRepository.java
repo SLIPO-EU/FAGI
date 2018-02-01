@@ -103,7 +103,7 @@ public class SparqlRepository {
         return statement.getLiteral();
     }
 
-    public static int countDistinctPRoperties(Model model) {
+    public static int countDistinctProperties(Model model) {
 
         int count = 0;
 
@@ -125,4 +125,28 @@ public class SparqlRepository {
         }
         return count;
     }
+    
+    public static int selectCategories(Model model, String category) {
+
+        String categoryPredicate = category;
+
+        String object = "o";
+        String queryString = SparqlConstructor.selectObjectQuery(categoryPredicate);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode obj = soln.getResource(object);
+                if (obj.isURIResource()) {
+                    String categoryStringLiteral = obj.toString();
+                }
+            }
+        }
+        //TODO add freq logic
+        return 0;
+    }    
 }
