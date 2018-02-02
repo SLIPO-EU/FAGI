@@ -55,12 +55,12 @@ public class Frequency {
     /**
      * Adds words to frequency map.
      *
-     * @param words the string array containing the words
+     * @param tokens the string array containing the tokens
      */
-    public void insertWords(String[] words) {
-        for (String word : words) {
-            if(!StringUtils.isBlank(word)){
-                map.merge(word, 1, Integer::sum);
+    public void insert(String[] tokens) {
+        for (String token : tokens) {
+            if(!StringUtils.isBlank(token)){
+                map.merge(token, 1, Integer::sum);
             }
         }
     }

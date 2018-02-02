@@ -12,6 +12,8 @@ import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.learning.Trainer;
+import gr.athena.innovation.fagi.preview.Frequency;
+import gr.athena.innovation.fagi.preview.RDFFrequencyCounter;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsCollector;
@@ -26,6 +28,9 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
+import gr.athena.innovation.fagi.utils.Namespace;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -120,21 +125,45 @@ public class FagiInstance {
 
         if (showPreview) {
 
+            //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
-
             StatisticsExporter exporter = new StatisticsExporter();
-            //exporter.exportStatistics(container, "");
-
-            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
-            qualityViewer.printRDFSimilarityResults(rdfProperties);
-
+            exporter.exportStatistics(container, "");
+            
             int frequentTopK = 0;
-            FileFrequencyCounter fq = new FileFrequencyCounter(fusionSpecification, frequentTopK);
+            FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpecification, frequentTopK);
+            termFrequency.setLocale(locale);
+            
+            //rdf properties from file
+            termFrequency.setProperties(rdfProperties);
 
-            fq.setLocale(locale);
-            fq.setProperties(rdfProperties);
-            fq.export("");
+            //csv input
+            termFrequency.export("");
+
+            RDFFrequencyCounter categoryCounter = new RDFFrequencyCounter();
+            String categoryNT = "";
+
+            Map<String, String> categoryMap = categoryCounter.getCategoryMap(categoryNT);
+
+            Frequency catFreq = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY);
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("", true))) {
+                writer.append("# category frequencies");    
+                writer.newLine();
+                for (Map.Entry<String, Integer> f : catFreq.getTopKFrequency(0).entrySet()){
+                    String catLiteral = categoryMap.get(f.getKey());
+                    
+                    String pair = catLiteral + "=" + f.getValue();
+                    writer.append(pair);
+                    writer.newLine();
+                    
+                }
+            }
+            
+            //similarity viewer for each pair and a,b,c normalization
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            qualityViewer.printRDFSimilarityResults(rdfProperties);            
 
         }
 

@@ -14,6 +14,9 @@ public class Namespace {
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
     public static final String WKT2 = "http://www.opengis.net/ont/geosparql#asWKT";
     
+    public static final String CATEGORY_VALUE = "<http://slipo.eu/def#value>";
+    public static final String CATEGORY = "<http://slipo.eu/def#category>";
+    
     private String leftLinksNamespace;
     private String rightLinksNamespace;
 

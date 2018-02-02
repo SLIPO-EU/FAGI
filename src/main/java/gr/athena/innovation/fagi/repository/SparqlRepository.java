@@ -1,6 +1,8 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -126,12 +128,12 @@ public class SparqlRepository {
         return count;
     }
     
-    public static int selectCategories(Model model, String category) {
+    public static Frequency selectCategories(Model model, String category) {
 
-        String categoryPredicate = category;
-
+        Frequency frequency = new Frequency();
+        
         String object = "o";
-        String queryString = SparqlConstructor.selectObjectQuery(categoryPredicate);
+        String queryString = SparqlConstructor.selectObjectQuery(category);
         Query query = QueryFactory.create(queryString);
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
@@ -142,11 +144,11 @@ public class SparqlRepository {
 
                 RDFNode obj = soln.getResource(object);
                 if (obj.isURIResource()) {
-                    String categoryStringLiteral = obj.toString();
+                    String categoryNode = obj.toString();
+                    frequency.insert(new String[] {categoryNode});
                 }
             }
         }
-        //TODO add freq logic
-        return 0;
+        return frequency;
     }    
 }

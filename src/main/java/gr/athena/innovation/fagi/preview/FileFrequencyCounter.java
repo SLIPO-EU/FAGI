@@ -119,7 +119,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
                     SimpleLiteralNormalizer normalizer = new SimpleLiteralNormalizer();
                     String bNorm = normalizer.normalize(literal, locale);
                     String[] toks = tokenize(bNorm);
-                    freq.insertWords(toks);
+                    freq.insert(toks);
                 }
             }
 

@@ -15,12 +15,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     @Override
     public StatisticsContainer collect(){
-        
+
         StatisticsContainer container = new StatisticsContainer();
-        
+
         int distinctProperties = countDistinctProperties();
         //int frequentCategoryValues = countCategoryFrequency();
-        
+
         container.setDistinctProperties(distinctProperties);
         //container.setCategoryFrequency(frequentCategoryValues);
 
