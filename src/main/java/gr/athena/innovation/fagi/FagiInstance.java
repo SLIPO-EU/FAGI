@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
+import gr.athena.innovation.fagi.learning.Trainer;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsCollector;
@@ -49,6 +50,7 @@ public class FagiInstance {
     private final String rulesXml;
     private final boolean runEvaluation = false;
     private final boolean showPreview = false;
+    private final boolean train = false;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -170,6 +172,11 @@ public class FagiInstance {
 
             MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
             metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
+        }
+        
+        if(train){
+            Trainer trainer = new Trainer(fusionSpecification);
+            trainer.train();
         }
 
         List<InterlinkedPair> interlinkedEntities = new ArrayList<>();

@@ -103,6 +103,20 @@ public class ResourceFileLoader {
         
         return Collections.unmodifiableSet(specialTerms);
     }
+
+    public Set<String> getSpecialTermsFromPath(String filepath) throws IOException, ApplicationException {
+        
+        BufferedReader reader = new BufferedReader(new FileReader(filepath));
+
+        Set<String> specialTerms = new HashSet<>();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            specialTerms.add(line);
+        }
+        
+        return Collections.unmodifiableSet(specialTerms);
+    }
     
     public Map<String, String> getExitCodes() throws IOException, ApplicationException, ParseException {
         InputStream inputStream = getClass().getResourceAsStream("/matching/country_codes.json");

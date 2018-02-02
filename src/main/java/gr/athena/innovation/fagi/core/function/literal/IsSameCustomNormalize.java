@@ -51,10 +51,10 @@ public class IsSameCustomNormalize  implements IFunction, IFunctionThreeParamete
         
         AdvancedGenericNormalizer advancedNormalizer = new AdvancedGenericNormalizer();
         
-        WeightedPairLiteral la = advancedNormalizer.getWeightedPair(normA, normB, locale);
+        WeightedPairLiteral wieghtedPair = advancedNormalizer.getWeightedPair(normA, normB, locale);
         
-        String a = la.getCompleteA();
-        String b = la.getCompleteB();
+        String a = wieghtedPair.getCompleteA();
+        String b = wieghtedPair.getCompleteB();
         
         //TODO: consider replacing equals with similarity metric and use the threshold
         
