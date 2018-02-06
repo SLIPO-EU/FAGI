@@ -51,13 +51,10 @@ public class SimpleLiteralNormalizer implements INormalizer {
 
     private String getNormalizedLiteral(String literal, Locale locale) {
 
-        //1)
-        String tempString = removePunctuation(literal);
+        //1)to lowercase using given locale
+        String tempString = literal.toLowerCase(locale);
 
-        //2)to lowercase using given locale
-        tempString = tempString.toLowerCase(locale);
-
-        //3)remove special character except parenthesis
+        //2)remove special character except parenthesis
         return removeSpecialCharacters(tempString);
 
     }
@@ -70,7 +67,7 @@ public class SimpleLiteralNormalizer implements INormalizer {
 
     //remove special character except parenthesis
     private String removeSpecialCharacters(String text) {
-        String result = text.replaceAll(SpecificationConstants.Regex.SPECIAL_CHARS, " ");
+        String result = text.replaceAll(SpecificationConstants.Regex.SIMPLE_SPECIAL_CHARS, " ");
         return result;
     }
     

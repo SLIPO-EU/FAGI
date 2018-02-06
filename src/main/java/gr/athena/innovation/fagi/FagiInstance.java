@@ -8,12 +8,10 @@ import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.InterlinkedPair;
-import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.learning.Trainer;
-import gr.athena.innovation.fagi.preview.Frequency;
-import gr.athena.innovation.fagi.preview.RDFFrequencyCounter;
+import gr.athena.innovation.fagi.preview.FrequencyExtractor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsCollector;
@@ -28,9 +26,7 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
-import gr.athena.innovation.fagi.utils.Namespace;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -53,8 +49,10 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
+    
     private final boolean runEvaluation = false;
-    private final boolean showPreview = false;
+    private final boolean exportStatistics = false;
+    
     private final boolean train = false;
 
     public FagiInstance(String specXml, String rulesXml) {
@@ -123,47 +121,30 @@ public class FagiInstance {
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
 
-        if (showPreview) {
+        if (exportStatistics) {
 
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
             StatisticsExporter exporter = new StatisticsExporter();
-            exporter.exportStatistics(container, "");
-            
-            int frequentTopK = 0;
-            FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpecification, frequentTopK);
-            termFrequency.setLocale(locale);
-            
-            //rdf properties from file
-            termFrequency.setProperties(rdfProperties);
 
-            //csv input
-            termFrequency.export("");
+            File outputPath = new File(fusionSpecification.getPathOutput());
+            File parentDir = outputPath.getParentFile();
+            String statsPath = parentDir.getPath() + "/stats.txt";
 
-            RDFFrequencyCounter categoryCounter = new RDFFrequencyCounter();
-            String categoryNT = "";
+            exporter.exportStatistics(container, statsPath);
 
-            Map<String, String> categoryMap = categoryCounter.getCategoryMap(categoryNT);
+            String categoryMappingsNTPath = "";
 
-            Frequency catFreq = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY);
+            FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("", true))) {
-                writer.append("# category frequencies");    
-                writer.newLine();
-                for (Map.Entry<String, Integer> f : catFreq.getTopKFrequency(0).entrySet()){
-                    String catLiteral = categoryMap.get(f.getKey());
-                    
-                    String pair = catLiteral + "=" + f.getValue();
-                    writer.append(pair);
-                    writer.newLine();
-                    
-                }
-            }
-            
+            int topK = 0; //topK zero and negative values return the complete list
+
+            frequencyExtractor.extract(topK, rdfProperties, categoryMappingsNTPath, fusionSpecification, locale);
+
             //similarity viewer for each pair and a,b,c normalization
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
-            qualityViewer.printRDFSimilarityResults(rdfProperties);            
+            qualityViewer.printRDFSimilarityResults(rdfProperties);
 
         }
 

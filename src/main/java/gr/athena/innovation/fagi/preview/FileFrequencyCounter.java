@@ -72,7 +72,6 @@ public class FileFrequencyCounter implements FrequencyCounter {
             try {
 
                 if (outputFile.exists()) {
-
                     //clear contents
                     pw = new PrintWriter(outputFile);
                     pw.close();
@@ -106,7 +105,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
             String line;
             String splitBy = "\\s+";
 
-            Frequency freq = new Frequency();
+            Frequency frequency = new Frequency();
 
             while ((line = bufferedReader.readLine()) != null) {
 
@@ -116,20 +115,22 @@ public class FileFrequencyCounter implements FrequencyCounter {
                     String[] tokens = Arrays.copyOfRange(spl, 2, spl.length);
 
                     String literal = String.join(" ", tokens);
+
                     SimpleLiteralNormalizer normalizer = new SimpleLiteralNormalizer();
                     String bNorm = normalizer.normalize(literal, locale);
                     String[] toks = tokenize(bNorm);
-                    freq.insert(toks);
+                    
+                    frequency.insert(toks);
                 }
             }
 
-            Map<String, Integer> frequency = freq.getTopKFrequency(frequentTopK);
+            Map<String, Integer> frequencyMap = frequency.getTopKFrequency(frequentTopK);
 
             //title with the name of the property
             writer.append("# " + property);
             writer.newLine();
-            for (String key : frequency.keySet()) {
-                String value = frequency.get(key).toString();
+            for (String key : frequencyMap.keySet()) {
+                String value = frequencyMap.get(key).toString();
                 String pair = key + "=" + value;
                 writer.append(pair);
                 writer.newLine();
@@ -149,7 +150,6 @@ public class FileFrequencyCounter implements FrequencyCounter {
     //tokenize on whitespaces
     private static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
-
         String[] split = text.toString().split("\\s+");
         return split;
     }

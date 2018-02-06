@@ -94,6 +94,7 @@ public class SpecificationConstants {
         //v0.2
         //removes - _ / @ 
         public static final String SPECIAL_CHARS = "[\\-\\_\\/\\@]";
+        public static final String SIMPLE_SPECIAL_CHARS = "[\\\"\\,\\.\\-\\_\\@]";
     }    
     
     public static final String[] DATE_FORMATS = {

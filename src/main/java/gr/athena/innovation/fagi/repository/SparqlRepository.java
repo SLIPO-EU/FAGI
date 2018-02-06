@@ -2,7 +2,6 @@ package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -150,5 +149,5 @@ public class SparqlRepository {
             }
         }
         return frequency;
-    }    
+    }
 }
