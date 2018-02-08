@@ -11,6 +11,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -126,6 +127,29 @@ public class SparqlRepository {
         }
         return count;
     }
+
+    public static int countProperty(Model model, String property) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countProperties(countVar, property);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
     
     public static Frequency selectCategories(Model model, String category) {
 
@@ -149,5 +173,13 @@ public class SparqlRepository {
             }
         }
         return frequency;
+    }
+    
+    public static NodeIterator getObjectsOfProperty(String prop, Model model){
+        Property property = ResourceFactory.createProperty(prop);
+        
+        NodeIterator objects = model.listObjectsOfProperty(property);
+        
+        return objects;
     }
 }

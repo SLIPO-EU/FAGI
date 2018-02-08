@@ -17,6 +17,9 @@ public class Namespace {
     public static final String CATEGORY_VALUE = "<http://slipo.eu/def#value>";
     public static final String CATEGORY = "<http://slipo.eu/def#category>";
     
+    //TODO: define date property
+    public static final String DATE = "<http://slipo.eu/def#date>";    
+    
     private String leftLinksNamespace;
     private String rightLinksNamespace;
 

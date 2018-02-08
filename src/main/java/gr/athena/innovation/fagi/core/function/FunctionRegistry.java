@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.function;
 
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
+import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.core.function.property.Exists;
 import gr.athena.innovation.fagi.core.function.date.IsValidDate;
 import gr.athena.innovation.fagi.core.function.geo.IsGeometryMoreComplex;
@@ -36,6 +37,7 @@ public class FunctionRegistry {
         
         //date
         IsDateKnownFormat isDateKnownFormat = new IsDateKnownFormat();
+        IsDatePrimaryFormat isDatePrimaryFormat = new IsDatePrimaryFormat();
         IsValidDate isValidDate = new IsValidDate();
 
         //geo
@@ -55,6 +57,7 @@ public class FunctionRegistry {
         
         //register all functions
         functionMap.put(isDateKnownFormat.getName(), isDateKnownFormat);
+        functionMap.put(isDatePrimaryFormat.getName(), isDatePrimaryFormat);
         functionMap.put(isValidDate.getName(), isValidDate);
 
         //geo

@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import java.util.List;
 
 /**
  * Class representing a rule for fusion. 
@@ -12,6 +13,10 @@ public class Rule {
 
     private String propertyA;
     private String propertyB;
+    
+    //TODO: external properties implementation
+    private List<String> externalProperties;
+    
     private ActionRuleSet actionRuleSet;
     private EnumFusionAction defaultAction;
 

@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.rule.model;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
+import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.core.function.date.IsValidDate;
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.core.function.literal.IsSameCustomNormalize;
@@ -117,6 +118,20 @@ public class Condition {
                                 + " requires one parameter A or B");
                 }
             }
+            case SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT:
+            {
+                IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
+                String parameter = function.getParameters()[0];
+                switch (parameter) {
+                    case SpecificationConstants.A:
+                        return isDatePrimaryFormat.evaluate(valueA);
+                    case SpecificationConstants.B:
+                        return isDatePrimaryFormat.evaluate(valueB);
+                    default:
+                        throw new WrongInputException(SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT 
+                                + " requires one parameter A or B");
+                }
+            }            
             case SpecificationConstants.Functions.IS_VALID_DATE:
             {
                 IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());

@@ -6,22 +6,37 @@ package gr.athena.innovation.fagi.preview;
  */
 public class StatisticsContainer {
     
-    private int distinctProperties;
-    private int categoryFrequency;
-    
-    public int getDistinctProperties() {
+    private StatisticResultPair distinctProperties;
+    private StatisticResultPair nonEmptyDates;
+    private StatisticResultPair percentageOfDateKnownFormats;
+
+    @Override
+    public String toString() {
+        return "\n" + distinctProperties+ "\n" + nonEmptyDates + "\n" + percentageOfDateKnownFormats;
+    }
+
+    public StatisticResultPair getDistinctProperties() {
         return distinctProperties;
     }
 
-    public void setDistinctProperties(int distinctProperties) {
+    public void setDistinctProperties(StatisticResultPair distinctProperties) {
         this.distinctProperties = distinctProperties;
     }
 
-    public int getCategoryFrequency() {
-        return categoryFrequency;
+    public StatisticResultPair getPercentageOfDateKnownFormats() {
+        return percentageOfDateKnownFormats;
     }
 
-    public void setCategoryFrequency(int categoryFrequency) {
-        this.categoryFrequency = categoryFrequency;
+    public void setPercentageOfDateKnownFormats(StatisticResultPair percentageOfDateKnownFormats) {
+        this.percentageOfDateKnownFormats = percentageOfDateKnownFormats;
     }
+
+    public StatisticResultPair getNonEmptyDates() {
+        return nonEmptyDates;
+    }
+
+    public void setNonEmptyDates(StatisticResultPair nonEmptyDates) {
+        this.nonEmptyDates = nonEmptyDates;
+    }
+
 }

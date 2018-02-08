@@ -107,12 +107,17 @@ public class SpecificationConstants {
                 "yyyy:MM:dd HH:mm:ss",          "yyyy-MM-dd", 
                 "dd mm yyyy",                   "yyyy/MM/dd",
                 "dd-mm-yyyy",                   "dd-MM-yyyy",
-                "dd/mm/yyyy",                   "dd MM yyyy",
-                "yyyy/MM/dd"};
+                "dd/mm/yyyy",                   "dd MM yyyy"};
 
+    public static final String[] PRIMARY_DATE_FORMATS = {
+                "yyyy-MM-dd",                   "yyyy/MM/dd",
+                "dd-mm-yyyy",                   "dd-MM-yyyy",
+                "dd/mm/yyyy",                   "dd/MM/yyyy"};
+    
     public class Functions {
 
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
+        public static final String IS_DATE_PRIMARY_FORMAT = "isdateprimaryformat";
         public static final String IS_VALID_DATE = "isvaliddate";
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
         public static final String IS_PHONE_NUMBER_PARSABLE = "isphonenumberparsable";
