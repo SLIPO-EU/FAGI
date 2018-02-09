@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.specification.Namespace;
+
 /**
  * Utilities for constructing SPARQL queries
  * 
@@ -131,6 +133,27 @@ public class SparqlConstructor {
                         + "WHERE {"
                         + "?s " + predicate + "?o"
                         + "}";
+        return query;
+    }
+
+    public static String countPOIs(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s " + Namespace.TYPE+ " " + Namespace.POI + "}";
+        return query;
+    }
+
+    public static String countPropertyWithObject(String countVar, String property, String object){
+        String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s " + property + " \"" + object + "\"}";
+        return query;
+    }
+    
+    public static String countDistinctSubjects(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o}";
         return query;
     }
     

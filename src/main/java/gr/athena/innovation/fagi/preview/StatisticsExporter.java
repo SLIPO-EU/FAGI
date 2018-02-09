@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -19,9 +17,13 @@ public class StatisticsExporter {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(StatisticsExporter.class);
     
-    public void exportStatistics(StatisticsContainer container, String outputPath){
+    public void exportStatistics(StatisticsContainer container, String specOutputPath){
 
-        File outputFile = new File(outputPath);
+        File outputPath = new File(specOutputPath);
+        File parentDir = outputPath.getParentFile();
+        String statsPath = parentDir.getPath() + "/stats.txt";
+            
+        File outputFile = new File(statsPath);
 
         if (outputFile.exists()) {
             try (PrintWriter pw = new PrintWriter(outputFile)) {
@@ -56,7 +58,6 @@ public class StatisticsExporter {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
             writer.append("#Statistics");
             writer.newLine();
-            logger.info(container.toString());
             writer.append(container.toString());
             writer.newLine();
         }        

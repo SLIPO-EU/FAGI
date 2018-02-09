@@ -1,10 +1,15 @@
 package gr.athena.innovation.fagi;
 
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import java.io.IOException;
+import java.text.ParseException;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
 
 /**
  * Main class of the application.
@@ -59,7 +64,9 @@ public class Fagi {
             logger.error(e.getMessage(), e);
             logger.info(SpecificationConstants.HELP);
             System.exit(-1);
-        } catch (Exception ex) {
+        } catch (ParserConfigurationException | SAXException | IOException | ParseException 
+                | com.vividsolutions.jts.io.ParseException | ApplicationException 
+                | org.json.simple.parser.ParseException ex) {
             logger.error(ex.getMessage(), ex);
             System.exit(-1);
         }

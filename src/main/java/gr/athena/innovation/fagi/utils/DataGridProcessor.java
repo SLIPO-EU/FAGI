@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.specification.Namespace;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import java.io.File;
 import java.io.FileInputStream;

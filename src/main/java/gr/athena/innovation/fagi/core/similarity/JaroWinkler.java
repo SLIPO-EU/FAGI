@@ -37,7 +37,7 @@ public final class JaroWinkler {
             return 0;
         } else {
             double roundedResult = new BigDecimal(result).
-                    setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();
+                    setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
 
             return roundedResult;
         }

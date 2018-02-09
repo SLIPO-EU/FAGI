@@ -1,3 +1,4 @@
 http://slipo.eu/def#nameValue
 http://slipo.eu/def#street
 http://slipo.eu/def#locality
+http://slipo.eu/def#contactValue

@@ -128,6 +128,75 @@ public class SparqlRepository {
         return count;
     }
 
+    public static int countPOIs(Model model) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countPOIs(countVar);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int countPropertyWithObject(Model model, String property, String object) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countPropertyWithObject(countVar, property, object);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int countDistinctSubjects(Model model) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countDistinctSubjects(countVar);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+    
     public static int countProperty(Model model, String property) {
 
         int count = 0;

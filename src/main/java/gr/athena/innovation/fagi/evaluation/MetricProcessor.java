@@ -1026,7 +1026,7 @@ public class MetricProcessor {
     }
     
     private double roundHalfUp(double d){
-        return new BigDecimal(d).setScale(SpecificationConstants.ROUND_DECIMALS, RoundingMode.HALF_UP).doubleValue();        
+        return new BigDecimal(d).setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();        
     }
     
     private int count(List<Double> accepted, double threshold) {

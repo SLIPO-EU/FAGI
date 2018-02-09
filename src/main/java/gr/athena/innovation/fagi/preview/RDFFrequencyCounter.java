@@ -3,7 +3,7 @@ package gr.athena.innovation.fagi.preview;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
-import gr.athena.innovation.fagi.utils.Namespace;
+import gr.athena.innovation.fagi.specification.Namespace;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

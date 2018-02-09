@@ -6,8 +6,8 @@ package gr.athena.innovation.fagi.preview;
  */
 public class StatisticResultPair{
 
-    private final int a;
-    private final int b;
+    private final String a;
+    private final String b;
     private String name;
 
     @Override
@@ -15,16 +15,16 @@ public class StatisticResultPair{
         return name + "\na=" + a + ", b=" + b + "\n\n";
     }
 
-    public StatisticResultPair(int a, int b) {
+    public StatisticResultPair(String a, String b) {
         this.a = a;
         this.b = b;
     }
 
-    public int getA() {
+    public String getA() {
         return a;
     }
 
-    public int getB() {
+    public String getB() {
         return b;
     }
 

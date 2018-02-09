@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.model.InterlinkedPair;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.learning.Trainer;
+import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.preview.FrequencyExtractor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
@@ -26,7 +27,6 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -49,10 +49,12 @@ public class FagiInstance {
     private static final Logger logger = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
-    
+
     private final boolean runEvaluation = false;
-    private final boolean exportStatistics = false;
     
+    private final boolean exportFrequencies = false;
+    private final boolean exportStatistics = true;
+
     private final boolean train = false;
 
     public FagiInstance(String specXml, String rulesXml) {
@@ -121,31 +123,40 @@ public class FagiInstance {
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();
 
-        if (exportStatistics) {
+        if(exportFrequencies){
 
-            //statistics obtained using RDF
-            StatisticsCollector collector = new RDFStatisticsCollector();
-            StatisticsContainer container = collector.collect();
-            StatisticsExporter exporter = new StatisticsExporter();
+            //word frequencies using the RDF properties from file
+            int topK = 0; //topK zero and negative values return the complete list
 
-            File outputPath = new File(fusionSpecification.getPathOutput());
-            File parentDir = outputPath.getParentFile();
-            String statsPath = parentDir.getPath() + "/stats.txt";
+            //Frequent terms
+            FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpecification, topK);
+            termFrequency.setLocale(locale);
 
-            exporter.exportStatistics(container, statsPath);
+            termFrequency.setProperties(rdfProperties);
 
+            termFrequency.export(fusionSpecification.getPathA());
+
+            //category frequencies using the mapping (URI to literal value) of categories from external file
+            //TODO: put optional field on spec.xml for this file
             String categoryMappingsNTPath = "";
 
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
 
-            int topK = 0; //topK zero and negative values return the complete list
-
-            frequencyExtractor.extract(topK, rdfProperties, categoryMappingsNTPath, fusionSpecification, locale);
+            frequencyExtractor.extract(topK, categoryMappingsNTPath, fusionSpecification, locale);
 
             //similarity viewer for each pair and a,b,c normalization
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
             qualityViewer.printRDFSimilarityResults(rdfProperties);
 
+        }
+
+        if (exportStatistics) {
+            //statistics obtained using RDF
+            StatisticsCollector collector = new RDFStatisticsCollector();
+            StatisticsExporter exporter = new StatisticsExporter();
+
+            StatisticsContainer container = collector.collect();
+            exporter.exportStatistics(container, fusionSpecification.getPathOutput());
         }
 
         //Produce quality metric results for previewing, if enabled

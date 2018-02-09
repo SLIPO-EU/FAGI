@@ -67,7 +67,8 @@ public class SpecificationConstants {
     public static final double ERROR_E = 1e-3;
     public static final double SIMILARITY_MAX = 0.999;
     public static final double SIMILARITY_MIN = 0.001;
-    public static final int ROUND_DECIMALS = 3;
+    public static final int ROUND_DECIMALS_3 = 3;
+    public static final int ROUND_DECIMALS_2 = 2;
     
     //evaluation
     public static final double MISMATCH_THRESHOLD = 0.75;
