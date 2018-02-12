@@ -36,6 +36,7 @@ public class SpecificationConstants {
     public static final String DEFAULT_ACTION = "defaultAction";
     public static final String PROPERTY_A = "propertyA";
     public static final String PROPERTY_B = "propertyB";
+    public static final String EXTERNAL_PROPERTY = "externalProperty";
     public static final String CONDITION = "condition";
     public static final String ACTION_RULE_SET = "actionRuleSet";
     public static final String ACTION_RULE = "actionRule";

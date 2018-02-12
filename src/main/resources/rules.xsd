@@ -17,6 +17,15 @@
             <xs:sequence>
               <xs:element name="propertyA" type="xs:anyURI" />
               <xs:element name="propertyB" type="xs:anyURI" />
+			  <xsd:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+				  <xsd:simpleContent>
+					<xsd:extension base="xsd:string">
+					  <xsd:attribute name="id" type="xsd:string" use="required"/>
+					</xsd:extension>
+				  </xsd:simpleContent>
+				</xsd:complexType>
+			  </xsd:element> 
               <xs:element name="actionRuleSet" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>

@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class representing a rule for fusion. 
@@ -15,7 +16,7 @@ public class Rule {
     private String propertyB;
     
     //TODO: external properties implementation
-    private List<String> externalProperties;
+    private Map<String, ExternalProperty> externalProperties = new HashMap<>();
     
     private ActionRuleSet actionRuleSet;
     private EnumFusionAction defaultAction;
@@ -52,10 +53,18 @@ public class Rule {
         this.actionRuleSet = actionRuleSet;
     }
 
+    public Map<String, ExternalProperty> getExternalProperties() {
+        return externalProperties;
+    }
+
+    public void putExternalProperty(String parameter, ExternalProperty externalProperty) {
+        externalProperties.put(parameter, externalProperty);
+    }
+    
     @Override
     public String toString() {
-        return "\n\nRule{" + "\npropertyA=" + propertyA + ", \npropertyB=" + propertyB + ", "
-                + "\ndefaultAction=" + defaultAction + ", "
-                + "\nactionRuleSet=" + actionRuleSet + "}\n\n";
+        return "\n\nRule{" + "\npropertyA=" + propertyA + "\npropertyB=" + propertyB 
+                + "\nexternalProperties=" + externalProperties + "\nactionRuleSet=" + actionRuleSet 
+                + "\ndefaultAction=" + defaultAction + "}\n\n";
     }
 }

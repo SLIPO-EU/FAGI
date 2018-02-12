@@ -6,6 +6,7 @@ import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.core.function.property.Exists;
 import gr.athena.innovation.fagi.core.function.date.IsValidDate;
 import gr.athena.innovation.fagi.core.function.geo.IsGeometryMoreComplex;
+import gr.athena.innovation.fagi.core.function.literal.IsSameCustomNormalize;
 import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
 import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
@@ -46,6 +47,7 @@ public class FunctionRegistry {
         //literal
         IsLiteralAbbreviation isLiteralAbbreviation = new IsLiteralAbbreviation();
         IsSameNormalized isSameNormalized = new IsSameNormalized();
+        IsSameCustomNormalize isSameCustomNormalize = new IsSameCustomNormalize();
 
         //phone
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
@@ -66,6 +68,7 @@ public class FunctionRegistry {
         //literal
         functionMap.put(isLiteralAbbreviation.getName(), isLiteralAbbreviation);
         functionMap.put(isSameNormalized.getName(), isSameNormalized);
+        functionMap.put(isSameCustomNormalize.getName(), isSameCustomNormalize);
         
         //phone
         functionMap.put(isPhoneNumberParsable.getName(), isPhoneNumberParsable);

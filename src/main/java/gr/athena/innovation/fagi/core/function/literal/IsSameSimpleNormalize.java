@@ -35,6 +35,8 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeParameter
         String a = normalizer.normalize(literalA, literalB);
         String b = normalizer.normalize(literalB, literalA);
         
+        //TODO: add similarity metric and threshold instead of equals
+        
         return a.equals(b);
     }
 

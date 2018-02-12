@@ -49,22 +49,25 @@ We set rules as a `<rule>` element inside the root tag.
 Each <rule> element consists of the following main childs:
 `<propertyA>`
 `<propertyB>`
+`<externalProperty>`
 `<actionRuleSet>`
-`<defaultAction>`
+`<defaultAction>`.
 
-`<propertyA>` and `<propertyB>` define the two RDF properties that the rule will apply.
-`<actionRuleSet>` is a set of condition-action pairs with priority the order of appearance.
-`<defaultAction>` is the default fusion action to apply if no condition from the <actionRuleSet> is met.
 
-`<actionRuleSet>` element:
+* `<propertyA>` and `<propertyB>` define the two RDF properties that the rule will apply.
+* `<externalProperty>` is optional and is used to combine different properties inside a condition. The fusion action does not affect the value of this property. The external property requires an id attribute as a parameter in the XML and the id must start with the letter a or be that refers to the corresponding value (left or right) and followed by an incrementing integer for each different property used in the same rule.
+* `<actionRuleSet>` is a set of condition-action pairs with priority the order of appearance.
+* `<defaultAction>` is the default fusion action to apply if no condition from the <actionRuleSet> is met.
+
+* `<actionRuleSet>` element:
 This element consists of one or more `<actionRule>` child elements. 
 Each <actionRule> is a pair of a condition and a fusion action, namely `<condition>`, `<action>`.
 If the condition of an <actionRule> is met, then the fusion action of that <actionRule> is going to be applied and all the rest will be ignored, so the fusion action priority is the order of the <actionRule> appearance. 
 
-The `<condition>` along with the `<action>` are the most essential part of the configuration of the fusion process. 
+* The `<condition>` along with the `<action>` are the most essential part of the configuration of the fusion process. 
 In order to construct a condition, we assemble a group of logical operations that contain functions to apply on the RDF properties defined above.
-We can define a logical operations by using the `<expression>` tag as a child of a condition. 
-Then, inside the expression we can put together a combination `<and>`, `<or>` and `<not>` operations and as operands we can use `<function>` elements containing a function or a nested <expression> containing more logical operations.
+We can define a logical operation by using the `<expression>` tag as a child of a condition. 
+Then, inside the expression we can put together a combination of `<and>`, `<or>` and `<not>` operations. Αs operands we can use `<function>` elements containing a function or a nested <expression> containing more logical operations. The depth of the nested expressions supported currently is 2 levels of same logical operations. 
 
 A sample rules.xml file could look like this: 
 
@@ -73,11 +76,13 @@ A sample rules.xml file could look like this:
 	<rule>
 		<propertyA>dateA</propertyA>
 		<propertyB>dateB</propertyB>
+		<externalProperty id="a1">label</externalProperty>
+		<externalProperty id="b1">label</externalProperty>		
 		<actionRuleSet>
 			<actionRule>
 				<condition>
 					<expression>
-						<function>isKnownDate(b)</function>
+						<function>isLiteralAbbreviation(b1)</function>
 					</expression>
 				</condition>
 				<action>keep-right</action>
@@ -117,7 +122,8 @@ A sample rules.xml file could look like this:
 * **isValidDate:** Evaluates the given date against the target format.
 * **isGeometryMoreComplex:** Checks if the first geometry has more points than the second.
 * **isLiteralAbbreviation:** Checks if the given literal is or contains an abbreviation of some form.
-* **isSameNormalized:** Checks if the two given literals are same. It normalizes the two literals and checks again if the first check fails.
+* **isSameSimpleNormalize:** Checks if the two given literals are same. It normalizes the two literals with some basic steps and checks again if the first check fails. The check will be replaced with similarity metric and threshold.
+* **isSameCustomNormalize:** Checks if the two given literals are same. It normalizes the two literals with some extra steps in addition to the simple normalization. The check will be replaced with similarity metric and threshold.
 * **isPhoneNumberParsable:** Checks if the given phone number is consisted of only numbers or contains special character and/or exit code.
 * **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
@@ -126,10 +132,12 @@ A sample rules.xml file could look like this:
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
 | isDateKnownFormat      | a or b | Date | isDateKnownFormat(a)
+| isDatePrimaryFormat      | a or b | Date | isDatePrimaryFormat(a)
 | isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
 | isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
-| isSameNormalized | a and b | Literal | isSameNormalized(a,b) 
+| isSameSimpleNormalize | a, b and threshold| Literal | isSameSimpleNormalize(a,b) 
+| isSameCustomNormalize | a, b and threshold| Literal | isSameCustomNormalize(a,b) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
 | isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  

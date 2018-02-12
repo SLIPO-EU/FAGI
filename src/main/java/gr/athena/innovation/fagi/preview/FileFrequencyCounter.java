@@ -96,7 +96,6 @@ public class FileFrequencyCounter implements FrequencyCounter {
     }
 
     private void writePropertyFrequency(StringBuilder property, String inputFilename, String outputFilename) throws IOException {
-        logger.warn("property " + property);
         BufferedWriter writer = null;
         try {
 

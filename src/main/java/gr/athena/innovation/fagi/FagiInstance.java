@@ -53,7 +53,7 @@ public class FagiInstance {
     private final boolean runEvaluation = false;
     
     private final boolean exportFrequencies = false;
-    private final boolean exportStatistics = true;
+    private final boolean exportStatistics = false;
 
     private final boolean train = false;
 

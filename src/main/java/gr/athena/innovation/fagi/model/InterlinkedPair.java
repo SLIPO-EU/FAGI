@@ -15,6 +15,7 @@ import gr.athena.innovation.fagi.rule.model.Rule;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
+import gr.athena.innovation.fagi.rule.model.ExternalProperty;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +114,17 @@ public class InterlinkedPair {
                 
                 Condition condition = actionRule.getCondition();
 
-                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, literalA, literalB);
+                //switch case for evaluation using external properties.
+                for(Map.Entry<String, ExternalProperty> extProp : rule.getExternalProperties().entrySet()){
+
+                    String valueA = getLiteralValue(extProp.getValue().getProperty(), leftMetadata.getModel());
+                    String valueB = getLiteralValue(extProp.getValue().getProperty(), rightMetadata.getModel());         
+                    
+                    extProp.getValue().setValueA(valueA);
+                    extProp.getValue().setValueB(valueB);
+                }
+
+                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, literalA, literalB, rule.getExternalProperties());
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){

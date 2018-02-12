@@ -46,7 +46,8 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
 
         if (!StringUtils.isBlank(literal)) {
             AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
-            return resolver.containsAbbreviationOrAcronym(literal);
+            boolean result = resolver.containsAbbreviationOrAcronym(literal);
+            return result;
         } else {
             return false;
         }

@@ -3,10 +3,14 @@
 	<rule>
 		<propertyA>label</propertyA>
 		<propertyB>label</propertyB>
+		<externalProperty id="a1">http://www.w3.org/2000/01/rdf-schema#label</externalProperty>
+		<externalProperty id="b1">http://www.w3.org/2000/01/rdf-schema#label</externalProperty>
+		<externalProperty id="a2">http://linkedgeodata.org/ontology/cuisine</externalProperty>
+		<externalProperty id="b2">http://linkedgeodata.org/ontology/cuisine</externalProperty>		
 		<actionRuleSet>
 			<actionRule>
 				<condition>
-					<function>isLiteralAbbreviation(b)</function>
+					<function>isLiteralAbbreviation(a2)</function>
 				</condition>
 				<action>keep-right</action>
 			</actionRule>
@@ -21,6 +25,8 @@
 	<rule>
 		<propertyA>http://purl.org/dc/terms/modified</propertyA>
 		<propertyB>http://purl.org/dc/terms/modified</propertyB>
+		<externalProperty id="a1">phone</externalProperty>
+		<externalProperty id="b1">phone</externalProperty>
 		<actionRuleSet>		
 			<actionRule>
 				<condition>
