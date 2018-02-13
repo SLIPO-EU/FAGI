@@ -69,8 +69,8 @@ public class LinkedPair {
         fusedEntity = new Entity();
         fusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction));
 
-        EntityData leftMetadata = leftNode.getEntityData();
-        EntityData rightMetadata = rightNode.getEntityData();
+        EntityData leftEntityData = leftNode.getEntityData();
+        EntityData rightEntityData = rightNode.getEntityData();
 
         fuseDefaultDatasetAction(defaultDatasetAction);
 
@@ -85,8 +85,8 @@ public class LinkedPair {
             Property rdfPropertyA = getRDFPropertyFromString(rule.getPropertyA());
             Property rdfPropertyB = getRDFPropertyFromString(rule.getPropertyB());
             
-            String literalA = getLiteralValue(rule.getPropertyA(), leftMetadata.getModel());
-            String literalB = getLiteralValue(rule.getPropertyB(), rightMetadata.getModel());
+            String literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
+            String literalB = getLiteralValue(rule.getPropertyB(), rightEntityData.getModel());
             logger.info("Found literals: {}, {}", literalA, literalB);
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
@@ -117,8 +117,8 @@ public class LinkedPair {
                 //switch case for evaluation using external properties.
                 for(Map.Entry<String, ExternalProperty> extProp : rule.getExternalProperties().entrySet()){
 
-                    String valueA = getLiteralValue(extProp.getValue().getProperty(), leftMetadata.getModel());
-                    String valueB = getLiteralValue(extProp.getValue().getProperty(), rightMetadata.getModel());         
+                    String valueA = getLiteralValue(extProp.getValue().getProperty(), leftEntityData.getModel());
+                    String valueB = getLiteralValue(extProp.getValue().getProperty(), rightEntityData.getModel());         
                     
                     extProp.getValue().setValueA(valueA);
                     extProp.getValue().setValueB(valueB);
@@ -152,18 +152,22 @@ public class LinkedPair {
                 ("Default fusion action tries to overwrite already fused data!");
         }
 
-        EntityData leftMetadata = leftNode.getEntityData();
-        EntityData rightMetadata = rightNode.getEntityData();
+        EntityData leftData = leftNode.getEntityData();
+        EntityData rightData = rightNode.getEntityData();
         
         switch(datasetDefaultAction){
             case KEEP_LEFT:
-                fusedEntity.setEntityData(leftMetadata);
+                fusedEntity.setEntityData(leftData);
                 break;
             case KEEP_RIGHT:
-                fusedEntity.setEntityData(rightMetadata);
+                fusedEntity.setEntityData(rightData);
                 break;
             case KEEP_BOTH:
-                fusedEntity.getEntityData().getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
+                fusedEntity.getEntityData().getModel().add(leftData.getModel()).add(rightData.getModel());
+                break;
+            case REJECT_LINK:
+                fusedEntity.getEntityData().getModel().removeAll();
+                break;                
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
         }        
@@ -177,40 +181,40 @@ public class LinkedPair {
 
         String fusedURI = fusedEntity.getResourceURI();
 
-        EntityData fusedMetadata = fusedEntity.getEntityData();
+        EntityData fusedEntityData = fusedEntity.getEntityData();
 
         switch(action){
             case KEEP_LEFT:
             {
-                Model fusedModel = fusedMetadata.getModel();
+                Model fusedModel = fusedEntityData.getModel();
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
                 
-                fusedMetadata = fusedEntity.getEntityData();
-                fusedMetadata.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedMetadata);
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
 
                 break;
             }
             case KEEP_RIGHT:
             {
-                Model fusedModel = fusedMetadata.getModel();
+                Model fusedModel = fusedEntityData.getModel();
                 fusedModel.removeAll(null, property, null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
 
-                fusedMetadata.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedMetadata);
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
                 
                 break;
             }
             case KEEP_BOTH:
             {
-                    EntityData leftMetadata = leftNode.getEntityData();
-                    EntityData rightMetadata = rightNode.getEntityData();
+                    EntityData leftEntityData = leftNode.getEntityData();
+                    EntityData rightEntityData = rightNode.getEntityData();
 
-                    Model fusedModel = fusedMetadata.getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
-                    fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setEntityData(fusedMetadata);
+                    Model fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
+                    fusedEntityData.setModel(fusedModel);
+                    fusedEntity.setEntityData(fusedEntityData);
                     
                     break;
             }
@@ -223,24 +227,24 @@ public class LinkedPair {
 
                 if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
 
-                    Model fusedModel = fusedMetadata.getModel();
+                    Model fusedModel = fusedEntityData.getModel();
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
 
-                    fusedMetadata = fusedEntity.getEntityData();
-                    fusedMetadata.setModel(fusedModel);
+                    fusedEntityData = fusedEntity.getEntityData();
+                    fusedEntityData.setModel(fusedModel);
 
-                    fusedEntity.setEntityData(fusedMetadata);
+                    fusedEntity.setEntityData(fusedEntityData);
 
                 } else {
-                    Model fusedModel = fusedMetadata.getModel();
+                    Model fusedModel = fusedEntityData.getModel();
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
 
-                    fusedMetadata = fusedEntity.getEntityData();
-                    fusedMetadata.setModel(fusedModel);
+                    fusedEntityData = fusedEntity.getEntityData();
+                    fusedEntityData.setModel(fusedModel);
 
-                    fusedEntity.setEntityData(fusedMetadata);
+                    fusedEntity.setEntityData(fusedEntityData);
                 }
                 break;
             }
@@ -256,13 +260,13 @@ public class LinkedPair {
                     Geometry fusedGeometry = centroidTranslator.shift(leftGeometry);
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
-                    Model fusedModel = fusedMetadata.getModel();
+                    Model fusedModel = fusedEntityData.getModel();
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                    fusedMetadata = fusedEntity.getEntityData();
-                    fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setEntityData(fusedMetadata);
+                    fusedEntityData = fusedEntity.getEntityData();
+                    fusedEntityData.setModel(fusedModel);
+                    fusedEntity.setEntityData(fusedEntityData);
                     
                 } else if(leftGeometry.getNumPoints() < rightGeometry.getNumPoints()){
 
@@ -270,13 +274,13 @@ public class LinkedPair {
                     Geometry fusedGeometry = centroidTranslator.shift(rightGeometry);   
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
-                    Model fusedModel = fusedMetadata.getModel();
+                    Model fusedModel = fusedEntityData.getModel();
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                    fusedMetadata = fusedEntity.getEntityData();
-                    fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setEntityData(fusedMetadata);
+                    fusedEntityData = fusedEntity.getEntityData();
+                    fusedEntityData.setModel(fusedModel);
+                    fusedEntity.setEntityData(fusedEntityData);
                 }
                 
                 break;
@@ -292,13 +296,13 @@ public class LinkedPair {
                 Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
                 String wktFusedGeometry = getWKTLiteral(shiftedToRightGeometry);
 
-                Model fusedModel = fusedMetadata.getModel();
+                Model fusedModel = fusedEntityData.getModel();
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                fusedMetadata = fusedEntity.getEntityData();
-                fusedMetadata.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedMetadata);
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
                 
                 break;
             }
@@ -313,26 +317,26 @@ public class LinkedPair {
                 Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);   
                 String wktFusedGeometry = getWKTLiteral(shiftedToLeftGeometry);
 
-                Model fusedModel = fusedMetadata.getModel();
+                Model fusedModel = fusedEntityData.getModel();
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                fusedMetadata = fusedEntity.getEntityData();
-                fusedMetadata.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedMetadata);
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
 
                 break;
             }
             case REJECT_LINK:
             {
-                Model fusedModel = fusedMetadata.getModel();
+                Model fusedModel = fusedEntityData.getModel();
                 
                 if(!fusedModel.isEmpty()){
                     fusedModel.removeAll();
                 }
 
-                fusedMetadata.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedMetadata);                
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);                
                 
                 break;
             }             
@@ -375,6 +379,9 @@ public class LinkedPair {
             case KEEP_RIGHT:
                 resourceURI = rightNode.getResourceURI();
                 break;
+            case REJECT_LINK:
+                resourceURI = "";
+                break;                
             default:
                 resourceURI = leftNode.getResourceURI();
                 break;

@@ -88,8 +88,8 @@ public class RDFInputSimilarityViewer {
         try (BufferedWriter output = new BufferedWriter(new FileWriter(propertyPath, true))) {
             for (Link link : links.getLinks()) {
 
-                Model modelA = constructEntityMetadataModel(link.getNodeA(), left, fusionSpecification.getOptionalDepth());
-                Model modelB = constructEntityMetadataModel(link.getNodeB(), right, fusionSpecification.getOptionalDepth());
+                Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpecification.getOptionalDepth());
+                Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpecification.getOptionalDepth());
 
                 String literalA = SparqlRepository.getObjectOfProperty(rdfProperty, modelA);
                 String literalB = SparqlRepository.getObjectOfProperty(rdfProperty, modelB);
@@ -125,7 +125,7 @@ public class RDFInputSimilarityViewer {
         }
     }
 
-    private Model constructEntityMetadataModel(String node, Model sourceModel, int depth) {
+    private Model constructEntityDataModel(String node, Model sourceModel, int depth) {
 
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);

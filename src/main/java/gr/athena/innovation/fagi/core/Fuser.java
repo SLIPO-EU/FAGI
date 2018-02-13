@@ -62,8 +62,8 @@ public class Fuser implements IFuser{
 
         for (Link link : links.getLinks()){
 
-            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
-            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
+            Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
+            Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
@@ -114,8 +114,8 @@ public class Fuser implements IFuser{
                 
                 for(LinkedPair pair : fusedEntities){
 
-                    Model fusedMetadataModel = pair.getFusedEntity().getEntityData().getModel();
-                    leftModel.add(fusedMetadataModel);
+                    Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    leftModel.add(fusedDataModel);
                 }
 
                 leftModel.write(out, fusionSpecification.getOutputRDFFormat()) ;
@@ -126,8 +126,8 @@ public class Fuser implements IFuser{
                 
                 for(LinkedPair p : fusedEntities){
 
-                    Model fusedMetadataModel = p.getFusedEntity().getEntityData().getModel();
-                    rightModel.add(fusedMetadataModel);
+                    Model fusedModel = p.getFusedEntity().getEntityData().getModel();
+                    rightModel.add(fusedModel);
                 }
 
                 rightModel.write(out, fusionSpecification.getOutputRDFFormat());
@@ -140,8 +140,8 @@ public class Fuser implements IFuser{
                 
                 for(LinkedPair pair : fusedEntities){
 
-                    Model fusedMetadataModel = pair.getFusedEntity().getEntityData().getModel();
-                    newModel.add(fusedMetadataModel);
+                    Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
+                    newModel.add(fusedModel);
                 }
 
                 newModel.write(out, fusionSpecification.getOutputRDFFormat());                
@@ -152,14 +152,14 @@ public class Fuser implements IFuser{
     private Entity constructEntity(Model model, String resourceURI) throws ParseException {
         
         Entity entity = new Entity();
-        EntityData metadata = new EntityData(model);
+        EntityData entityData = new EntityData(model);
         entity.setResourceURI(resourceURI);
-        entity.setEntityData(metadata);
+        entity.setEntityData(entityData);
         
         return entity;
     }
 
-    private Model constructEntityMetadataModel(String node, Model sourceModel, int depth){
+    private Model constructEntityDataModel(String node, Model sourceModel, int depth){
 
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);

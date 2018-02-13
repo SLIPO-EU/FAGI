@@ -9,6 +9,7 @@
 			  <xs:enumeration value="keep-left"/>
 			  <xs:enumeration value="keep-right"/>
 			  <xs:enumeration value="keep-both"/>
+			  <xs:enumeration value="reject-link"/>
 		    </xs:restriction>
 		  </xs:simpleType>
 		</xs:element>
@@ -76,6 +77,7 @@
 								  <xs:enumeration value="keep-more-points-and-shift"/>
 								  <xs:enumeration value="shift-left-geometry"/>
 								  <xs:enumeration value="shift-right-geometry"/>
+								  <xs:enumeration value="reject-link"/>
 								</xs:restriction>
 							  </xs:simpleType>
 						  </xs:element>                          
@@ -95,6 +97,7 @@
 					<xs:enumeration value="keep-more-points-and-shift"/>
 					<xs:enumeration value="shift-left-geometry"/>
 					<xs:enumeration value="shift-right-geometry"/>
+					<xs:enumeration value="reject-link"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:element>     
