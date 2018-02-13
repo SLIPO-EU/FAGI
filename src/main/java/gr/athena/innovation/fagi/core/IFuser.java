@@ -3,8 +3,10 @@ package gr.athena.innovation.fagi.core;
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,10 +22,11 @@ public interface IFuser {
      * @param config
      * @param ruleCatalog
      * @param functionMap
+     * @return the list of the fused interlinked entities
      * @throws ParseException
      * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */    
-    public void fuseAllWithRules(FusionSpecification config, RuleCatalog ruleCatalog, 
+    public List<LinkedPair> fuseAll(FusionSpecification config, RuleCatalog ruleCatalog, 
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException;
     
 }

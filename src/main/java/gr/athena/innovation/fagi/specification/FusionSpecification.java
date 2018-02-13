@@ -31,6 +31,9 @@ public class FusionSpecification {
     private String resourceUri;
     private String idOutput;
     private String endpointOutput;
+    
+    private String categoriesA;
+    private String categoriesB;
 
     private EnumTargetDataset finalDataset;
     private String outputRDFFormat;
@@ -243,5 +246,21 @@ public class FusionSpecification {
                     "\n maxOptionalDepth=" + maxOptionalDepth + 
                     "\n minOptionalDepth=" + minOptionalDepth + 
                     "\n}";
+    }
+
+    public String getCategoriesA() {
+        return categoriesA;
+    }
+
+    public void setCategoriesA(String categoriesA) {
+        this.categoriesA = categoriesA;
+    }
+
+    public String getCategoriesB() {
+        return categoriesB;
+    }
+
+    public void setCategoriesB(String categoriesB) {
+        this.categoriesB = categoriesB;
     }
 }

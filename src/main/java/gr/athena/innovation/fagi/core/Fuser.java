@@ -7,16 +7,17 @@ import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
-import gr.athena.innovation.fagi.model.InterlinkedPair;
+import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.model.LeftModel;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
-import gr.athena.innovation.fagi.model.Metadata;
+import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.RightModel;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.jena.query.Query;
@@ -36,29 +37,22 @@ import org.apache.logging.log4j.Logger;
 public class Fuser implements IFuser{ 
     
     private static final Logger logger = LogManager.getLogger(Fuser.class);
-    private final List<InterlinkedPair> interlinkedEntitiesList;
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
-    
-    /**
-     *
-     * @param interlinkedEntitiesList
-     */
-    public Fuser(List<InterlinkedPair> interlinkedEntitiesList) {
-        this.interlinkedEntitiesList = interlinkedEntitiesList;
-    }
 
     /**
      * Fuses all links using the Rules from file.
      * 
-     * @param fusionSpecification
+     * @param fusionSpec
      * @param ruleCatalog
      * @param functionMap
      * @throws ParseException
      */
     @Override
-    public void fuseAllWithRules(FusionSpecification fusionSpecification, RuleCatalog ruleCatalog, 
+    public List<LinkedPair> fuseAll(FusionSpecification fusionSpec, RuleCatalog ruleCatalog, 
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException{
+        
+        List<LinkedPair> fusedList = new ArrayList<>();
         
         linkedEntitiesNotFoundInDataset = 0;
 
@@ -68,15 +62,15 @@ public class Fuser implements IFuser{
 
         for (Link link : links.getLinks()){
 
-            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, fusionSpecification.getOptionalDepth());
-            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, fusionSpecification.getOptionalDepth());
+            Model modelA = constructEntityMetadataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
+            Model modelB = constructEntityMetadataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
                 continue;
             }
 
-            InterlinkedPair pair = new InterlinkedPair();
+            LinkedPair pair = new LinkedPair();
 
             Entity entityA = constructEntity(modelA, link.getNodeA());
             Entity entityB = constructEntity(modelB, link.getNodeB());
@@ -84,12 +78,14 @@ public class Fuser implements IFuser{
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
             
-            pair.fuseWithRule(ruleCatalog, functionMap);
+            pair.fusePair(ruleCatalog, functionMap);
             
             fusedPairsCount++;
-            interlinkedEntitiesList.add(pair);
+            fusedList.add(pair);
         }
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
+        
+        return fusedList;
     }
     
     /**
@@ -97,12 +93,12 @@ public class Fuser implements IFuser{
      * or combining the fused entities into the source datasets.
      * 
      * @param fusionSpecification
-     * @param interlinkedEntitiesList
+     * @param fusedEntities
      * @param defaultDatasetAction
      * @throws FileNotFoundException
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
-            List<InterlinkedPair> interlinkedEntitiesList, EnumDatasetAction defaultDatasetAction) 
+            List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException{
         
         OutputStream out;
@@ -116,9 +112,9 @@ public class Fuser implements IFuser{
             case LEFT:
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 
-                for(InterlinkedPair p : interlinkedEntitiesList){
+                for(LinkedPair pair : fusedEntities){
 
-                    Model fusedMetadataModel = p.getFusedEntity().getMetadata().getModel();
+                    Model fusedMetadataModel = pair.getFusedEntity().getEntityData().getModel();
                     leftModel.add(fusedMetadataModel);
                 }
 
@@ -128,9 +124,9 @@ public class Fuser implements IFuser{
             case RIGHT:
                 Model rightModel = RightModel.getRightModel().getModel();
                 
-                for(InterlinkedPair p : interlinkedEntitiesList){
+                for(LinkedPair p : fusedEntities){
 
-                    Model fusedMetadataModel = p.getFusedEntity().getMetadata().getModel();
+                    Model fusedMetadataModel = p.getFusedEntity().getEntityData().getModel();
                     rightModel.add(fusedMetadataModel);
                 }
 
@@ -142,9 +138,9 @@ public class Fuser implements IFuser{
                 //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
-                for(InterlinkedPair pair : interlinkedEntitiesList){
+                for(LinkedPair pair : fusedEntities){
 
-                    Model fusedMetadataModel = pair.getFusedEntity().getMetadata().getModel();
+                    Model fusedMetadataModel = pair.getFusedEntity().getEntityData().getModel();
                     newModel.add(fusedMetadataModel);
                 }
 
@@ -156,9 +152,9 @@ public class Fuser implements IFuser{
     private Entity constructEntity(Model model, String resourceURI) throws ParseException {
         
         Entity entity = new Entity();
-        Metadata metadata = new Metadata(model);
+        EntityData metadata = new EntityData(model);
         entity.setResourceURI(resourceURI);
-        entity.setMetadata(metadata);
+        entity.setEntityData(metadata);
         
         return entity;
     }

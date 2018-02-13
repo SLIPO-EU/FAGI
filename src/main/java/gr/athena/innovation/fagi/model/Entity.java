@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 public class Entity {
     
     private String resourceURI;
-    private Metadata metadata;
+    private EntityData entityData;
 
     public String getResourceURI() {
         return resourceURI;
@@ -19,14 +19,14 @@ public class Entity {
         this.resourceURI = resourceURI;
     }
 
-    public Metadata getMetadata() {
-        if(metadata == null){
-            return new Metadata(ModelFactory.createDefaultModel());
+    public EntityData getEntityData() {
+        if(entityData == null){
+            return new EntityData(ModelFactory.createDefaultModel());
         }
-        return metadata;
+        return entityData;
     }
 
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
+    public void setEntityData(EntityData entityData) {
+        this.entityData = entityData;
     }
 }

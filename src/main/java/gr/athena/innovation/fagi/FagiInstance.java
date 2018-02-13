@@ -2,15 +2,18 @@ package gr.athena.innovation.fagi;
 
 import gr.athena.innovation.fagi.core.Fuser;
 import gr.athena.innovation.fagi.core.function.FunctionRegistry;
+import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.core.function.literal.TermResolver;
 import gr.athena.innovation.fagi.core.function.phone.CallingCodeResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
-import gr.athena.innovation.fagi.model.InterlinkedPair;
+import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.evaluation.SimilarityCalculator;
 import gr.athena.innovation.fagi.evaluation.MetricProcessor;
 import gr.athena.innovation.fagi.learning.Trainer;
+import gr.athena.innovation.fagi.model.LeftModel;
+import gr.athena.innovation.fagi.model.RightModel;
 import gr.athena.innovation.fagi.preview.FileFrequencyCounter;
 import gr.athena.innovation.fagi.preview.FrequencyExtractor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
@@ -35,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -87,10 +91,10 @@ public class FagiInstance {
 
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
-        FusionSpecification fusionSpecification = specificationParser.parse(specXml);
+        FusionSpecification fusionSpec = specificationParser.parse(specXml);
 
         //TODO: remove setLocale as soon as locale is implemented in fusion specification parser
-        fusionSpecification.setLocale(locale);
+        fusionSpec.setLocale(locale);
 
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
@@ -102,9 +106,9 @@ public class FagiInstance {
         long startTimeReadFiles = System.currentTimeMillis();
 
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
-        genericRDFRepository.parseLeft(fusionSpecification.getPathA());
-        genericRDFRepository.parseRight(fusionSpecification.getPathB());
-        genericRDFRepository.parseLinks(fusionSpecification.getPathLinks());
+        genericRDFRepository.parseLeft(fusionSpec.getPathA());
+        genericRDFRepository.parseRight(fusionSpec.getPathB());
+        genericRDFRepository.parseLinks(fusionSpec.getPathLinks());
 
         long stopTimeReadFiles = System.currentTimeMillis();
 
@@ -129,23 +133,32 @@ public class FagiInstance {
             int topK = 0; //topK zero and negative values return the complete list
 
             //Frequent terms
-            FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpecification, topK);
+            FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpec, topK);
             termFrequency.setLocale(locale);
 
             termFrequency.setProperties(rdfProperties);
 
-            termFrequency.export(fusionSpecification.getPathA());
+            termFrequency.export(fusionSpec.getPathA());
 
             //category frequencies using the mapping (URI to literal value) of categories from external file
             //TODO: put optional field on spec.xml for this file
             String categoryMappingsNTPath = "";
 
-            FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
+            if(!StringUtils.isBlank(fusionSpec.getCategoriesA())){
+                FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
+                frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftModel.getLeftModel().getModel(), 
+                        fusionSpec, locale);                
+            }
+            
+            if(!StringUtils.isBlank(fusionSpec.getCategoriesB())){
 
-            frequencyExtractor.extract(topK, categoryMappingsNTPath, fusionSpecification, locale);
+                FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
+                frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightModel.getRightModel().getModel(), 
+                        fusionSpec, locale);                
+            }            
 
             //similarity viewer for each pair and a,b,c normalization
-            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpecification);
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpec);
             qualityViewer.printRDFSimilarityResults(rdfProperties);
 
         }
@@ -156,7 +169,7 @@ public class FagiInstance {
             StatisticsExporter exporter = new StatisticsExporter();
 
             StatisticsContainer container = collector.collect();
-            exporter.exportStatistics(container, fusionSpecification.getPathOutput());
+            exporter.exportStatistics(container, fusionSpec.getPathOutput());
         }
 
         //Produce quality metric results for previewing, if enabled
@@ -188,35 +201,36 @@ public class FagiInstance {
                 resultsPath = resultsPath + "/";
             }
 
-            SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpecification);
+            SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpec);
             similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);
 
-            MetricProcessor metricProcessor = new MetricProcessor(fusionSpecification);
+            MetricProcessor metricProcessor = new MetricProcessor(fusionSpec);
             metricProcessor.executeEvaluation(csvPath, resultsPath, nameMetrics, thresholds, notes);
         }
         
         if(train){
-            Trainer trainer = new Trainer(fusionSpecification);
+            Trainer trainer = new Trainer(fusionSpec);
             trainer.train();
         }
 
-        List<InterlinkedPair> interlinkedEntities = new ArrayList<>();
-        Fuser fuser = new Fuser(interlinkedEntities);
-        fuser.fuseAllWithRules(fusionSpecification, ruleCatalog, functionRegistry.getFunctionMap());
+        Fuser fuser = new Fuser();
+        Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
+        
+        List<LinkedPair> fusedEntities = fuser.fuseAll(fusionSpec, ruleCatalog, functionRegistryMap);
 
         long stopTimeFusion = System.currentTimeMillis();
 
         //Combine result datasets and write to file
         long startTimeWrite = System.currentTimeMillis();
 
-        fuser.combineFusedAndWrite(fusionSpecification, interlinkedEntities, ruleCatalog.getDefaultDatasetAction());
+        fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
 
         long stopTimeWrite = System.currentTimeMillis();
 
-        logger.info(fusionSpecification.toString());
+        logger.info(fusionSpec.toString());
 
         logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-        logger.info("Interlinked: " + interlinkedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
+        logger.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
                 + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
         logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
         logger.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");

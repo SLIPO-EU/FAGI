@@ -53,7 +53,9 @@ public enum EnumFusionAction {
     /**
      * Shifts the geometry of the right source entity to the centroid of the left.
      */
-    SHIFT_RIGHT_GEOMETRY(7);
+    SHIFT_RIGHT_GEOMETRY(7),
+    
+    REJECT_LINK(8);
     
 	private final int value;
 
@@ -136,6 +138,7 @@ public enum EnumFusionAction {
         case KEEP_MORE_POINTS_AND_SHIFT: return "keep-more-points-and-shift";
         case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";
         case SHIFT_RIGHT_GEOMETRY: return "shift-right-geometry";
+        case REJECT_LINK: return "reject-link";
         default: throw new IllegalArgumentException();
       }
     }     

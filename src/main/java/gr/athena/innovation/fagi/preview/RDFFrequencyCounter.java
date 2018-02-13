@@ -50,9 +50,8 @@ public class RDFFrequencyCounter{
         return categoryMap;
     }
     
-    public Frequency exportCategoryFrequency(String category) {
-        
-        Model model = LeftModel.getLeftModel().getModel();
+    public Frequency exportCategoryFrequency(String category, Model model) {
+
         Frequency frequency = SparqlRepository.selectCategories(model, category);
 
         return frequency;

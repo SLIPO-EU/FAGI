@@ -11,15 +11,15 @@ import org.apache.jena.rdf.model.StmtIterator;
  *
  * @author nkarag
  */
-public class Metadata {
+public class EntityData {
     
     private Model model = ModelFactory.createDefaultModel();
     
-    public Metadata() {
+    public EntityData() {
         
     }
     
-    public Metadata(Model model) {
+    public EntityData(Model model) {
         this.model = model;
     }
 

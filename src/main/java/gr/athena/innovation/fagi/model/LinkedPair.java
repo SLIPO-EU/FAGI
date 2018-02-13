@@ -31,9 +31,9 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author nkarag
  */
-public class InterlinkedPair {
+public class LinkedPair {
 
-    private static final Logger logger = LogManager.getLogger(InterlinkedPair.class);
+    private static final Logger logger = LogManager.getLogger(LinkedPair.class);
     private Entity leftNode;
     private Entity rightNode;
     private Entity fusedEntity;
@@ -62,15 +62,15 @@ public class InterlinkedPair {
         return fusedEntity;
     }
 
-    public void fuseWithRule(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap) throws WrongInputException{
+    public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap) throws WrongInputException{
 
         EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
         fusedEntity = new Entity();
         fusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction));
 
-        Metadata leftMetadata = leftNode.getMetadata();
-        Metadata rightMetadata = rightNode.getMetadata();
+        EntityData leftMetadata = leftNode.getEntityData();
+        EntityData rightMetadata = rightNode.getEntityData();
 
         fuseDefaultDatasetAction(defaultDatasetAction);
 
@@ -88,7 +88,7 @@ public class InterlinkedPair {
             String literalA = getLiteralValue(rule.getPropertyA(), leftMetadata.getModel());
             String literalB = getLiteralValue(rule.getPropertyB(), rightMetadata.getModel());
             logger.info("Found literals: {}, {}", literalA, literalB);
-            
+
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if(rule.getActionRuleSet() == null){
@@ -98,7 +98,7 @@ public class InterlinkedPair {
                 }
                 break;
             }
-            
+
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
             int actionRuleCount = 0;
             boolean actionRuleToApply = false;
@@ -129,7 +129,9 @@ public class InterlinkedPair {
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
                     logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
+                    
                     fuseRuleAction(action, rdfPropertyA, literalA, literalB);
+                    
                     actionRuleToApply = true;
                     break;
                 }
@@ -145,23 +147,23 @@ public class InterlinkedPair {
     public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction) throws WrongInputException{
 
         //default dataset action should be performed before the rules apply. The fused model should be empty:
-        if(!fusedEntity.getMetadata().getModel().isEmpty()){
+        if(!fusedEntity.getEntityData().getModel().isEmpty()){
             throw new ApplicationException
                 ("Default fusion action tries to overwrite already fused data!");
         }
 
-        Metadata leftMetadata = leftNode.getMetadata();
-        Metadata rightMetadata = rightNode.getMetadata();
+        EntityData leftMetadata = leftNode.getEntityData();
+        EntityData rightMetadata = rightNode.getEntityData();
         
         switch(datasetDefaultAction){
             case KEEP_LEFT:
-                fusedEntity.setMetadata(leftMetadata);
+                fusedEntity.setEntityData(leftMetadata);
                 break;
             case KEEP_RIGHT:
-                fusedEntity.setMetadata(rightMetadata);
+                fusedEntity.setEntityData(rightMetadata);
                 break;
             case KEEP_BOTH:
-                fusedEntity.getMetadata().getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
+                fusedEntity.getEntityData().getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
         }        
@@ -175,7 +177,7 @@ public class InterlinkedPair {
 
         String fusedURI = fusedEntity.getResourceURI();
 
-        Metadata fusedMetadata = fusedEntity.getMetadata();
+        EntityData fusedMetadata = fusedEntity.getEntityData();
 
         switch(action){
             case KEEP_LEFT:
@@ -184,9 +186,9 @@ public class InterlinkedPair {
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
                 
-                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata = fusedEntity.getEntityData();
                 fusedMetadata.setModel(fusedModel);
-                fusedEntity.setMetadata(fusedMetadata);
+                fusedEntity.setEntityData(fusedMetadata);
 
                 break;
             }
@@ -197,18 +199,18 @@ public class InterlinkedPair {
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
 
                 fusedMetadata.setModel(fusedModel);
-                fusedEntity.setMetadata(fusedMetadata);
+                fusedEntity.setEntityData(fusedMetadata);
                 
                 break;
             }
             case KEEP_BOTH:
             {
-                    Metadata leftMetadata = leftNode.getMetadata();
-                    Metadata rightMetadata = rightNode.getMetadata();
+                    EntityData leftMetadata = leftNode.getEntityData();
+                    EntityData rightMetadata = rightNode.getEntityData();
 
                     Model fusedModel = fusedMetadata.getModel().add(leftMetadata.getModel()).add(rightMetadata.getModel());
                     fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setMetadata(fusedMetadata);
+                    fusedEntity.setEntityData(fusedMetadata);
                     
                     break;
             }
@@ -225,20 +227,20 @@ public class InterlinkedPair {
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
 
-                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata = fusedEntity.getEntityData();
                     fusedMetadata.setModel(fusedModel);
 
-                    fusedEntity.setMetadata(fusedMetadata);
+                    fusedEntity.setEntityData(fusedMetadata);
 
                 } else {
                     Model fusedModel = fusedMetadata.getModel();
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
 
-                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata = fusedEntity.getEntityData();
                     fusedMetadata.setModel(fusedModel);
 
-                    fusedEntity.setMetadata(fusedMetadata);
+                    fusedEntity.setEntityData(fusedMetadata);
                 }
                 break;
             }
@@ -258,9 +260,9 @@ public class InterlinkedPair {
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata = fusedEntity.getEntityData();
                     fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setMetadata(fusedMetadata);
+                    fusedEntity.setEntityData(fusedMetadata);
                     
                 } else if(leftGeometry.getNumPoints() < rightGeometry.getNumPoints()){
 
@@ -272,9 +274,9 @@ public class InterlinkedPair {
                     fusedModel.removeAll(null, property, (RDFNode) null);
                     fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                    fusedMetadata = fusedEntity.getMetadata();
+                    fusedMetadata = fusedEntity.getEntityData();
                     fusedMetadata.setModel(fusedModel);
-                    fusedEntity.setMetadata(fusedMetadata);
+                    fusedEntity.setEntityData(fusedMetadata);
                 }
                 
                 break;
@@ -294,9 +296,9 @@ public class InterlinkedPair {
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata = fusedEntity.getEntityData();
                 fusedMetadata.setModel(fusedModel);
-                fusedEntity.setMetadata(fusedMetadata);
+                fusedEntity.setEntityData(fusedMetadata);
                 
                 break;
             }
@@ -315,12 +317,25 @@ public class InterlinkedPair {
                 fusedModel.removeAll(null, property, (RDFNode) null);
                 fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
-                fusedMetadata = fusedEntity.getMetadata();
+                fusedMetadata = fusedEntity.getEntityData();
                 fusedMetadata.setModel(fusedModel);
-                fusedEntity.setMetadata(fusedMetadata);
+                fusedEntity.setEntityData(fusedMetadata);
 
                 break;
-            }                
+            }
+            case REJECT_LINK:
+            {
+                Model fusedModel = fusedMetadata.getModel();
+                
+                if(!fusedModel.isEmpty()){
+                    fusedModel.removeAll();
+                }
+
+                fusedMetadata.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedMetadata);                
+                
+                break;
+            }             
         }        
     }
 
@@ -391,6 +406,7 @@ public class InterlinkedPair {
     
     private void checkWKTProperty(Property property, EnumFusionAction action) throws WrongInputException{
         if(!property.toString().equals(SpecificationConstants.WKT)){
+            logger.error("The selected action " + action.toString() + " applies only for WKT geometry literals");
             throw new WrongInputException
                 ("The selected action " + action.toString() + " applies only for WKT geometry literals");
         }         

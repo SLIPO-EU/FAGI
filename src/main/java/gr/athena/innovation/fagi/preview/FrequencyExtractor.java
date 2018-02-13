@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -19,7 +20,7 @@ public class FrequencyExtractor {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FrequencyExtractor.class);
 
-    public void extract(int frequentTopK, String categoryMappingsNTPath, 
+    public void extract(int frequentTopK, String categoryMappingsNTPath, Model model, 
             FusionSpecification fusionSpecification, Locale locale){
 
             //Category frequencies
@@ -27,7 +28,7 @@ public class FrequencyExtractor {
 
             Map<String, String> categoryMap = categoryCounter.getCategoryMap(categoryMappingsNTPath);
 
-            Frequency categoryFrequencies = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY);
+            Frequency categoryFrequencies = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY, model);
 
             File propertyFile = new File(fusionSpecification.getPathOutput());
             File parentDir = propertyFile.getParentFile();
