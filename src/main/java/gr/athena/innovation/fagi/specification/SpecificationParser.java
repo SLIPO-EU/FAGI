@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.specification;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,14 +19,14 @@ import org.xml.sax.SAXException;
  * @author nkarag
  */
 public class SpecificationParser {
-    
+
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SpecificationParser.class);
-    
-    public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException{
-        
+
+    public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException {
+
         logger.info("Parsing Fusion Specification: " + fusionSpecificationPath);
         FusionSpecification fusionSpecification = FusionSpecification.getInstance();
-        
+
         try {
 
             File fXmlFile = new File(fusionSpecificationPath);
@@ -38,46 +39,83 @@ public class SpecificationParser {
             NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.INPUT_FORMAT);
             String inputFormat = inputNodeList.item(0).getTextContent();
             fusionSpecification.setInputRDFFormat(inputFormat);
-            
+
             NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.OUTPUT_FORMAT);
             String outputFormat = outputNodeList.item(0).getTextContent();
             fusionSpecification.setOutputRDFFormat(outputFormat);
+
+            NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.LOCALE);
+            String localeText = localeNodeList.item(0).getTextContent();
+            
+            Locale locale;
+            
+            switch (localeText) {
+                case "EN-GB":
+                    locale = Locale.forLanguageTag("en-GB");
+                    break;
+                case "EN-US":
+                    locale = Locale.forLanguageTag("en-US");
+                    break;                    
+                case "DE":
+                case "de":
+                case "de-DE":
+                case "GERMAN":
+                case "german":
+                    locale = Locale.forLanguageTag("de-DE");
+                    break;
+                case "DE-AT":
+                case "de-at":
+                    locale = Locale.forLanguageTag("de-AT");
+                    break;
+                case "EL":
+                case "el":   
+                case "greek":
+                    locale = Locale.forLanguageTag("el-GR");
+                    break;
+                default:
+                    locale = Locale.ENGLISH;
+            }
+
+            fusionSpecification.setLocale(locale);
 
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();
             for (int i = 0; i < leftChilds.getLength(); i++) {
-                Node n = leftChilds.item(i);                            
+                Node n = leftChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
-                       fusionSpecification.setPathA(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)){
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                        fusionSpecification.setPathA(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
                         fusionSpecification.setIdA(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
                         fusionSpecification.setEndpointA(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.CATEGORIES)) {
+                        fusionSpecification.setCategoriesA(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
-            
 
             NodeList rightNodeList = doc.getElementsByTagName(SpecificationConstants.RIGHT_DATASET);
             Node rightNode = rightNodeList.item(0);
             NodeList rightChilds = rightNode.getChildNodes();
             for (int i = 0; i < rightChilds.getLength(); i++) {
-                
-                Node n = rightChilds.item(i);                            
+
+                Node n = rightChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
-                       fusionSpecification.setPathB(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)){
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                        fusionSpecification.setPathB(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
                         fusionSpecification.setIdB(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
                         fusionSpecification.setEndpointB(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.CATEGORIES)) {
+                        fusionSpecification.setCategoriesB(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
@@ -87,16 +125,16 @@ public class SpecificationParser {
             Node linksNode = linksNodeList.item(0);
             NodeList linksChilds = linksNode.getChildNodes();
             for (int i = 0; i < linksChilds.getLength(); i++) {
- 
-                Node n = linksChilds.item(i);                            
+
+                Node n = linksChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
-                       fusionSpecification.setPathLinks(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)){
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                        fusionSpecification.setPathLinks(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
                         fusionSpecification.setIdLinks(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
                         fusionSpecification.setEndpointLinks(n.getTextContent());
                     }
                 }
@@ -107,30 +145,30 @@ public class SpecificationParser {
             Node targetNode = targetNodeList.item(0);
             NodeList targetChilds = targetNode.getChildNodes();
             for (int i = 0; i < targetChilds.getLength(); i++) {
-                Node n = targetChilds.item(i);                            
+                Node n = targetChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)){
-                       fusionSpecification.setPathOutput(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.TARGET_RESOURCE_URI)){
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                        fusionSpecification.setPathOutput(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.TARGET_RESOURCE_URI)) {
                         fusionSpecification.setResourceUri(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.MERGE_WITH)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.MERGE_WITH)) {
                         fusionSpecification.setFinalDataset(EnumTargetDataset.fromString(n.getTextContent()));
-                    }else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
                         fusionSpecification.setIdOutput(n.getTextContent());
-                    } else if(n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)){
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
                         fusionSpecification.setEndpointOutput(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
-            
+
         } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
-            logger.fatal("Exception occured while parsing the fusion specification: " 
+            logger.fatal("Exception occured while parsing the fusion specification: "
                     + fusionSpecificationPath + "\n" + e);
         }
-        
+
         return fusionSpecification;
     }
 }

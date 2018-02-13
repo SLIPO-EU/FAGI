@@ -32,12 +32,22 @@ The `inputFormat` refers to the RDF format of the input dataset and the `outputF
 
 In order to fill the `inputFormat` and `outputFormat` use the values of the corresponding parenthesis.
 
+The `locale` is optional in case a dataset contains entities from regions with different locales, but it is strongly recommended to choose one when possible because it is used on several steps of the normalization process. The available locales are: 
+* EN 
+* EN-GB
+* EN-US
+* DE
+* DE-DE
+* DE-AT
+* EL
+
 The `left`, `right`, `links` and `target` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
 Specifically:
 `id`: An ID to identify the dataset.
 `file`: The filepath of the dataset. For the target (output) dataset, "System.out" is also accepted as console output.
 `endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `file` tag empty.
+`categories`: This is again optional. It is used to extract statistics about the categories of the entities. If you want to use this feature you should provide a file in N-Triples format that contains the categorization.
 
 `mergeWith`: Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
 

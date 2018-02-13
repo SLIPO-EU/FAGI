@@ -32,9 +32,7 @@ import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
@@ -70,8 +68,6 @@ public class FagiInstance {
             com.vividsolutions.jts.io.ParseException, WrongInputException,
             ApplicationException, org.json.simple.parser.ParseException {
 
-        Locale locale = Locale.GERMAN;
-
         long startTimeInput = System.currentTimeMillis();
         //Validate input
         FunctionRegistry functionRegistry = new FunctionRegistry();
@@ -92,9 +88,6 @@ public class FagiInstance {
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpec = specificationParser.parse(specXml);
-
-        //TODO: remove setLocale as soon as locale is implemented in fusion specification parser
-        fusionSpec.setLocale(locale);
 
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
@@ -120,7 +113,7 @@ public class FagiInstance {
         Map<String, String> codes = resourceFileLoader.getExitCodes();
 
         AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
-        AbbreviationAndAcronymResolver.setLocale(locale);
+        AbbreviationAndAcronymResolver.setLocale(fusionSpec.getLocale());
         TermResolver.setTerms(specialTerms);
         CallingCodeResolver.setCodes(codes);
 
@@ -134,27 +127,23 @@ public class FagiInstance {
 
             //Frequent terms
             FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpec, topK);
-            termFrequency.setLocale(locale);
+            termFrequency.setLocale(fusionSpec.getLocale());
 
             termFrequency.setProperties(rdfProperties);
 
             termFrequency.export(fusionSpec.getPathA());
 
-            //category frequencies using the mapping (URI to literal value) of categories from external file
-            //TODO: put optional field on spec.xml for this file
-            String categoryMappingsNTPath = "";
-
             if(!StringUtils.isBlank(fusionSpec.getCategoriesA())){
                 FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
                 frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftModel.getLeftModel().getModel(), 
-                        fusionSpec, locale);                
+                        fusionSpec, fusionSpec.getLocale());                
             }
             
             if(!StringUtils.isBlank(fusionSpec.getCategoriesB())){
 
                 FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
                 frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightModel.getRightModel().getModel(), 
-                        fusionSpec, locale);                
+                        fusionSpec, fusionSpec.getLocale());                
             }            
 
             //similarity viewer for each pair and a,b,c normalization

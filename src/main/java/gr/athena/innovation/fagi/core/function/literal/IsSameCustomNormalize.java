@@ -40,10 +40,8 @@ public class IsSameCustomNormalize  implements IFunction, IFunctionThreeParamete
         
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
-        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA, literalB, Locale.ENGLISH);
-        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB, literalA, Locale.ENGLISH);
-
-        
+        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA, literalB, locale);
+        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB, literalA, locale);
 
         if(normA.getNormalized().equals(normB.getNormalized())){
             return true;
@@ -64,5 +62,5 @@ public class IsSameCustomNormalize  implements IFunction, IFunctionThreeParamete
     public String getName() {
         String className = this.getClass().getSimpleName().toLowerCase();
         return className;
-    }        
+    }
 }

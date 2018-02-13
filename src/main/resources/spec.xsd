@@ -32,6 +32,27 @@
 			  <xs:enumeration value="TRIX"/>
 			</xs:restriction>
 		  </xs:simpleType>
+		</xs:element>
+		<xs:element name="locale">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value="EN"/>
+			  <xs:enumeration value="en"/>
+			  <xs:enumeration value="EN-GB"/>
+			  <xs:enumeration value="EN-US"/>			  			  
+			  <xs:enumeration value="ENGLISH"/>
+			  <xs:enumeration value="english"/>
+			  <xs:enumeration value="DE"/>
+			  <xs:enumeration value="de"/>
+			  <xs:enumeration value="GERMAN"/>
+			  <xs:enumeration value="german"/>
+			  <xs:enumeration value="de-AT"/>
+			  <xs:enumeration value="DE-AT"/>
+			  <xs:enumeration value="EL"/>
+			  <xs:enumeration value="el"/>
+			  <xs:enumeration value="greek"/>
+			</xs:restriction>
+		  </xs:simpleType>
 		</xs:element>		
 		<xs:element name="left">
 		  <xs:complexType>
@@ -39,6 +60,7 @@
 			  <xs:element name="id" type="xs:string"/>
 			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
 			  <xs:element name="file" type="xs:anyURI"/>
+			  <xs:element name="categories" type="xs:anyURI" minOccurs="0"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element> 
@@ -48,6 +70,7 @@
 			  <xs:element name="id" type="xs:string"/>
 			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
 			  <xs:element name="file" type="xs:anyURI"/>
+			  <xs:element name="categories" type="xs:anyURI" minOccurs="0"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>

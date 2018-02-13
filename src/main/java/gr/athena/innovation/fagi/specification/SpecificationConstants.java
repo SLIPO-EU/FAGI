@@ -18,6 +18,7 @@ public class SpecificationConstants {
     public static final String SPECIFICATION = "specification";
     public static final String INPUT_FORMAT = "inputFormat";
     public static final String OUTPUT_FORMAT = "outputFormat";
+    public static final String LOCALE = "locale";
 
     public static final String LEFT_DATASET = "left";
     public static final String RIGHT_DATASET = "right";
@@ -26,7 +27,7 @@ public class SpecificationConstants {
     public static final String TARGET_RESOURCE_URI = "resourceURI";
     public static final String MERGE_WITH = "mergeWith";
     public static final String LINKS = "links";
-    public static final String CATEGORIES = "categoryMappingFile";
+    public static final String CATEGORIES = "categories";
 
     public static final String ID = "id";
     public static final String FILE = "file";

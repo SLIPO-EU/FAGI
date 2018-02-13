@@ -2,15 +2,18 @@
 <specification>
 	<inputFormat>NT</inputFormat>
 	<outputFormat>NT</outputFormat>
+	<locale>de</locale>
 	<left>
 		<id>OSM</id>
 		<endpoint></endpoint>
 		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/osm.nt</file>
+		<categories></categories>
 	</left>
 	<right>
 		<id>WIKIMAPIA</id>
 		<endpoint></endpoint>
 		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/wikimapia.nt</file>
+		<categories></categories>
 	</right>
 	<links>
 		<id>LINKS_OSM_WIKIMAPIA</id>

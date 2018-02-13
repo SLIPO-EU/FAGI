@@ -40,6 +40,26 @@ public class SchemaDefinition {
 "			  <xs:enumeration value=\"TRIX\"/>\n" +
 "			</xs:restriction>\n" +
 "		  </xs:simpleType>\n" +
+"		</xs:element>\n" +
+"		<xs:element name=\"locale\">\n" +
+"		  <xs:simpleType>\n" +
+"			<xs:restriction base=\"xs:string\">\n" +
+"			  <xs:enumeration value=\"EN\"/>\n" +
+"			  <xs:enumeration value=\"en\"/>\n" +
+"			  <xs:enumeration value=\"EN-GB\"/>\n" +            
+"			  <xs:enumeration value=\"EN-US\"/>\n" +                
+"			  <xs:enumeration value=\"ENGLISH\"/>\n" +
+"			  <xs:enumeration value=\"english\"/>\n" +
+"			  <xs:enumeration value=\"DE\"/>\n" +
+"			  <xs:enumeration value=\"de\"/>\n" +
+"			  <xs:enumeration value=\"DE-AT\"/>\n" +
+"			  <xs:enumeration value=\"de-at\"/>\n" +
+"			  <xs:enumeration value=\"GERMAN\"/>\n" +
+"			  <xs:enumeration value=\"german\"/>\n" +
+"			  <xs:enumeration value=\"EL\"/>\n" +
+"			  <xs:enumeration value=\"el\"/>\n" +
+"			</xs:restriction>\n" +
+"		  </xs:simpleType>\n" +
 "		</xs:element>		\n" +
 "		<xs:element name=\"left\">\n" +
 "		  <xs:complexType>\n" +
@@ -47,6 +67,7 @@ public class SchemaDefinition {
 "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
 "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"categories\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element> \n" +
@@ -56,6 +77,7 @@ public class SchemaDefinition {
 "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
 "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"categories\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>\n" +
