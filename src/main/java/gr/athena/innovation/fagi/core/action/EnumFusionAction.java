@@ -17,6 +17,8 @@ public enum EnumFusionAction {
 
     /**
      * Undefined value of the fusion action.
+     *//**
+     * Undefined value of the fusion action.
      */
     UNDEFINED(0), 
 
@@ -69,7 +71,17 @@ public enum EnumFusionAction {
     /**
      * Keeps the model of the entity with the longest value. 
      */      
-    KEEP_LONGEST(10);
+    KEEP_LONGEST(10),
+    
+    /**
+     * Keeps the default action, but marks the value as ambiguous in the model using a statement with the POI's URI.
+     */    
+    ACCEPT_MARK_AMBIGUOUS(11),
+    
+    /**
+     * Rejects the link, but marks the value as ambiguous in the model using a statement with the POI's URI.
+     */       
+    REJECT_MARK_AMBIGUOUS(12);
     
 	private final int value;
 
@@ -155,6 +167,8 @@ public enum EnumFusionAction {
         case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";
         case SHIFT_RIGHT_GEOMETRY: return "shift-right-geometry";
         case REJECT_LINK: return "reject-link";
+        case ACCEPT_MARK_AMBIGUOUS: return "accept-mark-ambiguous";
+        case REJECT_MARK_AMBIGUOUS: return "reject-mark-ambiguous";
         default: throw new IllegalArgumentException();
       }
     }     

@@ -168,12 +168,13 @@ A sample rules.xml file could look like this:
 | ------------- |:-------------|:------|
 | keep-left | Both | Keeps the value of the left source dataset in the fused model.
 | keep-right | Both | Keeps the value of the right source dataset in the fused model.
+| concatenate | Literal | Keeps both values of the source datasets as a concatenated literal in the same property of the fused model.
+| keep-longest | Literal | Keeps the value of the longest literal in the fused model using the NFC normalization before comparing the literals.
 | keep-both | Both | Keeps both values of the source datasets in the fused model.
 | keep-more-points | Geometry | Keeps the geometry that is composed with more points than the other.
 | keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
 | shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
-| concatenate | Both | Keeps both values of the source datasets as a concatenated literal in the same property of the fused model.
 | reject-link | Both | Rejects the whole link based on the rule property.
 
 ### Available default dataset actions:

@@ -204,7 +204,9 @@ public class SchemaDefinition {
 "								  <xs:enumeration value=\"keep-left\"/>\n" +
 "								  <xs:enumeration value=\"keep-right\"/>\n" +
 "								  <xs:enumeration value=\"concatenate\"/>\n" +
-"								  <xs:enumeration value=\"keep-longest\"/>\n" +            
+"								  <xs:enumeration value=\"keep-longest\"/>\n" +         
+"								  <xs:enumeration value=\"accept-mark-ambiguous\"/>\n" +
+"								  <xs:enumeration value=\"reject-mark-ambiguous\"/>\n" +            
 "								  <xs:enumeration value=\"keep-both\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points-and-shift\"/>\n" +

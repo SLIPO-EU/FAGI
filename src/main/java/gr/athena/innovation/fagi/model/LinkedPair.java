@@ -378,8 +378,36 @@ public class LinkedPair {
                 fusedEntity.setEntityData(fusedEntityData);                
                 
                 break;
-            }             
-        }        
+            }
+            case ACCEPT_MARK_AMBIGUOUS:
+            {
+                Model fusedModel = fusedEntityData.getModel();
+                
+                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_PROPERTY);
+
+                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);                
+                
+                break;
+            }
+            case REJECT_MARK_AMBIGUOUS:
+            {
+                Model fusedModel = fusedEntityData.getModel();
+                
+                if(!fusedModel.isEmpty()){
+                    fusedModel.removeAll();
+                }
+                
+                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_PROPERTY);
+
+                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);                
+                
+                break;
+            }               
+        }         
     }
 
     private String getLiteralValue(String property, Model model){
