@@ -43,25 +43,40 @@ public class SchemaDefinition {
 "		</xs:element>\n" +
 "		<xs:element name=\"locale\" minOccurs=\"0\">\n" +
 "		  <xs:simpleType>\n" +
-"			<xs:restriction base=\"xs:string\">\n" +         
-"			  <xs:enumeration value=\"\"/>\n" +            
+"			<xs:restriction base=\"xs:string\">\n" +
+"			  <xs:enumeration value=\"\"/>\n" +
 "			  <xs:enumeration value=\"EN\"/>\n" +
 "			  <xs:enumeration value=\"en\"/>\n" +
-"			  <xs:enumeration value=\"EN-GB\"/>\n" +            
-"			  <xs:enumeration value=\"EN-US\"/>\n" +                
+"			  <xs:enumeration value=\"EN-GB\"/>\n" +
+"			  <xs:enumeration value=\"EN-US\"/>			  			  \n" +
 "			  <xs:enumeration value=\"ENGLISH\"/>\n" +
 "			  <xs:enumeration value=\"english\"/>\n" +
 "			  <xs:enumeration value=\"DE\"/>\n" +
 "			  <xs:enumeration value=\"de\"/>\n" +
-"			  <xs:enumeration value=\"DE-AT\"/>\n" +
-"			  <xs:enumeration value=\"de-at\"/>\n" +
 "			  <xs:enumeration value=\"GERMAN\"/>\n" +
 "			  <xs:enumeration value=\"german\"/>\n" +
+"			  <xs:enumeration value=\"de-AT\"/>\n" +
+"			  <xs:enumeration value=\"DE-AT\"/>\n" +
 "			  <xs:enumeration value=\"EL\"/>\n" +
 "			  <xs:enumeration value=\"el\"/>\n" +
+"			  <xs:enumeration value=\"greek\"/>\n" +
 "			</xs:restriction>\n" +
 "		  </xs:simpleType>\n" +
-"		</xs:element>		\n" +
+"		</xs:element>\n" +
+"		<xs:element name=\"similarity\" minOccurs=\"0\">\n" +
+"		  <xs:simpleType>\n" +
+"			<xs:restriction base=\"xs:string\">\n" +
+"			  <xs:enumeration value=\"\"/>\n" +
+"			  <xs:enumeration value=\"sortedjarowinkler\"/>\n" +
+"			  <xs:enumeration value=\"jarowinkler\"/>\n" +
+"			  <xs:enumeration value=\"cosine\"/>\n" +
+"			  <xs:enumeration value=\"levenshtein\"/>			  			  \n" +
+"			  <xs:enumeration value=\"jaro\"/>\n" +
+"			  <xs:enumeration value=\"2Gram\"/>\n" +
+"			  <xs:enumeration value=\"longestcommonsubsequence\"/>\n" +
+"			</xs:restriction>\n" +
+"		  </xs:simpleType>\n" +
+"		</xs:element>				\n" +
 "		<xs:element name=\"left\">\n" +
 "		  <xs:complexType>\n" +
 "			<xs:sequence>\n" +

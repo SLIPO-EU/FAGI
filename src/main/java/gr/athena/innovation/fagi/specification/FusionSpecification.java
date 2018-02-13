@@ -40,6 +40,7 @@ public class FusionSpecification {
     private String inputRDFFormat;
     
     private Locale locale = null;
+    private String similarity;
 
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
@@ -224,6 +225,30 @@ public class FusionSpecification {
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
+
+    public String getCategoriesA() {
+        return categoriesA;
+    }
+
+    public void setCategoriesA(String categoriesA) {
+        this.categoriesA = categoriesA;
+    }
+
+    public String getCategoriesB() {
+        return categoriesB;
+    }
+
+    public void setCategoriesB(String categoriesB) {
+        this.categoriesB = categoriesB;
+    }
+
+    public String getSimilarity() {
+        return similarity;
+    }
+
+    public void setSimilarity(String similarity) {
+        this.similarity = similarity;
+    }
     
     @Override
     public String toString() {
@@ -242,25 +267,13 @@ public class FusionSpecification {
                     "\n finalDataset=" + finalDataset + 
                     "\n outputRDFFormat=" + outputRDFFormat + 
                     "\n inputRDFFormat=" + inputRDFFormat + 
+                    "\n locale=" + locale +
+                    "\n categoriesA=" + categoriesA +
+                    "\n categoriesB=" + categoriesB +
+                    "\n similarity=" + similarity +
                     "\n optionalDepth=" + optionalDepth + 
                     "\n maxOptionalDepth=" + maxOptionalDepth + 
                     "\n minOptionalDepth=" + minOptionalDepth + 
                     "\n}";
-    }
-
-    public String getCategoriesA() {
-        return categoriesA;
-    }
-
-    public void setCategoriesA(String categoriesA) {
-        this.categoriesA = categoriesA;
-    }
-
-    public String getCategoriesB() {
-        return categoriesB;
-    }
-
-    public void setCategoriesB(String categoriesB) {
-        this.categoriesB = categoriesB;
     }
 }

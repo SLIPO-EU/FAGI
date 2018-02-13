@@ -3,6 +3,7 @@
 	<inputFormat>NT</inputFormat>
 	<outputFormat>NT</outputFormat>
 	<locale></locale>
+	<similarity>jarowinkler</similarity>
 	<left>
 		<id>OSM</id>
 		<endpoint></endpoint>

@@ -83,6 +83,43 @@ public class SpecificationParser {
 
             fusionSpecification.setLocale(locale);
 
+            NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.SIMILARITY);
+            String similarityText = "";
+            String similarity;
+            
+            if (similarityNodeList.getLength() > 0) {
+                similarityText = similarityNodeList.item(0).getTextContent();
+            }
+
+            switch (similarityText.toUpperCase()) {
+                case "":
+                case "SORTEDJAROWINKLER":
+                    similarity = "sortedjarowinkler";
+                    break;
+                case "JAROWINKLER":
+                    similarity = "jarowinkler";
+                    break;                    
+                case "COSINE":
+                    similarity = "cosine";
+                    break;                       
+                case "LEVENSHTEIN":
+                    similarity = "levenshtein";
+                    break;  
+                case "JARO":
+                    similarity = "jaro";
+                    break;  
+                case "2GRAM":
+                    similarity = "2Gram";
+                    break;  
+                case "LONGESTCOMMONSUBSEQUENCE":
+                    similarity = "longestcommonsubsequence";
+                    break;                    
+                default:
+                    similarity = "jarowinkler";
+            }
+
+            fusionSpecification.setSimilarity(similarity);
+
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();

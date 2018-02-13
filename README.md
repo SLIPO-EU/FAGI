@@ -41,6 +41,15 @@ The `locale` is optional in case a dataset contains entities from regions with d
 * DE-AT
 * EL
 
+The `similarity` is also optional and it is used as a part of the custom matching process (default is JaroWinkler). The available values (case-insensitive) are the following:
+* sortedjarowinkler 
+* jarowinkler
+* cosine
+* jaro
+* levenshtein
+* 2Gram
+* longestcommonsubsequence
+
 The `left`, `right`, `links` and `target` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
 Specifically:
@@ -132,8 +141,8 @@ A sample rules.xml file could look like this:
 * **isValidDate:** Evaluates the given date against the target format.
 * **isGeometryMoreComplex:** Checks if the first geometry has more points than the second.
 * **isLiteralAbbreviation:** Checks if the given literal is or contains an abbreviation of some form.
-* **isSameSimpleNormalize:** Checks if the two given literals are same. It normalizes the two literals with some basic steps and checks again if the first check fails. The check will be replaced with similarity metric and threshold.
-* **isSameCustomNormalize:** Checks if the two given literals are same. It normalizes the two literals with some extra steps in addition to the simple normalization. The check will be replaced with similarity metric and threshold.
+* **isSameSimpleNormalize:** Checks if the two given literals are same. It normalizes the two literals with some basic steps and uses the provided similarity (default JaroWinkler) and returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
+* **isSameCustomNormalize:** Checks if the two given literals are same. It normalizes the two literals with some extra steps in addition to the simple normalization. Then, it uses the provided similarity (default JaroWinkler) and returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
 * **isPhoneNumberParsable:** Checks if the given phone number is consisted of only numbers or contains special character and/or exit code.
 * **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
@@ -146,8 +155,8 @@ A sample rules.xml file could look like this:
 | isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
 | isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
-| isSameSimpleNormalize | a, b and threshold| Literal | isSameSimpleNormalize(a,b) 
-| isSameCustomNormalize | a, b and threshold| Literal | isSameCustomNormalize(a,b) 
+| isSameSimpleNormalize | a, b and threshold| Literal | isSameSimpleNormalize(a,b, 0.7) 
+| isSameCustomNormalize | a, b and threshold| Literal | isSameCustomNormalize(a,b, 0.6) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
 | isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  

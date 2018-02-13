@@ -36,6 +36,7 @@
 		<xs:element name="locale" minOccurs="0">
 		  <xs:simpleType>
 			<xs:restriction base="xs:string">
+			  <xs:enumeration value=""/>
 			  <xs:enumeration value="EN"/>
 			  <xs:enumeration value="en"/>
 			  <xs:enumeration value="EN-GB"/>
@@ -53,7 +54,21 @@
 			  <xs:enumeration value="greek"/>
 			</xs:restriction>
 		  </xs:simpleType>
-		</xs:element>		
+		</xs:element>
+		<xs:element name="similarity" minOccurs="0">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value=""/>
+			  <xs:enumeration value="sortedjarowinkler"/>
+			  <xs:enumeration value="jarowinkler"/>
+			  <xs:enumeration value="cosine"/>
+			  <xs:enumeration value="levenshtein"/>			  			  
+			  <xs:enumeration value="jaro"/>
+			  <xs:enumeration value="2Gram"/>
+			  <xs:enumeration value="longestcommonsubsequence"/>
+			</xs:restriction>
+		  </xs:simpleType>
+		</xs:element>				
 		<xs:element name="left">
 		  <xs:complexType>
 			<xs:sequence>
