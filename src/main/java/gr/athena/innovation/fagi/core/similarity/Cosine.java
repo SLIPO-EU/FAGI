@@ -35,7 +35,7 @@ public final class Cosine {
      * 
      * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
      * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
-     * on the {@link SpecificationConstants.ROUND_DECIMALS} decimal digits.
+     * on the {@link SpecificationConstants.Similarity.ROUND_DECIMALS} decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.
@@ -71,13 +71,13 @@ public final class Cosine {
 
         Double result = cosineSimilarity.cosineSimilarity(aVector, bVector);
 
-        if(result > SpecificationConstants.SIMILARITY_MAX){
+        if(result > SpecificationConstants.Similarity.SIMILARITY_MAX){
             return 1.0;
-        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+        } else if(result < SpecificationConstants.Similarity.SIMILARITY_MIN){
             return 0.0;
         } else {
             double roundedResult = new BigDecimal(result).
-                    setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
+                    setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
 
             return roundedResult;
         }
@@ -91,7 +91,7 @@ public final class Cosine {
      * 
      * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
      * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
-     * on the {@link SpecificationConstants.ROUND_DECIMALS} decimal digits.
+     * on the {@link SpecificationConstants.Similarity.ROUND_DECIMALS} decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.
@@ -104,13 +104,13 @@ public final class Cosine {
         Double result = cosDist.apply(a, b);
         
         //check the returned result 
-        if(result > SpecificationConstants.SIMILARITY_MAX){
+        if(result > SpecificationConstants.Similarity.SIMILARITY_MAX){
             return 1;
-        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+        } else if(result < SpecificationConstants.Similarity.SIMILARITY_MIN){
             return 0;
         } else {
             double resultRounded = new BigDecimal(result).
-                    setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
+                    setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
 
             return resultRounded;
         }

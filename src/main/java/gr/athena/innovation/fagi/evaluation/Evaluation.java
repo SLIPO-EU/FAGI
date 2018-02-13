@@ -25,10 +25,10 @@ public class Evaluation {
 
             setWeights(version);
 
-            String baseW = SpecificationConstants.BASE_WEIGHT.toString();
-            String misW = SpecificationConstants.MISMATCH_WEIGHT.toString();
-            String spW = SpecificationConstants.SPECIAL_TERMS_WEIGHT.toString();
-            String comW = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT.toString();
+            String baseW = SpecificationConstants.Evaluation.BASE_WEIGHT.toString();
+            String misW = SpecificationConstants.Evaluation.MISMATCH_WEIGHT.toString();
+            String spW = SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT.toString();
+            String comW = SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT.toString();
 
             String notes = "JaroWinkler mismatch threshold (collator): 0.75\n"
                     + "Base weight: " + baseW + "\n"
@@ -56,40 +56,40 @@ public class Evaluation {
     
     private void setWeights(String version) {
         if (version.endsWith("a")) {
-            SpecificationConstants.BASE_WEIGHT = 0.5;
-            SpecificationConstants.MISMATCH_WEIGHT = 0.5;
-            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
-                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
-            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
-            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.BASE_WEIGHT = 0.5;
+            SpecificationConstants.Evaluation.MISMATCH_WEIGHT = 0.5;
+            SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.Evaluation.BASE_WEIGHT + SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+            SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
         } else if (version.endsWith("b")) {
-            SpecificationConstants.BASE_WEIGHT = 0.6;
-            SpecificationConstants.MISMATCH_WEIGHT = 0.4;
-            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
-                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
-            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
-            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.BASE_WEIGHT = 0.6;
+            SpecificationConstants.Evaluation.MISMATCH_WEIGHT = 0.4;
+            SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.Evaluation.BASE_WEIGHT + SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+            SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
         } else if (version.endsWith("c")) {
-            SpecificationConstants.BASE_WEIGHT = 0.7;
-            SpecificationConstants.MISMATCH_WEIGHT = 0.3;
-            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
-                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
-            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
-            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.BASE_WEIGHT = 0.7;
+            SpecificationConstants.Evaluation.MISMATCH_WEIGHT = 0.3;
+            SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.Evaluation.BASE_WEIGHT + SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+            SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
         } else if (version.endsWith("d")) {
-            SpecificationConstants.BASE_WEIGHT = 0.8;
-            SpecificationConstants.MISMATCH_WEIGHT = 0.2;
-            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
-                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
-            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
-            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.BASE_WEIGHT = 0.8;
+            SpecificationConstants.Evaluation.MISMATCH_WEIGHT = 0.2;
+            SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.Evaluation.BASE_WEIGHT + SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+            SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
         } else {
-            SpecificationConstants.BASE_WEIGHT = 0.7;
-            SpecificationConstants.MISMATCH_WEIGHT = 0.3;
-            SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT
-                    = SpecificationConstants.BASE_WEIGHT + SpecificationConstants.MISMATCH_WEIGHT;
-            SpecificationConstants.SPECIAL_TERMS_WEIGHT = 0.0;
-            SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.BASE_WEIGHT = 0.7;
+            SpecificationConstants.Evaluation.MISMATCH_WEIGHT = 0.3;
+            SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT
+                    = SpecificationConstants.Evaluation.BASE_WEIGHT + SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+            SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT = 0.0;
+            SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT = 0.0;
         }
     }    
 }

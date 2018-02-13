@@ -9,82 +9,91 @@ import java.text.Collator;
  * @author nkarag
  */
 public class SpecificationConstants {
-
-    public static final String RULES_XML = "rules.xml";
-    public static final String RULES_XSD = "rules.xsd";
-    public static final String SPEC_XML = "spec.xml";
-    public static final String SPEC_XSD = "spec.xsd";
     
-    public static final String SPECIFICATION = "specification";
-    public static final String INPUT_FORMAT = "inputFormat";
-    public static final String OUTPUT_FORMAT = "outputFormat";
-    public static final String LOCALE = "locale";
-    public static final String SIMILARITY = "similarity";
-
-    public static final String LEFT_DATASET = "left";
-    public static final String RIGHT_DATASET = "right";
-    
-    public static final String TARGET_DATASET = "target";
-    public static final String TARGET_RESOURCE_URI = "resourceURI";
-    public static final String MERGE_WITH = "mergeWith";
-    public static final String LINKS = "links";
-    public static final String CATEGORIES = "categories";
-
-    public static final String ID = "id";
-    public static final String FILE = "file";
-    public static final String ENDPOINT = "endpoint";
-
-    public static final String RULE = "rule";
-    public static final String DEFAULT_DATASET_ACTION = "defaultDatasetAction";
-    public static final String DEFAULT_ACTION = "defaultAction";
-    public static final String PROPERTY_A = "propertyA";
-    public static final String PROPERTY_B = "propertyB";
-    public static final String EXTERNAL_PROPERTY = "externalProperty";
-    public static final String CONDITION = "condition";
-    public static final String ACTION_RULE_SET = "actionRuleSet";
-    public static final String ACTION_RULE = "actionRule";
-    public static final String ACTION = "action";
-    public static final String EXPRESSION = "expression";
-    public static final String FUNCTION = "function";
-    public static final String AND = "and";
-    public static final String OR = "or";
-    public static final String NOT = "not";
-
-    public static final String A = "a";
-    public static final String B = "b";
-    
-    public static final int COLLATOR_STRENGTH = Collator.IDENTICAL;
     public static final int CONNECTOR = ' ';
-
-    public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
-    public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
-    public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
 
     public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
                                     + "-spec requires the spec.xml file path\n"
                                     + "-rules requires the rules.xml file path\n";
-
-    //similarity constants
-    public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
-    public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
-    public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
-    public static final double ERROR_E = 1e-3;
-    public static final double SIMILARITY_MAX = 0.999;
-    public static final double SIMILARITY_MIN = 0.001;
-    public static final int ROUND_DECIMALS_3 = 3;
-    public static final int ROUND_DECIMALS_2 = 2;
     
-    //evaluation
-    public static final double MISMATCH_THRESHOLD = 0.75;
-    public static Double BASE_WEIGHT;
-    public static Double MISMATCH_WEIGHT;
-    public static Double MERGED_BASE_MISMATCH_WEIGHT;
-    public static Double SPECIAL_TERMS_WEIGHT;
-    public static Double COMMON_SPECIAL_TERM_WEIGHT;
+    public static class Spec {
 
-    public static final String LOWERCASE_VOWELS = "aeiouäöü";
+        public static final String RULES_XML = "rules.xml";
+        public static final String RULES_XSD = "rules.xsd";
+        public static final String SPEC_XML = "spec.xml";
+        public static final String SPEC_XSD = "spec.xsd";
+
+        public static final String SPECIFICATION = "specification";
+        public static final String INPUT_FORMAT = "inputFormat";
+        public static final String OUTPUT_FORMAT = "outputFormat";
+        public static final String LOCALE = "locale";
+        public static final String SIMILARITY = "similarity";
+
+        public static final String LEFT_DATASET = "left";
+        public static final String RIGHT_DATASET = "right";
+
+        public static final String TARGET_DATASET = "target";
+        public static final String TARGET_RESOURCE_URI = "resourceURI";
+        public static final String MERGE_WITH = "mergeWith";
+        public static final String LINKS = "links";
+        public static final String CATEGORIES = "categories";
+
+        public static final String ID = "id";
+        public static final String FILE = "file";
+        public static final String ENDPOINT = "endpoint";
+    }  
+        
+    public static class Rule {
+
+        public static final String RULE = "rule";
+        public static final String DEFAULT_DATASET_ACTION = "defaultDatasetAction";
+        public static final String DEFAULT_ACTION = "defaultAction";
+        public static final String PROPERTY_A = "propertyA";
+        public static final String PROPERTY_B = "propertyB";
+        public static final String EXTERNAL_PROPERTY = "externalProperty";
+        public static final String CONDITION = "condition";
+        public static final String ACTION_RULE_SET = "actionRuleSet";
+        public static final String ACTION_RULE = "actionRule";
+        public static final String ACTION = "action";
+        public static final String EXPRESSION = "expression";
+        public static final String FUNCTION = "function";
+        public static final String AND = "and";
+        public static final String OR = "or";
+        public static final String NOT = "not";
+        public static final String A = "a";
+        public static final String B = "b";
+        public static final int CONCATENATION_SEP = ", ";
+    }  
+
+    public static class Similarity {
+
+        public static final int COLLATOR_STRENGTH = Collator.IDENTICAL;
+
+        public static final BigDecimal SIMILARITY_ABSOLUTE_ACCEPTED_ERROR = new BigDecimal(0.01);
+        public static final BigDecimal SIMILARITY_RELATIVE_ACCEPTED_ERROR = new BigDecimal(0.1);
+        public static final double SIMILARITY_ACCEPTED_ERROR = 0.05;
+        public static final double ERROR_E = 1e-3;
+        public static final double SIMILARITY_MAX = 0.999;
+        public static final double SIMILARITY_MIN = 0.001;
+        public static final int ROUND_DECIMALS_3 = 3;
+        public static final int ROUND_DECIMALS_2 = 2;
     
-    public class Regex {
+    }  
+
+    public static class Evaluation {
+
+        public static final double MISMATCH_THRESHOLD = 0.75;
+        public static Double BASE_WEIGHT;
+        public static Double MISMATCH_WEIGHT;
+        public static Double MERGED_BASE_MISMATCH_WEIGHT;
+        public static Double SPECIAL_TERMS_WEIGHT;
+        public static Double COMMON_SPECIAL_TERM_WEIGHT;
+
+        public static final String LOWERCASE_VOWELS = "aeiouäöü";
+    
+    }  
+
+    public static class Regex {
 
         //v0.1
         public static final String ABBR_REGEX = "\\b(?:[A-Z][a-z]*){2,}";
@@ -119,7 +128,7 @@ public class SpecificationConstants {
                 "dd-mm-yyyy",                   "dd-MM-yyyy",
                 "dd/mm/yyyy",                   "dd/MM/yyyy"};
     
-    public class Functions {
+    public static class Functions {
 
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
         public static final String IS_DATE_PRIMARY_FORMAT = "isdateprimaryformat";
@@ -135,7 +144,7 @@ public class SpecificationConstants {
 
     }
 
-    public class Normalize {
+    public static class Normalize {
         
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
         public static final String NORMALIZE_DATE_TO_FORMAT = "normalizedatetoformat";

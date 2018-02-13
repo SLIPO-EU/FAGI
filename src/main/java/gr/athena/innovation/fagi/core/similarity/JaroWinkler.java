@@ -31,13 +31,13 @@ public final class JaroWinkler {
 
         double result = jaroWinkler.apply(a, b);
 
-        if(result > SpecificationConstants.SIMILARITY_MAX){
+        if(result > SpecificationConstants.Similarity.SIMILARITY_MAX){
             return 1;
-        } else if(result < SpecificationConstants.SIMILARITY_MIN){
+        } else if(result < SpecificationConstants.Similarity.SIMILARITY_MIN){
             return 0;
         } else {
             double roundedResult = new BigDecimal(result).
-                    setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
+                    setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();
 
             return roundedResult;
         }

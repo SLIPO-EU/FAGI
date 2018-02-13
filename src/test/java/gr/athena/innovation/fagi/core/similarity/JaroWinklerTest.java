@@ -34,14 +34,14 @@ public class JaroWinklerTest {
         
         double expResult4 = 0.93;
         double result4 = JaroWinkler.computeSimilarity("frog", "fog");
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
         double expResult5 = 0.88;
         double result5 = JaroWinkler.computeSimilarity("hello", "hallo");
-        assertEquals(expResult5, result5, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult5, result5, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
         
         double expResult6 = 1.0;
         double result6 = JaroWinkler.computeSimilarity("fog", "fog");
-        assertEquals(expResult6, result6, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR); 
+        assertEquals(expResult6, result6, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR); 
     }
 }

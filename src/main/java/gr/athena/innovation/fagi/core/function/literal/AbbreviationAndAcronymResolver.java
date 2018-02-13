@@ -369,7 +369,7 @@ public class AbbreviationAndAcronymResolver {
     }
     
     private static boolean isVowel(Character c){
-        String vowels = SpecificationConstants.LOWERCASE_VOWELS;
+        String vowels = SpecificationConstants.Evaluation.LOWERCASE_VOWELS;
         return vowels.indexOf(c) >= 0;
     }
 

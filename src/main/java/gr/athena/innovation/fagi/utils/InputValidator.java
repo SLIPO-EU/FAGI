@@ -109,7 +109,7 @@ public class InputValidator {
         Document doc = dBuilder.parse(fXmlFile);
 
         doc.getDocumentElement().normalize();        
-        NodeList nList = doc.getElementsByTagName(SpecificationConstants.FUNCTION);
+        NodeList nList = doc.getElementsByTagName(SpecificationConstants.Rule.FUNCTION);
         for (int i = 0; i < nList.getLength(); i++) {
 
             Node functionNode = nList.item(i);
@@ -120,7 +120,7 @@ public class InputValidator {
                 if (index != -1){
                     String functionNameBeforeParenthesis = function.substring(0, index).toLowerCase();
                     if(!functionSet.contains(functionNameBeforeParenthesis)){
-                        logger.fatal("Functions defined in " + SpecificationConstants.RULES_XML + " is not valid. "
+                        logger.fatal("Functions defined in " + SpecificationConstants.Spec.RULES_XML + " is not valid. "
                                 + functionNameBeforeParenthesis + " is malformed or not supported.");
                         return false;
                     }

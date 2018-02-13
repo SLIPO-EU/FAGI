@@ -45,7 +45,7 @@ public class Condition {
             String parentOperation = expression.getLogicalOperatorParent();
             
             switch (parentOperation) {
-                case SpecificationConstants.NOT: {
+                case SpecificationConstants.Rule.NOT: {
                     //NOT should contain a single function or a single expression child.
                     List<Function> functions = expression.getFunctions();
                     if (functions.size() == 1) {
@@ -59,7 +59,7 @@ public class Condition {
                     
                     break;
                 }
-                case SpecificationConstants.OR: {
+                case SpecificationConstants.Rule.OR: {
                     List<Function> functions = expression.getFunctions();
                     //Check with priority of appearance the evaluation of each function:
                     for (Function orFunction : functions) {
@@ -75,7 +75,7 @@ public class Condition {
                     }
                     break;
                 }
-                case SpecificationConstants.AND: {
+                case SpecificationConstants.Rule.AND: {
                     List<Function> functions = expression.getFunctions();
                     //Check with priority of appearance the evaluation of each function:
                     boolean evaluated = true;
@@ -109,9 +109,9 @@ public class Condition {
                 //todo add case for parameters a1,a2 etc. add a param to this method with List<ExternalProps>
                 //and iterate it to find id (change externalProps to Map maybe.
                 switch (parameter) {
-                    case SpecificationConstants.A:
+                    case SpecificationConstants.Rule.A:
                         return isDateKnownFormat.evaluate(valueA);
-                    case SpecificationConstants.B:
+                    case SpecificationConstants.Rule.B:
                         return isDateKnownFormat.evaluate(valueB);                    
                     default:
                         
@@ -123,7 +123,7 @@ public class Condition {
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");                            
                         }
                         
-                        if (parameter.startsWith(SpecificationConstants.A)) {
+                        if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                             return isDateKnownFormat.evaluate(property.getValueA());
                         } else {
                             return isDateKnownFormat.evaluate(property.getValueB());
@@ -135,9 +135,9 @@ public class Condition {
                 IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
                 String parameter = function.getParameters()[0];
                 switch (parameter) {
-                    case SpecificationConstants.A:
+                    case SpecificationConstants.Rule.A:
                         return isDatePrimaryFormat.evaluate(valueA);
-                    case SpecificationConstants.B:
+                    case SpecificationConstants.Rule.B:
                         return isDatePrimaryFormat.evaluate(valueB);
                     default:
                         ExternalProperty property = externalProperties.get(parameter);
@@ -148,7 +148,7 @@ public class Condition {
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");                            
                         }
                         
-                        if (parameter.startsWith(SpecificationConstants.A)) {
+                        if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                             return isDatePrimaryFormat.evaluate(property.getValueA());
                         } else {
                             return isDatePrimaryFormat.evaluate(property.getValueB());
@@ -160,9 +160,9 @@ public class Condition {
                 String parameterA = function.getParameters()[0];
                 String parameterB = function.getParameters()[1];
                 switch (parameterA) {
-                    case SpecificationConstants.A:
+                    case SpecificationConstants.Rule.A:
                         return isValidDate.evaluate(valueA, parameterB);
-                    case SpecificationConstants.B:
+                    case SpecificationConstants.Rule.B:
                         return isValidDate.evaluate(valueB, parameterB);
                     default:                        
                         
@@ -174,7 +174,7 @@ public class Condition {
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");                            
                         }
                         
-                        if (parameterA.startsWith(SpecificationConstants.A)) {
+                        if (parameterA.startsWith(SpecificationConstants.Rule.A)) {
                             return isValidDate.evaluate(property.getValueA(), parameterB);
                         } else {
                             return isValidDate.evaluate(property.getValueB(), parameterB);
@@ -186,9 +186,9 @@ public class Condition {
                     IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
                     switch (parameter) {
-                        case SpecificationConstants.A:
+                        case SpecificationConstants.Rule.A:
                             return isLiteralAbbreviation.evaluate(valueA);
-                        case SpecificationConstants.B:
+                        case SpecificationConstants.Rule.B:
                             return isLiteralAbbreviation.evaluate(valueB);
                         default:
                             ExternalProperty property = externalProperties.get(parameter);
@@ -200,7 +200,7 @@ public class Condition {
                                         + " requires one parameter a or b followed by the external property id number. Eg. a1");                                
                             }
                             
-                            if (parameter.startsWith(SpecificationConstants.A)) {
+                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                                 return isLiteralAbbreviation.evaluate(property.getValueA());
                             } else {
                                 return isLiteralAbbreviation.evaluate(property.getValueB());
@@ -215,9 +215,9 @@ public class Condition {
                     IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
                     String parameter = function.getParameters()[0];
                     switch (parameter) {
-                        case SpecificationConstants.A:
+                        case SpecificationConstants.Rule.A:
                             return isPhoneNumberParsable.evaluate(valueA);
-                        case SpecificationConstants.B:
+                        case SpecificationConstants.Rule.B:
                             return isPhoneNumberParsable.evaluate(valueB);
                         default:
                             ExternalProperty property = externalProperties.get(parameter);
@@ -228,7 +228,7 @@ public class Condition {
                                         + " requires one parameter a or b followed by the external property id number. Eg. a1");                                
                             }
                             
-                            if (parameter.startsWith(SpecificationConstants.A)) {
+                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                                 return isPhoneNumberParsable.evaluate(property.getValueA());
                             } else {
                                 return isPhoneNumberParsable.evaluate(property.getValueB());
@@ -244,7 +244,7 @@ public class Condition {
                 String parameter = function.getParameters()[0];
 
                 //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
-                if (parameter.equals(SpecificationConstants.A) || parameter.equals(SpecificationConstants.B)) {
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
                     return isSamePhoneNumber.evaluate(valueA, valueB);
                 } else {
                     ExternalProperty property = externalProperties.get(parameter);
@@ -268,7 +268,7 @@ public class Condition {
                 //Use the third parameter as the exit code digits
                 String exitCodeDigits = function.getParameters()[2];
                 
-                if (parameter.equals(SpecificationConstants.A) || parameter.equals(SpecificationConstants.B)) {
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
                     return isSamePhoneNumberUsingExitCode.evaluate(valueA, valueB, exitCodeDigits);
                     
                 } else {
@@ -280,7 +280,7 @@ public class Condition {
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
-                    if (parameter.startsWith(SpecificationConstants.A)) {
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                         return isSamePhoneNumberUsingExitCode.evaluate(property.getValueA(),
                                 property.getValueB(), exitCodeDigits);
                     } else {
@@ -298,7 +298,7 @@ public class Condition {
                 String parameter = function.getParameters()[0];
                 String threshold = function.getParameters()[2];
                 
-                if (parameter.equals(SpecificationConstants.A) || parameter.equals(SpecificationConstants.B)) {
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
                     
                     return isSameSimpleNormalize.evaluate(valueA, valueB, threshold);
                     
@@ -311,7 +311,7 @@ public class Condition {
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
-                    if (parameter.startsWith(SpecificationConstants.A)) {
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                         return isSameSimpleNormalize.evaluate(property.getValueA(),
                                 property.getValueB(), threshold);
                     } else {
@@ -327,7 +327,7 @@ public class Condition {
                 IsSameCustomNormalize isSameCustomNormalize
                         = (IsSameCustomNormalize) functionMap.get(function.getName());                
                 
-                if (parameter.equals(SpecificationConstants.A) || parameter.equals(SpecificationConstants.B)) {
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
                     
                     return isSameCustomNormalize.evaluate(valueA, valueB, threshold);                    
                 } else {
@@ -339,7 +339,7 @@ public class Condition {
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
-                    if (parameter.startsWith(SpecificationConstants.A)) {
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
                         return isSameCustomNormalize.evaluate(property.getValueA(),
                                 property.getValueB(), threshold);
                     } else {

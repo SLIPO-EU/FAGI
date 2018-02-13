@@ -312,6 +312,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     } 
     
     private double roundHalfDown(Double d){
-        return new BigDecimal(d).setScale(SpecificationConstants.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
+        return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
     }
 }

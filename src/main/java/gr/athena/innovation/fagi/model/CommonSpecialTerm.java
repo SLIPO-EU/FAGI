@@ -11,7 +11,7 @@ import java.util.Objects;
 public class CommonSpecialTerm {
 
     private String term;
-    private final double weight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
+    private final double weight = SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT;
 
     @Override
     public int hashCode() {

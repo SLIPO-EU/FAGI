@@ -55,7 +55,16 @@ public enum EnumFusionAction {
      */
     SHIFT_RIGHT_GEOMETRY(7),
     
-    REJECT_LINK(8);
+    /**
+     * Rejects the link, that is the fusion action. 
+     * If a new fused dataset is chosen as output, none of the respective models of the entities appear in the final dataset.
+     */      
+    REJECT_LINK(8),
+    
+    /**
+     * Concatenates the two literals and keeps them in the same property.
+     */      
+    CONCATENATE(9);
     
 	private final int value;
 
@@ -139,6 +148,7 @@ public enum EnumFusionAction {
         case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";
         case SHIFT_RIGHT_GEOMETRY: return "shift-right-geometry";
         case REJECT_LINK: return "reject-link";
+        case CONCATENATE: return "concatenate";
         default: throw new IllegalArgumentException();
       }
     }     

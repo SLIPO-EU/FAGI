@@ -40,7 +40,7 @@ public class NGramTest {
         float expResult4 = 0.41F;
         float result4 = NGram.computeDistance(a, b);
         //logger.debug(result4);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
     }
 
     /**
@@ -73,7 +73,7 @@ public class NGramTest {
         float expResult4 = 0.50F;
         float result4 = NGram.computeDistance(a, b, 10);
         //logger.debug(result4);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
         logger.info("compute N-grams of size " + 4);
         String c = "This is a foo bar string.";
@@ -81,7 +81,7 @@ public class NGramTest {
         float expResult5 = 0.45F;
         float result5 = NGram.computeDistance(c, d, 4);
         //logger.debug(result5);
-        assertEquals(expResult5, result5, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);        
+        assertEquals(expResult5, result5, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);        
 
     }
     

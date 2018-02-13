@@ -41,7 +41,7 @@ public class CosineTest {
         double expResult1 = 0.86164043;
         double result1 = Cosine.computeSimilarity(a, b);
 
-        assertEquals(expResult1, result1, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult1, result1, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
         String c = "we are same and we should return 1.0 despite the floating point representation errors";
         String d = "we are same and we should return 1.0 despite the floating point representation errors";
@@ -70,7 +70,7 @@ public class CosineTest {
         double expResult1 = 1 - 0.86164043;
         double result1 = Cosine.computeDistance(a, b);
 
-        assertEquals(expResult1, result1, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult1, result1, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
         String c = "we are same and we should return 0.0 despite the floating point representation errors";
         String d = "we are same and we should return 0.0 despite the floating point representation errors";

@@ -16,6 +16,7 @@ import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
+import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import java.util.List;
 import java.util.Map;
@@ -327,6 +328,20 @@ public class LinkedPair {
 
                 break;
             }
+            case CONCATENATE:
+            {
+                Model fusedModel = fusedEntityData.getModel();
+                fusedModel.removeAll(null, property, (RDFNode) null);
+                
+                String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
+                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(concatenated));                
+                
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            }             
             case REJECT_LINK:
             {
                 Model fusedModel = fusedEntityData.getModel();
@@ -358,11 +373,11 @@ public class LinkedPair {
         //TODO: remove aliases of properties
         Property propertyRDF;
         if(property.equalsIgnoreCase("label")){
-            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.LABEL);
+            propertyRDF = ResourceFactory.createProperty(Namespace.LABEL);
         } else if(property.equalsIgnoreCase("date")){
-            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.DATE_OSM_MODIFIED);
+            propertyRDF = ResourceFactory.createProperty(Namespace.DATE_OSM_MODIFIED);
         } else if(property.equalsIgnoreCase("wkt")){
-            propertyRDF = ResourceFactory.createProperty(SpecificationConstants.WKT);
+            propertyRDF = ResourceFactory.createProperty(Namespace.WKT);
         } else {
             propertyRDF = ResourceFactory.createProperty(property);
         }
@@ -412,7 +427,7 @@ public class LinkedPair {
     }
     
     private void checkWKTProperty(Property property, EnumFusionAction action) throws WrongInputException{
-        if(!property.toString().equals(SpecificationConstants.WKT)){
+        if(!property.toString().equals(Namespace.WKT)){
             logger.error("The selected action " + action.toString() + " applies only for WKT geometry literals");
             throw new WrongInputException
                 ("The selected action " + action.toString() + " applies only for WKT geometry literals");

@@ -11,9 +11,9 @@ import gr.athena.innovation.fagi.rule.model.Expression;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
 import gr.athena.innovation.fagi.rule.model.Rule;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
-import static gr.athena.innovation.fagi.specification.SpecificationConstants.AND;
-import static gr.athena.innovation.fagi.specification.SpecificationConstants.NOT;
-import static gr.athena.innovation.fagi.specification.SpecificationConstants.OR;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.AND;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.NOT;
+import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.OR;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,21 +66,21 @@ public class RuleProcessor {
         //http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
         doc.getDocumentElement().normalize();
 
-        NodeList defaultDatasetAction = doc.getElementsByTagName(SpecificationConstants.DEFAULT_DATASET_ACTION);
+        NodeList defaultDatasetAction = doc.getElementsByTagName(SpecificationConstants.Rule.DEFAULT_DATASET_ACTION);
 
         if (defaultDatasetAction.getLength() == 1) {
             Node datasetActionNode = defaultDatasetAction.item(0);
             EnumDatasetAction datasetAction = EnumDatasetAction.fromString(datasetActionNode.getTextContent());
             ruleCatalog.setDefaultDatasetAction(datasetAction);
             if (datasetAction.equals(EnumDatasetAction.UNDEFINED)) {
-                throw new WrongInputException("<" + SpecificationConstants.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
+                throw new WrongInputException("<" + SpecificationConstants.Rule.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
             }
         } else {
-            throw new WrongInputException("<" + SpecificationConstants.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
+            throw new WrongInputException("<" + SpecificationConstants.Rule.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
         }
 
         //get all <RULE> elements of the XML. The rule elements are all in the same level
-        NodeList rules = doc.getElementsByTagName(SpecificationConstants.RULE);
+        NodeList rules = doc.getElementsByTagName(SpecificationConstants.Rule.RULE);
         for (int temp = 0; temp < rules.getLength(); temp++) {
             logger.info("----- Rule " + temp);
 
@@ -104,20 +104,20 @@ public class RuleProcessor {
 
             if (ruleNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element ruleElement = (Element) ruleNodeList.item(i);
-                if (ruleElement.getNodeName().contains(SpecificationConstants.PROPERTY_A)) {
+                if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.PROPERTY_A)) {
                     logger.debug("property A: " + ruleElement.getTextContent());
                     rule.setPropertyA(ruleElement.getTextContent());
-                } else if (ruleElement.getNodeName().contains(SpecificationConstants.PROPERTY_B)) {
+                } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.PROPERTY_B)) {
                     logger.debug("property B: " + ruleElement.getTextContent());
                     rule.setPropertyB(ruleElement.getTextContent());
-                } else if (ruleElement.getNodeName().contains(SpecificationConstants.EXTERNAL_PROPERTY)) {
+                } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.EXTERNAL_PROPERTY)) {
 
                     ExternalProperty extProp = new ExternalProperty();
 
                     String entityReference = ruleElement.getAttribute("id");
 
-                    if (entityReference.startsWith(SpecificationConstants.A)
-                            || entityReference.startsWith(SpecificationConstants.B)) {
+                    if (entityReference.startsWith(SpecificationConstants.Rule.A)
+                            || entityReference.startsWith(SpecificationConstants.Rule.B)) {
                         extProp.setParameter(entityReference);
 
                         extProp.setProperty(ruleElement.getTextContent());
@@ -127,11 +127,11 @@ public class RuleProcessor {
                                 + ". Parameter should start with a or b followed by a number id of the property.");
                     }
 
-                } else if (ruleElement.getNodeName().contains(SpecificationConstants.DEFAULT_ACTION)) {
+                } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.DEFAULT_ACTION)) {
                     EnumFusionAction defaultGeoAction = EnumFusionAction.fromString(ruleElement.getTextContent());
                     rule.setDefaultAction(defaultGeoAction);
-                } else if (ruleElement.getNodeName().contains(SpecificationConstants.ACTION_RULE_SET)) {
-                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName(SpecificationConstants.ACTION_RULE);
+                } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.ACTION_RULE_SET)) {
+                    NodeList actionRuleNodeList = ruleElement.getElementsByTagName(SpecificationConstants.Rule.ACTION_RULE);
                     actionRuleSet = createActionRuleSet(actionRuleNodeList);
                     rule.setActionRuleSet(actionRuleSet);
                 }
@@ -174,13 +174,13 @@ public class RuleProcessor {
         Node actionNode = actionRuleElement.getLastChild();
 
         int i = 0;
-        while (!actionNode.getNodeName().equalsIgnoreCase(SpecificationConstants.ACTION)) {
+        while (!actionNode.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.ACTION)) {
             actionNode = actionNode.getPreviousSibling();
             i++;
             if (i > 5000) {
                 //TODO - remove this check when xsd validation is complete
-                throw new WrongInputException("Could not find " + SpecificationConstants.ACTION + " tag inside "
-                        + SpecificationConstants.ACTION_RULE + ". Check the XML input.");
+                throw new WrongInputException("Could not find " + SpecificationConstants.Rule.ACTION + " tag inside "
+                        + SpecificationConstants.Rule.ACTION_RULE + ". Check the XML input.");
             }
         }
 
@@ -193,12 +193,12 @@ public class RuleProcessor {
         }
 
         //Extract condition
-        NodeList conditionsList = actionRuleElement.getElementsByTagName(SpecificationConstants.CONDITION);
+        NodeList conditionsList = actionRuleElement.getElementsByTagName(SpecificationConstants.Rule.CONDITION);
 
         logger.trace(" condition size: " + conditionsList.getLength());
         if (conditionsList.getLength() != 1) {
             //TODO - remove this check after xsd validation is complete
-            throw new WrongInputException("Condition should be exactly one inside " + SpecificationConstants.ACTION_RULE
+            throw new WrongInputException("Condition should be exactly one inside " + SpecificationConstants.Rule.ACTION_RULE
                     + ". Please check the XML input file.");
         }
 
@@ -321,7 +321,7 @@ public class RuleProcessor {
 
         Node child = conditionNode.getFirstChild();
         while (child != null) {
-            if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)) {
+            if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.EXPRESSION)) {
                 return child;
             }
             child = child.getNextSibling();
@@ -339,7 +339,7 @@ public class RuleProcessor {
         while (child != null) {
 
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)) {
+                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.FUNCTION)) {
                     hasOnlyFunctions = true;
                 } else {
                     return false;
@@ -359,9 +359,9 @@ public class RuleProcessor {
         while (child != null) {
 
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)) {
+                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.FUNCTION)) {
                     containsFunction = true;
-                } else if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)) {
+                } else if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.EXPRESSION)) {
                     containsExpression = true;
                 }
             }
@@ -379,7 +379,7 @@ public class RuleProcessor {
         while (child != null) {
 
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)) {
+                if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.EXPRESSION)) {
                     hasOnlyExpressions = true;
                 } else {
                     return false;
@@ -393,11 +393,11 @@ public class RuleProcessor {
     private boolean parentNodeContainsSingleFunction(Node parentExpression) {
         if (parentExpression.getNodeType() == Node.ELEMENT_NODE) {
             Element parentExpressionElement = (Element) parentExpression;
-            NodeList functions = parentExpressionElement.getElementsByTagName(SpecificationConstants.FUNCTION);
+            NodeList functions = parentExpressionElement.getElementsByTagName(SpecificationConstants.Rule.FUNCTION);
 
             //a NOT expression can contain a single function. 
             //If such element exists, the function is not considered single and the method should return false
-            NodeList possibleNotExpression = parentExpressionElement.getElementsByTagName(SpecificationConstants.NOT);
+            NodeList possibleNotExpression = parentExpressionElement.getElementsByTagName(SpecificationConstants.Rule.NOT);
 
             return functions.getLength() == 1 && possibleNotExpression.getLength() == 0;
         }
@@ -408,7 +408,7 @@ public class RuleProcessor {
         Node child = parentExpression.getFirstChild();
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
-                if (child.getNodeName().equals(SpecificationConstants.FUNCTION)) {
+                if (child.getNodeName().equals(SpecificationConstants.Rule.FUNCTION)) {
                     return child.getTextContent();
                 }
             }
@@ -449,7 +449,7 @@ public class RuleProcessor {
         Node logicalOperationNode = getLogicalOperationNode(node);
         Node child = logicalOperationNode.getFirstChild();
         while (child != null) {
-            if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.FUNCTION)) {
+            if (child.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.FUNCTION)) {
                 list.add(new Function(child.getTextContent()));
             }
             child = child.getNextSibling();
@@ -490,7 +490,7 @@ public class RuleProcessor {
         Node childExpression = logicalOperationNode.getFirstChild();
         while (childExpression != null) {
             if (childExpression.getNodeType() == Node.ELEMENT_NODE) {
-                if (childExpression.getNodeName().equalsIgnoreCase(SpecificationConstants.EXPRESSION)) {
+                if (childExpression.getNodeName().equalsIgnoreCase(SpecificationConstants.Rule.EXPRESSION)) {
                     childExpressions.add(childExpression);
                 }
             }

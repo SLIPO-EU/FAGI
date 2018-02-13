@@ -535,11 +535,11 @@ public class WeightedSimilarity {
     private static double computeCWeights(WeightedPairLiteral pair, CategoryWeight categorySimilarity,
             double baseSim, double mismatchSim, double specialsSim, double termSim) {
 
-        double baseWeight = SpecificationConstants.BASE_WEIGHT;
-        double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
-        double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
-        double specialsWeight = SpecificationConstants.SPECIAL_TERMS_WEIGHT;
-        double termWeight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
+        double baseWeight = SpecificationConstants.Evaluation.BASE_WEIGHT;
+        double mismatchWeight = SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+        double mergedBaseMismatchWeight = SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT;
+        double specialsWeight = SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT;
+        double termWeight = SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT;
 
         if (useLengths) {
 
@@ -608,11 +608,11 @@ public class WeightedSimilarity {
     private static double computeDWeights(WeightedPairLiteral pair, CategoryWeight categorySimilarity,
             double baseSim, double mismatchSim, double specialsSim, double termSim) {
 
-        double baseWeight = SpecificationConstants.BASE_WEIGHT;
-        double mismatchWeight = SpecificationConstants.MISMATCH_WEIGHT;
-        double mergedBaseMismatchWeight = SpecificationConstants.MERGED_BASE_MISMATCH_WEIGHT;
-        double specialsWeight = SpecificationConstants.SPECIAL_TERMS_WEIGHT;
-        double termWeight = SpecificationConstants.COMMON_SPECIAL_TERM_WEIGHT;
+        double baseWeight = SpecificationConstants.Evaluation.BASE_WEIGHT;
+        double mismatchWeight = SpecificationConstants.Evaluation.MISMATCH_WEIGHT;
+        double mergedBaseMismatchWeight = SpecificationConstants.Evaluation.MERGED_BASE_MISMATCH_WEIGHT;
+        double specialsWeight = SpecificationConstants.Evaluation.SPECIAL_TERMS_WEIGHT;
+        double termWeight = SpecificationConstants.Evaluation.COMMON_SPECIAL_TERM_WEIGHT;
         
         if (useLengths) {
             

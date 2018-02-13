@@ -36,15 +36,15 @@ public class SpecificationParser {
 
             doc.getDocumentElement().normalize();
 
-            NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.INPUT_FORMAT);
+            NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.INPUT_FORMAT);
             String inputFormat = inputNodeList.item(0).getTextContent();
             fusionSpecification.setInputRDFFormat(inputFormat);
 
-            NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.OUTPUT_FORMAT);
+            NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.OUTPUT_FORMAT);
             String outputFormat = outputNodeList.item(0).getTextContent();
             fusionSpecification.setOutputRDFFormat(outputFormat);
 
-            NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.LOCALE);
+            NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LOCALE);
             
             String localeText = "";
             Locale locale;
@@ -83,7 +83,7 @@ public class SpecificationParser {
 
             fusionSpecification.setLocale(locale);
 
-            NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.SIMILARITY);
+            NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.SIMILARITY);
             String similarityText = "";
             String similarity;
             
@@ -120,7 +120,7 @@ public class SpecificationParser {
 
             fusionSpecification.setSimilarity(similarity);
 
-            NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.LEFT_DATASET);
+            NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();
             for (int i = 0; i < leftChilds.getLength(); i++) {
@@ -128,20 +128,20 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
                         fusionSpecification.setPathA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         fusionSpecification.setEndpointA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.CATEGORIES)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesA(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
 
-            NodeList rightNodeList = doc.getElementsByTagName(SpecificationConstants.RIGHT_DATASET);
+            NodeList rightNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.RIGHT_DATASET);
             Node rightNode = rightNodeList.item(0);
             NodeList rightChilds = rightNode.getChildNodes();
             for (int i = 0; i < rightChilds.getLength(); i++) {
@@ -150,20 +150,20 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
                         fusionSpecification.setPathB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         fusionSpecification.setEndpointB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.CATEGORIES)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesB(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
 
-            NodeList linksNodeList = doc.getElementsByTagName(SpecificationConstants.LINKS);
+            NodeList linksNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LINKS);
             Node linksNode = linksNodeList.item(0);
             NodeList linksChilds = linksNode.getChildNodes();
             for (int i = 0; i < linksChilds.getLength(); i++) {
@@ -172,18 +172,18 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
                         fusionSpecification.setPathLinks(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdLinks(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         fusionSpecification.setEndpointLinks(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
 
-            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.TARGET_DATASET);
+            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.TARGET_DATASET);
             Node targetNode = targetNodeList.item(0);
             NodeList targetChilds = targetNode.getChildNodes();
             for (int i = 0; i < targetChilds.getLength(); i++) {
@@ -191,15 +191,15 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
                         fusionSpecification.setPathOutput(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.TARGET_RESOURCE_URI)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.TARGET_RESOURCE_URI)) {
                         fusionSpecification.setResourceUri(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.MERGE_WITH)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MERGE_WITH)) {
                         fusionSpecification.setFinalDataset(EnumTargetDataset.fromString(n.getTextContent()));
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdOutput(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         fusionSpecification.setEndpointOutput(n.getTextContent());
                     }
                 }

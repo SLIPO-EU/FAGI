@@ -103,7 +103,7 @@ public class AdvancedGenericNormalizer {
             int compareResult = collator.compare(ta, tb);
 
             //Using JaroWinkler to check similarity instead of Collator. Collator result is used on mismatch only
-            if (result > SpecificationConstants.MISMATCH_THRESHOLD) {
+            if (result > SpecificationConstants.Evaluation.MISMATCH_THRESHOLD) {
 
                 a.append(ta).append(CONNECTOR);
                 b.append(tb).append(CONNECTOR);
@@ -154,7 +154,7 @@ public class AdvancedGenericNormalizer {
             locale = Locale.ENGLISH;
         }
         Collator collator = Collator.getInstance(locale);
-        collator.setStrength(SpecificationConstants.COLLATOR_STRENGTH);
+        collator.setStrength(SpecificationConstants.Similarity.COLLATOR_STRENGTH);
 
         return collator;
     }

@@ -32,13 +32,13 @@ public class SortedJaroWinklerTest {
         String b = "same we should be";
         double expResult3 = 1.0;
         double result3 = SortedJaroWinkler.computeSimilarity(a, b);
-        assertEquals(expResult3, result3, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult3, result3, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
         String c = "abcdm mjkl";
         String d = "efghm mnop";
         double expResult4 = 0.5;
         double result4 = SortedJaroWinkler.computeSimilarity(c, d);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
     }
     
 }

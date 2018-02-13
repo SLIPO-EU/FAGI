@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.evaluation;
 
-import gr.athena.innovation.fagi.evaluation.Accuracy;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
@@ -1026,7 +1025,7 @@ public class MetricProcessor {
     }
     
     private double roundHalfUp(double d){
-        return new BigDecimal(d).setScale(SpecificationConstants.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();        
+        return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();        
     }
     
     private int count(List<Double> accepted, double threshold) {

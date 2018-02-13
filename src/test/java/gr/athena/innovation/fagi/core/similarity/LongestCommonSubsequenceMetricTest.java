@@ -41,7 +41,7 @@ private static final org.apache.logging.log4j.Logger logger
         double expResult4 = 0.58;
         double result4 = LongestCommonSubsequenceMetric.computeSimilarity(a, b);
         logger.debug(result4);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
 
     }
 
@@ -72,7 +72,7 @@ private static final org.apache.logging.log4j.Logger logger
         double expResult4 = 1.0 - 0.58;
         double result4 = LongestCommonSubsequenceMetric.computeDistance(a, b);
         logger.debug(result4);
-        assertEquals(expResult4, result4, SpecificationConstants.SIMILARITY_ACCEPTED_ERROR);
+        assertEquals(expResult4, result4, SpecificationConstants.Similarity.SIMILARITY_ACCEPTED_ERROR);
     }
     
 }
