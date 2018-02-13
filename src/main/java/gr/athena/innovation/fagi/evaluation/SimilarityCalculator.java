@@ -3,7 +3,6 @@ package gr.athena.innovation.fagi.evaluation;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.Cosine;
-//import gr.athena.innovation.fagi.core.similarity.Jaccard;
 import gr.athena.innovation.fagi.core.similarity.Jaro;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.Levenshtein;
@@ -19,7 +18,6 @@ import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,33 +41,35 @@ public class SimilarityCalculator {
         this.fusionSpecification = fusionSpecification;
     }
 
-    public void calculateCSVPairSimilarities(String path, String outputPath, String propertName) throws FileNotFoundException, IOException {
+    public void calculateCSVPairSimilarities(String path, String outputPath, String propertName){
         String csvFile = path;
         String line;
         String cvsSplitBy = "\\^";
         Locale locale = fusionSpecification.getLocale();
-
-        BufferedReader br = new BufferedReader(new FileReader(csvFile));
-        int i = 0;
-
-        String propertyPath = outputPath + propertName;
-        File file = new File(propertyPath);
-
-        if (file.exists()) {
-            //clear contents
-            PrintWriter pw = new PrintWriter(propertyPath);
-            pw.close();
-        } else {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-        }
-
-        int l = 0;
-        BufferedWriter namesWriter = new BufferedWriter(new FileWriter(file, true));
-        try {
         
-            l = 0;
-            while ((line = br.readLine()) != null) {
+        BufferedWriter namesWriter = null;
+        try {
+            
+            BufferedReader reader = new BufferedReader(new FileReader(csvFile));
+            int i = 0;
+
+            String propertyPath = outputPath + propertName;
+            File file = new File(propertyPath);
+
+            if (file.exists()) {
+                //clear contents
+                PrintWriter pw = new PrintWriter(propertyPath);
+                pw.close();
+            } else {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+
+            int l = 0;
+            
+            namesWriter = new BufferedWriter(new FileWriter(file, true));
+        
+            while ((line = reader.readLine()) != null) {
 
                 //skip first two lines of csv
                 if (l < 2) {
@@ -126,11 +126,21 @@ public class SimilarityCalculator {
             
             namesWriter.close();
             
-        } catch(IOException | RuntimeException ex){  
-            namesWriter.close();
+            logger.info("Total lines: " + l);
+            
+        } catch(IOException ex){  
+            logger.error(ex);
             throw new ApplicationException(ex.getMessage());
+        } finally {
+            try {
+                if(namesWriter != null){
+                    namesWriter.close();
+                }
+            } catch (IOException ex) {
+                logger.error(ex);
+                throw new ApplicationException(ex.getMessage());
+            }
         }
-        logger.info("Total lines: " + l);
     }
 
     private String getPropertyLine(String idA, String idB, String propertyA, String propertyB, 
