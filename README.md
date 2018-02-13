@@ -176,6 +176,8 @@ A sample rules.xml file could look like this:
 | shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
 | reject-link | Both | Rejects the whole link based on the rule property.
+| accept-mark-ambiguous | Both | Keeps the default fusion action data, but marks the property as ambiguous by adding a statement to the model.
+| reject-mark-ambiguous | Both | Rejects the link, but marks the property as ambiguous by adding a statement to the model.
 
 ### Available default dataset actions:
 | Name        | Type | Description
