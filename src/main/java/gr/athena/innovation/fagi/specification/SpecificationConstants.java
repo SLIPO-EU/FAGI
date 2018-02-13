@@ -62,7 +62,7 @@ public class SpecificationConstants {
         public static final String NOT = "not";
         public static final String A = "a";
         public static final String B = "b";
-        public static final int CONCATENATION_SEP = ", ";
+        public static final String CONCATENATION_SEP = ", ";
     }  
 
     public static class Similarity {

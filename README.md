@@ -173,6 +173,8 @@ A sample rules.xml file could look like this:
 | keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
 | shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
+| concatenate | Both | Keeps both values of the source datasets as a concatenated literal in the same property of the fused model.
+| reject-link | Both | Rejects the whole link based on the rule property.
 
 ### Available default dataset actions:
 | Name        | Type | Description
@@ -180,4 +182,5 @@ A sample rules.xml file could look like this:
 | keep-left | Both | Keeps the value of the left source entity in the fused model.
 | keep-right | Both | Keeps the value of the right source entity in the fused model.
 | keep-both | Both | Keeps both values of the source entities in the fused model.
+| reject-link | Both | Rejects the link. No data will be passed or affected in the target dataset for this link.
 
