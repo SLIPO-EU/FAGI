@@ -64,7 +64,12 @@ public enum EnumFusionAction {
     /**
      * Concatenates the two literals and keeps them in the same property.
      */      
-    CONCATENATE(9);
+    CONCATENATE(9),
+    
+    /**
+     * Keeps the model of the entity with the longest value. 
+     */      
+    KEEP_LONGEST(10);
     
 	private final int value;
 
@@ -142,13 +147,14 @@ public enum EnumFusionAction {
         case UNDEFINED: return "undefined";
         case KEEP_LEFT: return "keep-left";
         case KEEP_RIGHT: return "keep-right";
+        case CONCATENATE: return "concatenate";
+        case KEEP_LONGEST: return "keep-longest";        
         case KEEP_BOTH: return "keep-both";
         case KEEP_MORE_POINTS: return "keep-more-points";
         case KEEP_MORE_POINTS_AND_SHIFT: return "keep-more-points-and-shift";
         case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";
         case SHIFT_RIGHT_GEOMETRY: return "shift-right-geometry";
         case REJECT_LINK: return "reject-link";
-        case CONCATENATE: return "concatenate";
         default: throw new IllegalArgumentException();
       }
     }     

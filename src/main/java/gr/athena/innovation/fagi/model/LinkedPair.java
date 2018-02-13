@@ -18,6 +18,7 @@ import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
@@ -208,6 +209,43 @@ public class LinkedPair {
                 
                 break;
             }
+            case CONCATENATE:
+            {
+                Model fusedModel = fusedEntityData.getModel();
+                fusedModel.removeAll(null, property, (RDFNode) null);
+                
+                String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
+                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(concatenated));                
+                
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            } 
+            case KEEP_LONGEST:
+            {
+                Model fusedModel = fusedEntityData.getModel();
+                fusedModel.removeAll(null, property, (RDFNode) null);
+                
+                String sA = Normalizer.normalize(literalA, Normalizer.Form.NFD);
+                String sB = Normalizer.normalize(literalB, Normalizer.Form.NFD);
+                String longest;
+                
+                if(sA.length() > sB.length()){
+                    longest = sA;
+                } else {
+                    longest = sB;
+                }
+
+                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(longest));                
+                
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            }             
             case KEEP_BOTH:
             {
                     EntityData leftEntityData = leftNode.getEntityData();
@@ -327,21 +365,7 @@ public class LinkedPair {
                 fusedEntity.setEntityData(fusedEntityData);
 
                 break;
-            }
-            case CONCATENATE:
-            {
-                Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
-                
-                String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(concatenated));                
-                
-                fusedEntityData = fusedEntity.getEntityData();
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);
-
-                break;
-            }             
+            }            
             case REJECT_LINK:
             {
                 Model fusedModel = fusedEntityData.getModel();

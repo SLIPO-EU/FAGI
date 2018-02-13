@@ -203,12 +203,13 @@ public class SchemaDefinition {
 "								<xs:restriction base=\"xs:string\">\n" +
 "								  <xs:enumeration value=\"keep-left\"/>\n" +
 "								  <xs:enumeration value=\"keep-right\"/>\n" +
+"								  <xs:enumeration value=\"concatenate\"/>\n" +
+"								  <xs:enumeration value=\"keep-longest\"/>\n" +            
 "								  <xs:enumeration value=\"keep-both\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points-and-shift\"/>\n" +
 "								  <xs:enumeration value=\"shift-left-geometry\"/>\n" +
 "								  <xs:enumeration value=\"shift-right-geometry\"/>\n" +
-"								  <xs:enumeration value=\"concatenate\"/>\n" +
 "								  <xs:enumeration value=\"reject-link\"/>\n" +
 "								</xs:restriction>\n" +
 "							  </xs:simpleType>\n" +
