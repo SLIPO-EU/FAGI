@@ -45,11 +45,16 @@ public class SpecificationParser {
             fusionSpecification.setOutputRDFFormat(outputFormat);
 
             NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.LOCALE);
-            String localeText = localeNodeList.item(0).getTextContent();
             
+            String localeText = "";
             Locale locale;
             
+            if (localeNodeList.getLength() > 0) {
+                localeText = localeNodeList.item(0).getTextContent();
+            }
+
             switch (localeText) {
+                case "":
                 case "EN-GB":
                     locale = Locale.forLanguageTag("en-GB");
                     break;

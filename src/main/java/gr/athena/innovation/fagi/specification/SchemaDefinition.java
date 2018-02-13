@@ -41,9 +41,10 @@ public class SchemaDefinition {
 "			</xs:restriction>\n" +
 "		  </xs:simpleType>\n" +
 "		</xs:element>\n" +
-"		<xs:element name=\"locale\">\n" +
+"		<xs:element name=\"locale\" minOccurs=\"0\">\n" +
 "		  <xs:simpleType>\n" +
-"			<xs:restriction base=\"xs:string\">\n" +
+"			<xs:restriction base=\"xs:string\">\n" +         
+"			  <xs:enumeration value=\"\"/>\n" +            
 "			  <xs:enumeration value=\"EN\"/>\n" +
 "			  <xs:enumeration value=\"en\"/>\n" +
 "			  <xs:enumeration value=\"EN-GB\"/>\n" +            

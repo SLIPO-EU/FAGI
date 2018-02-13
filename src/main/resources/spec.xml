@@ -2,7 +2,7 @@
 <specification>
 	<inputFormat>NT</inputFormat>
 	<outputFormat>NT</outputFormat>
-	<locale>de</locale>
+	<locale></locale>
 	<left>
 		<id>OSM</id>
 		<endpoint></endpoint>
