@@ -1,6 +1,5 @@
-package gr.athena.innovation.fagi.core.functions.phone;
+package gr.athena.innovation.fagi.core.function.phone;
 
-import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;

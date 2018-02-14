@@ -1,12 +1,7 @@
-package gr.athena.innovation.fagi.core.functions.phone;
+package gr.athena.innovation.fagi.core.function.phone;
 
-import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -17,25 +12,6 @@ import static org.junit.Assert.*;
 public class IsSamePhoneNumberTest {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsSamePhoneNumberTest.class);
-    
-    public IsSamePhoneNumberTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of evaluate method, of class IsSamePhoneNumber.

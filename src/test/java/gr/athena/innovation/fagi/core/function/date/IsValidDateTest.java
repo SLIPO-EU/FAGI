@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions.date;
+package gr.athena.innovation.fagi.core.function.date;
 
 import gr.athena.innovation.fagi.core.function.date.IsValidDate;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;

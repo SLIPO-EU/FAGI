@@ -136,6 +136,7 @@ public class SpecificationConstants {
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
         public static final String IS_PHONE_NUMBER_PARSABLE = "isphonenumberparsable";
         public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
+        public static final String IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE = "issamephonenumbercustomnormalize";
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
         public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplex";
         //public static final String IS_SAME_NORMALIZED = "issamenormalized";

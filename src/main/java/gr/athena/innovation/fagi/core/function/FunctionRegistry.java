@@ -10,6 +10,7 @@ import gr.athena.innovation.fagi.core.function.literal.IsSameCustomNormalize;
 import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
 import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberCustomNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class FunctionRegistry {
         IsSameCustomNormalize isSameCustomNormalize = new IsSameCustomNormalize();
 
         //phone
+        IsSamePhoneNumberCustomNormalize isSamePhoneNumberCustomNormalize = new IsSamePhoneNumberCustomNormalize();
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
         IsSamePhoneNumber isSamePhoneNumber = new IsSamePhoneNumber();
         IsSamePhoneNumberUsingExitCode isSamePhoneNumberUsingExitCode = new IsSamePhoneNumberUsingExitCode();
@@ -71,6 +73,7 @@ public class FunctionRegistry {
         functionMap.put(isSameCustomNormalize.getName(), isSameCustomNormalize);
         
         //phone
+        functionMap.put(isSamePhoneNumberCustomNormalize.getName(), isSamePhoneNumberCustomNormalize);
         functionMap.put(isPhoneNumberParsable.getName(), isPhoneNumberParsable);
         functionMap.put(isSamePhoneNumber.getName(), isSamePhoneNumber);
         functionMap.put(isSamePhoneNumberUsingExitCode.getName(), isSamePhoneNumberUsingExitCode);

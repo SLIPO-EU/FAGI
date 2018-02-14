@@ -10,6 +10,7 @@ import gr.athena.innovation.fagi.core.function.literal.IsSameCustomNormalize;
 import gr.athena.innovation.fagi.core.function.literal.IsSameSimpleNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
+import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberCustomNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.util.List;
@@ -144,7 +145,7 @@ public class Condition {
                         
                         if (property == null) {
                             throw new WrongInputException(parameter + " is wrong. " 
-                                    + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                    + SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");                            
                         }
                         
@@ -170,7 +171,7 @@ public class Condition {
                         
                         if (property == null) {
                             throw new WrongInputException(parameterA + " is wrong. " 
-                                    + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                    + SpecificationConstants.Functions.IS_VALID_DATE
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");                            
                         }
                         
@@ -224,7 +225,7 @@ public class Condition {
                             
                             if (property == null) {
                                 throw new WrongInputException(parameter + " is wrong. " 
-                                        + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                        + SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE
                                         + " requires one parameter a or b followed by the external property id number. Eg. a1");                                
                             }
                             
@@ -251,11 +252,32 @@ public class Condition {
                     
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. " 
-                                + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
                     return isSamePhoneNumber.evaluate(property.getValueA(), property.getValueB());
+                }
+            }
+            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE: {
+                IsSamePhoneNumberCustomNormalize isSamePhoneNumberCustomNormalize 
+                        = (IsSamePhoneNumberCustomNormalize) functionMap.get(function.getName());
+                
+                String parameter = function.getParameters()[0];
+
+                //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+                    return isSamePhoneNumberCustomNormalize.evaluate(valueA, valueB);
+                } else {
+                    ExternalProperty property = externalProperties.get(parameter);
+                    
+                    if (property == null) {
+                        throw new WrongInputException(parameter + " is wrong. " 
+                                + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE
+                                + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
+                    }
+                    
+                    return isSamePhoneNumberCustomNormalize.evaluate(property.getValueA(), property.getValueB());
                 }
             }            
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE: {
@@ -276,7 +298,7 @@ public class Condition {
                     
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. " 
-                                + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
@@ -307,7 +329,7 @@ public class Condition {
                     
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. " 
-                                + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                + SpecificationConstants.Functions.IS_SAME_SIMPLE_NORMALIZE
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     
@@ -335,7 +357,7 @@ public class Condition {
                     
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. " 
-                                + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
+                                + SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");                        
                     }
                     

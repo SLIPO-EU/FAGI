@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.core.functions.literal;
+package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralAbbreviation;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
