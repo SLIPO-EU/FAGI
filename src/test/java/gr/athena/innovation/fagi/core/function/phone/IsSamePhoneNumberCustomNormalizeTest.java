@@ -21,28 +21,62 @@ public class IsSamePhoneNumberCustomNormalizeTest {
     public void testEvaluate() {
         logger.info("evaluate");
         IsSamePhoneNumberCustomNormalize instance = new IsSamePhoneNumberCustomNormalize();
-        
-        String number1 = "+(30)-(1234)-1230";
-        String number2 = "01234/123-0";
-        
+
+        //considered same
         boolean expResult1 = true;
-        boolean result1 = instance.evaluate(number1, number2);
+        boolean result1 = instance.evaluate("+(30)-(1234)-1230", "01234/123-0");
         assertEquals(expResult1, result1);
-        
-        String number3 = "01234/123-0";
-        String number4 = "+(30)-(1234)-1230";
-        
+
         boolean expResult2 = true;
-        boolean result2 = instance.evaluate(number3, number4);
+        boolean result2 = instance.evaluate("01234/123-0", "+(30)-(1234)-1230");
         assertEquals(expResult2, result2);
         
-        String number5 = "+(30)-(1324)-56789";
-        String number6 = "01234/56789-0";
-        
-        boolean expResult3 = false;
-        boolean result3 = instance.evaluate(number5, number6);
-        assertEquals(expResult3, result3);        
+        boolean expResult3 = true;
+        boolean result3 = instance.evaluate("+(30)-(1234)-56789", "01234/56789-0");
+        assertEquals(expResult3, result3);
 
+        boolean expResult4 = true;
+        boolean result4 = instance.evaluate("01234/56789-0", "+(30)-(1234)-56789");
+        assertEquals(expResult4, result4);
+
+        boolean expResult5 = true;
+        boolean result5 = instance.evaluate("+(30)-(1234)-567890", "01234/56789-0");
+        assertEquals(expResult5, result5);
+        
+        boolean expResult6 = true;
+        boolean result6 = instance.evaluate("01234/56789-0", "+(30)-(1234)-567890");
+        assertEquals(expResult6, result6);   
+
+        boolean expResult7 = true;
+        boolean result7 = instance.evaluate("+(30)-(1234)-1230", "01234/123-0");
+        assertEquals(expResult7, result7);   
+
+        boolean expResult8 = true;
+        boolean result8 = instance.evaluate("01234/123-0", "+(30)-(1234)-1230");
+        assertEquals(expResult8, result8);  
+
+        boolean expResult9 = true;
+        boolean result9 = instance.evaluate("+(30)-(123)-4500", "0123/450-0");
+        assertEquals(expResult9, result9);   
+
+        boolean expResult10 = true;
+        boolean result10 = instance.evaluate("0123/450-0", "+(30)-(123)-4500");
+        assertEquals(expResult10, result10);  
+        
+        
+        //considered different
+        
+        boolean expResult11 = false;
+        boolean result11 = instance.evaluate("+(30)-(1234)-5670", "01234/567-00");
+        assertEquals(expResult11, result11);
+        
+        boolean expResult12 = false;
+        boolean result12 = instance.evaluate("01234/567-89", "+(30)-(1234)-5670");
+        assertEquals(expResult12, result12);
+        
+        boolean expResult13 = false;
+        boolean result13 = instance.evaluate("+(30)-(123)-4500", "0123/450-1");
+        assertEquals(expResult13, result13);           
     }
 
     /**

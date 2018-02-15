@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -37,7 +38,6 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
 
             return numerical1.equals(numerical2);
         }
-        
 
         //both are known formats from now on
         if((phone1.hasCountryCode() && !phone2.hasCountryCode()) 
@@ -47,7 +47,28 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
             //cannot compare using exit codes. Continue with area code, line number and internal code.
             if(phone1.getAreaCode().equals(phone2.getAreaCode())){
 
-                if(phone1.getLineNumber().equals(phone2.getLineNumber())){
+                if(!phone1.getLineNumber().equals(phone2.getLineNumber())){
+                    if(phone1.getLineNumber().equals(phone2.getLineNumber()+phone2.getInternal())){
+                        //phone1 line number contains internal digits of phone2
+                        return true;
+                    } else if(phone2.getLineNumber().equals(phone1.getLineNumber()+phone1.getInternal())){
+                        //phone2 line number contains internal digits of phone1
+                        return true;
+                    } else {
+                        //check again, ignoring the trailing zero from line number
+                        if(phone1.getLineNumber().endsWith("0")){
+                            String line1 = phone1.getLineNumber().substring(0, phone1.getLineNumber().length()-1);
+                            if(line1.equals(phone2.getLineNumber())){
+                                return true;
+                            }
+                        } else if(phone2.getLineNumber().endsWith("0")){
+                            String line2 = phone2.getLineNumber().substring(0, phone2.getLineNumber().length()-1);
+                            if(line2.equals(phone1.getLineNumber())){
+                                return true;
+                            }                            
+                        }
+                    }
+                } else if(phone1.getLineNumber().equals(phone2.getLineNumber())){
                     
                     return phone1.getLineNumber().endsWith(phone2.getInternal()) 
                             || phone2.getLineNumber().endsWith(phone1.getInternal());
@@ -144,19 +165,17 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
 
         //set area code
         if(phoneNumber.getCountryCode() != null){
-            int index = number.indexOf("(", number.indexOf("(") + 1);
-            String areaCode = number.substring(index+1, index + 5);
-            phoneNumber.setAreaCode(areaCode);
+
+            String[] codes = StringUtils.substringsBetween(number, "(", ")");
+            phoneNumber.setAreaCode(codes[1]);
             
         } else {
             if(number.contains("/")){
                 String[] parts = number.split("/");
-                if(parts[0].startsWith("0") && parts[0].length() == 5){ //found zero prefix, removing it
-                    String areaCode = parts[0].substring(1, 5);
-                    phoneNumber.setAreaCode(areaCode);
-                } else if(parts[0].length() == 4){
-                    String areaCode = parts[0].substring(0, 3);
-                    phoneNumber.setAreaCode(areaCode);
+                
+                if(parts[0].startsWith("0")){ //found zero prefix, removing it
+                    String ar = StringUtils.right(parts[0], parts[0].length()-1);
+                    phoneNumber.setAreaCode(ar);
                 } else {
                     phoneNumber.setUnknownFormat(true);
                     phoneNumber.setNumericalValue(removeNonNumericCharacters(number));

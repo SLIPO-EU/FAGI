@@ -12,7 +12,7 @@ public class PhoneNumber {
     private boolean hasPlus = false;
     private boolean hasCountryCode = false;
     
-    private String countryCode;
+    private String countryCode = null;
     private String areaCode = "";
     private String lineNumber = "";
     private String internal = "";
