@@ -16,8 +16,8 @@
         <xs:element name="rule" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="propertyA" type="xs:anyURI" />
-              <xs:element name="propertyB" type="xs:anyURI" />
+              <xs:element name="propertyA" type="xs:string" />
+              <xs:element name="propertyB" type="xs:string" />
 			  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 				  <xs:simpleContent>

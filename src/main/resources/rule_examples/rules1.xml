@@ -1,0 +1,23 @@
+<rules>
+	<defaultDatasetAction>keep-left</defaultDatasetAction>	
+	<rule>
+		<propertyA>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyA>
+		<propertyB>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyB>
+		<externalProperty id="a1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
+		<externalProperty id="b1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
+		<actionRuleSet>
+			<actionRule>
+				<condition>
+					<function>isSamePhoneNumber(a1,b1)</function>
+				</condition>
+				<action>concatenate</action>
+			</actionRule>
+		</actionRuleSet>
+		<defaultAction>keep-left</defaultAction>
+	</rule>	
+	<rule>
+		<propertyA>wkt</propertyA>
+		<propertyB>wkt</propertyB>
+		<defaultAction>keep-left</defaultAction>
+	</rule>
+</rules>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification>
+	<inputFormat>NT</inputFormat>
+	<outputFormat>NT</outputFormat>
+	<locale></locale>
+	<similarity>jarowinkler</similarity>
+	<left>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+	</left>
+	<right>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+	</right>
+	<links>
+		<id>LINKS_OSM_WIKIMAPIA</id>
+		<endpoint></endpoint>
+		<file></file>
+	</links>	
+	<target>
+		<id>FUSED_OSM_WIKIMAPIA</id>
+		<resourceURI>left</resourceURI>	
+		<mergeWith>new</mergeWith>
+		<file></file>
+	</target>
+</specification>
+
+
+
+
+

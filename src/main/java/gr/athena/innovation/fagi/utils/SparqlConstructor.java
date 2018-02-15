@@ -120,6 +120,7 @@ public class SparqlConstructor {
         }
         return query; 
     }
+    
     public static String askPredicateQuery(String predicate){
         return "ASK { ?s <" + predicate + "> ?o }";
     }
@@ -135,7 +136,23 @@ public class SparqlConstructor {
                         + "}";
         return query;
     }
+    
+    public static String selectNodeWithLiteralQuery(String predicate, String literal){
+        String query = "SELECT ?s " 
+                        + "WHERE {"
+                        + "?s <" + predicate + "> \"" + literal +"\" "
+                        + "}";
+        return query;
+    }    
 
+    public static String selectObjectFromChainQuery(String predicate1, String predicate2){
+        String query = "SELECT ?o2 " 
+                        + "WHERE {"
+                        + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2"
+                        + "}";
+        return query;
+    }
+    
     public static String countPOIs(String countVar){
         String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +

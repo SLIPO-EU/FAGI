@@ -147,8 +147,8 @@ public class SchemaDefinition {
 "        <xs:element name=\"rule\" maxOccurs=\"unbounded\">\n" +
 "          <xs:complexType>\n" +
 "            <xs:sequence>\n" +
-"              <xs:element name=\"propertyA\" type=\"xs:anyURI\" />\n" +
-"              <xs:element name=\"propertyB\" type=\"xs:anyURI\" />\n" +
+"              <xs:element name=\"propertyA\" type=\"xs:string\" />\n" +
+"              <xs:element name=\"propertyB\" type=\"xs:string\" />\n" +
 "			  <xs:element name=\"externalProperty\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n"+
 "				<xs:complexType>\n" +
 "				  <xs:simpleContent>\n" +

@@ -55,6 +55,51 @@ public class SparqlRepository {
         return rdfObjectValue;
     }
 
+    public static String getObjectOfPropertyChain(String p1, String p2, Model model) {
+        
+        String var = "o2";
+        String result = null;
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1,p2);
+
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(var);
+                if (c.isLiteral()) {
+                    result = c.toString();
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Resource getSubjectWithLiteral(String property, String literal, Model model) {
+        
+        String var = "s";
+        String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property, literal);
+
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode result = soln.get(var);
+                if (result.isResource()) {
+                    return (Resource) result;
+                }
+            }
+        }
+        return null;
+    }
+    
     public static String getObjectOfProperty(String property, Model model) {
         String rdfObjectValue = null;
 

@@ -36,7 +36,6 @@ public class Condition {
             Map<String, ExternalProperty> externalProperties) throws WrongInputException {
         
         if (isSingleFunction()) {
-            logger.trace("\nEvaluating: " + func.getName() + " with values: " + valueA + ", " + valueB);
             Function function2 = new Function(this.function);
             if (functionMap.containsKey(function2.getName())) {
                 return evaluateOperator(functionMap, func, valueA, valueB, externalProperties);
@@ -249,7 +248,7 @@ public class Condition {
                     return isSamePhoneNumber.evaluate(valueA, valueB);
                 } else {
                     ExternalProperty property = externalProperties.get(parameter);
-                    
+
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. " 
                                 + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER

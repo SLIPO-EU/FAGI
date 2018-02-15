@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
                 String[] commas = parenthesis.split("\\)");
 
                 if(commas[0].contains(",")){
-                    String[] params = commas[1].split(",");
+                    String[] params = commas[0].split(",");
                     setParameters(params);
                 } else {
                     //single parameter:

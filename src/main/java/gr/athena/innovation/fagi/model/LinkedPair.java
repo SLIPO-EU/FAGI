@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,19 +85,40 @@ public class LinkedPair {
             EnumFusionAction defaultAction = rule.getDefaultAction();
 
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
-            Property rdfPropertyA = getRDFPropertyFromString(rule.getPropertyA());
-            Property rdfPropertyB = getRDFPropertyFromString(rule.getPropertyB());
+            Property rdfValuePropertyA = getRDFPropertyFromString(rule.getPropertyA());
+            Property rdfValuePropertyB = getRDFPropertyFromString(rule.getPropertyB());
+
+            //the property here is assumed to be one node above the literal value in order  to align with the ontology.
+            //For example the property is the p1 in the following linked triples.
+            // s p1 o1 . o1 p2 o2 
+            String literalA;
+            String literalB;
             
-            String literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
-            String literalB = getLiteralValue(rule.getPropertyB(), rightEntityData.getModel());
-            logger.info("Found literals: {}, {}", literalA, literalB);
+            if(rule.getParentPropertyA() == null){
+                literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
+
+            } else {
+                literalA = getLiteralValueFromChain(rule.getParentPropertyA(), rule.getPropertyA(), leftEntityData.getModel());
+            }
+            
+            if(rule.getParentPropertyB() == null){
+                literalB = getLiteralValue(rule.getPropertyB(), rightEntityData.getModel());
+            } else {
+                literalB = getLiteralValueFromChain(rule.getParentPropertyB(), rule.getPropertyB(), rightEntityData.getModel());
+            }
+
+            logger.warn("Found literals: {}, {}", literalA, literalB);
+            
+            if(literalA == null && literalB == null){
+                continue;
+            }
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if(rule.getActionRuleSet() == null){
                 logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultAction);
                 if(defaultAction != null){
-                    fuseRuleAction(defaultAction, rdfPropertyA, literalA, literalB);
+                    fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB);
                 }
                 break;
             }
@@ -119,9 +141,22 @@ public class LinkedPair {
                 //switch case for evaluation using external properties.
                 for(Map.Entry<String, ExternalProperty> extProp : rule.getExternalProperties().entrySet()){
 
-                    String valueA = getLiteralValue(extProp.getValue().getProperty(), leftEntityData.getModel());
-                    String valueB = getLiteralValue(extProp.getValue().getProperty(), rightEntityData.getModel());         
+                    //The rule model does not represent the external properties with chain relationships.
+                    //So, there are two cases here: Property refers to literal the external property contains a chain
+                    //separated by a whitespace.
+                    String extPropertyText = extProp.getValue().getProperty();
+                    String valueA;
+                    String valueB;
                     
+                    if(extPropertyText.contains(" ")){
+                        String[] chains = extPropertyText.split(" ");
+                        valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
+                        valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
+                    } else {
+                        valueA = getLiteralValue(extProp.getValue().getProperty(), leftEntityData.getModel());
+                        valueB = getLiteralValue(extProp.getValue().getProperty(), rightEntityData.getModel());
+                    }
+
                     extProp.getValue().setValueA(valueA);
                     extProp.getValue().setValueB(valueB);
                 }
@@ -132,7 +167,7 @@ public class LinkedPair {
                 if(isActionRuleToBeApplied){
                     logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
                     
-                    fuseRuleAction(action, rdfPropertyA, literalA, literalB);
+                    fuseRuleAction(action, rdfValuePropertyA, literalA, literalB);
                     
                     actionRuleToApply = true;
                     break;
@@ -141,7 +176,7 @@ public class LinkedPair {
 
             //No action rule applied. Use default Action
             if(actionRuleToApply == false){
-                fuseRuleAction(defaultAction, rdfPropertyA, literalA, literalB);
+                fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB);
             }
         }
     }
@@ -189,8 +224,14 @@ public class LinkedPair {
             case KEEP_LEFT:
             {
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
+                
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                
+                //TODO: check when model does not contain literalA or B
+                if(node != null){
+                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA)); 
+                }
+                               
                 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -201,8 +242,9 @@ public class LinkedPair {
             case KEEP_RIGHT:
             {
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, null);
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalB));                
 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
@@ -211,11 +253,14 @@ public class LinkedPair {
             }
             case CONCATENATE:
             {
+
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
-                
+
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+
                 String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(concatenated));                
+
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(concatenated));                
                 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -226,7 +271,8 @@ public class LinkedPair {
             case KEEP_LONGEST:
             {
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
+                
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                 
                 String sA = Normalizer.normalize(literalA, Normalizer.Form.NFD);
                 String sB = Normalizer.normalize(literalB, Normalizer.Form.NFD);
@@ -238,7 +284,7 @@ public class LinkedPair {
                     longest = sB;
                 }
 
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(longest));                
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(longest));                
                 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -267,8 +313,10 @@ public class LinkedPair {
                 if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
 
                     Model fusedModel = fusedEntityData.getModel();
-                    fusedModel.removeAll(null, property, (RDFNode) null);
-                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalA));                
+                    
+                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    
+                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));                
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -277,8 +325,10 @@ public class LinkedPair {
 
                 } else {
                     Model fusedModel = fusedEntityData.getModel();
-                    fusedModel.removeAll(null, property, (RDFNode) null);
-                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(literalB));                
+                    
+                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    
+                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalB));                
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -300,8 +350,10 @@ public class LinkedPair {
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
                     Model fusedModel = fusedEntityData.getModel();
-                    fusedModel.removeAll(null, property, (RDFNode) null);
-                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+                    
+                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    
+                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -314,8 +366,10 @@ public class LinkedPair {
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
                     Model fusedModel = fusedEntityData.getModel();
-                    fusedModel.removeAll(null, property, (RDFNode) null);
-                    fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+                    
+                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    
+                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -336,8 +390,10 @@ public class LinkedPair {
                 String wktFusedGeometry = getWKTLiteral(shiftedToRightGeometry);
 
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+                
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -357,8 +413,10 @@ public class LinkedPair {
                 String wktFusedGeometry = getWKTLiteral(shiftedToLeftGeometry);
 
                 Model fusedModel = fusedEntityData.getModel();
-                fusedModel.removeAll(null, property, (RDFNode) null);
-                fusedModel.add(ResourceFactory.createResource(fusedURI), property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
+                
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -410,13 +468,40 @@ public class LinkedPair {
         }         
     }
 
+    //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
+    //The method also returns the resource that the literalA or B waw found in order to be used as subject and preserve
+    //the triple chain
+    private Resource getResourceAndRemoveLiteral(Model model, Property property, String literalA, String literalB) {
+        Resource node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
+        if(node == null){
+            node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalB, model);
+            if(node != null){
+                model.removeAll(node, property, (RDFNode) null);
+            }
+        } else {
+            model.removeAll(node, property, (RDFNode) null);
+        }
+        return node;
+    }
+
     private String getLiteralValue(String property, Model model){
         Property propertyRDF = getRDFPropertyFromString(property);
         
         if(propertyRDF != null){
             return SparqlRepository.getObjectOfProperty(propertyRDF, model);
         } else {
-            logger.warn("Could not find literal for property {}", property);
+            logger.warn("Could not find literal with property {}", property);
+
+            return "";
+        }
+    }
+
+    private String getLiteralValueFromChain(String property1, String property2, Model model){
+
+        if(property1 != null){
+            return SparqlRepository.getObjectOfPropertyChain(property1, property2, model);
+        } else {
+            logger.warn("Could not find literal with property {}", property1);
             return "";
         }
     }

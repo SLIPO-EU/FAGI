@@ -12,8 +12,11 @@ import java.util.Map;
  */
 public class Rule {
 
+    private String parentPropertyA = null;
     private String propertyA;
+    private String parentPropertyB = null;    
     private String propertyB;
+
     
     //TODO: external properties implementation
     private Map<String, ExternalProperty> externalProperties = new HashMap<>();
@@ -21,22 +24,44 @@ public class Rule {
     private ActionRuleSet actionRuleSet;
     private EnumFusionAction defaultAction;
 
+    //this property is always the end of a chain and points to a literal.
     public String getPropertyA() {
         return propertyA;
     }
 
     public void setPropertyA(String propertyA) {
-        this.propertyA = propertyA;
+        if(propertyA.contains(" ")){
+            String[] chains = propertyA.split(" ");
+            this.parentPropertyA = chains[0];
+            this.propertyA = chains[1];
+        } else {
+            this.propertyA = propertyA;
+        }
     }
-
+    
+    //this property is always the end of a chain and points to a literal.
     public String getPropertyB() {
         return propertyB;
     }
 
     public void setPropertyB(String propertyB) {
-        this.propertyB = propertyB;
+        if(propertyB.contains(" ")){
+            String[] chains = propertyB.split(" ");
+            this.parentPropertyB = chains[0];
+            this.propertyB = chains[1];
+        } else {
+            this.propertyB = propertyB;
+        }
     }
 
+    public String getParentPropertyA() {
+        return parentPropertyA;
+    }
+
+    public String getParentPropertyB() {
+        return parentPropertyB;
+    }
+    
     public EnumFusionAction getDefaultAction() {
         return defaultAction;
     }
