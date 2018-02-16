@@ -71,4 +71,9 @@ import org.apache.logging.log4j.Logger;
         public void setParameterCount(int parameterCount) {
             this.parameterCount = parameterCount;
         }
+        
+        @Override
+        public String toString() {
+            return "Function{" + "name=" + name + ", parameters=" + Arrays.toString(parameters) + ", parameterCount=" + parameterCount + '}';
+        }        
     }

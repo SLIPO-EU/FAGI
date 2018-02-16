@@ -83,11 +83,11 @@ public class SpecificationConstants {
     public static class Evaluation {
 
         public static final double MISMATCH_THRESHOLD = 0.75;
-        public static Double BASE_WEIGHT;
-        public static Double MISMATCH_WEIGHT;
-        public static Double MERGED_BASE_MISMATCH_WEIGHT;
-        public static Double SPECIAL_TERMS_WEIGHT;
-        public static Double COMMON_SPECIAL_TERM_WEIGHT;
+        public static Double BASE_WEIGHT = 0.7;
+        public static Double MISMATCH_WEIGHT = 0.3;
+        public static Double MERGED_BASE_MISMATCH_WEIGHT = 1.0;
+        public static Double SPECIAL_TERMS_WEIGHT = 0.0;
+        public static Double COMMON_SPECIAL_TERM_WEIGHT = 0.0;
 
         public static final String LOWERCASE_VOWELS = "aeiouäöü";
     

@@ -21,8 +21,8 @@
 			  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
 				<xs:complexType>
 				  <xs:simpleContent>
-					<xs:extension base="xsd:string">
-					  <xs:attribute name="id" type="xsd:string" use="required"/>
+					<xs:extension base="xs:string">
+					  <xs:attribute name="id" type="xs:string" use="required"/>
 					</xs:extension>
 				  </xs:simpleContent>
 				</xs:complexType>
@@ -37,27 +37,30 @@
 							  <xs:complexType>
 								<xs:sequence>
 								  <xs:element name="function" type="xs:string" minOccurs="0"/>
-								  <xs:element name="expression" minOccurs="0">
+								  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded">
 							        <xs:complexType>
 									 <xs:sequence>
 										<xs:element name="not" minOccurs="0">
 										  <xs:complexType>
 											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0"/>
+											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
 											</xs:sequence>
 										  </xs:complexType>
 										</xs:element> 
 										<xs:element name="and" minOccurs="0">
 										  <xs:complexType>
 											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0"/>
+											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
 											</xs:sequence>
 										  </xs:complexType>
 										</xs:element> 
 										<xs:element name="or" minOccurs="0">
 										  <xs:complexType>
 											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0"/>
+											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
 											</xs:sequence>
 										  </xs:complexType>
 										</xs:element> 

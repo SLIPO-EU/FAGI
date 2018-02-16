@@ -58,21 +58,20 @@ public enum EnumFusionAction {
     SHIFT_RIGHT_GEOMETRY(7),
     
     /**
-     * Rejects the link, that is the fusion action. 
-     * If a new fused dataset is chosen as output, none of the respective models of the entities appear in the final dataset.
-     */      
-    REJECT_LINK(8),
-    
-    /**
      * Concatenates the two literals and keeps them in the same property.
      */      
-    CONCATENATE(9),
+    CONCATENATE(8),
     
     /**
      * Keeps the model of the entity with the longest value. 
      */      
-    KEEP_LONGEST(10),
+    KEEP_LONGEST(9),
     
+    /**
+     * Rejects the link, that is the fusion action. 
+     * If a new fused dataset is chosen as output, none of the respective models of the entities appear in the final dataset.
+     */      
+    REJECT_LINK(10),    
     /**
      * Keeps the default action, but marks the value as ambiguous in the model using a statement with the POI's URI.
      */    

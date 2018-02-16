@@ -22,6 +22,7 @@ import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -107,8 +108,6 @@ public class LinkedPair {
                 literalB = getLiteralValueFromChain(rule.getParentPropertyB(), rule.getPropertyB(), rightEntityData.getModel());
             }
 
-            logger.warn("Found literals: {}, {}", literalA, literalB);
-            
             if(literalA == null && literalB == null){
                 continue;
             }
@@ -147,7 +146,7 @@ public class LinkedPair {
                     String extPropertyText = extProp.getValue().getProperty();
                     String valueA;
                     String valueB;
-                    
+
                     if(extPropertyText.contains(" ")){
                         String[] chains = extPropertyText.split(" ");
                         valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
@@ -166,14 +165,13 @@ public class LinkedPair {
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
                     logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
-                    
+
                     fuseRuleAction(action, rdfValuePropertyA, literalA, literalB);
-                    
+
                     actionRuleToApply = true;
                     break;
                 }
             }
-
             //No action rule applied. Use default Action
             if(actionRuleToApply == false){
                 fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB);
@@ -189,22 +187,40 @@ public class LinkedPair {
                 ("Default fusion action tries to overwrite already fused data!");
         }
 
+        EntityData fusedData = new EntityData();
+        
+        Model fusedModel = ModelFactory.createDefaultModel();
+        
         EntityData leftData = leftNode.getEntityData();
         EntityData rightData = rightNode.getEntityData();
         
         switch(datasetDefaultAction){
             case KEEP_LEFT:
-                fusedEntity.setEntityData(leftData);
+            {
+                fusedModel.add(leftData.getModel());
+                fusedData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedData);
                 break;
+            }
             case KEEP_RIGHT:
-                fusedEntity.setEntityData(rightData);
+            {
+                fusedModel.add(rightData.getModel());
+                fusedData.setModel(rightData.getModel());
+                fusedEntity.setEntityData(fusedData);
                 break;
+            }
             case KEEP_BOTH:
-                fusedEntity.getEntityData().getModel().add(leftData.getModel()).add(rightData.getModel());
+            {
+                fusedModel.add(leftData.getModel().add(rightData.getModel()));
+                fusedData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedData);
                 break;
+            } 
             case REJECT_LINK:
+            {
                 fusedEntity.getEntityData().getModel().removeAll();
-                break;                
+                break;   
+            }
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
         }        
@@ -212,6 +228,7 @@ public class LinkedPair {
 
     private void fuseRuleAction(EnumFusionAction action, 
             Property property, String literalA, String literalB) throws WrongInputException{
+        
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
@@ -219,20 +236,22 @@ public class LinkedPair {
         String fusedURI = fusedEntity.getResourceURI();
 
         EntityData fusedEntityData = fusedEntity.getEntityData();
-
+        
         switch(action){
             case KEEP_LEFT:
             {
                 Model fusedModel = fusedEntityData.getModel();
-                
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                } 
+
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-                
+
                 //TODO: check when model does not contain literalA or B
                 if(node != null){
                     fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA)); 
                 }
-                               
-                
+
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
@@ -241,21 +260,31 @@ public class LinkedPair {
             }
             case KEEP_RIGHT:
             {
+                
                 Model fusedModel = fusedEntityData.getModel();
+                
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                 
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalB));                
 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
-                
+               
                 break;
             }
             case CONCATENATE:
             {
 
                 Model fusedModel = fusedEntityData.getModel();
-
+                
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
 
                 String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
@@ -271,6 +300,10 @@ public class LinkedPair {
             case KEEP_LONGEST:
             {
                 Model fusedModel = fusedEntityData.getModel();
+                
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
                 
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                 
@@ -298,6 +331,11 @@ public class LinkedPair {
                     EntityData rightEntityData = rightNode.getEntityData();
 
                     Model fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
+                    
+                    if(isRejectedByPreviousRule(fusedModel)){
+                        break;
+                    }
+                    
                     fusedEntityData.setModel(fusedModel);
                     fusedEntity.setEntityData(fusedEntityData);
                     
@@ -314,6 +352,10 @@ public class LinkedPair {
 
                     Model fusedModel = fusedEntityData.getModel();
                     
+                    if(isRejectedByPreviousRule(fusedModel)){
+                        break;
+                    }
+                    
                     Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                     
                     fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));                
@@ -325,6 +367,10 @@ public class LinkedPair {
 
                 } else {
                     Model fusedModel = fusedEntityData.getModel();
+                    
+                    if(isRejectedByPreviousRule(fusedModel)){
+                        break;
+                    }                   
                     
                     Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                     
@@ -351,6 +397,10 @@ public class LinkedPair {
 
                     Model fusedModel = fusedEntityData.getModel();
                     
+                    if(isRejectedByPreviousRule(fusedModel)){
+                        break;
+                    }
+                    
                     Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                     
                     fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
@@ -366,6 +416,10 @@ public class LinkedPair {
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
                     Model fusedModel = fusedEntityData.getModel();
+                    
+                    if(isRejectedByPreviousRule(fusedModel)){
+                        break;
+                    }
                     
                     Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                     
@@ -391,6 +445,10 @@ public class LinkedPair {
 
                 Model fusedModel = fusedEntityData.getModel();
                 
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                 
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
@@ -414,6 +472,10 @@ public class LinkedPair {
 
                 Model fusedModel = fusedEntityData.getModel();
                 
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
                 
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
@@ -428,6 +490,10 @@ public class LinkedPair {
             {
                 Model fusedModel = fusedEntityData.getModel();
                 
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }               
+                
                 if(!fusedModel.isEmpty()){
                     fusedModel.removeAll();
                 }
@@ -441,6 +507,10 @@ public class LinkedPair {
             {
                 Model fusedModel = fusedEntityData.getModel();
                 
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
                 Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_PROPERTY);
 
                 fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
@@ -451,7 +521,12 @@ public class LinkedPair {
             }
             case REJECT_MARK_AMBIGUOUS:
             {
+            
                 Model fusedModel = fusedEntityData.getModel();
+                
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
                 
                 if(!fusedModel.isEmpty()){
                     fusedModel.removeAll();
@@ -462,9 +537,9 @@ public class LinkedPair {
                 fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);                
-                
+            
                 break;
-            }               
+            }
         }         
     }
 
@@ -569,5 +644,12 @@ public class LinkedPair {
             throw new WrongInputException
                 ("The selected action " + action.toString() + " applies only for WKT geometry literals");
         }         
+    }
+    
+    private boolean isRejectedByPreviousRule(Model model){
+        //the link has been rejected (or rejected and marked ambiguous) by previous rule. break
+        //TODO: if size is 1, maybe strict check if the triple contains the ambiguity
+        
+        return model.isEmpty() || model.size() == 1;
     }
 }

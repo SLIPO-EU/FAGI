@@ -254,7 +254,7 @@ public class RuleProcessor {
         //3)both functions and expressions
         //1)
         if (containsOnlyFunctionChilds(rootExpressionNode)) {
-            List<Function> functions = getFunctionsOfLogicalOperation2(rootExpressionNode);
+            List<Function> functions = getFunctionsOfLogicalOperation(rootExpressionNode);
             expression.setFunctions(functions);
             return expression;
         }
@@ -271,7 +271,7 @@ public class RuleProcessor {
                 if (!containsOnlyFunctionChilds(n)) {
                     throw new WrongInputException("Expression depth exceeded! Re-construct the conditions in rules.xml");
                 } else {
-                    List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
+                    List<Function> childFunctions = getFunctionsOfLogicalOperation(n);
 
                     if (expressionChildFunctions.containsKey(childOperator)) {
                         List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
@@ -299,7 +299,7 @@ public class RuleProcessor {
                 if (!containsOnlyFunctionChilds(n)) {
                     throw new WrongInputException("Expression depth exceeded! Re-construct the conditions in rules.xml");
                 } else {
-                    List<Function> childFunctions = getFunctionsOfLogicalOperation2(n);
+                    List<Function> childFunctions = getFunctionsOfLogicalOperation(n);
                     if (expressionChildFunctions.containsKey(childOperator)) {
                         List<Function> mergedFunctions = expressionChildFunctions.get(childOperator);
                         mergedFunctions.addAll(childFunctions);
@@ -443,7 +443,7 @@ public class RuleProcessor {
     //this method returns a list with all functions under a logical operation. 
     //The input is the parent node of the logical operation (Expression node)
     //IMPORTANT: Assumes that the parent node contains only <FUNCTION> tags.
-    private List<Function> getFunctionsOfLogicalOperation2(Node node) throws WrongInputException {
+    private List<Function> getFunctionsOfLogicalOperation(Node node) throws WrongInputException {
         List<Function> list = new ArrayList<>();
 
         Node logicalOperationNode = getLogicalOperationNode(node);

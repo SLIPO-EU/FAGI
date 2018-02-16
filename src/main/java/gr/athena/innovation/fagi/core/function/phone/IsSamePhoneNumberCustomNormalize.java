@@ -31,12 +31,13 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
         PhoneNumber phone1 = createPhoneNumber(phoneText1);
         PhoneNumber phone2 = createPhoneNumber(phoneText2);
 
-        if(phone1.isUnknownFormat() || phone2.isUnknownFormat()){
+        String numerical1 = removeNonNumericCharacters(phoneText1);
+        String numerical2 = removeNonNumericCharacters(phoneText2);
 
-            String numerical1 = removeNonNumericCharacters(phoneText1);
-            String numerical2 = removeNonNumericCharacters(phoneText2);
-
-            return numerical1.equals(numerical2);
+        if(numerical1.equals(numerical2)){
+            return true;
+        } else if(phone1.isUnknownFormat() || phone2.isUnknownFormat()){
+            return false;
         }
 
         //both are known formats from now on

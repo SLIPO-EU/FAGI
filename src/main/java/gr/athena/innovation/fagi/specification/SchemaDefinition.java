@@ -149,7 +149,7 @@ public class SchemaDefinition {
 "            <xs:sequence>\n" +
 "              <xs:element name=\"propertyA\" type=\"xs:string\" />\n" +
 "              <xs:element name=\"propertyB\" type=\"xs:string\" />\n" +
-"			  <xs:element name=\"externalProperty\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n"+
+"			  <xs:element name=\"externalProperty\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "				<xs:complexType>\n" +
 "				  <xs:simpleContent>\n" +
 "					<xs:extension base=\"xs:string\">\n" +
@@ -168,27 +168,30 @@ public class SchemaDefinition {
 "							  <xs:complexType>\n" +
 "								<xs:sequence>\n" +
 "								  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
-"								  <xs:element name=\"expression\" minOccurs=\"0\">\n" +
+"								  <xs:element name=\"expression\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "							        <xs:complexType>\n" +
 "									 <xs:sequence>\n" +
 "										<xs:element name=\"not\" minOccurs=\"0\">\n" +
 "										  <xs:complexType>\n" +
 "											<xs:sequence>\n" +
-"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
+"											  <xs:element name=\"expression\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
 "											</xs:sequence>\n" +
 "										  </xs:complexType>\n" +
 "										</xs:element> \n" +
 "										<xs:element name=\"and\" minOccurs=\"0\">\n" +
 "										  <xs:complexType>\n" +
 "											<xs:sequence>\n" +
-"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
+"											  <xs:element name=\"expression\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
 "											</xs:sequence>\n" +
 "										  </xs:complexType>\n" +
 "										</xs:element> \n" +
 "										<xs:element name=\"or\" minOccurs=\"0\">\n" +
 "										  <xs:complexType>\n" +
 "											<xs:sequence>\n" +
-"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+"											  <xs:element name=\"function\" type=\"xs:string\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
+"											  <xs:element name=\"expression\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
 "											</xs:sequence>\n" +
 "										  </xs:complexType>\n" +
 "										</xs:element> \n" +
@@ -204,9 +207,9 @@ public class SchemaDefinition {
 "								  <xs:enumeration value=\"keep-left\"/>\n" +
 "								  <xs:enumeration value=\"keep-right\"/>\n" +
 "								  <xs:enumeration value=\"concatenate\"/>\n" +
-"								  <xs:enumeration value=\"keep-longest\"/>\n" +         
+"								  <xs:enumeration value=\"keep-longest\"/>\n" +
 "								  <xs:enumeration value=\"accept-mark-ambiguous\"/>\n" +
-"								  <xs:enumeration value=\"reject-mark-ambiguous\"/>\n" +            
+"								  <xs:enumeration value=\"reject-mark-ambiguous\"/>\n" +
 "								  <xs:enumeration value=\"keep-both\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points\"/>\n" +
 "								  <xs:enumeration value=\"keep-more-points-and-shift\"/>\n" +

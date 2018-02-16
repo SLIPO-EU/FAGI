@@ -145,6 +145,7 @@ A sample rules.xml file could look like this:
 * **isSameCustomNormalize:** Checks if the two given literals are same. It normalizes the two literals with some extra steps in addition to the simple normalization. Then, it uses the provided similarity (default JaroWinkler) and returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
 * **isPhoneNumberParsable:** Checks if the given phone number is consisted of only numbers or contains special character and/or exit code.
 * **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
+* **isSamePhoneNumberCustomNormalize:** Checks if the given phone numbers are the same. Some phone-normalization. If the equality fails, some custom steps for normalization are executed and the function rechecks for equality (e.g two numbers are considered same if one of them does not contain a country code but the line number is the same etc).
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
 * **exists:** Checks if the given property exists in the model of the given entity.
 
@@ -159,6 +160,7 @@ A sample rules.xml file could look like this:
 | isSameCustomNormalize | a, b and threshold| Literal | isSameCustomNormalize(a,b, 0.6) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
+| isSamePhoneNumberCustomNormalize | a and b | Phone | isSamePhoneNumberCustomNormalize(a,b)  
 | isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  
 | exists | model, property | Property | exists(a,http&#58;//www.w3.org/2000/01/rdf-schema#label)  
 
