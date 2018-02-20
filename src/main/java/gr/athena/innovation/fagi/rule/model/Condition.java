@@ -107,15 +107,33 @@ public class Condition {
             for (Map.Entry<String, List<Function>> entry : groups.entrySet()) {
                 switch (entry.getKey()) {
                     case SpecificationConstants.Rule.NOT: {
-                        //NOT should contain a single function or a single expression child.
                         List<Function> functions = entry.getValue();//expression.getFunctions();
-                        if (functions.size() == 1) {
-                            Function notFunction = functions.get(0);
-                            if (functionMap.containsKey(notFunction.getName())) {
-                                notEvaluation = !evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties);
-                            }
-                        } else {
-                            throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
+                        String parentOperation = expression.getLogicalOperatorParent();
+                        switch(parentOperation){
+                            case SpecificationConstants.Rule.AND:
+                                notEvaluation = true;
+                                for (Function notFunction : functions) {
+                                    if (functionMap.containsKey(notFunction.getName())) {
+                                        notEvaluation = evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties)
+                                                && notEvaluation;
+                                    } else {
+                                        throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
+                                    }
+                                }
+                                break;
+                            case SpecificationConstants.Rule.OR:
+                                notEvaluation = false;
+                                for (Function notFunction : functions) {
+                                    if (functionMap.containsKey(notFunction.getName())) {
+                                        notEvaluation = evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties)
+                                                || notEvaluation;
+                                    } else {
+                                        throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
+                                    }
+                                }                                
+                                break;
+                            case SpecificationConstants.Rule.NOT:    
+                                throw new WrongInputException("NOT as parent cannot contain NOT childs in rules.xml");
                         }
                         break;
                     }
@@ -171,7 +189,7 @@ public class Condition {
                     } else if (andEvaluation == null && orEvaluation != null && notEvaluation != null) {
                         return orEvaluation && notEvaluation;
                     } else if (andEvaluation == null && orEvaluation == null && notEvaluation != null) {
-                        return notEvaluation;
+                        return notEvaluation; //not has been already calculated using parent expression.
                     } else {
                         throw new WrongInputException("Wrong operands for 'AND' operation.");
                     }
@@ -379,7 +397,7 @@ public class Condition {
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. "
                                 + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE
-                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                                + " requires one parameter a or b followed by the SAME external property id number.");
                     }
 
                     return isSamePhoneNumberCustomNormalize.evaluate(property.getValueA(), property.getValueB());
