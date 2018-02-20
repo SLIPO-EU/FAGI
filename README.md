@@ -148,7 +148,7 @@ A sample rules.xml file could look like this:
 * **isSamePhoneNumberCustomNormalize:** Checks if the given phone numbers are the same. Some phone-normalization. If the equality fails, some custom steps for normalization are executed and the function rechecks for equality (e.g two numbers are considered same if one of them does not contain a country code but the line number is the same etc).
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
 * **exists:** Checks if the given property exists in the model of the entity.
-* **exists:** The reverse function of exists. Returns true if the selected property is not found in the model.
+* **notExists:** The reverse function of exists. Returns true if the selected property is not found in the model.
 
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
