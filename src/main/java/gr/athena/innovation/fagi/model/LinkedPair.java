@@ -88,6 +88,7 @@ public class LinkedPair {
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
             Property rdfValuePropertyA = getRDFPropertyFromString(rule.getPropertyA());
             Property rdfValuePropertyB = getRDFPropertyFromString(rule.getPropertyB());
+            String fusionProperty;
 
             //the property here is assumed to be one node above the literal value in order  to align with the ontology.
             //For example the property is the p1 in the following linked triples.
@@ -96,9 +97,11 @@ public class LinkedPair {
             String literalB;
             
             if(rule.getParentPropertyA() == null){
+                fusionProperty = rule.getPropertyA();
                 literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
 
             } else {
+                fusionProperty = rule.getParentPropertyA();
                 literalA = getLiteralValueFromChain(rule.getParentPropertyA(), rule.getPropertyA(), leftEntityData.getModel());
             }
             
@@ -160,7 +163,8 @@ public class LinkedPair {
                     extProp.getValue().setValueB(valueB);
                 }
 
-                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, literalA, literalB, rule.getExternalProperties());
+                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, this, fusionProperty,
+                    literalA, literalB, rule.getExternalProperties());
 
                 actionRuleCount++;
                 if(isActionRuleToBeApplied){
@@ -492,7 +496,7 @@ public class LinkedPair {
                 
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
-                }               
+                }
                 
                 if(!fusedModel.isEmpty()){
                     fusedModel.removeAll();
@@ -511,9 +515,12 @@ public class LinkedPair {
                     break;
                 }
                 
-                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_PROPERTY);
+                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
+                
+                String resourceString = "http://slipo.eu/def#" + leftNode.getResourceURI() + "_"+ rightNode.getResourceURI();   
+                Resource resource =  ResourceFactory.createResource(resourceString);
 
-                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
+                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource); 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);                
                 
@@ -532,9 +539,11 @@ public class LinkedPair {
                     fusedModel.removeAll();
                 }
                 
-                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_PROPERTY);
-
-                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, property); 
+                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
+                String resourceString = "http://slipo.eu/def#" + leftNode.getResourceURI() + "_"+ rightNode.getResourceURI();
+                Resource resource =  ResourceFactory.createResource(resourceString);
+                
+                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource); 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);                
             

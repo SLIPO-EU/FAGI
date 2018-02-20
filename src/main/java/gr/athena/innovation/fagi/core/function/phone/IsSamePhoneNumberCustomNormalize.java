@@ -24,6 +24,10 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
     @Override
     public boolean evaluate(String phoneText1, String phoneText2){
 
+        if(StringUtils.isBlank(phoneText1) || StringUtils.isBlank(phoneText2)){
+            return false;
+        }
+        
         if(phoneText1.equals(phoneText2)){
             return true;
         }

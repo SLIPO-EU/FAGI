@@ -9,6 +9,7 @@ import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -34,6 +35,10 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeParameter
     @Override
     public boolean evaluate(String literalA, String literalB, String threshold) {
 
+        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+            return false;
+        }
+        
         double thres = Double.parseDouble(threshold);
 
         if (literalA.equals(literalB)) {

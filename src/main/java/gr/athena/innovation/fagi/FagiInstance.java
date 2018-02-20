@@ -138,7 +138,7 @@ public class FagiInstance {
             evaluation.run(fusionSpec, csvPath);
 
         }
-        
+
         if(train){
             Trainer trainer = new Trainer(fusionSpec);
             trainer.train();

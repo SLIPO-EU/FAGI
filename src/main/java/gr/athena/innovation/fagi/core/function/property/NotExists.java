@@ -12,11 +12,11 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * Checks if the provided property exists in the RDF model of a resource.
+ * Checks if the provided property is absent from the RDF model of a resource.
  * 
  * @author nkarag
  */
-public class Exists implements IFunction, IFunctionTwoParameters{
+public class NotExists implements IFunction, IFunctionTwoParameters{
 
     @Override
     public boolean evaluate(String modelText, String propertyString) {
@@ -31,7 +31,7 @@ public class Exists implements IFunction, IFunctionTwoParameters{
 
     public boolean evaluate(Model model, String propertyString) {
         Property property = ResourceFactory.createProperty(propertyString);
-        return propertyExistsInModel(model, property);
+        return !propertyExistsInModel(model, property);
     }
     
     public static boolean propertyExistsInModel(Model model, Property property){
@@ -53,3 +53,4 @@ public class Exists implements IFunction, IFunctionTwoParameters{
         return className;
     }    
 }
+

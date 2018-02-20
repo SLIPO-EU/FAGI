@@ -142,6 +142,8 @@ public class SpecificationConstants {
         //public static final String IS_SAME_NORMALIZED = "issamenormalized";
         public static final String IS_SAME_SIMPLE_NORMALIZE = "issamesimplenormalize";
         public static final String IS_SAME_CUSTOM_NORMALIZE = "issamecustomnormalize";
+        public static final String EXISTS = "exists";
+        public static final String NOT_EXISTS = "notexists";
 
     }
 

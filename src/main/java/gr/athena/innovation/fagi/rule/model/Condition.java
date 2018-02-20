@@ -12,7 +12,10 @@ import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberCustomNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.core.function.property.Exists;
+import gr.athena.innovation.fagi.core.function.property.NotExists;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.model.LinkedPair;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +36,13 @@ public class Condition {
     private Function func;
     private Expression expression;
 
-    public boolean evaluate(Map<String, IFunction> functionMap, String valueA, String valueB,
+    public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, String fusionProperty, String valueA, String valueB,
             Map<String, ExternalProperty> externalProperties) throws WrongInputException {
 
         if (isSingleFunction()) {
             Function function2 = new Function(this.function);
             if (functionMap.containsKey(function2.getName())) {
-                return evaluateOperator(functionMap, func, valueA, valueB, externalProperties);
+                return evaluateOperator(functionMap, func, pair, fusionProperty, valueA, valueB, externalProperties);
             }
         } else if (expression.getGroupsOfChildFunctions().isEmpty()) {
             logger.trace("Condition is not a single function");
@@ -52,7 +55,7 @@ public class Condition {
                     if (functions.size() == 1) {
                         Function notFunction = functions.get(0);
                         if (functionMap.containsKey(notFunction.getName())) {
-                            return !evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties);
+                            return !evaluateOperator(functionMap, notFunction, pair, fusionProperty, valueA, valueB, externalProperties);
                         }
                     } else {
                         logger.error(functions);
@@ -67,7 +70,7 @@ public class Condition {
                     for (Function orFunction : functions) {
 
                         if (functionMap.containsKey(orFunction.getName())) {
-                            boolean evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB, externalProperties);
+                            boolean evaluated = evaluateOperator(functionMap, orFunction, pair, fusionProperty, valueA, valueB, externalProperties);
                             if (evaluated) {
                                 return true;
                             }
@@ -83,7 +86,7 @@ public class Condition {
                     boolean evaluated = true;
                     for (Function orFunction : functions) {
                         if (functionMap.containsKey(orFunction.getName())) {
-                            evaluated = evaluateOperator(functionMap, orFunction, valueA, valueB, externalProperties)
+                            evaluated = evaluateOperator(functionMap, orFunction, pair, fusionProperty, valueA, valueB, externalProperties)
                                     && evaluated;
 
                         } else {
@@ -114,7 +117,7 @@ public class Condition {
                                 notEvaluation = true;
                                 for (Function notFunction : functions) {
                                     if (functionMap.containsKey(notFunction.getName())) {
-                                        notEvaluation = evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties)
+                                        notEvaluation = evaluateOperator(functionMap, notFunction, pair, fusionProperty, valueA, valueB, externalProperties)
                                                 && notEvaluation;
                                     } else {
                                         throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
@@ -125,7 +128,7 @@ public class Condition {
                                 notEvaluation = false;
                                 for (Function notFunction : functions) {
                                     if (functionMap.containsKey(notFunction.getName())) {
-                                        notEvaluation = evaluateOperator(functionMap, notFunction, valueA, valueB, externalProperties)
+                                        notEvaluation = evaluateOperator(functionMap, notFunction, pair, fusionProperty, valueA, valueB, externalProperties)
                                                 || notEvaluation;
                                     } else {
                                         throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
@@ -143,7 +146,7 @@ public class Condition {
                         orEvaluation = false;
                         for (Function orFunction : functions) {
                             if (functionMap.containsKey(orFunction.getName())) {
-                                orEvaluation = evaluateOperator(functionMap, orFunction, valueA, valueB, externalProperties) 
+                                orEvaluation = evaluateOperator(functionMap, orFunction, pair, fusionProperty, valueA, valueB, externalProperties) 
                                         || orEvaluation;
 
                             } else {
@@ -159,7 +162,7 @@ public class Condition {
                         andEvaluation = true;
                         for (Function orFunction : functions) {
                             if (functionMap.containsKey(orFunction.getName())) {
-                                andEvaluation = evaluateOperator(functionMap, orFunction, valueA, valueB, externalProperties)
+                                andEvaluation = evaluateOperator(functionMap, orFunction, pair, fusionProperty, valueA, valueB, externalProperties)
                                         && andEvaluation;
 
                             } else {
@@ -222,8 +225,9 @@ public class Condition {
         return false;
     }
 
-    private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, String valueA, String valueB,
-            Map<String, ExternalProperty> externalProperties) throws WrongInputException {
+    private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, LinkedPair pair, 
+            String fusionProperty, String valueA, String valueB, Map<String, ExternalProperty> externalProperties) 
+                throws WrongInputException {
 
         switch (function.getName()) {
             case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT: {
@@ -493,6 +497,68 @@ public class Condition {
                     }
                 }
             }
+            case SpecificationConstants.Functions.EXISTS: {
+                if (function.getParameters().length == 1) {
+                    Exists exists = (Exists) functionMap.get(function.getName());
+                    String parameter = function.getParameters()[0];
+
+                    switch (parameter) {
+                        case SpecificationConstants.Rule.A:
+                            
+                            return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), fusionProperty);
+                            
+                        case SpecificationConstants.Rule.B:
+                            return exists.evaluate(pair.getRightNode().getEntityData().getModel(), fusionProperty);
+                        default:
+                            ExternalProperty property = externalProperties.get(parameter);
+
+                            if (property == null) {
+                                throw new WrongInputException(parameter + " is wrong. "
+                                        + SpecificationConstants.Functions.EXISTS
+                                        + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                            }
+
+                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                                return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), property.getValueA());
+                            } else {
+                                return exists.evaluate(pair.getRightNode().getEntityData().getModel(), property.getValueB());
+                            }
+                    }
+                } else {
+                    throw new WrongInputException(SpecificationConstants.Functions.EXISTS + " requires one parameter!");
+                }
+            }
+            case SpecificationConstants.Functions.NOT_EXISTS: {
+                if (function.getParameters().length == 1) {
+                    NotExists notExists = (NotExists) functionMap.get(function.getName());
+                    String parameter = function.getParameters()[0];
+
+                    switch (parameter) {
+                        case SpecificationConstants.Rule.A:
+
+                            return notExists.evaluate(pair.getLeftNode().getEntityData().getModel(), fusionProperty);
+
+                        case SpecificationConstants.Rule.B:
+                            return notExists.evaluate(pair.getRightNode().getEntityData().getModel(), fusionProperty);
+                        default:
+                            ExternalProperty property = externalProperties.get(parameter);
+
+                            if (property == null) {
+                                throw new WrongInputException(parameter + " is wrong. "
+                                        + SpecificationConstants.Functions.NOT_EXISTS
+                                        + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                            }
+
+                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                                return notExists.evaluate(pair.getLeftNode().getEntityData().getModel(), property.getValueA());
+                            } else {
+                                return notExists.evaluate(pair.getRightNode().getEntityData().getModel(), property.getValueB());
+                            }
+                    }
+                } else {
+                    throw new WrongInputException(SpecificationConstants.Functions.NOT_EXISTS + " requires one parameter!");
+                }
+            }            
             default:
                 throw new WrongInputException("Function used in rules.xml is malformed does not exist or currently not supported!" + function.getName());
         }

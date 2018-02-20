@@ -40,7 +40,8 @@ public class Namespace {
     public static final String EMAIL = "<http://slipo.eu/def#email>";
     public static final String PHONE = "<http://slipo.eu/def#phone>";
     
-    public static final String AMBIGUOUS_PROPERTY = "http://slipo.eu/def#ambiguousValue";
+    //public static final String AMBIGUOUS_PROPERTY = "http://slipo.eu/def#ambiguousValue";
+    public static final String AMBIGUOUS_LINK_PROPERTY = "http://slipo.eu/def#ambiguousLink" ;
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;

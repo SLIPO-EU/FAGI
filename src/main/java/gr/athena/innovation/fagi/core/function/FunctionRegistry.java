@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumber;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberCustomNormalize;
 import gr.athena.innovation.fagi.core.function.phone.IsSamePhoneNumberUsingExitCode;
+import gr.athena.innovation.fagi.core.function.property.NotExists;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class FunctionRegistry {
         
         //property
         Exists exists = new Exists();
+        NotExists notExists = new NotExists();
         
         //register all functions
         functionMap.put(isDateKnownFormat.getName(), isDateKnownFormat);
@@ -80,6 +82,7 @@ public class FunctionRegistry {
         
         //property
         functionMap.put(exists.getName(), exists);
+        functionMap.put(notExists.getName(), notExists);
 
         isInitialized = true;
     }

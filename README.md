@@ -147,7 +147,8 @@ A sample rules.xml file could look like this:
 * **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
 * **isSamePhoneNumberCustomNormalize:** Checks if the given phone numbers are the same. Some phone-normalization. If the equality fails, some custom steps for normalization are executed and the function rechecks for equality (e.g two numbers are considered same if one of them does not contain a country code but the line number is the same etc).
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
-* **exists:** Checks if the given property exists in the model of the given entity.
+* **exists:** Checks if the given property exists in the model of the entity.
+* **exists:** The reverse function of exists. Returns true if the selected property is not found in the model.
 
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
@@ -162,7 +163,8 @@ A sample rules.xml file could look like this:
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
 | isSamePhoneNumberCustomNormalize | a and b | Phone | isSamePhoneNumberCustomNormalize(a,b)  
 | isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  
-| exists | model, property | Property | exists(a,http&#58;//www.w3.org/2000/01/rdf-schema#label)  
+| exists | a or b | Property | exists(a)  
+| notExists | a or b | Property | notExists(b)  
 
 
 ### Available fusion actions:
