@@ -1,10 +1,10 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
-import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
@@ -26,6 +26,7 @@ public class AbbreviationResolverTest {
         Map<String, String> knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
 
         AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
+        AbbreviationAndAcronymResolver.setLocale(Locale.ENGLISH);
         
     }
 
