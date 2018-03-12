@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.learning.Trainer;
 import gr.athena.innovation.fagi.preview.FrequencyCalculationProcess;
+import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsCollector;
 import gr.athena.innovation.fagi.preview.StatisticsContainer;
@@ -48,8 +49,9 @@ public class FagiInstance {
 
     private final boolean runEvaluation = false;
     
-    private final boolean exportFrequencies = false;
-    private final boolean exportStatistics = false;
+    private final boolean exportFrequencies = true;
+    private final boolean exportStatistics = true;
+    private final boolean exportSimilaritiesPerLink = false;
 
     private final boolean train = false;
 
@@ -82,7 +84,14 @@ public class FagiInstance {
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpec = specificationParser.parse(specXml);
-
+        
+        //validate output filepath:
+        if(!validator.isValidOutput(fusionSpec)){
+            logger.info("Please specify a file output in specification.");
+            logger.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+        
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
         ruleCatalog.setFunctionRegistry(functionRegistry);
@@ -115,24 +124,40 @@ public class FagiInstance {
         long startTimeFusion = System.currentTimeMillis();
 
         if(exportFrequencies){
-
+            logger.info("Exporting frequencies...");
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
             freqProcess.run(fusionSpec, rdfProperties);
-
         }
 
         if (exportStatistics) {
+            logger.info("Calculating statistics...");
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
-            StatisticsExporter exporter = new StatisticsExporter();
-
             StatisticsContainer container = collector.collect();
-            exporter.exportStatistics(container, fusionSpec.getPathOutput());
+            
+            if(container.isValid()){
+                StatisticsExporter exporter = new StatisticsExporter();
+                exporter.exportStatistics(container, fusionSpec.getPathOutput());                
+            }
+        }
+        
+        if(exportSimilaritiesPerLink){
+            //similarity viewer for each pair and a,b,c normalization
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpec);
+
+            try {
+
+                qualityViewer.printRDFSimilarityResults(rdfProperties);
+
+            } catch (com.vividsolutions.jts.io.ParseException | IOException ex) {
+                logger.error(ex);
+                throw new ApplicationException(ex.getMessage());
+            }            
         }
 
         //Produce quality metric results for previewing, if enabled
         if (runEvaluation) {
-            
+            logger.info("Running evaluation...");
             Evaluation evaluation = new Evaluation();
             String csvPath = "";
             evaluation.run(fusionSpec, csvPath);
@@ -140,10 +165,12 @@ public class FagiInstance {
         }
 
         if(train){
+            logger.info("Training...");
             Trainer trainer = new Trainer(fusionSpec);
             trainer.train();
         }
 
+        logger.info("Initiating fusion process...");
         Fuser fuser = new Fuser();
         Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
         
@@ -154,6 +181,7 @@ public class FagiInstance {
         //Combine result datasets and write to file
         long startTimeWrite = System.currentTimeMillis();
 
+        logger.info("Writing results...");
         fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
 
         long stopTimeWrite = System.currentTimeMillis();

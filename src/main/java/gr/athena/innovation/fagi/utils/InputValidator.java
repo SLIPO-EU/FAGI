@@ -1,14 +1,19 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.SchemaDefinition;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -127,6 +132,23 @@ public class InputValidator {
                 }
             }
         }        
+        return true;
+    }
+    
+    public boolean isValidOutput(FusionSpecification fusionSpec){
+        
+        OutputStream out;
+        if(fusionSpec.getPathOutput().equalsIgnoreCase("System.out")){
+            out = System.out;
+        } else {
+            try {
+                out = new FileOutputStream(fusionSpec.getPathOutput());
+            } catch (FileNotFoundException ex) {
+                logger.fatal(ex);
+                return false;
+            }
+        }
+        
         return true;
     }
 }

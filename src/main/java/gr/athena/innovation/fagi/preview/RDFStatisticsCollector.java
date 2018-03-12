@@ -28,6 +28,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     
     private int sumA = 0;
     private int sumB = 0;
+    
     StatisticsContainer container;
 
     @Override
@@ -35,6 +36,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         container = new StatisticsContainer();
 
+        StatisticResultPair totalEntities = countTotalEntities();
+        container.setTotalEntities(totalEntities); 
+        
         StatisticResultPair distinctProperties = countDistinctProperties();
         container.setDistinctProperties(distinctProperties);
         
@@ -43,9 +47,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair percentageOfKnownFormats = calculatePercentageOfPrimaryDateFormats();
         container.setPercentageOfDateKnownFormats(percentageOfKnownFormats);
-
-        StatisticResultPair totalEntities = countTotalEntities();
-        container.setTotalEntities(totalEntities); 
         
         StatisticResultPair percentageOfNames = calculateNamePercentage();
         container.setNamePercentage(percentageOfNames);
@@ -64,9 +65,15 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair percentageOfLocalities = calculateLocalityPercentage();
         container.setLocalityPercentage(percentageOfLocalities);
-        
+
         StatisticResultPair percentageOfTotalProperties = calculateAllNonEmptyPropertiesPercentage();
         container.setNonEmptyTotalProperties(percentageOfTotalProperties);
+
+        if(totalEntitiesA == 0 || totalEntitiesB == 0){
+            container.setValid(false);
+        } else {
+            container.setValid(true);
+        }
         
         return container;
     }
@@ -80,8 +87,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         totalEntitiesA = totalA;
         totalEntitiesB = totalB;
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
@@ -171,8 +178,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int namesB = SparqlRepository.countPropertyWithObject(RightModel.getRightModel().getModel(), 
                 Namespace.NAME_TYPE, Namespace.OFFICIAL_LITERAL);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
 
         Double percentageA = roundHalfDown((100 * namesA) / (double) totalEntitiesA);
@@ -190,8 +197,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int websiteA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.WEBSITE);
         int websiteB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.WEBSITE);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
         
         Double percentageA = roundHalfDown((100 * websiteA) / (double) totalEntitiesA);
@@ -210,8 +217,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int phonesA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.PHONE);
         int phonesB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.PHONE);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
         
         Double percentageA = roundHalfDown((100 * phonesA) / (double) totalEntitiesA);
@@ -230,8 +237,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetsA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.STREET);
         int streetsB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.STREET);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
         
         Double percentageA = roundHalfDown((100 * streetsA) / (double) totalEntitiesA);
@@ -250,8 +257,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetΝumbersA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.STREET_NUMBER);
         int streetNumbersB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.STREET_NUMBER);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
 
         Double percentageA = roundHalfDown((100 * streetΝumbersA) / (double) totalEntitiesA);
@@ -270,8 +277,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int localitiesA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.LOCALITY);
         int localitiesB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.LOCALITY);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
-            throw new ApplicationException("Zero entities in dataset. Check LAT property.");
+        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
+            return new StatisticResultPair("0","0");
         }
 
         Double percentageA = roundHalfDown((100 * localitiesA) / (double) totalEntitiesA);
@@ -313,5 +320,16 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     
     private double roundHalfDown(Double d){
         return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
+    }
+    
+    private boolean warn(int entitiesA, int entitiesB, String propertyName) {
+        if (entitiesA == 0) {
+            logger.warn("Zero entities in dataset A. Check " + propertyName + " property.");
+            return true;
+        } else if (entitiesB == 0) {
+            logger.warn("Zero entities in dataset B. Check " + propertyName + " property.");
+            return true;
+        }
+        return false;
     }
 }

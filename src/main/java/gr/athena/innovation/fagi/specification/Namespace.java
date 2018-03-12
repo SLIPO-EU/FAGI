@@ -24,7 +24,7 @@ public class Namespace {
     public static final String DATE = "<http://slipo.eu/def#date>";
     
     public static final String TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
-    public static final String POI = "<http://slipo.eu/def#POI>";
+    //public static final String POI = "<http://slipo.eu/def#POI>";
     
     public static final String LON = "<http://www.w3.org/2003/01/geo/wgs84_pos#lon>";
     public static final String LAT = "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>";
@@ -33,6 +33,7 @@ public class Namespace {
     public static final String NAME_TYPE = "<http://slipo.eu/def#nameType>";
     public static final String OFFICIAL_LITERAL = "official";
     
+    public static final String SOURCE = "<http://slipo.eu/def#source>";
     public static final String LOCALITY = "<http://slipo.eu/def#locality>";
     public static final String STREET = "<http://slipo.eu/def#street>";
     public static final String STREET_NUMBER = "<http://slipo.eu/def#number>";

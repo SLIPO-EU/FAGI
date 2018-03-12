@@ -6,6 +6,8 @@ package gr.athena.innovation.fagi.preview;
  */
 public class StatisticsContainer {
     
+    private boolean valid;
+    
     private StatisticResultPair distinctProperties;
     private StatisticResultPair nonEmptyDates;
     private StatisticResultPair percentageOfDateKnownFormats;
@@ -112,6 +114,14 @@ public class StatisticsContainer {
 
     public void setNonEmptyTotalProperties(StatisticResultPair nonEmptyTotalProperties) {
         this.nonEmptyTotalProperties = nonEmptyTotalProperties;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
 }

@@ -82,7 +82,7 @@ public class BasicGenericNormalizer implements INormalizer {
         return sortAlphabetically(tempString);
     }
     
-    //1)Recover abbreviation if possible. Returns the whole literalA.
+    //1)Recover abbreviation if possible. Returns the whole literalA with the abbreviation replaced if found.
     private String getAbbreviation(String literalA, String literalB) {
 
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();

@@ -35,7 +35,7 @@ public class FusionSpecification {
     private String categoriesA;
     private String categoriesB;
 
-    private EnumTargetDataset finalDataset;
+    private EnumDataset finalDataset;
     private String outputRDFFormat;
     private String inputRDFFormat;
     
@@ -135,11 +135,11 @@ public class FusionSpecification {
         }
     }
 
-    public EnumTargetDataset getFinalDataset() {
+    public EnumDataset getFinalDataset() {
         return finalDataset;
     }
 
-    public void setFinalDataset(EnumTargetDataset finalDataset) {
+    public void setFinalDataset(EnumDataset finalDataset) {
         this.finalDataset = finalDataset;
     }
 

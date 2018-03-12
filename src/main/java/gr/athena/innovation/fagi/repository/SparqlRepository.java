@@ -186,7 +186,7 @@ public class SparqlRepository {
 
             for (; results.hasNext();) {
                 QuerySolution soln = results.nextSolution();
-
+                
                 RDFNode c = soln.get(countVar);
                 if (c.isLiteral()) {
                     count = c.asLiteral().getInt();

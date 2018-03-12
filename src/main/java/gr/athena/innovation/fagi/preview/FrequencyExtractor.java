@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.preview;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
+import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.Namespace;
 import java.io.BufferedWriter;
@@ -21,7 +22,7 @@ public class FrequencyExtractor {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FrequencyExtractor.class);
 
     public void extract(int frequentTopK, String categoryMappingsNTPath, Model model, 
-            FusionSpecification fusionSpecification, Locale locale){
+            String outputPath, Locale locale, EnumDataset dataset){
 
             //Category frequencies
             RDFFrequencyCounter categoryCounter = new RDFFrequencyCounter();
@@ -30,12 +31,27 @@ public class FrequencyExtractor {
 
             Frequency categoryFrequencies = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY, model);
 
-            File propertyFile = new File(fusionSpecification.getPathOutput());
+            File propertyFile = new File(outputPath);
             File parentDir = propertyFile.getParentFile();
+            
+            String filename;
+            switch(dataset){
+                case LEFT:
+                    filename = "category.freq.A.txt";
+                    break;
+                case RIGHT:   
+                    filename = "category.freq.B.txt";
+                    break;
+                default:
+                    throw new ApplicationException("Wrong parameter for EnumDataset in Frequency extractor. "
+                            + "Only LEFT or RIGHT allowed.");
+            }
 
-            String outputFilename = parentDir.getPath() + "/frequencies/category.freq.txt";
+            String outputFilename = parentDir.getPath() + "/frequencies/" + filename;
             File outputFile = new File(outputFilename);
 
+            logger.info("Category frequency file: " + outputFile);
+            
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
                 writer.append("# category frequencies");    
                 writer.newLine();

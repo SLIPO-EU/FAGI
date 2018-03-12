@@ -7,12 +7,12 @@ import java.util.Map;
  *
  * @author nkarag
  */
-public enum EnumTargetDataset {
+public enum EnumDataset {
     DEFAULT(0), LEFT(1), RIGHT(2), NEW(3);
     
 	private final int value;
 
-	private EnumTargetDataset(int value) {
+	private EnumDataset(int value) {
 		this.value = value;
 	}
 
@@ -20,27 +20,27 @@ public enum EnumTargetDataset {
 		return this.value;
 	}
 	
-    private static final Map<Integer, EnumTargetDataset> intToTypeMap = new HashMap<>();    
+    private static final Map<Integer, EnumDataset> intToTypeMap = new HashMap<>();    
 	static {
-		for (EnumTargetDataset type : EnumTargetDataset.values()) {
+		for (EnumDataset type : EnumDataset.values()) {
 			intToTypeMap.put(type.value, type);
 		}
 	}
     
-	public static EnumTargetDataset fromInteger(int value) {
-		EnumTargetDataset type = intToTypeMap.get(value);
+	public static EnumDataset fromInteger(int value) {
+		EnumDataset type = intToTypeMap.get(value);
 		if (type == null)
-			return EnumTargetDataset.DEFAULT;
+			return EnumDataset.DEFAULT;
 		return type;
 	}
 
-	public static EnumTargetDataset fromString(String value) {
-		for (EnumTargetDataset item : EnumTargetDataset.values()) {
+	public static EnumDataset fromString(String value) {
+		for (EnumDataset item : EnumDataset.values()) {
 			if (item.toString().equalsIgnoreCase(value)) {
 				return item;
 			}
 		}
-		return EnumTargetDataset.DEFAULT;
+		return EnumDataset.DEFAULT;
 	}
     
     @Override

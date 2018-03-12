@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.preview;
 
 import gr.athena.innovation.fagi.core.normalizer.SimpleLiteralNormalizer;
 import gr.athena.innovation.fagi.exception.ApplicationException;
+import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -41,7 +42,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
     }
 
     @Override
-    public void export(String inputFilename) {
+    public void export(String inputFilename, EnumDataset dataset) {
 
         int index = 0;
         for (String property : properties) {
@@ -55,19 +56,44 @@ public class FileFrequencyCounter implements FrequencyCounter {
 
             File propertyFile = new File(fusionSpecification.getPathOutput());
             File parentDir = propertyFile.getParentFile();
-            String filename;
+            String filenamePrefix;
 
             if (property.lastIndexOf("#") != -1) {
-                filename = property.substring(property.lastIndexOf("#") + 1);
+                filenamePrefix = property.substring(property.lastIndexOf("#") + 1);
             } else if (property.lastIndexOf("/") != -1) {
-                filename = property.substring(property.lastIndexOf("/") + 1);
+                filenamePrefix = property.substring(property.lastIndexOf("/") + 1);
             } else {
-                filename = "_" + index;
+                filenamePrefix = "_" + index;
             }
 
-            String outputFilename = parentDir.getPath() + "/frequencies/" + filename + ".freq.txt";
+            String filenameTemp = inputFilename.substring(inputFilename.lastIndexOf("/") + 1);
+            
+            String filename;
+            if(filenameTemp.indexOf('.') > -1){
+                filename = "_" + filenameTemp.substring(0, filenameTemp.lastIndexOf("."));
+            } else {
+                filename = "_" + filenameTemp;
+            }
+            
+            String filenameSuffix;
+            
+            switch(dataset){
+                case LEFT:
+                    filenameSuffix = ".a.freq.txt";
+                    break;
+                case RIGHT:
+                    filenameSuffix = ".b.freq.txt";
+                    break;
+                default:
+                    throw new ApplicationException("Wrong parameter for EnumDataset in Frequency export. "
+                            + "Only LEFT or RIGHT allowed.");                    
+                    
+            }
+            
+            String outputFilename = parentDir.getPath() + "/frequencies/" + filenamePrefix + filename + filenameSuffix;
             File outputFile = new File(outputFilename);
 
+            logger.info("frequency file:" + outputFilename);
             PrintWriter pw = null;
             try {
 
