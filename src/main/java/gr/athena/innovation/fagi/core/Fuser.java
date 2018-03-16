@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core;
 
 import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
+import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Fusion core class. Contains methods for the fusion process and writing to output.
+ * Fusion core class. Contains methods for the fusion process.
  * 
  * @author nkarag
  */
@@ -51,17 +52,20 @@ public class Fuser implements IFuser{
     @Override
     public List<LinkedPair> fuseAll(FusionSpecification fusionSpec, RuleCatalog ruleCatalog, 
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException{
-        
+
         List<LinkedPair> fusedList = new ArrayList<>();
-        
+
         linkedEntitiesNotFoundInDataset = 0;
 
         Model left = LeftModel.getLeftModel().getModel();
         Model right = RightModel.getRightModel().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
+        EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
+
         for (Link link : links.getLinks()){
 
+            //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
 
@@ -72,16 +76,29 @@ public class Fuser implements IFuser{
 
             LinkedPair pair = new LinkedPair();
 
-            Entity entityA = constructEntity(modelA, link.getNodeA());
-            Entity entityB = constructEntity(modelB, link.getNodeB());
+            String leftURI = link.getNodeA();
+            String rightURI = link.getNodeB();
             
+            Entity entityA = constructEntity(modelA, leftURI);
+            Entity entityB = constructEntity(modelB, rightURI);
+
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
+
+            EnumValidationAction validation = pair.validateLink(ruleCatalog.getValidationRules(), functionMap);
+
+            Entity newFusedEntity = new Entity();
             
-            pair.fusePair(ruleCatalog, functionMap);
+            newFusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction, leftURI, rightURI));
+
+            pair.setFusedEntity(newFusedEntity);
+            
+            
+            pair.fusePair(ruleCatalog, functionMap, validation);
+            
+            fusedList.add(pair);
             
             fusedPairsCount++;
-            fusedList.add(pair);
         }
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
         
@@ -159,6 +176,7 @@ public class Fuser implements IFuser{
         return entity;
     }
 
+    //creates a jena rdf model for this node and removes the node from the source dataset
     private Model constructEntityDataModel(String node, Model sourceModel, int depth){
 
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
@@ -172,6 +190,29 @@ public class Fuser implements IFuser{
         return model;
     }
 
+    private String resolveFusedEntityURI(EnumDatasetAction defaultDatasetAction, String leftURI, String rightURI) {
+        String resourceURI;
+        switch (defaultDatasetAction) {
+            case KEEP_LEFT:
+                
+                resourceURI = leftURI;
+                break;
+            case KEEP_RIGHT:
+                resourceURI = rightURI;
+                break;
+            case KEEP_BOTH:
+                resourceURI = leftURI;
+                break;                
+            case REJECT_LINK:
+                resourceURI = "";
+                break;                
+            default:
+                logger.fatal("Cannot resolved fused Entity's URI. Check Default Dataset Action.");
+                throw new IllegalArgumentException();
+        }
+        return resourceURI;
+    }
+    
     /**
      * Returns the count of linked entities that were not found in the source datasets.
      * 

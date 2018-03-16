@@ -2,7 +2,6 @@ package gr.athena.innovation.fagi.preview;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.EnumDataset;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.Namespace;
 import java.io.BufferedWriter;
 import java.io.File;

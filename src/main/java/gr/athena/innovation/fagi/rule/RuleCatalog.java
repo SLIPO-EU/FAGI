@@ -15,7 +15,8 @@ import java.util.List;
 
 public class RuleCatalog{
 
-	private final List<Rule> rules = new ArrayList<>(); 
+	private final List<Rule> rules = new ArrayList<>();
+    private final List<Rule> validationRules = new ArrayList<>();
     private EnumDatasetAction defaultDatasetAction;
     private FunctionRegistry functionRegistry;
 
@@ -34,6 +35,21 @@ public class RuleCatalog{
         return rules;
     }
 
+    /**
+     * Adds a validation rule to the catalog.
+     * @param rule the validation rule to add.
+     */
+    public void addValidationItem(Rule rule){ 
+		validationRules.add(rule);
+	}
+
+    /**
+     * @return the List that contains the validation rules.
+     */
+    public List<Rule> getValidationRules() {
+        return validationRules;
+    }
+    
     /**
      * @return the Function Registry object.
      */

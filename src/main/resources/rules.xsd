@@ -1,117 +1,205 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="rules">
-    <xs:complexType>
-      <xs:sequence>
-		<xs:element name="defaultDatasetAction">
-		  <xs:simpleType>
-			<xs:restriction base="xs:string">
-			  <xs:enumeration value="keep-left"/>
-			  <xs:enumeration value="keep-right"/>
-			  <xs:enumeration value="keep-both"/>
-			  <xs:enumeration value="reject-link"/>
-		    </xs:restriction>
-		  </xs:simpleType>
-		</xs:element>
-        <xs:element name="rule" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="propertyA" type="xs:string" />
-              <xs:element name="propertyB" type="xs:string" />
-			  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-				  <xs:simpleContent>
-					<xs:extension base="xs:string">
-					  <xs:attribute name="id" type="xs:string" use="required"/>
-					</xs:extension>
-				  </xs:simpleContent>
-				</xs:complexType>
-			  </xs:element> 
-              <xs:element name="actionRuleSet" minOccurs="0">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="actionRule" minOccurs="0" maxOccurs="unbounded">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="condition">
-							  <xs:complexType>
-								<xs:sequence>
-								  <xs:element name="function" type="xs:string" minOccurs="0"/>
-								  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded">
-							        <xs:complexType>
-									 <xs:sequence>
-										<xs:element name="not" minOccurs="0">
+	<xs:element name="rules">
+		<xs:complexType>
+			<xs:sequence>
+				
+				<xs:element name="defaultDatasetAction">
+				  <xs:simpleType>
+					<xs:restriction base="xs:string">
+					  <xs:enumeration value="keep-left"/>
+					  <xs:enumeration value="keep-right"/>
+					  <xs:enumeration value="keep-both"/>
+					  <xs:enumeration value="reject-link"/>
+					</xs:restriction>
+				  </xs:simpleType>
+				</xs:element>
+				
+				<xs:element name="validationRule" minOccurs="0" maxOccurs="unbounded">		
+					<xs:complexType>
+						<xs:sequence>
+						  <xs:element name="propertyA" type="xs:string" />
+						  <xs:element name="propertyB" type="xs:string" />
+						  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+							  <xs:simpleContent>
+								<xs:extension base="xs:string">
+								  <xs:attribute name="id" type="xs:string" use="required"/>
+								</xs:extension>
+							  </xs:simpleContent>
+							</xs:complexType>
+						  </xs:element> 
+						  <xs:element name="actionRuleSet" minOccurs="0">
+							<xs:complexType>
+							  <xs:sequence>
+								<xs:element name="actionRule" minOccurs="0" maxOccurs="unbounded">
+								  <xs:complexType>
+									<xs:sequence>
+									  <xs:element name="condition">
 										  <xs:complexType>
 											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+											  <xs:element name="function" type="xs:string" minOccurs="0"/>
+											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+												 <xs:sequence>
+													<xs:element name="not" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+													<xs:element name="and" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+													<xs:element name="or" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+												 </xs:sequence>
+												</xs:complexType>
+											  </xs:element>									  
 											</xs:sequence>
 										  </xs:complexType>
-										</xs:element> 
-										<xs:element name="and" minOccurs="0">
+									  </xs:element> 							  
+									  <xs:element name="action">
+										  <xs:simpleType>
+											<xs:restriction base="xs:string">
+											  <xs:enumeration value="accept"/>
+											  <xs:enumeration value="reject"/>
+											  <xs:enumeration value="reject-mark-ambiguous"/>
+											  <xs:enumeration value="accept-mark-ambiguous"/>
+											</xs:restriction>
+										  </xs:simpleType>
+									  </xs:element>                          
+									</xs:sequence>
+								  </xs:complexType>
+								</xs:element>
+							  </xs:sequence>
+							</xs:complexType>
+						  </xs:element>
+						  <xs:element name="defaultAction">
+							<xs:simpleType>
+							  <xs:restriction base="xs:string">
+								  <xs:enumeration value="accept"/>
+								  <xs:enumeration value="reject"/>
+								  <xs:enumeration value="reject-mark-ambiguous"/>
+								  <xs:enumeration value="accept-mark-ambiguous"/>
+							  </xs:restriction>
+							</xs:simpleType>
+						  </xs:element>     
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element> 				
+				
+				<xs:element name="rule" minOccurs="0" maxOccurs="unbounded">		
+					<xs:complexType>
+						<xs:sequence>
+						  <xs:element name="propertyA" type="xs:string" />
+						  <xs:element name="propertyB" type="xs:string" />
+						  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+							  <xs:simpleContent>
+								<xs:extension base="xs:string">
+								  <xs:attribute name="id" type="xs:string" use="required"/>
+								</xs:extension>
+							  </xs:simpleContent>
+							</xs:complexType>
+						  </xs:element> 
+						  <xs:element name="actionRuleSet" minOccurs="0">
+							<xs:complexType>
+							  <xs:sequence>
+								<xs:element name="actionRule" minOccurs="0" maxOccurs="unbounded">
+								  <xs:complexType>
+									<xs:sequence>
+									  <xs:element name="condition">
 										  <xs:complexType>
 											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+											  <xs:element name="function" type="xs:string" minOccurs="0"/>
+											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded">
+												<xs:complexType>
+												 <xs:sequence>
+													<xs:element name="not" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+													<xs:element name="and" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+													<xs:element name="or" minOccurs="0">
+													  <xs:complexType>
+														<xs:sequence>
+														  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+														  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
+														</xs:sequence>
+													  </xs:complexType>
+													</xs:element> 
+												 </xs:sequence>
+												</xs:complexType>
+											  </xs:element>									  
 											</xs:sequence>
 										  </xs:complexType>
-										</xs:element> 
-										<xs:element name="or" minOccurs="0">
-										  <xs:complexType>
-											<xs:sequence>
-											  <xs:element name="function" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-											  <xs:element name="expression" minOccurs="0" maxOccurs="unbounded"/>
-											</xs:sequence>
-										  </xs:complexType>
-										</xs:element> 
-									 </xs:sequence>
-									</xs:complexType>
-								  </xs:element>									  
-								</xs:sequence>
-							  </xs:complexType>
-						  </xs:element> 							  
-                          <xs:element name="action">
-							  <xs:simpleType>
-								<xs:restriction base="xs:string">
+									  </xs:element> 							  
+									  <xs:element name="action">
+										  <xs:simpleType>
+											<xs:restriction base="xs:string">
+											  <xs:enumeration value="keep-left"/>
+											  <xs:enumeration value="keep-right"/>
+											  <xs:enumeration value="concatenate"/>
+											  <xs:enumeration value="keep-longest"/>
+											  <xs:enumeration value="keep-both"/>
+											  <xs:enumeration value="keep-more-points"/>
+											  <xs:enumeration value="keep-more-points-and-shift"/>
+											  <xs:enumeration value="shift-left-geometry"/>
+											  <xs:enumeration value="shift-right-geometry"/>
+											</xs:restriction>
+										  </xs:simpleType>
+									  </xs:element>                          
+									</xs:sequence>
+								  </xs:complexType>
+								</xs:element>
+							  </xs:sequence>
+							</xs:complexType>
+						  </xs:element>
+						  <xs:element name="defaultAction">
+							<xs:simpleType>
+							  <xs:restriction base="xs:string">
 								  <xs:enumeration value="keep-left"/>
 								  <xs:enumeration value="keep-right"/>
 								  <xs:enumeration value="concatenate"/>
 								  <xs:enumeration value="keep-longest"/>
-								  <xs:enumeration value="accept-mark-ambiguous"/>
-								  <xs:enumeration value="reject-mark-ambiguous"/>
 								  <xs:enumeration value="keep-both"/>
 								  <xs:enumeration value="keep-more-points"/>
 								  <xs:enumeration value="keep-more-points-and-shift"/>
 								  <xs:enumeration value="shift-left-geometry"/>
 								  <xs:enumeration value="shift-right-geometry"/>
-								  <xs:enumeration value="reject-link"/>
-								</xs:restriction>
-							  </xs:simpleType>
-						  </xs:element>                          
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="defaultAction">
-				<xs:simpleType>
-				  <xs:restriction base="xs:string">
-					<xs:enumeration value="keep-left"/>
-					<xs:enumeration value="keep-right"/>
-					<xs:enumeration value="keep-both"/>
-					<xs:enumeration value="keep-more-points"/>
-					<xs:enumeration value="keep-more-points-and-shift"/>
-					<xs:enumeration value="shift-left-geometry"/>
-					<xs:enumeration value="shift-right-geometry"/>
-					<xs:enumeration value="reject-link"/>
-				  </xs:restriction>
-				</xs:simpleType>
-			  </xs:element>     
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+							  </xs:restriction>
+							</xs:simpleType>
+						  </xs:element>     
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

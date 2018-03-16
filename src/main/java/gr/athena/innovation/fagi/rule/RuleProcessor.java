@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.rule;
 import gr.athena.innovation.fagi.rule.model.Function;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.ActionRuleSet;
@@ -55,7 +56,9 @@ public class RuleProcessor {
      * @throws gr.athena.innovation.fagi.exception.WrongInputException
      */
     public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException {
+        
         RuleCatalog ruleCatalog = new RuleCatalog();
+
         logger.info("Parsing rules: " + path);
 
         File fXmlFile = new File(path);
@@ -79,24 +82,37 @@ public class RuleProcessor {
             throw new WrongInputException("<" + SpecificationConstants.Rule.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
         }
 
-        //get all <RULE> elements of the XML. The rule elements are all in the same level
+        //get all <rule> elements of the XML. The rule elements are all in the same level
         NodeList rules = doc.getElementsByTagName(SpecificationConstants.Rule.RULE);
         for (int temp = 0; temp < rules.getLength(); temp++) {
             logger.info("----- Rule " + temp);
 
             Node ruleNode = rules.item(temp);
             NodeList ruleNodeList = ruleNode.getChildNodes();
-            Rule rule = createRule(ruleNodeList);
+            Rule rule = createRule(ruleNodeList, false);
             ruleCatalog.addItem(rule);
 
         }
+        
+        //get all <validationRule> elements of the XML. The rule elements are all in the same level
+        NodeList validationRules = doc.getElementsByTagName(SpecificationConstants.Rule.VALIDATION_RULE);
+        for (int temp = 0; temp < validationRules.getLength(); temp++) {
+            logger.info("----- Validation Rule " + temp);
+
+            Node validationRulesNode = validationRules.item(temp);
+            NodeList validationRuleNodeList = validationRulesNode.getChildNodes();
+            Rule validationRule = createRule(validationRuleNodeList, true);
+            ruleCatalog.addValidationItem(validationRule);
+
+        }
+        
         return ruleCatalog;
     }
 
     /*
         Parse propertyA, propertyB and ACTION_RULE_SET of the current rule
      */
-    private Rule createRule(NodeList ruleNodeList) throws WrongInputException {
+    private Rule createRule(NodeList ruleNodeList, boolean isValidation) throws WrongInputException {
         Rule rule = new Rule();
         int length = ruleNodeList.getLength();
         ActionRuleSet actionRuleSet = null;
@@ -128,11 +144,18 @@ public class RuleProcessor {
                     }
 
                 } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.DEFAULT_ACTION)) {
-                    EnumFusionAction defaultGeoAction = EnumFusionAction.fromString(ruleElement.getTextContent());
-                    rule.setDefaultAction(defaultGeoAction);
+                    
+                    if(isValidation){
+                        EnumValidationAction defaultValidationAction = EnumValidationAction.fromString(ruleElement.getTextContent());
+                        rule.setDefaultValidationAction(defaultValidationAction);                        
+                    } else {
+                        EnumFusionAction defaultFusionAction = EnumFusionAction.fromString(ruleElement.getTextContent());
+                        rule.setDefaultFusionAction(defaultFusionAction);                        
+                    }
+
                 } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.ACTION_RULE_SET)) {
                     NodeList actionRuleNodeList = ruleElement.getElementsByTagName(SpecificationConstants.Rule.ACTION_RULE);
-                    actionRuleSet = createActionRuleSet(actionRuleNodeList);
+                    actionRuleSet = createActionRuleSet(actionRuleNodeList, isValidation);
                     rule.setActionRuleSet(actionRuleSet);
                 }
             }
@@ -140,16 +163,16 @@ public class RuleProcessor {
 
         if (actionRuleSet == null) {
             logger.trace("# RULE without action rule set");
-            logger.trace(rule.getDefaultAction());
+            logger.trace(rule.getDefaultFusionAction());
         }
 
         return rule;
     }
-
+    
     /*
         Parse each action rule from the action rule set. All action rules are on the same level
      */
-    private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList) throws WrongInputException {
+    private ActionRuleSet createActionRuleSet(NodeList actionRuleNodeList, boolean isValidation) throws WrongInputException {
         ActionRuleSet actionRuleSet = new ActionRuleSet();
 
         int length = actionRuleNodeList.getLength();
@@ -160,14 +183,14 @@ public class RuleProcessor {
             if (actionRuleNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element actionRuleElement = (Element) actionRuleNode;
 
-                ActionRule actionRule = createActionRule(actionRuleElement);
+                ActionRule actionRule = createActionRule(actionRuleElement, isValidation);
                 actionRuleSet.addActionRule(actionRule);
             }
         }
         return actionRuleSet;
     }
 
-    private ActionRule createActionRule(Element actionRuleElement) throws WrongInputException {
+    private ActionRule createActionRule(Element actionRuleElement, boolean isValidation) throws WrongInputException {
         ActionRule actionRule = new ActionRule();
 
         //Extract ACTION element and its text inside ACTION_RULE
@@ -184,12 +207,26 @@ public class RuleProcessor {
             }
         }
 
-        EnumFusionAction action = EnumFusionAction.fromString(actionNode.getTextContent());
+        EnumFusionAction fusionAction;
+        EnumValidationAction validationAction;
+        
+        if(isValidation){
+            validationAction = EnumValidationAction.fromString(actionNode.getTextContent());
+            
+            if (validationAction.equals(EnumValidationAction.UNDEFINED)) {
+                throw new WrongInputException("Wrong fusion action input: " + actionNode.getTextContent());
+            } else {
+                actionRule.setValidationAction(validationAction);
+            }
 
-        if (action.equals(EnumFusionAction.UNDEFINED)) {
-            throw new WrongInputException("Wrong fusion action input: " + actionNode.getTextContent());
         } else {
-            actionRule.setAction(action);
+            fusionAction = EnumFusionAction.fromString(actionNode.getTextContent());
+            
+            if (fusionAction.equals(EnumFusionAction.UNDEFINED)) {
+                throw new WrongInputException("Wrong fusion action input: " + actionNode.getTextContent());
+            } else {
+                actionRule.setFusionAction(fusionAction);
+            }      
         }
 
         //Extract condition
@@ -460,12 +497,13 @@ public class RuleProcessor {
     private Node getLogicalOperationNode(Node expression) throws WrongInputException {
 
         Node logicalOperationNode = expression.getFirstChild(); //first level child is the logical operation of the expression
-        logger.trace("logical operation: " + logicalOperationNode.getNodeName());
+        
         //get the logical operation node. Should always exist:
         int i = 0;
         while (true) {
 
             if (logicalOperationNode.getNodeType() == Node.ELEMENT_NODE) {
+                logger.trace("logical operation: " + logicalOperationNode.getNodeName());
                 if (logicalOperationNode.getNodeName().equalsIgnoreCase(AND)
                         || logicalOperationNode.getNodeName().equalsIgnoreCase(OR)
                         || logicalOperationNode.getNodeName().equalsIgnoreCase(NOT)) {

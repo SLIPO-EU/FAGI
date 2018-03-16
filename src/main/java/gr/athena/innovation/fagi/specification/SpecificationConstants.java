@@ -46,6 +46,7 @@ public class SpecificationConstants {
     public static class Rule {
 
         public static final String RULE = "rule";
+        public static final String VALIDATION_RULE = "validationRule";
         public static final String DEFAULT_DATASET_ACTION = "defaultDatasetAction";
         public static final String DEFAULT_ACTION = "defaultAction";
         public static final String PROPERTY_A = "propertyA";

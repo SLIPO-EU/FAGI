@@ -6,6 +6,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
@@ -27,6 +28,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +43,8 @@ public class LinkedPair {
     private Entity leftNode;
     private Entity rightNode;
     private Entity fusedEntity;
+    
+    EnumValidationAction validation = EnumValidationAction.UNDEFINED;
 
     public Entity getLeftNode() {
         return leftNode;
@@ -66,13 +70,126 @@ public class LinkedPair {
         return fusedEntity;
     }
 
-    public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap) throws WrongInputException{
+    public void setFusedEntity(Entity fusedEntity) {
+        this.fusedEntity = fusedEntity;
+    }
+    
+    public EnumValidationAction validateLink(List<Rule> validationRules, Map<String, IFunction> functionMap) 
+            throws WrongInputException{
+
+        EntityData leftEntityData = leftNode.getEntityData();
+        EntityData rightEntityData = rightNode.getEntityData();
+
+        for(Rule validationRule : validationRules){
+            logger.trace("Validating with Rule: " + validationRule);
+
+            String validationProperty;
+
+            //the property here is assumed to be one node above the literal value in order  to align with the ontology.
+            //For example the property is the p1 in the following linked triples.
+            // s p1 o1 . o1 p2 o2 
+            String literalA;
+            String literalB;
+            
+            if(validationRule.getParentPropertyA() == null){
+                validationProperty = validationRule.getPropertyA();
+                literalA = getLiteralValue(validationRule.getPropertyA(), leftEntityData.getModel());
+
+            } else {
+                validationProperty = validationRule.getParentPropertyA();
+                literalA = getLiteralValueFromChain(validationRule.getParentPropertyA(), validationRule.getPropertyA(), 
+                        leftEntityData.getModel());
+            }
+
+            if(validationRule.getParentPropertyB() == null){
+                literalB = getLiteralValue(validationRule.getPropertyB(), rightEntityData.getModel());
+            } else {
+                literalB = getLiteralValueFromChain(validationRule.getParentPropertyB(), validationRule.getPropertyB(), 
+                        rightEntityData.getModel());
+            }
+
+            if(literalA == null && literalB == null){
+                continue;
+            }
+
+            //Checking if it is a simple rule with default actions and no conditions and functions are set.
+            //Fuse with the rule defaults and break.
+            if(validationRule.getActionRuleSet() == null){
+                logger.trace("Rule without ACTION RULE SET, accepting link.");
+                
+                validation = EnumValidationAction.ACCEPT;
+
+                break;
+            }
+
+            List<ActionRule> actionRules = validationRule.getActionRuleSet().getActionRuleList();
+            int actionRuleCount = 0;
+            boolean actionRuleToApply = false;
+            for(ActionRule actionRule : actionRules){
+
+                logger.info("-- Action rule: " + actionRuleCount);
+
+                EnumValidationAction validationAction = null;
+                
+                if(actionRule.getValidationAction() != null){
+                    validationAction = actionRule.getValidationAction();
+                }
+                
+                Condition condition = actionRule.getCondition();
+
+                //switch case for evaluation using external properties.
+                for(Map.Entry<String, ExternalProperty> externalPropertyEntry : validationRule.getExternalProperties().entrySet()){
+
+                    //The rule model does not represent the external properties with chain relationships.
+                    //So, there are two cases here: Property refers to literal the external property contains a chain
+                    //separated by a whitespace.
+                    String extPropertyText = externalPropertyEntry.getValue().getProperty();
+                    String valueA;
+                    String valueB;
+
+                    if(extPropertyText.contains(" ")){
+                        String[] chains = extPropertyText.split(" ");
+                        valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
+                        valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
+                    } else {
+                        valueA = getLiteralValue(externalPropertyEntry.getValue().getProperty(), leftEntityData.getModel());
+                        valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
+                    }
+
+                    externalPropertyEntry.getValue().setValueA(valueA);
+                    externalPropertyEntry.getValue().setValueB(valueB);
+                }
+
+                boolean isActionRuleToBeApplied = condition.evaluate(functionMap, this, validationProperty,
+                    literalA, literalB, validationRule.getExternalProperties());
+
+                actionRuleCount++;
+                
+                if(isActionRuleToBeApplied){
+                    logger.trace("Condition : " + condition + " evaluated true. Validating link with: " + validationAction);
+
+                    validation = validationAction;
+                    
+                    actionRuleToApply = true;
+                    break;
+                }
+            }
+            
+            //No action rule applied. Use default Action (accept)
+            if(actionRuleToApply == false){
+                EnumValidationAction defaultAction = validationRule.getDefaultValidationAction();
+                validation = defaultAction;
+            }
+        }
+        
+        return validation;
+    }
+    
+    public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap, 
+            EnumValidationAction validationAction) throws WrongInputException{
 
         EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
-        fusedEntity = new Entity();
-        fusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction));
-
         EntityData leftEntityData = leftNode.getEntityData();
         EntityData rightEntityData = rightNode.getEntityData();
 
@@ -83,7 +200,7 @@ public class LinkedPair {
         for(Rule rule : rules){
             logger.trace("Fusing with Rule: " + rule);
 
-            EnumFusionAction defaultAction = rule.getDefaultAction();
+            EnumFusionAction defaultAction = rule.getDefaultFusionAction();
 
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
             Property rdfValuePropertyA = getRDFPropertyFromString(rule.getPropertyA());
@@ -120,7 +237,7 @@ public class LinkedPair {
             if(rule.getActionRuleSet() == null){
                 logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultAction);
                 if(defaultAction != null){
-                    fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB);
+                    fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB, validationAction);
                 }
                 break;
             }
@@ -134,19 +251,19 @@ public class LinkedPair {
 
                 EnumFusionAction action = null;
                 
-                if(actionRule.getAction() != null){
-                    action = actionRule.getAction();
+                if(actionRule.getFusionAction() != null){
+                    action = actionRule.getFusionAction();
                 }
                 
                 Condition condition = actionRule.getCondition();
 
                 //switch case for evaluation using external properties.
-                for(Map.Entry<String, ExternalProperty> extProp : rule.getExternalProperties().entrySet()){
+                for(Map.Entry<String, ExternalProperty> externalPropertyEntry : rule.getExternalProperties().entrySet()){
 
                     //The rule model does not represent the external properties with chain relationships.
                     //So, there are two cases here: Property refers to literal the external property contains a chain
                     //separated by a whitespace.
-                    String extPropertyText = extProp.getValue().getProperty();
+                    String extPropertyText = externalPropertyEntry.getValue().getProperty();
                     String valueA;
                     String valueB;
 
@@ -155,34 +272,36 @@ public class LinkedPair {
                         valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
                         valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
                     } else {
-                        valueA = getLiteralValue(extProp.getValue().getProperty(), leftEntityData.getModel());
-                        valueB = getLiteralValue(extProp.getValue().getProperty(), rightEntityData.getModel());
+                        valueA = getLiteralValue(externalPropertyEntry.getValue().getProperty(), leftEntityData.getModel());
+                        valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
                     }
 
-                    extProp.getValue().setValueA(valueA);
-                    extProp.getValue().setValueB(valueB);
+                    externalPropertyEntry.getValue().setValueA(valueA);
+                    externalPropertyEntry.getValue().setValueB(valueB);
                 }
 
                 boolean isActionRuleToBeApplied = condition.evaluate(functionMap, this, fusionProperty,
                     literalA, literalB, rule.getExternalProperties());
 
                 actionRuleCount++;
+                
                 if(isActionRuleToBeApplied){
                     logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
 
-                    fuseRuleAction(action, rdfValuePropertyA, literalA, literalB);
+                    fuseRuleAction(action, rdfValuePropertyA, literalA, literalB, validationAction);
 
                     actionRuleToApply = true;
                     break;
                 }
             }
+            
             //No action rule applied. Use default Action
             if(actionRuleToApply == false){
-                fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB);
+                fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB, validationAction);
             }
         }
     }
-
+    
     public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction) throws WrongInputException{
 
         //default dataset action should be performed before the rules apply. The fused model should be empty:
@@ -229,22 +348,70 @@ public class LinkedPair {
                 throw new WrongInputException("Dataset default fusion action is not defined.");
         }        
     }
-
+    
     private void fuseRuleAction(EnumFusionAction action, 
-            Property property, String literalA, String literalB) throws WrongInputException{
-        
+            Property property, String literalA, String literalB, EnumValidationAction validationAction) throws WrongInputException{
+
+        logger.warn("fuseRuleAction " + validationAction);
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
 
-        String fusedURI = fusedEntity.getResourceURI();
-
         EntityData fusedEntityData = fusedEntity.getEntityData();
         
+        Model fusedModel = fusedEntityData.getModel();
+        
+        switch(validationAction){
+
+            case ACCEPT:
+                //do nothing
+                break;      
+            case REJECT:
+            {    
+                
+                if(!fusedModel.isEmpty()){
+                    fusedModel.removeAll();
+                }
+
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData); 
+                logger.warn("LINK REJECTED, RETURNING");
+                return; //stop link fusion
+            }    
+            case ACCEPT_MARK_AMBIGUOUS:
+            {    
+                Statement statement = getAmbiguousLinkStatement();
+
+                if(isRejectedByPreviousRule(fusedModel)){
+                    break;
+                }
+                
+                fusedModel.add(statement); 
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);        
+                        
+                break;
+            }    
+            case REJECT_MARK_AMBIGUOUS:
+            {    
+                
+                if(!fusedModel.isEmpty()){
+                    fusedModel.removeAll();
+                }
+                
+                Statement statement = getAmbiguousLinkStatement();
+                
+                fusedModel.add(statement); 
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);   
+                
+                return; //stop link fusion
+            }    
+        }
+
         switch(action){
             case KEEP_LEFT:
             {
-                Model fusedModel = fusedEntityData.getModel();
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 } 
@@ -265,8 +432,6 @@ public class LinkedPair {
             case KEEP_RIGHT:
             {
                 
-                Model fusedModel = fusedEntityData.getModel();
-                
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
@@ -283,8 +448,6 @@ public class LinkedPair {
             case CONCATENATE:
             {
 
-                Model fusedModel = fusedEntityData.getModel();
-                
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
@@ -303,8 +466,7 @@ public class LinkedPair {
             } 
             case KEEP_LONGEST:
             {
-                Model fusedModel = fusedEntityData.getModel();
-                
+
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
@@ -334,7 +496,7 @@ public class LinkedPair {
                     EntityData leftEntityData = leftNode.getEntityData();
                     EntityData rightEntityData = rightNode.getEntityData();
 
-                    Model fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
+                    fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
                     
                     if(isRejectedByPreviousRule(fusedModel)){
                         break;
@@ -354,8 +516,6 @@ public class LinkedPair {
 
                 if(leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
 
-                    Model fusedModel = fusedEntityData.getModel();
-                    
                     if(isRejectedByPreviousRule(fusedModel)){
                         break;
                     }
@@ -370,8 +530,7 @@ public class LinkedPair {
                     fusedEntity.setEntityData(fusedEntityData);
 
                 } else {
-                    Model fusedModel = fusedEntityData.getModel();
-                    
+
                     if(isRejectedByPreviousRule(fusedModel)){
                         break;
                     }                   
@@ -399,8 +558,6 @@ public class LinkedPair {
                     Geometry fusedGeometry = centroidTranslator.shift(leftGeometry);
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
-                    Model fusedModel = fusedEntityData.getModel();
-                    
                     if(isRejectedByPreviousRule(fusedModel)){
                         break;
                     }
@@ -419,8 +576,6 @@ public class LinkedPair {
                     Geometry fusedGeometry = centroidTranslator.shift(rightGeometry);   
                     String wktFusedGeometry = getWKTLiteral(fusedGeometry);
 
-                    Model fusedModel = fusedEntityData.getModel();
-                    
                     if(isRejectedByPreviousRule(fusedModel)){
                         break;
                     }
@@ -447,8 +602,6 @@ public class LinkedPair {
                 Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
                 String wktFusedGeometry = getWKTLiteral(shiftedToRightGeometry);
 
-                Model fusedModel = fusedEntityData.getModel();
-                
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
@@ -469,19 +622,17 @@ public class LinkedPair {
 
                 Geometry leftGeometry = parseGeometry(literalA);
                 Geometry rightGeometry = parseGeometry(literalB);
-                
+
                 CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
                 Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);   
                 String wktFusedGeometry = getWKTLiteral(shiftedToLeftGeometry);
 
-                Model fusedModel = fusedEntityData.getModel();
-                
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
-                
+
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-                
+
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                 fusedEntityData = fusedEntity.getEntityData();
@@ -489,67 +640,8 @@ public class LinkedPair {
                 fusedEntity.setEntityData(fusedEntityData);
 
                 break;
-            }            
-            case REJECT_LINK:
-            {
-                Model fusedModel = fusedEntityData.getModel();
-                
-                if(isRejectedByPreviousRule(fusedModel)){
-                    break;
-                }
-                
-                if(!fusedModel.isEmpty()){
-                    fusedModel.removeAll();
-                }
-
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);                
-                
-                break;
             }
-            case ACCEPT_MARK_AMBIGUOUS:
-            {
-                Model fusedModel = fusedEntityData.getModel();
-                
-                if(isRejectedByPreviousRule(fusedModel)){
-                    break;
-                }
-                
-                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
-                
-                String resourceString = "http://slipo.eu/def#" + leftNode.getResourceURI() + "_"+ rightNode.getResourceURI();   
-                Resource resource =  ResourceFactory.createResource(resourceString);
-
-                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource); 
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);                
-                
-                break;
-            }
-            case REJECT_MARK_AMBIGUOUS:
-            {
-            
-                Model fusedModel = fusedEntityData.getModel();
-                
-                if(isRejectedByPreviousRule(fusedModel)){
-                    break;
-                }
-                
-                if(!fusedModel.isEmpty()){
-                    fusedModel.removeAll();
-                }
-                
-                Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
-                String resourceString = "http://slipo.eu/def#" + leftNode.getResourceURI() + "_"+ rightNode.getResourceURI();
-                Resource resource =  ResourceFactory.createResource(resourceString);
-                
-                fusedModel.add(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource); 
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);                
-            
-                break;
-            }
-        }         
+        }
     }
 
     //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
@@ -589,7 +681,7 @@ public class LinkedPair {
             return "";
         }
     }
-    
+
     private Property getRDFPropertyFromString(String property){
         //TODO: remove aliases of properties
         Property propertyRDF;
@@ -603,26 +695,6 @@ public class LinkedPair {
             propertyRDF = ResourceFactory.createProperty(property);
         }
         return propertyRDF;
-    }
-
-    private String resolveFusedEntityURI(EnumDatasetAction defaultDatasetAction) {
-        String resourceURI;
-        switch (defaultDatasetAction) {
-            case KEEP_LEFT:
-                leftNode.getResourceURI();
-                resourceURI = leftNode.getResourceURI();
-                break;
-            case KEEP_RIGHT:
-                resourceURI = rightNode.getResourceURI();
-                break;
-            case REJECT_LINK:
-                resourceURI = "";
-                break;                
-            default:
-                resourceURI = leftNode.getResourceURI();
-                break;
-        }
-        return resourceURI;
     }
 
     private Geometry parseGeometry(String literal) {
@@ -656,9 +728,40 @@ public class LinkedPair {
     }
     
     private boolean isRejectedByPreviousRule(Model model){
-        //the link has been rejected (or rejected and marked ambiguous) by previous rule. break
+        //the link has been rejected (or rejected and marked ambiguous) by previous rule.
         //TODO: if size is 1, maybe strict check if the triple contains the ambiguity
         
         return model.isEmpty() || model.size() == 1;
+    }
+    
+    private Statement getAmbiguousLinkStatement(){
+        
+        String fusedURI = fusedEntity.getResourceURI();
+        
+        Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
+        
+        String leftID = getIDFromURI(leftNode.getResourceURI());
+        String rightID = getIDFromURI(rightNode.getResourceURI());
+        
+        String resourceString = Namespace.SLIPO_PREFIX + leftID + "_"+ rightID;   
+        Resource resource =  ResourceFactory.createResource(resourceString);
+
+        Statement statement = ResourceFactory.createStatement
+                (ResourceFactory.createResource(fusedURI), ambiguousProperty, resource);
+        
+        return statement;
+    }
+    
+    private String getIDFromURI(String URI){
+
+        String id;
+        int startIndex = URI.lastIndexOf("/");
+        if(startIndex > -1){
+            id = URI.substring(startIndex+1, URI.length());
+        } else {
+            id = URI;
+        }
+
+        return id;
     }
 }

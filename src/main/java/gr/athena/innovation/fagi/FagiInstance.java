@@ -48,12 +48,11 @@ public class FagiInstance {
     private final String rulesXml;
 
     private final boolean runEvaluation = false;
-    
-    private final boolean exportFrequencies = true;
-    private final boolean exportStatistics = true;
+    private final boolean exportFrequencies = false;
+    private final boolean exportStatistics = false;
     private final boolean exportSimilaritiesPerLink = false;
-
     private final boolean train = false;
+    private final boolean fuse = true;
 
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -170,32 +169,35 @@ public class FagiInstance {
             trainer.train();
         }
 
-        logger.info("Initiating fusion process...");
-        Fuser fuser = new Fuser();
-        Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
-        
-        List<LinkedPair> fusedEntities = fuser.fuseAll(fusionSpec, ruleCatalog, functionRegistryMap);
+        if(fuse){
+            logger.info("Initiating fusion process...");
+            
+            Fuser fuser = new Fuser();
+            Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
 
-        long stopTimeFusion = System.currentTimeMillis();
+            List<LinkedPair> fusedEntities = fuser.fuseAll(fusionSpec, ruleCatalog, functionRegistryMap);
 
-        //Combine result datasets and write to file
-        long startTimeWrite = System.currentTimeMillis();
+            long stopTimeFusion = System.currentTimeMillis();
 
-        logger.info("Writing results...");
-        fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
+            //Combine result datasets and write to file
+            long startTimeWrite = System.currentTimeMillis();
 
-        long stopTimeWrite = System.currentTimeMillis();
+            logger.info("Writing results...");
+            fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
 
-        logger.info(fusionSpec.toString());
+            long stopTimeWrite = System.currentTimeMillis();
+            
+            logger.info(fusionSpec.toString());
 
-        logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-        logger.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
-                + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
-        logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
-        logger.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
-        logger.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
-        logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
-        logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
-        logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");
+            logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
+            logger.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
+                    + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
+            logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
+            logger.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
+            logger.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
+            logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
+            logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
+            logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");            
+        }
     }
 }

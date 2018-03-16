@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 
 /**
  * ActionRule represents a fusion action to be executed when a condition is fulfilled. 
@@ -11,18 +12,23 @@ import gr.athena.innovation.fagi.core.action.EnumFusionAction;
 public class ActionRule {
 
     private Condition condition;
-    private EnumFusionAction action;
+    private EnumFusionAction fusionAction;
+    private EnumValidationAction validationAction;
 
-    public EnumFusionAction getAction() {
-        return action;
+    public EnumFusionAction getFusionAction() {
+        return fusionAction;
     }
 
-    public void setAction(EnumFusionAction action) {
-        this.action = action;
+    public void setFusionAction(EnumFusionAction fusionAction) {
+        this.fusionAction = fusionAction;
     }
     
-    public boolean isConditionFulfilled(){
-        return true;
+    public EnumValidationAction getValidationAction() {
+        return validationAction;
+    }
+
+    public void setValidationAction(EnumValidationAction validationAction) {
+        this.validationAction = validationAction;
     }
 
     public Condition getCondition() {
@@ -35,6 +41,6 @@ public class ActionRule {
     
     @Override
     public String toString() {
-        return "\nActionRule{" + "condition=" + condition + ", action=" + action + "\n}";
+        return "\nActionRule{" + "condition=" + condition + ", action=" + fusionAction + "\n}";
     }    
 }

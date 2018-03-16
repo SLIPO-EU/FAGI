@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +18,11 @@ public class Rule {
     private String parentPropertyB = null;    
     private String propertyB;
 
-    
-    //TODO: external properties implementation
     private Map<String, ExternalProperty> externalProperties = new HashMap<>();
     
     private ActionRuleSet actionRuleSet;
-    private EnumFusionAction defaultAction;
+    private EnumFusionAction defaultFusionAction;
+    private EnumValidationAction defaultValidationAction;
 
     //this property is always the end of a chain and points to a literal.
     public String getPropertyA() {
@@ -62,12 +62,12 @@ public class Rule {
         return parentPropertyB;
     }
     
-    public EnumFusionAction getDefaultAction() {
-        return defaultAction;
+    public EnumFusionAction getDefaultFusionAction() {
+        return defaultFusionAction;
     }
 
-    public void setDefaultAction(EnumFusionAction defaultAction) {
-        this.defaultAction = defaultAction;
+    public void setDefaultFusionAction(EnumFusionAction defaultFusionAction) {
+        this.defaultFusionAction = defaultFusionAction;
     }
 
     public ActionRuleSet getActionRuleSet() {
@@ -90,6 +90,14 @@ public class Rule {
     public String toString() {
         return "\n\nRule{" + "\npropertyA=" + propertyA + "\npropertyB=" + propertyB 
                 + "\nexternalProperties=" + externalProperties + "\nactionRuleSet=" + actionRuleSet 
-                + "\ndefaultAction=" + defaultAction + "}\n\n";
+                + "\ndefaultAction=" + defaultFusionAction + "}\n\n";
+    }
+
+    public EnumValidationAction getDefaultValidationAction() {
+        return defaultValidationAction;
+    }
+
+    public void setDefaultValidationAction(EnumValidationAction defaultValidationAction) {
+        this.defaultValidationAction = defaultValidationAction;
     }
 }

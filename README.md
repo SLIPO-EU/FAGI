@@ -88,13 +88,44 @@ In order to construct a condition, we assemble a group of logical operations tha
 We can define a logical operation by using the `<expression>` tag as a child of a condition. 
 Then, inside the expression we can put together a combination of `<and>`, `<or>` and `<not>` operations. Αs operands we can use `<function>` elements containing a function or a nested <expression> containing more logical operations. The depth of the nested expressions supported currently is 2 levels of same logical operations. 
 
+Except fusion rules which are defined with the `<rule>` tag, there is an option to add validation rules using the `<validationRule>` tag. With a validation rule we can accept/reject and/or mark a link as ambiguous in the model. The validation rules follow the exact same logic described above with the only difference being that the fusion actions are replaced with the validation actions, both described at the tables below.
+
 A sample rules.xml file could look like this: 
 
 <rules>
 
+	<validationRule>
+		<propertyA>nameΑ nameValueΑ</propertyA>
+		<propertyB>nameA nameValueA</propertyB>
+		<externalProperty id="a1">phoneA contactValueA</externalProperty>
+		<externalProperty id="b1">phoneB contactValueB</externalProperty>
+		<actionRuleSet>
+			<actionRule>
+				<condition>
+					<expression>
+						<or>
+							<expression>
+								<and>
+									<function>isSamePhoneNumberCustomNormalize(a1,b1)</function>
+									<function>isSameCustomNormalize(a,b,0.6)</function>
+								</and>
+							</expression>
+							<expression>
+								<not>
+									<function>isSameCustomNormalize(a,b,0.5)</function>
+								</not>
+							</expression>
+						</or>
+					</expression>			
+				</condition>
+				<action>reject-mark-ambiguous</action>
+			</actionRule>
+		</actionRuleSet>
+		<defaultAction>accept</defaultAction>
+	</validationRule>	
 	<rule>
-		<propertyA>dateA</propertyA>
-		<propertyB>dateB</propertyB>
+		<propertyA>dateA lastModifiedA</propertyA>
+		<propertyB>dateB lastModifiedB</propertyB>
 		<externalProperty id="a1">label</externalProperty>
 		<externalProperty id="b1">label</externalProperty>		
 		<actionRuleSet>
@@ -120,8 +151,8 @@ A sample rules.xml file could look like this:
 		<defaultAction>keep-left</defaultAction>
 	</rule>
 	<rule>
-		<propertyA>phoneA</propertyA>
-		<propertyB>phoneB</propertyB>
+		<propertyA>phoneA contactValueA</propertyA>
+		<propertyB>phoneB contactValueB</propertyB>
 		<actionRuleSet>
 			<actionRule>
 				<condition>
@@ -179,9 +210,14 @@ A sample rules.xml file could look like this:
 | keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
 | shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
 | shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
-| reject-link | Both | Rejects the whole link based on the rule property.
-| accept-mark-ambiguous | Both | Keeps the default fusion action data, but marks the property as ambiguous by adding a statement to the model.
-| reject-mark-ambiguous | Both | Rejects the link, but marks the property as ambiguous by adding a statement to the model.
+
+### Available validation actions:
+| Name        | Type | Description
+| ------------- |:-------------|:------|
+| accept | Link | Accepts a link based on the rule property.
+| reject| Link | Rejects the whole link based on the rule property.
+| accept-mark-ambiguous | Link | Keeps the default fusion action data, but marks the property as ambiguous by adding a statement to the model.
+| reject-mark-ambiguous | Link | Rejects the link, but marks the property as ambiguous by adding a statement to the model.
 
 ### Available default dataset actions:
 | Name        | Type | Description
