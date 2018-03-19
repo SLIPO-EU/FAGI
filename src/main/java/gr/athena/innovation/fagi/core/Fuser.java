@@ -93,7 +93,6 @@ public class Fuser implements IFuser{
 
             pair.setFusedEntity(newFusedEntity);
             
-            
             pair.fusePair(ruleCatalog, functionMap, validation);
             
             fusedList.add(pair);
@@ -202,10 +201,7 @@ public class Fuser implements IFuser{
                 break;
             case KEEP_BOTH:
                 resourceURI = leftURI;
-                break;                
-            case REJECT_LINK:
-                resourceURI = "";
-                break;                
+                break;              
             default:
                 logger.fatal("Cannot resolved fused Entity's URI. Check Default Dataset Action.");
                 throw new IllegalArgumentException();

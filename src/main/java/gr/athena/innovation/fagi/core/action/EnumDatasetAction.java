@@ -33,13 +33,7 @@ public enum EnumDatasetAction {
     /**
      * Keeps both models of the entity from left and right source datasets.
      */
-    KEEP_BOTH(3),
-
-    /**
-     * Rejects the link, that is the fusion action. 
-     * If a new fused dataset is chosen as output, none of the respective models of the entities appear in the final dataset.
-     */    
-    REJECT_LINK(4);
+    KEEP_BOTH(3);
 
 	private final int value;
     
@@ -118,7 +112,6 @@ public enum EnumDatasetAction {
         case KEEP_LEFT: return "keep-left";
         case KEEP_RIGHT: return "keep-right";
         case KEEP_BOTH: return "keep-both";
-        case REJECT_LINK: return "reject-link";
         default: throw new IllegalArgumentException();
       }
     }    

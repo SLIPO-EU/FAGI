@@ -188,6 +188,8 @@ public class LinkedPair {
     public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap, 
             EnumValidationAction validationAction) throws WrongInputException{
 
+        //TODO: optimization: resolve validation action here 
+        
         EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
         EntityData leftEntityData = leftNode.getEntityData();
@@ -338,11 +340,6 @@ public class LinkedPair {
                 fusedData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedData);
                 break;
-            } 
-            case REJECT_LINK:
-            {
-                fusedEntity.getEntityData().getModel().removeAll();
-                break;   
             }
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
