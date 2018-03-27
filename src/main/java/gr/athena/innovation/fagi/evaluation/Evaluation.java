@@ -4,8 +4,6 @@ import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -16,7 +14,7 @@ public class Evaluation {
     public void run(FusionSpecification fusionSpec, String csvPath){
 
             //on version change, all weights update (along with notes)
-            String version = "v2.3a";
+            String version = "v2.2a";
             String evaluationPath = "";
             String resultsPath = evaluationPath + version + "/";
             String nameMetrics = "name_metrics_" + version + ".csv";

@@ -27,10 +27,12 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -182,13 +184,14 @@ public class MetricProcessor {
         } else {
             metricsFile.getParentFile().mkdirs();
             metricsFile.createNewFile();
-        }     
+        }
+        
+        logger.info("Evaluation output at " + metricsFile.getAbsolutePath());
 
         try (BufferedWriter metricsWriter = new BufferedWriter(new FileWriter(metricsFile, true))) {
             
             double[] thresholds = 
-                {0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.30, 0.325, 0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5, 
-                    0.525, 0.55, 0.575, 0.6, 0.625, 0.65, 0.675, 0.70, 0.725, 0.75, 0.775, 0.80, 0.825, 0.85, 0.875, 0.90, 0.925, 0.95, 0.975};
+                {0.05, 0.1, 0.15, 0.2, 0.30, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95};
             
             for (int i = 0; i < thresholds.length; i++) {
 
@@ -282,6 +285,8 @@ public class MetricProcessor {
             Accuracy aAccuracy, Accuracy bAccuracy, Accuracy cAccuracy, Accuracy dAccuracy) 
             throws FileNotFoundException, IOException{
         
+        logger.trace("Calculating for threshold " + threshold);
+        
         totalRows = 0;
                 
         String line;
@@ -292,60 +297,10 @@ public class MetricProcessor {
         BufferedReader br = new BufferedReader(new FileReader(csvPath));
 
         try {
-        
-            l = 0;
-            while ((line = br.readLine()) != null) {
-
-                //skip first two lines of csv
-                if (l < 2) {
-                    l++;
-                    continue;
-                }
-
-                // use comma as separator
-                String[] spl = line.split(cvsSplitBy);
-
-                //StringBuffer sb = new StringBuffer("");
-                if (spl.length < 22) {
-                    continue;
-                }
-                String idA = spl[0];
-                String idB = spl[1];
-
-                //String distanceMeters = spl[2];
-
-                String nameA = spl[3];
-                String nameB = spl[4];
-                //String nameFusionAction = spl[5];
-
-                String streetA = spl[6];
-                String streetB = spl[7];
-                //String streetFusionAction = spl[8];
-
-                String streetNumberA = spl[9];
-                String streetNumberB = spl[10];
-
-                String phoneA = spl[11];
-                String phoneB = spl[12];
-                //String phoneFusionAction = spl[13];
-
-                String emailA = spl[14];
-                String emailB = spl[15];
-                //String emailFusionAction = spl[16];
-
-                String websiteA = spl[17];
-                String websiteB = spl[18];
-                //String websiteFusionAction = spl[19];
-
-                //String score = spl[20];
-                //String names1 = spl[21];
-                String acceptance = spl[22];
-
-                computePairOutputResult(nameA, nameB, locale, acceptance, threshold, 
-                        aAccuracy, bAccuracy, cAccuracy, dAccuracy);
-
-                l++;
-            }         
+            
+            //toggle configuration
+            //executeOriginalSet(l, br, cvsSplitBy, locale, threshold, aAccuracy, bAccuracy, cAccuracy, dAccuracy);         
+            executeBalancedSet(l, br, cvsSplitBy, locale, threshold, aAccuracy, bAccuracy, cAccuracy, dAccuracy);
             
             int aLevenPrecisionAcceptCounter = count(aLevenPrecisionMap.get(ACCEPT), threshold);
             int aLevenPrecisionRejectCounter = count(aLevenPrecisionMap.get(REJECT), threshold);
@@ -438,7 +393,7 @@ public class MetricProcessor {
             double dLevenPrecision = calculatePrecision(dLevenPrecisionAcceptCounter, dLevenPrecisionRejectCounter);
             double dLevenRecall= calculateRecall(dLevenPrecisionAcceptCounter, dLevenPrecisionMap);
             double dLevenHarmonicMean = calculateHarmonicMean(dLevenPrecision, dLevenRecall);
-            
+
             double aNGramAccuracy = calculateAccuracy(aAccuracy.getNgram2Count(), totalRows);
             double aNGramPrecision = calculatePrecision(aNGramPrecisionAcceptCounter, aNGramPrecisionRejectCounter);
             double aNGramRecall= calculateRecall(aNGramPrecisionAcceptCounter, aNGramPrecisionMap);
@@ -605,19 +560,20 @@ public class MetricProcessor {
             writer.append(bScores);
             writer.newLine();
 
-            String cScores = scores("c", threshold, cLevenAccuracy, cLevenPrecision, cLevenRecall, cLevenHarmonicMean, 
-                            cNGramAccuracy, cNGramPrecision, cNGramRecall, cNGramHarmonicMean, cCosineAccuracy, 
-                            cCosinePrecision, cCosineRecall, cCosineHarmonicMean, cLqsAccuracy, cLqsPrecision, 
-                            cLqsRecall, cLqsHarmonicMean, cJaccardAccuracy, cJaccardPrecision, cJaccardRecall, 
-                            cJaccardHarmonicMean, cJaroAccuracy, cJaroPrecision, cJaroRecall, cJaroHarmonicMean, 
-                            cJaroWinklerAccuracy, cJaroWinklerPrecision, cJaroWinklerRecall, cJaroWinklerHarmonicMean, 
-                            cSortedJaroWinklerAccuracy, cSortedJaroWinklerPrecision, cSortedJaroWinklerRecall, 
-                            cSortedJaroWinklerHarmonicMean);            
-
-
-            
-            writer.append(cScores);
-            writer.newLine();
+//exclude c scores
+//            String cScores = scores("c", threshold, cLevenAccuracy, cLevenPrecision, cLevenRecall, cLevenHarmonicMean, 
+//                            cNGramAccuracy, cNGramPrecision, cNGramRecall, cNGramHarmonicMean, cCosineAccuracy, 
+//                            cCosinePrecision, cCosineRecall, cCosineHarmonicMean, cLqsAccuracy, cLqsPrecision, 
+//                            cLqsRecall, cLqsHarmonicMean, cJaccardAccuracy, cJaccardPrecision, cJaccardRecall, 
+//                            cJaccardHarmonicMean, cJaroAccuracy, cJaroPrecision, cJaroRecall, cJaroHarmonicMean, 
+//                            cJaroWinklerAccuracy, cJaroWinklerPrecision, cJaroWinklerRecall, cJaroWinklerHarmonicMean, 
+//                            cSortedJaroWinklerAccuracy, cSortedJaroWinklerPrecision, cSortedJaroWinklerRecall, 
+//                            cSortedJaroWinklerHarmonicMean);            
+//
+//
+//            
+//            writer.append(cScores);
+//            writer.newLine();
             
             String dScores = scores("d", threshold, dLevenAccuracy, dLevenPrecision, dLevenRecall, dLevenHarmonicMean, 
                             dNGramAccuracy, dNGramPrecision, dNGramRecall, dNGramHarmonicMean, dCosineAccuracy, 
@@ -639,9 +595,187 @@ public class MetricProcessor {
             writer.close();
             throw new ApplicationException(ex.getMessage());
         }
-        logger.info("Total lines: " + l);        
+                
     }
 
+    private void executeOriginalSet(int l, BufferedReader br, String cvsSplitBy, Locale locale, double threshold, 
+            Accuracy aAccuracy, Accuracy bAccuracy, Accuracy cAccuracy, Accuracy dAccuracy) throws IOException {
+        String line;
+        l = 0;
+        while ((line = br.readLine()) != null) {
+            
+            //skip first line of csv
+            if (l < 1) {
+                l++;
+                continue;
+            }
+            
+            // use comma as separator
+            String[] spl = line.split(cvsSplitBy);
+            
+            //StringBuffer sb = new StringBuffer("");
+            if (spl.length < 22) {
+                continue;
+            }
+            String idA = spl[0];
+            String idB = spl[1];
+            
+            //String distanceMeters = spl[2];
+            
+            String nameA = spl[3];
+            String nameB = spl[4];
+            //String nameFusionAction = spl[5];
+            
+//            String streetA = spl[6];
+//            String streetB = spl[7];
+//            //String streetFusionAction = spl[8];
+//            
+//            String streetNumberA = spl[9];
+//            String streetNumberB = spl[10];
+//            
+//            String phoneA = spl[11];
+//            String phoneB = spl[12];
+//            //String phoneFusionAction = spl[13];
+//            
+//            String emailA = spl[14];
+//            String emailB = spl[15];
+//            //String emailFusionAction = spl[16];
+//            
+//            String websiteA = spl[17];
+//            String websiteB = spl[18];
+            //String websiteFusionAction = spl[19];
+            
+            //String score = spl[20];
+            //String names1 = spl[21];
+            String acceptance = spl[22];
+            
+            computePairOutputResult(nameA, nameB, locale, acceptance, threshold,
+                    aAccuracy, bAccuracy, cAccuracy, dAccuracy);
+            
+            l++;
+        }
+    }
+
+    private void executeBalancedSet(int l, BufferedReader br, String cvsSplitBy, Locale locale, double threshold, 
+            Accuracy aAccuracy, Accuracy bAccuracy, Accuracy cAccuracy, Accuracy dAccuracy) throws IOException {
+    
+        List<Record> records = new ArrayList<>();
+        String line;
+        l = 0;
+
+        while ((line = br.readLine()) != null) {
+            //skip first line of csv
+            if (l < 1) {
+                l++;
+                continue;
+            }
+            
+            // use comma as separator
+            String[] spl = line.split(cvsSplitBy);
+            
+            //StringBuffer sb = new StringBuffer("");
+            if (spl.length < 22) {
+                continue;
+            }
+
+            String nameA = spl[3];
+            String nameB = spl[4];
+            String acceptance = spl[22];
+            
+            Record record = new Record();
+            record.setKey(l);
+            record.setNameA(nameA);
+            record.setNameB(nameB);
+            record.setAcceptance(acceptance);
+            
+            records.add(record);
+            
+            l++;
+        }
+        
+        
+        //balance the record list
+        int acceptCount = getAcceptCount(records);
+        int rejectCount = getRejectCount(records);
+        
+        List<Record> balanced = new ArrayList<>();
+        List<Record> accepts = new ArrayList<>();
+        List<Record> rejects = new ArrayList<>();
+        long seed = 123456;
+        
+        if(acceptCount > rejectCount){
+            int diff = acceptCount - rejectCount;
+            
+            for(Record record : records){
+                if(record.getAcceptance().equals(ACCEPT)){
+                    accepts.add(record);
+                } else if(record.getAcceptance().equals(REJECT)){
+                    rejects.add(record);
+                } else {
+                    throw new ApplicationException("Wrong acceptance value: " + record.getAcceptance());
+                }
+            }
+            
+            Collections.shuffle(accepts, new Random(seed));
+            
+            accepts = accepts.subList(diff, accepts.size());
+            
+            balanced.addAll(accepts);
+            balanced.addAll(rejects);
+            
+        } else if(acceptCount < rejectCount){
+            int diff = rejectCount - acceptCount;
+            
+            for(Record record : records){
+                if(record.getAcceptance().equals(ACCEPT)){
+                    accepts.add(record);
+                } else if(record.getAcceptance().equals(REJECT)){
+                    rejects.add(record);
+                } else {
+                    throw new ApplicationException("Wrong acceptance value: " + record.getAcceptance());
+                }
+            }
+            
+
+            Collections.shuffle(rejects, new Random(seed));
+            
+            rejects = rejects.subList(diff, rejects.size());
+            
+            balanced.addAll(accepts);
+            balanced.addAll(rejects);            
+            
+        }
+        
+        //compute using balanced
+        for (Record record : balanced) {
+            
+            computePairOutputResult(record.getNameA(), record.getNameB(), locale, record.getAcceptance(), threshold,
+                    aAccuracy, bAccuracy, cAccuracy, dAccuracy);
+            
+            l++;
+        }
+    }
+    
+    private int getAcceptCount(List<Record> records){
+        int count = 0;
+        for(Record record : records){
+            if(record.getAcceptance().equals(ACCEPT)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int getRejectCount(List<Record> records){
+        int count = 0;
+        for(Record record : records){
+            if(record.getAcceptance().equals(REJECT)){
+                count++;
+            }
+        }
+        return count;
+    }
+    
     private String scores(String ind, double threshold, double aLevenAccuracy, double aLevenPrecision, double aLevenRecall, 
         double aLevenHarmonicMean, double aNGramAccuracy, double aNGramPrecision, double aNGramRecall, 
         double aNGramHarmonicMean, double aCosineAccuracy, double aCosinePrecision, double aCosineRecall, 
@@ -651,17 +785,17 @@ public class MetricProcessor {
         double aJaroHarmonicMean, double aJaroWinklerAccuracy, double aJaroWinklerPrecision, 
         double aJaroWinklerRecall, double aJaroWinklerHarmonicMean, double aSortedJaroWinklerAccuracy, 
         double aSortedJaroWinklerPrecision, double aSortedJaroWinklerRecall, double aSortedJaroWinklerHarmonicMean) {
-        
+
         String scores = "Total: " + totalRows
                 +  "\nMetric_Threshold " + threshold + SEP + "Accuracy" + SEP +"Precision"+ SEP + "Recall" + SEP + "harmonicMean"
                 + " \nLevenstein_" + ind + threshold + SEP + aLevenAccuracy + SEP + aLevenPrecision +  SEP + aLevenRecall + SEP + aLevenHarmonicMean
                 + " \n2Gram_" + ind + threshold + SEP + aNGramAccuracy + SEP + aNGramPrecision +  SEP + aNGramRecall + SEP + aNGramHarmonicMean
-                + " \nCosine_" + ind + threshold + SEP + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
+                //+ " \nCosine_" + ind + threshold + SEP + aCosineAccuracy + SEP + aCosinePrecision +  SEP + aCosineRecall + SEP + aCosineHarmonicMean
                 + " \nLongestCommonSubseq_" + ind + threshold + SEP + aLqsAccuracy + SEP + aLqsPrecision +  SEP + aLqsRecall + SEP + aLqsHarmonicMean
                 //+ " \nJaccard_" + ind + threshold + SEP + aJaccardAccuracy + SEP + aJaccardPrecision +  SEP + aJaccardRecall + SEP + aJaccardHarmonicMean
-                + " \nJaro_a" + ind + threshold + SEP + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
-                + " \nJaroWinkler_" + ind + threshold + SEP + aJaroWinklerAccuracy + SEP + aJaroWinklerPrecision +  SEP + aJaroWinklerRecall + SEP + aJaroWinklerHarmonicMean
-                + " \nSortedJaroWinkler_" + ind + threshold + SEP + aSortedJaroWinklerAccuracy + SEP + aSortedJaroWinklerPrecision +  SEP + aSortedJaroWinklerRecall + SEP + aSortedJaroWinklerHarmonicMean;
+                + " \nJaro_" + ind + threshold + SEP + aJaroAccuracy + SEP + aJaroPrecision +  SEP + aJaroRecall + SEP + aJaroHarmonicMean
+                + " \nJaroWinkler_" + ind + threshold + SEP + aJaroWinklerAccuracy + SEP + aJaroWinklerPrecision +  SEP + aJaroWinklerRecall + SEP + aJaroWinklerHarmonicMean;
+                //+ " \nSortedJaroWinkler_" + ind + threshold + SEP + aSortedJaroWinklerAccuracy + SEP + aSortedJaroWinklerPrecision +  SEP + aSortedJaroWinklerRecall + SEP + aSortedJaroWinklerHarmonicMean;
         return scores;
     }
 
@@ -752,139 +886,139 @@ public class MetricProcessor {
         constructPrecisionMap(dSortedJaroWinklerPrecisionMap, acceptance, dSortedJaroWinkler);
 
         //a
-        if((aLeven > threshold && acceptance.equals(ACCEPT)) || aLeven < threshold && acceptance.equals(REJECT)){
+        if((aLeven >= threshold && acceptance.equals(ACCEPT)) || aLeven < threshold && acceptance.equals(REJECT)){
             aAccuracy.setLevenshteinCount(aAccuracy.getLevenshteinCount() + 1);
         }
 
-        if((aNGram > threshold && acceptance.equals(ACCEPT)) || aNGram < threshold && acceptance.equals(REJECT)){
+        if((aNGram >= threshold && acceptance.equals(ACCEPT)) || aNGram < threshold && acceptance.equals(REJECT)){
             aAccuracy.setNgram2Count(aAccuracy.getNgram2Count() + 1);
         } 
 
-        if((aCosine > threshold && acceptance.equals(ACCEPT)) || aCosine < threshold && acceptance.equals(REJECT)){
+        if((aCosine >= threshold && acceptance.equals(ACCEPT)) || aCosine < threshold && acceptance.equals(REJECT)){
             aAccuracy.setCosineCount(aAccuracy.getCosineCount() + 1);
         } 
 
-        if((aLqs > threshold && acceptance.equals(ACCEPT)) || aLqs < threshold && acceptance.equals(REJECT)){
+        if((aLqs >= threshold && acceptance.equals(ACCEPT)) || aLqs < threshold && acceptance.equals(REJECT)){
             aAccuracy.setLqsCount(aAccuracy.getLqsCount() + 1);
         } 
 
-        if((aJaccard > threshold && acceptance.equals(ACCEPT)) || aJaccard < threshold && acceptance.equals(REJECT)){
+        if((aJaccard >= threshold && acceptance.equals(ACCEPT)) || aJaccard < threshold && acceptance.equals(REJECT)){
             aAccuracy.setJaccardCount(aAccuracy.getJaccardCount() + 1);
         }
         
-        if((aJaro > threshold && acceptance.equals(ACCEPT)) || aJaro < threshold && acceptance.equals(REJECT)){
+        if((aJaro >= threshold && acceptance.equals(ACCEPT)) || aJaro < threshold && acceptance.equals(REJECT)){
             aAccuracy.setJaroCount(aAccuracy.getJaroCount() + 1);
         } 
 
-        if((aJaroWinkler > threshold && acceptance.equals(ACCEPT)) || aJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((aJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || aJaroWinkler < threshold && acceptance.equals(REJECT)){
             aAccuracy.setJaroWinklerCount(aAccuracy.getJaroWinklerCount() + 1);
         } 
 
-        if((aSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || aSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((aSortedJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || aSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             aAccuracy.setJaroWinklerSortedCount(aAccuracy.getJaroWinklerSortedCount() + 1);
         } 
-        
-        
+
+
         //b norm
-        
-        if((bLeven > threshold && acceptance.equals(ACCEPT)) || bLeven < threshold && acceptance.equals(REJECT)){
+
+        if((bLeven >= threshold && acceptance.equals(ACCEPT)) || bLeven < threshold && acceptance.equals(REJECT)){
             bAccuracy.setLevenshteinCount(bAccuracy.getLevenshteinCount() + 1);
         }
 
-        if((bNGram > threshold && acceptance.equals(ACCEPT)) || bNGram < threshold && acceptance.equals(REJECT)){
+        if((bNGram >= threshold && acceptance.equals(ACCEPT)) || bNGram < threshold && acceptance.equals(REJECT)){           
             bAccuracy.setNgram2Count(bAccuracy.getNgram2Count() + 1);
         } 
 
-        if((bCosine > threshold && acceptance.equals(ACCEPT)) || bCosine < threshold && acceptance.equals(REJECT)){
+        if((bCosine >= threshold && acceptance.equals(ACCEPT)) || bCosine < threshold && acceptance.equals(REJECT)){
             bAccuracy.setCosineCount(bAccuracy.getCosineCount() + 1);
         } 
 
-        if((bLqs > threshold && acceptance.equals(ACCEPT)) || bLqs < threshold && acceptance.equals(REJECT)){
+        if((bLqs >= threshold && acceptance.equals(ACCEPT)) || bLqs < threshold && acceptance.equals(REJECT)){
             bAccuracy.setLqsCount(bAccuracy.getLqsCount() + 1);
         } 
         
-        if((bJaccard > threshold && acceptance.equals(ACCEPT)) || bJaccard < threshold && acceptance.equals(REJECT)){
+        if((bJaccard >= threshold && acceptance.equals(ACCEPT)) || bJaccard < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaccardCount(bAccuracy.getJaccardCount() + 1);
         }
         
-        if((bJaro > threshold && acceptance.equals(ACCEPT)) || bJaro < threshold && acceptance.equals(REJECT)){
+        if((bJaro >= threshold && acceptance.equals(ACCEPT)) || bJaro < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaroCount(bAccuracy.getJaroCount() + 1);
         } 
 
-        if((bJaroWinkler > threshold && acceptance.equals(ACCEPT)) || bJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((bJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || bJaroWinkler < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaroWinklerCount(bAccuracy.getJaroWinklerCount() + 1);
         } 
 
-        if((bSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || bSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((bSortedJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || bSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             bAccuracy.setJaroWinklerSortedCount(bAccuracy.getJaroWinklerSortedCount() + 1);
         } 
         
         
         //c norm
         
-        if((cLeven > threshold && acceptance.equals(ACCEPT)) || cLeven < threshold && acceptance.equals(REJECT)){
+        if((cLeven >= threshold && acceptance.equals(ACCEPT)) || cLeven < threshold && acceptance.equals(REJECT)){
             cAccuracy.setLevenshteinCount(cAccuracy.getLevenshteinCount() + 1);
         }
 
-        if((cNGram > threshold && acceptance.equals(ACCEPT)) || cNGram < threshold && acceptance.equals(REJECT)){
+        if((cNGram >= threshold && acceptance.equals(ACCEPT)) || cNGram < threshold && acceptance.equals(REJECT)){
             cAccuracy.setNgram2Count(cAccuracy.getNgram2Count() + 1);
         } 
 
-        if((cCosine > threshold && acceptance.equals(ACCEPT)) || cCosine < threshold && acceptance.equals(REJECT)){
+        if((cCosine >= threshold && acceptance.equals(ACCEPT)) || cCosine < threshold && acceptance.equals(REJECT)){
             cAccuracy.setCosineCount(cAccuracy.getCosineCount() + 1);
         } 
 
-        if((cLqs > threshold && acceptance.equals(ACCEPT)) || cLqs < threshold && acceptance.equals(REJECT)){
+        if((cLqs >= threshold && acceptance.equals(ACCEPT)) || cLqs < threshold && acceptance.equals(REJECT)){
             cAccuracy.setLqsCount(cAccuracy.getLqsCount() + 1);
         } 
         
-        if((cJaccard > threshold && acceptance.equals(ACCEPT)) || cJaccard < threshold && acceptance.equals(REJECT)){
+        if((cJaccard >= threshold && acceptance.equals(ACCEPT)) || cJaccard < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaccardCount(cAccuracy.getJaccardCount() + 1);
         }
         
-        if((cJaro > threshold && acceptance.equals(ACCEPT)) || cJaro < threshold && acceptance.equals(REJECT)){
+        if((cJaro >= threshold && acceptance.equals(ACCEPT)) || cJaro < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaroCount(cAccuracy.getJaroCount() + 1);
         } 
 
-        if((cJaroWinkler > threshold && acceptance.equals(ACCEPT)) || cJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((cJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || cJaroWinkler < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaroWinklerCount(cAccuracy.getJaroWinklerCount() + 1);
         } 
 
-        if((cSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || cSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((cSortedJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || cSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             cAccuracy.setJaroWinklerSortedCount(cAccuracy.getJaroWinklerSortedCount() + 1);
         } 
         
         //d norm
         
-        if((dLeven > threshold && acceptance.equals(ACCEPT)) || dLeven < threshold && acceptance.equals(REJECT)){
+        if((dLeven >= threshold && acceptance.equals(ACCEPT)) || dLeven < threshold && acceptance.equals(REJECT)){
             dAccuracy.setLevenshteinCount(dAccuracy.getLevenshteinCount() + 1);
         }
 
-        if((dNGram > threshold && acceptance.equals(ACCEPT)) || dNGram < threshold && acceptance.equals(REJECT)){
+        if((dNGram >= threshold && acceptance.equals(ACCEPT)) || dNGram < threshold && acceptance.equals(REJECT)){
             dAccuracy.setNgram2Count(dAccuracy.getNgram2Count() + 1);
         } 
 
-        if((dCosine > threshold && acceptance.equals(ACCEPT)) || dCosine < threshold && acceptance.equals(REJECT)){
+        if((dCosine >= threshold && acceptance.equals(ACCEPT)) || dCosine < threshold && acceptance.equals(REJECT)){
             dAccuracy.setCosineCount(dAccuracy.getCosineCount() + 1);
         } 
 
-        if((dLqs > threshold && acceptance.equals(ACCEPT)) || dLqs < threshold && acceptance.equals(REJECT)){
+        if((dLqs >= threshold && acceptance.equals(ACCEPT)) || dLqs < threshold && acceptance.equals(REJECT)){
             dAccuracy.setLqsCount(dAccuracy.getLqsCount() + 1);
         } 
         
-        if((dJaccard > threshold && acceptance.equals(ACCEPT)) || dJaccard < threshold && acceptance.equals(REJECT)){
+        if((dJaccard >= threshold && acceptance.equals(ACCEPT)) || dJaccard < threshold && acceptance.equals(REJECT)){
             dAccuracy.setJaccardCount(dAccuracy.getJaccardCount() + 1);
         }
         
-        if((dJaro > threshold && acceptance.equals(ACCEPT)) || dJaro < threshold && acceptance.equals(REJECT)){
+        if((dJaro >= threshold && acceptance.equals(ACCEPT)) || dJaro < threshold && acceptance.equals(REJECT)){
             dAccuracy.setJaroCount(dAccuracy.getJaroCount() + 1);
         } 
 
-        if((dJaroWinkler > threshold && acceptance.equals(ACCEPT)) || dJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((dJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || dJaroWinkler < threshold && acceptance.equals(REJECT)){
             dAccuracy.setJaroWinklerCount(dAccuracy.getJaroWinklerCount() + 1);
         } 
 
-        if((dSortedJaroWinkler > threshold && acceptance.equals(ACCEPT)) || dSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
+        if((dSortedJaroWinkler >= threshold && acceptance.equals(ACCEPT)) || dSortedJaroWinkler < threshold && acceptance.equals(REJECT)){
             dAccuracy.setJaroWinklerSortedCount(dAccuracy.getJaroWinklerSortedCount() + 1);
         } 
         
@@ -965,14 +1099,16 @@ public class MetricProcessor {
         WeightedPairLiteral weightedPairLiteral = agn.getWeightedPair(normA, normB, locale);
         return weightedPairLiteral;
     }
-    
+
     private void constructPrecisionMap(Map<String, List<Double>> precisionMap, String acceptance, double similarity) {
         if(acceptance.equals(ACCEPT)){
             precisionMap.get(ACCEPT).add(similarity);
-        } else {
+        } else if(acceptance.equals(REJECT)){
             precisionMap.get(REJECT).add(similarity);
+        } else {
+            throw new ApplicationException("Wrong acceptance value: " + acceptance);
         }
-    }    
+    }
 
     private void clearPrecisionMapLists(Map<String, List<Double>> precisionMap){
         precisionMap.get(ACCEPT).clear();
@@ -1025,13 +1161,13 @@ public class MetricProcessor {
     }
     
     private double roundHalfUp(double d){
-        return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();        
+        return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_3, RoundingMode.HALF_UP).doubleValue();     
     }
     
     private int count(List<Double> accepted, double threshold) {
         int counter = 0;
         for(Double elem : accepted){
-            if(elem > threshold){
+            if(elem >= threshold){
                 counter++;
             }
         }

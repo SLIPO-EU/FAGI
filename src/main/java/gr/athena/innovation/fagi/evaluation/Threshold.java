@@ -17,9 +17,12 @@ public class Threshold {
 
     @Override
     public String toString() {
-        return "Threshold{" + "levenshtein=" + levenshtein + ", ngram2=" + ngram2 + ", cosine=" + cosine 
-                + ", lqs=" + lqs + ", jaccard=" + jaccard + ", jaro=" + jaro + ", jaroWinkler=" + jaroWinkler 
-                + ", sortedJaroWinkler=" + sortedJaroWinkler + '}';
+        return "Threshold{" + "levenshtein=" + levenshtein + ", ngram2=" + ngram2 
+                //+ ", cosine=" + cosine 
+                + ", lqs=" + lqs 
+                //+ ", jaccard=" + jaccard 
+                + ", jaro=" + jaro + ", jaroWinkler=" + jaroWinkler +'}';
+                //+ ", sortedJaroWinkler=" + sortedJaroWinkler + '}';
     }
 
     public double getLevenshtein() {

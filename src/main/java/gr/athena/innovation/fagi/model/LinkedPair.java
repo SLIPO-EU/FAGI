@@ -372,7 +372,7 @@ public class LinkedPair {
 
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData); 
-                logger.warn("LINK REJECTED, RETURNING");
+                
                 return; //stop link fusion
             }    
             case ACCEPT_MARK_AMBIGUOUS:
