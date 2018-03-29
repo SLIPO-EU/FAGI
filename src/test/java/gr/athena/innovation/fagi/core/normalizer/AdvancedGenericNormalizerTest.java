@@ -47,6 +47,16 @@ public class AdvancedGenericNormalizerTest {
     public void testGetWeightedPair() {
         logger.info("getWeightedPair");
         
+        String expResBaseValueA;
+        String expResBaseValueB;
+        if(TermResolver.getInstance().getTerms().contains("bar")){
+            expResBaseValueA = "ccc test";
+            expResBaseValueB = "ccc test";
+        } else {
+            expResBaseValueA = "bar ccc test";
+            expResBaseValueB = "bar ccc test";            
+        }
+        
         AdvancedGenericNormalizer normalizer = new AdvancedGenericNormalizer();
         
         Locale locale = Locale.ENGLISH;
@@ -61,11 +71,11 @@ public class AdvancedGenericNormalizerTest {
         normalizedLiteralB.setLiteral("bar ccc test Eee");
         normalizedLiteralB.setNormalized("bar ccc eee test");
         
-        //Set<CommonSpecialTerm> linkedTerms = new HashSet<>();
+        Set<CommonSpecialTerm> linkedTerms = new HashSet<>();
         
-        //CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
-        //linkedTerm.setTerm("bar");
-        //linkedTerms.add(linkedTerm);
+        CommonSpecialTerm linkedTerm = new CommonSpecialTerm();
+        linkedTerm.setTerm("bar");
+        linkedTerms.add(linkedTerm);
         
         ArrayList<String> mismatchedA = new ArrayList<>();
         ArrayList<String> mismatchedB = new ArrayList<>();
@@ -80,9 +90,9 @@ public class AdvancedGenericNormalizerTest {
         //uniqueSpecialsA.add("street");
         
         WeightedPairLiteral expResult = new WeightedPairLiteral();
-        //expResult.setCommonSpecialTerms(linkedTerms);
-        expResult.setBaseValueA("bar ccc test");
-        expResult.setBaseValueB("bar ccc test");
+        expResult.setCommonSpecialTerms(linkedTerms);
+        expResult.setBaseValueA(expResBaseValueA);
+        expResult.setBaseValueB(expResBaseValueB);
         expResult.setMismatchTokensA(mismatchedA);
         expResult.setMismatchTokensB(mismatchedB);
         

@@ -26,6 +26,7 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
+import gr.athena.innovation.fagi.specification.Namespace;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -137,6 +138,9 @@ public class FagiInstance {
             if(container.isValid()){
                 StatisticsExporter exporter = new StatisticsExporter();
                 exporter.exportStatistics(container, fusionSpec.getPathOutput());                
+            } else {
+                logger.warn("Could not export statistics. Input dataset(s) do not contain " 
+                        + Namespace.SOURCE + " property that is being used to count the entities.");
             }
         }
         
