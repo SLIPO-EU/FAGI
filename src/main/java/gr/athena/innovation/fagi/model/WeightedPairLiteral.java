@@ -150,7 +150,7 @@ public class WeightedPairLiteral {
         StringBuilder sb = new StringBuilder();
         
         commonSpecialTerms.stream().forEach((token) -> {
-            sb.append(token).append(CONNECTOR);
+            sb.append(token.getTerm()).append(CONNECTOR);
         });
         
         return sb.toString().trim();
