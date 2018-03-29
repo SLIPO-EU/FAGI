@@ -105,7 +105,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        mismatchTokensA.stream().forEach((token) -> {
+        mismatchTokensA.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -116,7 +116,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        mismatchTokensB.stream().forEach((token) -> {
+        mismatchTokensB.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -127,7 +127,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        specialTermsA.stream().forEach((token) -> {
+        specialTermsA.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -138,7 +138,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        specialTermsB.stream().forEach((token) -> {
+        specialTermsB.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
@@ -149,7 +149,7 @@ public class WeightedPairLiteral {
 
         StringBuilder sb = new StringBuilder();
         
-        commonSpecialTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((CommonSpecialTerm token) -> {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
@@ -162,15 +162,15 @@ public class WeightedPairLiteral {
         
         sb.append(baseValueA).append(CONNECTOR);
         
-        mismatchTokensA.stream().forEach((token) -> {
+        mismatchTokensA.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
 
-        specialTermsA.stream().forEach((token) -> {
+        specialTermsA.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
 
-        commonSpecialTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((CommonSpecialTerm token) -> {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
@@ -182,15 +182,15 @@ public class WeightedPairLiteral {
         
         sb.append(baseValueB).append(CONNECTOR);
         
-        mismatchTokensB.stream().forEach((token) -> {
+        mismatchTokensB.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
 
-        specialTermsB.stream().forEach((token) -> {
+        specialTermsB.stream().forEach((String token) -> {
             sb.append(token).append(CONNECTOR);
         });
         
-        commonSpecialTerms.stream().forEach((token) -> {
+        commonSpecialTerms.stream().forEach((CommonSpecialTerm token) -> {
             sb.append(token.getTerm()).append(CONNECTOR);
         });
         
