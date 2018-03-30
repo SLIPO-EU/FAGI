@@ -40,7 +40,7 @@ public class CategoryWeight {
             fullEmptyMismatch = true;
         }
         
-        if(specialsA.isEmpty() || specialsB.isEmpty()){
+        if(specialsA.isEmpty() && specialsB.isEmpty()){
             emptySpecials = true;
         } 
         
