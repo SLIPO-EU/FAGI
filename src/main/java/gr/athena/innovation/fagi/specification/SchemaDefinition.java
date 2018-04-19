@@ -133,7 +133,7 @@ public class SchemaDefinition {
 "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
 "	<xs:element name=\"rules\">\n" +
 "		<xs:complexType>\n" +
-"			<xs:sequence>\n" +
+"			<xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "				\n" +
 "				<xs:element name=\"defaultDatasetAction\">\n" +
 "				  <xs:simpleType>\n" +
@@ -148,9 +148,7 @@ public class SchemaDefinition {
 "				\n" +
 "				<xs:element name=\"validationRule\" minOccurs=\"0\" maxOccurs=\"unbounded\">		\n" +
 "					<xs:complexType>\n" +
-"						<xs:sequence>\n" +
-"						  <xs:element name=\"propertyA\" type=\"xs:string\" />\n" +
-"						  <xs:element name=\"propertyB\" type=\"xs:string\" />\n" +
+"						<xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "						  <xs:element name=\"externalProperty\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "							<xs:complexType>\n" +
 "							  <xs:simpleContent>\n" +
@@ -165,7 +163,7 @@ public class SchemaDefinition {
 "							  <xs:sequence>\n" +
 "								<xs:element name=\"actionRule\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "								  <xs:complexType>\n" +
-"									<xs:sequence>\n" +
+"									<xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "									  <xs:element name=\"condition\">\n" +
 "										  <xs:complexType>\n" +
 "											<xs:sequence>\n" +
@@ -213,7 +211,7 @@ public class SchemaDefinition {
 "											</xs:restriction>\n" +
 "										  </xs:simpleType>\n" +
 "									  </xs:element>                          \n" +
-"									</xs:sequence>\n" +
+"									</xs:choice>\n" +
 "								  </xs:complexType>\n" +
 "								</xs:element>\n" +
 "							  </xs:sequence>\n" +
@@ -229,13 +227,13 @@ public class SchemaDefinition {
 "							  </xs:restriction>\n" +
 "							</xs:simpleType>\n" +
 "						  </xs:element>     \n" +
-"						</xs:sequence>\n" +
+"						</xs:choice>\n" +
 "					</xs:complexType>\n" +
 "				</xs:element> 				\n" +
 "				\n" +
 "				<xs:element name=\"rule\" minOccurs=\"0\" maxOccurs=\"unbounded\">		\n" +
 "					<xs:complexType>\n" +
-"						<xs:sequence>\n" +
+"						<xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "						  <xs:element name=\"propertyA\" type=\"xs:string\" />\n" +
 "						  <xs:element name=\"propertyB\" type=\"xs:string\" />\n" +
 "						  <xs:element name=\"externalProperty\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
@@ -252,7 +250,7 @@ public class SchemaDefinition {
 "							  <xs:sequence>\n" +
 "								<xs:element name=\"actionRule\" minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "								  <xs:complexType>\n" +
-"									<xs:sequence>\n" +
+"									<xs:choice minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
 "									  <xs:element name=\"condition\">\n" +
 "										  <xs:complexType>\n" +
 "											<xs:sequence>\n" +
@@ -305,7 +303,7 @@ public class SchemaDefinition {
 "											</xs:restriction>\n" +
 "										  </xs:simpleType>\n" +
 "									  </xs:element>                          \n" +
-"									</xs:sequence>\n" +
+"									</xs:choice>\n" +
 "								  </xs:complexType>\n" +
 "								</xs:element>\n" +
 "							  </xs:sequence>\n" +
@@ -326,11 +324,11 @@ public class SchemaDefinition {
 "							  </xs:restriction>\n" +
 "							</xs:simpleType>\n" +
 "						  </xs:element>     \n" +
-"						</xs:sequence>\n" +
+"						</xs:choice>\n" +
 "					</xs:complexType>\n" +
 "				</xs:element>\n" +
 "				\n" +
-"			</xs:sequence>\n" +
+"			</xs:choice>\n" +
 "		</xs:complexType>\n" +
 "	</xs:element>\n" +
 "</xs:schema>";

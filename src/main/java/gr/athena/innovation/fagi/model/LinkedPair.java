@@ -349,7 +349,6 @@ public class LinkedPair {
     private void fuseRuleAction(EnumFusionAction action, 
             Property property, String literalA, String literalB, EnumValidationAction validationAction) throws WrongInputException{
 
-        logger.warn("fuseRuleAction " + validationAction);
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
@@ -680,6 +679,10 @@ public class LinkedPair {
     }
 
     private Property getRDFPropertyFromString(String property){
+        
+        if(property == null){
+            return null;
+        }
         //TODO: remove aliases of properties
         Property propertyRDF;
         if(property.equalsIgnoreCase("label")){

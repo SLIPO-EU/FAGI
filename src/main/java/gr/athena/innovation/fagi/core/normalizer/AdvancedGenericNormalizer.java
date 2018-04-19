@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -65,9 +66,11 @@ public class AdvancedGenericNormalizer {
         String normalizedA = aBuilder.toString();
         String normalizedB = bBuilder.toString();
 
+        String[] tokenizedA = tokenize(normalizedA);
+        String[] tokenizedB = tokenize(normalizedB);
         //custom alphabetical re-ordering, assign mismatches
         WeightedPairLiteral weightedPair = assignMismatch(weightedPairLiteral,
-                tokenize(normalizedA), tokenize(normalizedB), locale);
+                tokenizedA, tokenizedB, locale);
 
         //TODO:
         //(Discuss) Optionally concatenate all words of each string for specific distance measures.
@@ -84,7 +87,7 @@ public class AdvancedGenericNormalizer {
 
         List<String> tokensA = new LinkedList<>(Arrays.asList(tokensAar));
         List<String> tokensB = new LinkedList<>(Arrays.asList(tokensBar));
-
+        
         StringBuilder a = new StringBuilder();
         StringBuilder b = new StringBuilder();
 
@@ -94,7 +97,17 @@ public class AdvancedGenericNormalizer {
         int breakCondition = 0;
 
         while (breakCondition < tokensA.size() + tokensB.size()) {
-
+            if (tokensA.isEmpty())
+            {
+                mismatchB.addAll(tokensB);
+                return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
+            } 
+            else if (tokensB.isEmpty())
+            {
+                mismatchA.addAll(tokensA);
+                return getWeightedPairLiteral(weightedPairLiteral, mismatchA, mismatchB, a, b);
+            }
+            
             String ta = tokensA.get(carret_i);
             String tb = tokensB.get(carret_j);
 
@@ -160,7 +173,12 @@ public class AdvancedGenericNormalizer {
     }
 
     private List<String> getTokenList(String text) {
+        if(StringUtils.isBlank(text)){
+            return new LinkedList<>();
+        }        
+        
         List<String> tokens = new LinkedList<>(Arrays.asList(tokenize(text)));
+
         return tokens;
     }
 
@@ -177,8 +195,11 @@ public class AdvancedGenericNormalizer {
 
     //tokenize on whitespaces
     private static String[] tokenize(final CharSequence text) {
-        Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
-
+        //Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
+        if(StringUtils.isBlank(text)){
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        } 
+        
         String[] split = text.toString().split("\\s+");
         return split;
     }

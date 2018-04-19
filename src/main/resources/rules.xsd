@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="rules">
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				
 				<xs:element name="defaultDatasetAction">
 				  <xs:simpleType>
@@ -17,9 +17,7 @@
 				
 				<xs:element name="validationRule" minOccurs="0" maxOccurs="unbounded">		
 					<xs:complexType>
-						<xs:sequence>
-						  <xs:element name="propertyA" type="xs:string" />
-						  <xs:element name="propertyB" type="xs:string" />
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
 						  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
 							<xs:complexType>
 							  <xs:simpleContent>
@@ -34,7 +32,7 @@
 							  <xs:sequence>
 								<xs:element name="actionRule" minOccurs="0" maxOccurs="unbounded">
 								  <xs:complexType>
-									<xs:sequence>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
 									  <xs:element name="condition">
 										  <xs:complexType>
 											<xs:sequence>
@@ -82,7 +80,7 @@
 											</xs:restriction>
 										  </xs:simpleType>
 									  </xs:element>                          
-									</xs:sequence>
+									</xs:choice>
 								  </xs:complexType>
 								</xs:element>
 							  </xs:sequence>
@@ -98,13 +96,13 @@
 							  </xs:restriction>
 							</xs:simpleType>
 						  </xs:element>     
-						</xs:sequence>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element> 				
 				
 				<xs:element name="rule" minOccurs="0" maxOccurs="unbounded">		
 					<xs:complexType>
-						<xs:sequence>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
 						  <xs:element name="propertyA" type="xs:string" />
 						  <xs:element name="propertyB" type="xs:string" />
 						  <xs:element name="externalProperty" minOccurs="0" maxOccurs="unbounded">
@@ -121,7 +119,7 @@
 							  <xs:sequence>
 								<xs:element name="actionRule" minOccurs="0" maxOccurs="unbounded">
 								  <xs:complexType>
-									<xs:sequence>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
 									  <xs:element name="condition">
 										  <xs:complexType>
 											<xs:sequence>
@@ -174,7 +172,7 @@
 											</xs:restriction>
 										  </xs:simpleType>
 									  </xs:element>                          
-									</xs:sequence>
+									</xs:choice>
 								  </xs:complexType>
 								</xs:element>
 							  </xs:sequence>
@@ -195,11 +193,11 @@
 							  </xs:restriction>
 							</xs:simpleType>
 						  </xs:element>     
-						</xs:sequence>
+						</xs:choice>
 					</xs:complexType>
 				</xs:element>
 				
-			</xs:sequence>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

@@ -14,6 +14,7 @@ public class CategoryWeight {
     private boolean emptySpecials = false;
     private boolean emptyCommon = false;
     private boolean zeroBaseSimilarity = false;
+    private boolean fullZeroBaseSimilarity = false;
     
     public CategoryWeight(WeightedPairLiteral pair) {
         
@@ -28,12 +29,20 @@ public class CategoryWeight {
         
         Set<CommonSpecialTerm> common = pair.getCommonSpecialTerms();
         
-        if(baseA.isEmpty() || baseB.isEmpty()){
+        // giann: added the fullZeroBaseSimilarity check  /        
+        if(baseA.isEmpty() && baseB.isEmpty()){
+            fullZeroBaseSimilarity = true;
+        }
+        
+        /*giann: replaced with XOR*/
+        if(baseA.isEmpty() ^ baseB.isEmpty()){
             zeroBaseSimilarity = true;
         }
 
-        if((mismatchA.isEmpty() && !mismatchB.isEmpty())|| (!mismatchA.isEmpty() && mismatchB.isEmpty())){
+        System.out.println("CWmismatchA :" + mismatchA.size() + "| CWmismatchB :" + mismatchB.size() + "|");
+        if((mismatchA.isEmpty() && !mismatchB.isEmpty()) || (!mismatchA.isEmpty() && mismatchB.isEmpty())){
             halfEmptyMismatch = true;
+            System.out.println("halfEmptyMismatch");
         }
 
         if(mismatchA.isEmpty() && mismatchB.isEmpty()){
