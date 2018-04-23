@@ -184,12 +184,12 @@ public class LinkedPair {
         
         return validation;
     }
-    
+
     public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap, 
             EnumValidationAction validationAction) throws WrongInputException{
 
         //TODO: optimization: resolve validation action here 
-        
+
         EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
         
         EntityData leftEntityData = leftNode.getEntityData();
@@ -202,7 +202,7 @@ public class LinkedPair {
         for(Rule rule : rules){
             logger.trace("Fusing with Rule: " + rule);
 
-            EnumFusionAction defaultAction = rule.getDefaultFusionAction();
+            EnumFusionAction defaultFusionAction = rule.getDefaultFusionAction();
 
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
             Property rdfValuePropertyA = getRDFPropertyFromString(rule.getPropertyA());
@@ -237,9 +237,9 @@ public class LinkedPair {
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if(rule.getActionRuleSet() == null){
-                logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultAction);
-                if(defaultAction != null){
-                    fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB, validationAction);
+                logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
+                if(defaultFusionAction != null){
+                    fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
                 }
                 break;
             }
@@ -251,10 +251,10 @@ public class LinkedPair {
 
                 logger.info("-- Action rule: " + actionRuleCount);
 
-                EnumFusionAction action = null;
+                EnumFusionAction fusionAction = null;
                 
                 if(actionRule.getFusionAction() != null){
-                    action = actionRule.getFusionAction();
+                    fusionAction = actionRule.getFusionAction();
                 }
                 
                 Condition condition = actionRule.getCondition();
@@ -288,9 +288,9 @@ public class LinkedPair {
                 actionRuleCount++;
                 
                 if(isActionRuleToBeApplied){
-                    logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + action);
+                    logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + fusionAction);
 
-                    fuseRuleAction(action, rdfValuePropertyA, literalA, literalB, validationAction);
+                    fuseRuleAction(fusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
 
                     actionRuleToApply = true;
                     break;
@@ -299,7 +299,7 @@ public class LinkedPair {
             
             //No action rule applied. Use default Action
             if(actionRuleToApply == false){
-                fuseRuleAction(defaultAction, rdfValuePropertyA, literalA, literalB, validationAction);
+                fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
             }
         }
     }
@@ -343,20 +343,21 @@ public class LinkedPair {
             }
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
-        }        
+        }   
+        
     }
     
-    private void fuseRuleAction(EnumFusionAction action, 
-            Property property, String literalA, String literalB, EnumValidationAction validationAction) throws WrongInputException{
+    private void fuseRuleAction(EnumFusionAction action, EnumValidationAction validationAction, Property property, 
+            String literalA, String literalB) throws WrongInputException{
 
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
 
         EntityData fusedEntityData = fusedEntity.getEntityData();
-        
+
         Model fusedModel = fusedEntityData.getModel();
-        
+
         switch(validationAction){
 
             case ACCEPT:
@@ -601,9 +602,9 @@ public class LinkedPair {
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
                 }
-                
+
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-                
+
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));                
 
                 fusedEntityData = fusedEntity.getEntityData();

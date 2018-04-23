@@ -124,8 +124,8 @@ public class Fuser implements IFuser{
             out = new FileOutputStream(fusionSpecification.getPathOutput());
         }
 
-        switch(fusionSpecification.getFinalDataset()) {
-            case LEFT:
+        switch(fusionSpecification.getOutputMode()) {
+            case AA_MODE:
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -134,10 +134,9 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(out, fusionSpecification.getOutputRDFFormat()) ;
-
+                leftModel.write(out, fusionSpecification.getOutputRDFFormat());                
                 break;
-            case RIGHT:
+            case BB_MODE:
                 Model rightModel = RightModel.getRightModel().getModel();
                 
                 for(LinkedPair p : fusedEntities){
@@ -146,11 +145,9 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(out, fusionSpecification.getOutputRDFFormat());
+                rightModel.write(out, fusionSpecification.getOutputRDFFormat());              
                 break;
-            case NEW:
-            case DEFAULT:                
-            default:
+            case L_MODE:
                 //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
@@ -160,8 +157,23 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(out, fusionSpecification.getOutputRDFFormat());                
-                break;
+                newModel.write(out, fusionSpecification.getOutputRDFFormat());              
+                break; 
+            case AB_MODE:
+                throw new UnsupportedOperationException("Not supported yet.");
+                //break;
+            case BA_MODE:
+                throw new UnsupportedOperationException("Not supported yet.");
+                //break;
+            case A_MODE:
+                throw new UnsupportedOperationException("Not supported yet.");
+                //break;
+            case B_MODE:
+                throw new UnsupportedOperationException("Not supported yet.");
+                //break;
+            default:
+                throw new UnsupportedOperationException("Wrong Output mode!");
+                //break;                
         }
     }
     
@@ -234,5 +246,5 @@ public class Fuser implements IFuser{
     public int getFusedPairsCount() {
         return fusedPairsCount;
     }
-    
+
 }

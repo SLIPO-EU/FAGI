@@ -36,6 +36,7 @@ public class FusionSpecification {
     private String categoriesB;
 
     private EnumDataset finalDataset;
+    private EnumOutputMode outputMode;
     private String outputRDFFormat;
     private String inputRDFFormat;
     
@@ -248,6 +249,15 @@ public class FusionSpecification {
 
     public void setSimilarity(String similarity) {
         this.similarity = similarity;
+    }
+
+
+    public EnumOutputMode getOutputMode() {
+        return outputMode;
+    }
+
+    public void setOutputMode(EnumOutputMode outputMode) {
+        this.outputMode = outputMode;
     }
     
     @Override

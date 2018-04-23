@@ -111,6 +111,19 @@ public class SchemaDefinition {
 "			<xs:sequence>\n" +
 "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
 "			  <xs:element name=\"resourceURI\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"mode\">\n" +
+"				<xs:simpleType>\n" +
+"				  <xs:restriction base=\"xs:string\">\n" +
+"				    <xs:enumeration value=\"aa_mode\"/>\n" +
+"				    <xs:enumeration value=\"bb_mode\"/>\n" +
+"				    <xs:enumeration value=\"ab_mode\"/>\n" +
+"				    <xs:enumeration value=\"ba_mode\"/>\n" +
+"				    <xs:enumeration value=\"a_mode\"/>\n" +
+"				    <xs:enumeration value=\"b_mode\"/>\n" +
+"				    <xs:enumeration value=\"l_mode\"/>				    \n" +
+"				  </xs:restriction>\n" +
+"				</xs:simpleType>\n" +
+"			  </xs:element>					  \n" +
 "			  <xs:element name=\"mergeWith\">\n" +
 "				<xs:simpleType>\n" +
 "				  <xs:restriction base=\"xs:string\">\n" +

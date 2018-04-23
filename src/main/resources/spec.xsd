@@ -103,6 +103,19 @@
 			<xs:sequence>
 			  <xs:element name="id" type="xs:string"/>
 			  <xs:element name="resourceURI" type="xs:anyURI"/>
+			  <xs:element name="mode">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				    <xs:enumeration value="aa_mode"/>
+				    <xs:enumeration value="bb_mode"/>
+				    <xs:enumeration value="ab_mode"/>
+				    <xs:enumeration value="ba_mode"/>
+				    <xs:enumeration value="a_mode"/>
+				    <xs:enumeration value="b_mode"/>
+				    <xs:enumeration value="l_mode"/>				    
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>					  
 			  <xs:element name="mergeWith">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
