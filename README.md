@@ -58,7 +58,18 @@ Specifically:
 `endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `file` tag empty.
 `categories`: This is again optional. It is used to extract statistics about the categories of the entities. If you want to use this feature you should provide a file in N-Triples format that contains the categorization.
 
-`mergeWith`: Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
+`mode`: Specify the fused dataset mode. The supported modes are shown in the table below.
+| Mode        | Description     |
+| ------------- |:-------------:|
+| aa_mode      | Only linked triples are handled: Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A). | 
+| bb_mode      | Only linked triples are handled: Fused triples replace the respective ones of dataset B (the fusion output is exclusively written on B). | 
+| ab_mode      | All triples are handled: Fused triples replace the respective ones of dataset A; Un-linked triples of dataset B are copied as-is into dataset A | 
+| ba_mode      | All triples are handled: Fused triples replace the respective ones of dataset B; Un-linked triples of dataset A are copied as-is into dataset B | 
+| a_mode      | All triples are handled: Fused triples replace the respective ones of dataset A; Fused triples are removed from dataset B, which only maintains the remaining, unlinked triples | 
+| b_mode      | All triples are handled: Fused triples replace the respective ones of dataset B; Fused triples are removed from dataset A, which only maintains the remaining, unlinked triples | 
+| l_mode      | Only linked triples are handled: Only fused triples are written in a third dataset. | 
+
+Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
 
 ### How to fill in the rules.xml file
 

@@ -43,7 +43,7 @@ public class FusionSpecification {
     private Locale locale = null;
     private String similarity;
 
-    private int optionalDepth = 1; //depth of optional in sparql queries
+    private int optionalDepth = 2; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;    
 
@@ -132,7 +132,7 @@ public class FusionSpecification {
             this.optionalDepth = optionalDepth;
         } else {
             logger.warn("Optional Depth: " + optionalDepth + " is not allowed. Setting default value.");
-            this.optionalDepth = 1;
+            this.optionalDepth = 2;
         }
     }
 

@@ -6,10 +6,10 @@ import java.util.Map;
 /**
  * Fused dataset modes.
  * 
- * AA_MODE: Only linked triples are handled.
+ * AA_MODE: Only linked triples are handled:
  * Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A).
  * 
- * BB_MODE: Only linked triples are handled.
+ * BB_MODE: Only linked triples are handled:
  * Fused triples replace the respective ones of dataset B (the fusion output is exclusively written on B).
  * 
  * AB_MODE: All triples are handled: Fused triples replace the respective ones of dataset A; 

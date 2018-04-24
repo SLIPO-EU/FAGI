@@ -14,19 +14,27 @@ import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.jena.graph.Node;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,10 +69,10 @@ public class Fuser implements IFuser{
         Model right = RightModel.getRightModel().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
-        EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
+        EnumOutputMode mode = fusionSpec.getOutputMode();
 
         for (Link link : links.getLinks()){
-
+   
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
@@ -88,8 +96,10 @@ public class Fuser implements IFuser{
             EnumValidationAction validation = pair.validateLink(ruleCatalog.getValidationRules(), functionMap);
 
             Entity newFusedEntity = new Entity();
+
+            String targetURI = resolveURI(mode, leftURI, rightURI);
             
-            newFusedEntity.setResourceURI(resolveFusedEntityURI(defaultDatasetAction, leftURI, rightURI));
+            newFusedEntity.setResourceURI(targetURI);
 
             pair.setFusedEntity(newFusedEntity);
             
@@ -126,17 +136,23 @@ public class Fuser implements IFuser{
 
         switch(fusionSpecification.getOutputMode()) {
             case AA_MODE:
+            {
+                logger.warn("AA_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    
                     leftModel.add(fusedDataModel);
                 }
 
                 leftModel.write(out, fusionSpecification.getOutputRDFFormat());                
                 break;
+            }
             case BB_MODE:
+            {
+                logger.warn("BB_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model rightModel = RightModel.getRightModel().getModel();
                 
                 for(LinkedPair p : fusedEntities){
@@ -147,7 +163,10 @@ public class Fuser implements IFuser{
 
                 rightModel.write(out, fusionSpecification.getOutputRDFFormat());              
                 break;
+            }
             case L_MODE:
+            {
+                logger.warn("L_MODE, writing to " + fusionSpecification.getPathOutput());
                 //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
@@ -159,12 +178,38 @@ public class Fuser implements IFuser{
 
                 newModel.write(out, fusionSpecification.getOutputRDFFormat());              
                 break; 
+            }
             case AB_MODE:
-                throw new UnsupportedOperationException("Not supported yet.");
-                //break;
+            {
+                logger.warn("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                Model leftModel = LeftModel.getLeftModel().getModel();
+                Model rightModel = RightModel.getRightModel().getModel();
+                
+                for(LinkedPair pair : fusedEntities){
+
+                    Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    leftModel.add(fusedDataModel);
+                    //rightModel
+                }
+
+                leftModel.write(out, fusionSpecification.getOutputRDFFormat());                  
+                //throw new UnsupportedOperationException("Not supported yet.");
+                break;
+            }
             case BA_MODE:
-                throw new UnsupportedOperationException("Not supported yet.");
-                //break;
+                logger.warn("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                Model leftModel = LeftModel.getLeftModel().getModel();
+                Model rightModel = RightModel.getRightModel().getModel();
+                
+                for(LinkedPair pair : fusedEntities){
+
+                    Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    rightModel.add(fusedDataModel);
+                    //rightModel
+                }
+
+                leftModel.write(out, fusionSpecification.getOutputRDFFormat());   
+                break;
             case A_MODE:
                 throw new UnsupportedOperationException("Not supported yet.");
                 //break;
@@ -195,27 +240,46 @@ public class Fuser implements IFuser{
         QueryExecution queryExecution = QueryExecutionFactory.create(query, sourceModel);
         Model model = queryExecution.execConstruct(); //todo - maybe exclude geometry from model
 
-        //removing constructed model from source model.
-        sourceModel.remove(model);
+        StmtIterator jenaIterator = model.listStatements();
+
+        //SourceModel.remove(model) does not remove the model from the source for some reason.
+        //Also, strange concurrent modification exception when using jena statement iterator. Using list iterator instead.
+        List<Statement> stList = jenaIterator.toList();
+        Iterator<Statement> stIterator = stList.iterator();
+        while ( stIterator.hasNext() ) {
+            Statement st = stIterator.next();
+            sourceModel.remove(st);
+        }         
 
         return model;
     }
 
-    private String resolveFusedEntityURI(EnumDatasetAction defaultDatasetAction, String leftURI, String rightURI) {
+    private String resolveURI(EnumOutputMode mode, String leftURI, String rightURI) {
         String resourceURI;
-        switch (defaultDatasetAction) {
-            case KEEP_LEFT:
-                
+        switch (mode) {
+            case AA_MODE:
                 resourceURI = leftURI;
                 break;
-            case KEEP_RIGHT:
+            case BB_MODE:
                 resourceURI = rightURI;
                 break;
-            case KEEP_BOTH:
+            case AB_MODE:
                 resourceURI = leftURI;
-                break;              
+                break;    
+            case BA_MODE:
+                resourceURI = rightURI;
+                break; 
+            case A_MODE:
+                resourceURI = leftURI;
+                break; 
+            case B_MODE:
+                resourceURI = rightURI;
+                break; 
+            case L_MODE:
+                resourceURI = leftURI;
+                break;
             default:
-                logger.fatal("Cannot resolved fused Entity's URI. Check Default Dataset Action.");
+                logger.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
                 throw new IllegalArgumentException();
         }
         return resourceURI;

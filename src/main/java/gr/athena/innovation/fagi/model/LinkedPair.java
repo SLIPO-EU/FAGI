@@ -319,6 +319,8 @@ public class LinkedPair {
         EntityData leftData = leftNode.getEntityData();
         EntityData rightData = rightNode.getEntityData();
         
+        //TODO: decide what happens with URIs based on fused dataset mode. 
+        //E.g keep-right will bring all right triple-chain URIs to A. 
         switch(datasetDefaultAction){
             case KEEP_LEFT:
             {
@@ -343,8 +345,8 @@ public class LinkedPair {
             }
             default:
                 throw new WrongInputException("Dataset default fusion action is not defined.");
-        }   
-        
+        }
+
     }
     
     private void fuseRuleAction(EnumFusionAction action, EnumValidationAction validationAction, Property property, 
@@ -411,7 +413,7 @@ public class LinkedPair {
             {
                 if(isRejectedByPreviousRule(fusedModel)){
                     break;
-                } 
+                }
 
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
 
@@ -423,6 +425,8 @@ public class LinkedPair {
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
+                
+                
 
                 break;
             }
@@ -642,7 +646,7 @@ public class LinkedPair {
     }
 
     //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
-    //The method also returns the resource that the literalA or B waw found in order to be used as subject and preserve
+    //The method also returns the resource that the literalA or B was found in order to be used as subject and preserve
     //the triple chain
     private Resource getResourceAndRemoveLiteral(Model model, Property property, String literalA, String literalB) {
         Resource node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
