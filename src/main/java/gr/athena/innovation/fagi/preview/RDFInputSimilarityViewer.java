@@ -9,10 +9,10 @@ import gr.athena.innovation.fagi.core.similarity.Levenshtein;
 import gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric;
 import gr.athena.innovation.fagi.core.similarity.NGram;
 import gr.athena.innovation.fagi.core.similarity.SortedJaroWinkler;
-import gr.athena.innovation.fagi.model.LeftModel;
+import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
-import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
@@ -81,8 +81,8 @@ public class RDFInputSimilarityViewer {
 
     private void computeSimilarityOnProperty(String rdfProperty, String propertyPath) throws ParseException, IOException {
 
-        Model left = LeftModel.getLeftModel().getModel();
-        Model right = RightModel.getRightModel().getModel();
+        Model left = LeftDataset.getLeftDataset().getModel();
+        Model right = RightDataset.getRightDataset().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
         try (BufferedWriter output = new BufferedWriter(new FileWriter(propertyPath, true))) {

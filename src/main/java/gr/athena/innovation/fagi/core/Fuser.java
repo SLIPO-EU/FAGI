@@ -9,20 +9,35 @@ import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.model.LinkedPair;
-import gr.athena.innovation.fagi.model.LeftModel;
+import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
-import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -61,8 +76,8 @@ public class Fuser implements IFuser{
 
         linkedEntitiesNotFoundInDataset = 0;
 
-        Model left = LeftModel.getLeftModel().getModel();
-        Model right = RightModel.getRightModel().getModel();
+        Model left = LeftDataset.getLeftDataset().getModel();
+        Model right = RightDataset.getRightDataset().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
         EnumOutputMode mode = fusionSpec.getOutputMode();
@@ -121,20 +136,22 @@ public class Fuser implements IFuser{
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
-                    throws FileNotFoundException{
+                    throws FileNotFoundException, IOException{
         
-        OutputStream out;
+        OutputStream outputStream;
+
         if(fusionSpecification.getPathOutput().equalsIgnoreCase("System.out")){
-            out = System.out;
+            outputStream = System.out;
+
         } else {
-            out = new FileOutputStream(fusionSpecification.getPathOutput());
+            outputStream = new FileOutputStream(fusionSpecification.getPathOutput(), false);
         }
 
         switch(fusionSpecification.getOutputMode()) {
             case AA_MODE:
             {
                 logger.info("AA_MODE, writing to " + fusionSpecification.getPathOutput());
-                Model leftModel = LeftModel.getLeftModel().getModel();
+                Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
 
@@ -143,13 +160,13 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(out, fusionSpecification.getOutputRDFFormat());                
+                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());                
                 break;
             }
             case BB_MODE:
             {
                 logger.info("BB_MODE, writing to " + fusionSpecification.getPathOutput());
-                Model rightModel = RightModel.getRightModel().getModel();
+                Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 for(LinkedPair p : fusedEntities){
 
@@ -157,7 +174,7 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(out, fusionSpecification.getOutputRDFFormat());              
+                rightModel.write(outputStream, fusionSpecification.getOutputRDFFormat());              
                 break;
             }
             case L_MODE:
@@ -172,39 +189,46 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(out, fusionSpecification.getOutputRDFFormat());              
+                newModel.write(outputStream, fusionSpecification.getOutputRDFFormat());              
                 break; 
             }
             case AB_MODE:
             {
                 logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
-                Model leftModel = LeftModel.getLeftModel().getModel();
-                Model rightModel = RightModel.getRightModel().getModel();
+                Model leftModel = LeftDataset.getLeftDataset().getModel();
+                Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     leftModel.add(fusedDataModel);
-                    //rightModel
+                    
                 }
 
-                leftModel.write(out, fusionSpecification.getOutputRDFFormat());                  
-                //throw new UnsupportedOperationException("Not supported yet.");
+                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());                  
+                leftModel.close();
+                
+                addUnlinkedTriples(fusionSpecification.getPathOutput(), RightDataset.getRightDataset().getFilepath());
+
                 break;
             }
             case BA_MODE:
                 logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
-                Model leftModel = LeftModel.getLeftModel().getModel();
-                Model rightModel = RightModel.getRightModel().getModel();
+                Model leftModel = LeftDataset.getLeftDataset().getModel();
+                Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
-
+                    
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     rightModel.add(fusedDataModel);
                     //rightModel
                 }
 
-                leftModel.write(out, fusionSpecification.getOutputRDFFormat());   
+                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());   
+                
+                //TODO: 
+                addUnlinkedTriples(fusionSpecification.getPathOutput(), LeftDataset.getLeftDataset().getFilepath());
+                
                 break;
             case A_MODE:
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -253,26 +277,18 @@ public class Fuser implements IFuser{
     private String resolveURI(EnumOutputMode mode, String leftURI, String rightURI) {
         String resourceURI;
         switch (mode) {
+            
             case AA_MODE:
-                resourceURI = leftURI;
-                break;
-            case BB_MODE:
-                resourceURI = rightURI;
-                break;
             case AB_MODE:
-                resourceURI = leftURI;
-                break;    
-            case BA_MODE:
-                resourceURI = rightURI;
-                break; 
             case A_MODE:
+            case L_MODE:
+            case DEFAULT:
                 resourceURI = leftURI;
-                break; 
+                break;                
+            case BB_MODE:
+            case BA_MODE:
             case B_MODE:
                 resourceURI = rightURI;
-                break; 
-            case L_MODE:
-                resourceURI = leftURI;
                 break;
             default:
                 logger.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
@@ -305,6 +321,41 @@ public class Fuser implements IFuser{
      */
     public int getFusedPairsCount() {
         return fusedPairsCount;
+    }
+
+    private void addUnlinkedTriples(String outputPath, String datasetPath) throws IOException {
+
+        //TODO: create set with the corresponding URIs from the links. Check merged dataset with contains and add accordingly
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(outputPath), StandardCharsets.UTF_8)) {
+            
+            BufferedWriter output = new BufferedWriter(new FileWriter(outputPath, true));
+            
+            for (String line; (line = br.readLine()) != null;) {
+                String[] parts = line.split(" ");
+                String idPart = parts[0];
+
+                String id = getResourceURI(idPart);
+
+                if(!line.contains(id)){
+                    output.append(line);
+                    output.newLine();
+                }
+            }
+        }   
+    }
+    
+    public static String getResourceURI(String part) {
+        int endPosition = StringUtils.lastIndexOf(part, "/");
+        int startPosition = StringUtils.ordinalIndexOf(part, "/", 5) + 1;
+        
+        String res;
+        if(part.substring(startPosition).contains("/")){
+            res = part.subSequence(startPosition, endPosition).toString();
+        } else {
+            res = part.subSequence(startPosition, part.length()-1).toString();
+        }
+
+        return res;
     }
 
 }

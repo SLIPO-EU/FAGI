@@ -273,6 +273,7 @@ public class FusionSpecification {
                     "\n idLinks=" + idLinks + 
                     "\n endpointLinks=" + endpointLinks + 
                     "\n pathOutput=" + pathOutput + 
+                    "\n outputMode=" + outputMode +
                     "\n resourceUri=" + resourceUri +
                     "\n finalDataset=" + finalDataset + 
                     "\n outputRDFFormat=" + outputRDFFormat + 

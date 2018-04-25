@@ -470,14 +470,14 @@ public class LinkedPair {
 
                 Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
 
-                String sA = Normalizer.normalize(literalA, Normalizer.Form.NFD);
-                String sB = Normalizer.normalize(literalB, Normalizer.Form.NFD);
+                String sA = Normalizer.normalize(literalA, Normalizer.Form.NFC);
+                String sB = Normalizer.normalize(literalB, Normalizer.Form.NFC);
                 String longest;
 
                 if (sA.length() > sB.length()) {
-                    longest = sA;
+                    longest = literalA;
                 } else {
-                    longest = sB;
+                    longest = literalB;
                 }
 
                 fusedModel.add(node, property, ResourceFactory.createStringLiteral(longest));

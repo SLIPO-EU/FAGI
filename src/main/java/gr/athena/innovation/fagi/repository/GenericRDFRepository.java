@@ -1,9 +1,9 @@
 package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.exception.WrongInputException;
-import gr.athena.innovation.fagi.model.LeftModel;
+import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.LinksModel;
-import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.model.RightDataset;
 import static gr.athena.innovation.fagi.repository.AbstractRepository.parseLinksFile;
 import java.io.File;
 import java.text.ParseException;
@@ -32,9 +32,10 @@ public class GenericRDFRepository extends AbstractRepository{
         Model model = ModelFactory.createDefaultModel();
         model.read(filepath, null); //null base URI, since URIs are absolute
 
-        LeftModel leftModel = LeftModel.getLeftModel();
+        LeftDataset leftModel = LeftDataset.getLeftDataset();
         logger.debug("Jena model size for left dataset: " + model.size());
-        leftModel.setModel(model);   
+        leftModel.setModel(model);
+        leftModel.setFilepath(filepath);
     }
     
     @Override
@@ -48,9 +49,10 @@ public class GenericRDFRepository extends AbstractRepository{
         Model model = ModelFactory.createDefaultModel();
         model.read(filepath, null); //null base URI, since URIs are absolute
         
-        RightModel rightModel = RightModel.getRightModel();
+        RightDataset rightModel = RightDataset.getRightDataset();
         logger.debug("Jena model size for right dataset: " + model.size());
         rightModel.setModel(model);
+        rightModel.setFilepath(filepath);
     }   
     
     @Override
@@ -71,7 +73,8 @@ public class GenericRDFRepository extends AbstractRepository{
         Model model = ModelFactory.createDefaultModel();
         model.read(filepath) ;
         LinksModel linksModel = LinksModel.getLinksModel();
-        linksModel.setModel(model);        
+        linksModel.setModel(model);
+        linksModel.setFilepath(filepath);
     }
     
     private void loadLinksList(String filepath) throws ParseException{

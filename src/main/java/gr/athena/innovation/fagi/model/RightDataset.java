@@ -6,21 +6,23 @@ import org.apache.jena.rdf.model.Model;
  *
  * @author nkarag
  */
-public final class LeftModel {
+public final class RightDataset {
     
-    private static LeftModel leftModel = null;
+    private static RightDataset rightDataset = null;
     private Model model;
     private String namespace;
+    private String filepath;
 
-    private LeftModel() {
+    private RightDataset() {
          //defeat instantiation
     }
     
-    public static LeftModel getLeftModel() {
-       if(leftModel == null) {
-          leftModel = new LeftModel();
-       }
-       return leftModel;
+    public static RightDataset getRightDataset() {
+        if(rightDataset == null) {
+           rightDataset = new RightDataset();
+        }
+       
+       return rightDataset;
     }
     
     public void setModel(Model model){
@@ -37,6 +39,14 @@ public final class LeftModel {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public String getFilepath() {
+        return filepath;
+    }
+
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
     }
     
 }

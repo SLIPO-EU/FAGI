@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.specification;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Fused dataset modes.
@@ -26,13 +27,16 @@ import java.util.Map;
  * 
  * L_MODE: Only linked triples are handled: Only fused triples are written in a third dataset.
  * 
+ * DEFAULT: Default is L_MODE.
+ * 
  * @author nkarag
  */
 public enum EnumOutputMode {
     DEFAULT(0), AA_MODE(1), BB_MODE(2), AB_MODE(3), BA_MODE(4), A_MODE(5), B_MODE(6), L_MODE(7);
     
-	private final int value;
-
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(EnumOutputMode.class);
+    private final int value;
+    
 	private EnumOutputMode(int value) {
 		this.value = value;
 	}
@@ -67,7 +71,7 @@ public enum EnumOutputMode {
     @Override
     public String toString() {
         switch(this) {
-            case DEFAULT: return "L_MODE";
+            case DEFAULT: return "DEFAULT";
             case AA_MODE: return "AA_MODE";
             case BB_MODE: return "BB_MODE";
             case AB_MODE: return "AB_MODE";
@@ -75,7 +79,7 @@ public enum EnumOutputMode {
             case A_MODE: return "A_MODE";
             case B_MODE: return "B_MODE";
             case L_MODE: return "L_MODE";
-            default: return "L_MODE";
+            default: throw new IllegalArgumentException();
         }
     }    
 }

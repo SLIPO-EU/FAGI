@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.preview;
 
-import gr.athena.innovation.fagi.model.LeftModel;
-import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.model.LeftDataset;
+import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import java.util.List;
@@ -33,14 +33,14 @@ public class FrequencyCalculationProcess {
 
         if (!StringUtils.isBlank(fusionSpec.getCategoriesA())) {
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
-            frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftModel.getLeftModel().getModel(),
+            frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftDataset.getLeftDataset().getModel(),
                     fusionSpec.getPathOutput(), fusionSpec.getLocale(), EnumDataset.LEFT);
         }
 
         if (!StringUtils.isBlank(fusionSpec.getCategoriesB())) {
 
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
-            frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightModel.getRightModel().getModel(),
+            frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightDataset.getRightDataset().getModel(),
                     fusionSpec.getPathOutput(), fusionSpec.getLocale(), EnumDataset.RIGHT);
         }
     }

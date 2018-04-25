@@ -197,8 +197,6 @@ public class SpecificationParser {
                         fusionSpecification.setResourceUri(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
                         fusionSpecification.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MERGE_WITH)) {
-                        fusionSpecification.setFinalDataset(EnumDataset.fromString(n.getTextContent()));
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdOutput(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {

@@ -2,8 +2,8 @@ package gr.athena.innovation.fagi.preview;
 
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.exception.ApplicationException;
-import gr.athena.innovation.fagi.model.LeftModel;
-import gr.athena.innovation.fagi.model.RightModel;
+import gr.athena.innovation.fagi.model.LeftDataset;
+import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -81,8 +81,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair countTotalEntities(){
 
         //count total entities using a the lat property. 
-        Integer totalA = SparqlRepository.countPOIs(LeftModel.getLeftModel().getModel());
-        Integer totalB = SparqlRepository.countPOIs(RightModel.getRightModel().getModel());
+        Integer totalA = SparqlRepository.countPOIs(LeftDataset.getLeftDataset().getModel());
+        Integer totalB = SparqlRepository.countPOIs(RightDataset.getRightDataset().getModel());
 
         totalEntitiesA = totalA;
         totalEntitiesB = totalB;
@@ -99,8 +99,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     
     private StatisticResultPair countDistinctProperties(){
         
-        Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(LeftModel.getLeftModel().getModel());
-        Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(RightModel.getRightModel().getModel());
+        Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(LeftDataset.getLeftDataset().getModel());
+        Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(RightDataset.getRightDataset().getModel());
         StatisticResultPair pair = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString());
         pair.setName("Distinct Properties");
 
@@ -109,8 +109,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private StatisticResultPair countNonEmptyDates(){
 
-        Integer datesA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.DATE);
-        Integer datesB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.DATE);
+        Integer datesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.DATE);
+        Integer datesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.DATE);
         StatisticResultPair pair = new StatisticResultPair(datesA.toString(), datesB.toString());
         pair.setName("Non empty Dates");
         
@@ -119,8 +119,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private StatisticResultPair calculatePercentageOfPrimaryDateFormats(){
 
-        Model leftModel = LeftModel.getLeftModel().getModel();
-        Model rightModel = RightModel.getRightModel().getModel();
+        Model leftModel = LeftDataset.getLeftDataset().getModel();
+        Model rightModel = RightDataset.getRightDataset().getModel();
         String date = Namespace.DATE;
 
         int totalDatesA = SparqlRepository.countProperty(leftModel, date);
@@ -173,9 +173,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculateNamePercentage(){
 
         //count total entities using a the lat property. 
-        int namesA = SparqlRepository.countPropertyWithObject(LeftModel.getLeftModel().getModel(), 
+        int namesA = SparqlRepository.countPropertyWithObject(LeftDataset.getLeftDataset().getModel(), 
                 Namespace.NAME_TYPE, Namespace.OFFICIAL_LITERAL);
-        int namesB = SparqlRepository.countPropertyWithObject(RightModel.getRightModel().getModel(), 
+        int namesB = SparqlRepository.countPropertyWithObject(RightDataset.getRightDataset().getModel(), 
                 Namespace.NAME_TYPE, Namespace.OFFICIAL_LITERAL);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
@@ -194,8 +194,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculateWebsitePercentage(){
 
         //count total entities using a the lat property. 
-        int websiteA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.WEBSITE);
-        int websiteB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.WEBSITE);
+        int websiteA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.WEBSITE);
+        int websiteB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.WEBSITE);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
             return new StatisticResultPair("0","0");
@@ -214,8 +214,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculatePhonePercentage(){
 
         //count total entities using a the lat property. 
-        int phonesA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.PHONE);
-        int phonesB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.PHONE);
+        int phonesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.PHONE);
+        int phonesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.PHONE);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
             return new StatisticResultPair("0","0");
@@ -234,8 +234,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculateStreetPercentage(){
 
         //count total entities using a the lat property. 
-        int streetsA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.STREET);
-        int streetsB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.STREET);
+        int streetsA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET);
+        int streetsB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
             return new StatisticResultPair("0","0");
@@ -254,8 +254,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculateStreetNumberPercentage(){
 
         //count total entities using a the lat property. 
-        int streetΝumbersA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.STREET_NUMBER);
-        int streetNumbersB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.STREET_NUMBER);
+        int streetΝumbersA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET_NUMBER);
+        int streetNumbersB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET_NUMBER);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
             return new StatisticResultPair("0","0");
@@ -274,8 +274,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair calculateLocalityPercentage(){
 
         //count total entities using a the lat property. 
-        int localitiesA = SparqlRepository.countProperty(LeftModel.getLeftModel().getModel(), Namespace.LOCALITY);
-        int localitiesB = SparqlRepository.countProperty(RightModel.getRightModel().getModel(), Namespace.LOCALITY);
+        int localitiesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.LOCALITY);
+        int localitiesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.LOCALITY);
 
         if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
             return new StatisticResultPair("0","0");

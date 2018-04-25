@@ -12,6 +12,7 @@ public final class LinksModel {
     private static LinksModel linksModel = null;
     private Model model;
     private List<Link> links;
+    private String filepath;
 
     private LinksModel() {
          //defeat instantiation
@@ -38,6 +39,14 @@ public final class LinksModel {
 
     public void setLinks(List<Link> links) {
         this.links = links;
+    }
+
+    public String getFilepath() {
+        return filepath;
+    }
+
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
     }
     
 }
