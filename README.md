@@ -53,21 +53,26 @@ The `similarity` is also optional and it is used as a part of the custom matchin
 The `left`, `right`, `links` and `target` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
 Specifically:
+
 `id`: An ID to identify the dataset.
+
 `file`: The filepath of the dataset. For the target (output) dataset, "System.out" is also accepted as console output.
+
 `endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `file` tag empty.
+
 `categories`: This is again optional. It is used to extract statistics about the categories of the entities. If you want to use this feature you should provide a file in N-Triples format that contains the categorization.
 
 `mode`: Specify the fused dataset mode. The supported modes are shown in the table below.
-| Mode        | Description     |
+
+| Mode        | Description     
 | ------------- |:-------------:|
-| aa_mode      | Only linked triples are handled: Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A). | 
-| bb_mode      | Only linked triples are handled: Fused triples replace the respective ones of dataset B (the fusion output is exclusively written on B). | 
-| ab_mode      | All triples are handled: Fused triples replace the respective ones of dataset A; Un-linked triples of dataset B are copied as-is into dataset A | 
-| ba_mode      | All triples are handled: Fused triples replace the respective ones of dataset B; Un-linked triples of dataset A are copied as-is into dataset B | 
-| a_mode      | All triples are handled: Fused triples replace the respective ones of dataset A; Fused triples are removed from dataset B, which only maintains the remaining, unlinked triples | 
-| b_mode      | All triples are handled: Fused triples replace the respective ones of dataset B; Fused triples are removed from dataset A, which only maintains the remaining, unlinked triples | 
-| l_mode      | Only linked triples are handled: Only fused triples are written in a third dataset. | 
+| aa_mode | Only linked triples are handled: Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A). 
+| bb_mode | Only linked triples are handled: Fused triples replace the respective ones of dataset B (the fusion output is exclusively written on B). 
+| ab_mode | All triples are handled: Fused triples replace the respective ones of dataset A; Un-linked triples of dataset B are copied as-is into dataset A 
+| ba_mode | All triples are handled: Fused triples replace the respective ones of dataset B; Un-linked triples of dataset A are copied as-is into dataset B 
+| a_mode | All triples are handled: Fused triples replace the respective ones of dataset A; Fused triples are removed from dataset B, which only maintains the remaining, unlinked triples 
+| b_mode | All triples are handled: Fused triples replace the respective ones of dataset B; Fused triples are removed from dataset A, which only maintains the remaining, unlinked triples 
+| l_mode | Only linked triples are handled: Only fused triples are written in a third dataset. 
 
 ### How to fill in the rules.xml file
 
@@ -75,10 +80,15 @@ The rules.xml file starts with the root element `<rules>`.
 We set rules as a `<rule>` element inside the root tag. 
 
 Each <rule> element consists of the following main childs:
+
 `<propertyA>`
+
 `<propertyB>`
+
 `<externalProperty>`
+
 `<actionRuleSet>`
+
 `<defaultAction>`.
 
 
