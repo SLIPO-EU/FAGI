@@ -123,16 +123,7 @@ public class SchemaDefinition {
 "				    <xs:enumeration value=\"l_mode\"/>				    \n" +
 "				  </xs:restriction>\n" +
 "				</xs:simpleType>\n" +
-"			  </xs:element>					  \n" +
-"			  <xs:element name=\"mergeWith\">\n" +
-"				<xs:simpleType>\n" +
-"				  <xs:restriction base=\"xs:string\">\n" +
-"				    <xs:enumeration value=\"left\"/>\n" +
-"				    <xs:enumeration value=\"right\"/>\n" +
-"				    <xs:enumeration value=\"new\"/>\n" +
-"				  </xs:restriction>\n" +
-"				</xs:simpleType>\n" +
-"			  </xs:element>				  \n" +
+"			  </xs:element>\n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +

@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SPECIFICATION>
-	<INPUTFORMAT></INPUTFORMAT>
-	<OUTPUTFORMAT></OUTPUTFORMAT>
-	<LEFT>
-		<ID></ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE></FILE>
-	</LEFT>
-	<RIGHT>
-		<ID></ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE></FILE>
-	</RIGHT>
-	<LINKS>
-		<ID></ID>
-		<ENDPOINT></ENDPOINT>
-		<FILE></FILE>
-	</LINKS>	
-	<TARGET>
-		<ID></ID>
-		<FILE></FILE>
-	</TARGET>
-</SPECIFICATION>
+<specification>
+	<inputFormat>NT</inputFormat>
+	<outputFormat>NT</outputFormat>
+	<locale></locale>
+	<similarity>jarowinkler</similarity>
+	<left>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+	</left>
+	<right>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+	</right>
+	<links>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+	</links>	
+	<target>
+		<id></id>
+		<resourceURI></resourceURI>	
+		<mode></mode>
+		<file></file>
+	</target>
+</specification>
 
 
 

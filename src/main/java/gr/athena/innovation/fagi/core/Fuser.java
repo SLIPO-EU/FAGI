@@ -23,16 +23,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.apache.jena.graph.Node;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
@@ -137,7 +133,7 @@ public class Fuser implements IFuser{
         switch(fusionSpecification.getOutputMode()) {
             case AA_MODE:
             {
-                logger.warn("AA_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AA_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -152,7 +148,7 @@ public class Fuser implements IFuser{
             }
             case BB_MODE:
             {
-                logger.warn("BB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("BB_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model rightModel = RightModel.getRightModel().getModel();
                 
                 for(LinkedPair p : fusedEntities){
@@ -166,7 +162,7 @@ public class Fuser implements IFuser{
             }
             case L_MODE:
             {
-                logger.warn("L_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("L_MODE, writing to " + fusionSpecification.getPathOutput());
                 //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
@@ -181,7 +177,7 @@ public class Fuser implements IFuser{
             }
             case AB_MODE:
             {
-                logger.warn("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 Model rightModel = RightModel.getRightModel().getModel();
                 
@@ -197,7 +193,7 @@ public class Fuser implements IFuser{
                 break;
             }
             case BA_MODE:
-                logger.warn("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
                 Model leftModel = LeftModel.getLeftModel().getModel();
                 Model rightModel = RightModel.getRightModel().getModel();
                 

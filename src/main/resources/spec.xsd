@@ -115,16 +115,7 @@
 				    <xs:enumeration value="l_mode"/>				    
 				  </xs:restriction>
 				</xs:simpleType>
-			  </xs:element>					  
-			  <xs:element name="mergeWith">
-				<xs:simpleType>
-				  <xs:restriction base="xs:string">
-				    <xs:enumeration value="left"/>
-				    <xs:enumeration value="right"/>
-				    <xs:enumeration value="new"/>
-				  </xs:restriction>
-				</xs:simpleType>
-			  </xs:element>				  
+			  </xs:element>			  
 			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>

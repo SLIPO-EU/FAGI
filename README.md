@@ -69,8 +69,6 @@ Specifically:
 | b_mode      | All triples are handled: Fused triples replace the respective ones of dataset B; Fused triples are removed from dataset A, which only maintains the remaining, unlinked triples | 
 | l_mode      | Only linked triples are handled: Only fused triples are written in a third dataset. | 
 
-Specify the final fused dataset. The accepted values are `left` or `right` in order to merge with one of the source datasets, and `new` in order to create a new dataset that contains only the interlinked fused entities. 
-
 ### How to fill in the rules.xml file
 
 The rules.xml file starts with the root element `<rules>`.
@@ -106,8 +104,6 @@ A sample rules.xml file could look like this:
 <rules>
 
 	<validationRule>
-		<propertyA>nameΑ nameValueΑ</propertyA>
-		<propertyB>nameA nameValueA</propertyB>
 		<externalProperty id="a1">phoneA contactValueA</externalProperty>
 		<externalProperty id="b1">phoneB contactValueB</externalProperty>
 		<actionRuleSet>

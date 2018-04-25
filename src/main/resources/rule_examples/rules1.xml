@@ -1,66 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <rules>
-	<defaultDatasetAction>keep-left</defaultDatasetAction>	
-	<validationRule>
-		<propertyA>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyA>
-		<propertyB>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyB>
-		<externalProperty id="a1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
-		<externalProperty id="b1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
-		<actionRuleSet>
-			<actionRule>
-				<condition>
-					<expression>
-						<or>
-							<expression>
-								<and>
-									<function>isSamePhoneNumberCustomNormalize(a1,b1)</function>
-									<function>isSameCustomNormalize(a,b,0.6)</function>
-								</and>
-							</expression>
-							<expression>
-								<not>
-									<function>isSameCustomNormalize(a,b,0.5)</function>
-								</not>
-							</expression>
-						</or>
-					</expression>			
-				</condition>
-				<action>reject-mark-ambiguous</action>
-			</actionRule>
-		</actionRuleSet>
-		<defaultAction>reject-mark-ambiguous</defaultAction>
-	</validationRule>	
-	<rule>
-		<propertyA>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyA>
-		<propertyB>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyB>
-		<externalProperty id="a1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
-		<externalProperty id="b1">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
-		<actionRuleSet>
-			<actionRule>
-				<condition>
-					<expression>
-						<or>
-							<expression>
-								<and>
-									<function>isSamePhoneNumber(a1,b1)</function>
-									<function>isSameCustomNormalize(a,b,0.6)</function>
-								</and>
-							</expression>
-							<expression>
-								<not>
-									<function>isSameCustomNormalize(a,b,0.5)</function>
-								</not>
-							</expression>
-						</or>
-					</expression>			
-				</condition>
-				<action>keep-longest</action>
-			</actionRule>
-		</actionRuleSet>
-		<defaultAction>keep-right</defaultAction>
-	</rule>		
-	<rule>
-		<propertyA>wkt</propertyA>
-		<propertyB>wkt</propertyB>
-		<defaultAction>keep-left</defaultAction>
-	</rule>	
+  <validationRule>
+    <defaultAction>accept</defaultAction>
+    <actionRuleSet>
+      <actionRule>
+        <action>accept</action>
+        <condition>
+          <function>isPhoneNumberParsable(a0)</function>
+        </condition>
+      </actionRule>
+    </actionRuleSet>
+    <externalProperty id="a0">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
+    <externalProperty id="b0">http://slipo.eu/def#name http://slipo.eu/def#nameValue</externalProperty>
+  </validationRule>
+  <rule>
+    <propertyA>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyA>
+    <propertyB>http://slipo.eu/def#name http://slipo.eu/def#nameValue</propertyB>
+    <defaultAction>concatenate</defaultAction>
+    <actionRuleSet>
+      <actionRule>
+        <action>keep-left</action>
+        <condition>
+          <function>isSameSimpleNormalize(a1, b1, 0.8)</function>
+        </condition>
+      </actionRule>
+    </actionRuleSet>
+    <externalProperty id="a1">http://slipo.eu/def#name http://slipo.eu/def#nameValue</externalProperty>
+    <externalProperty id="b1">http://slipo.eu/def#name http://slipo.eu/def#nameValue</externalProperty>
+  </rule>
+  <defaultDatasetAction>keep-left</defaultDatasetAction>
 </rules>

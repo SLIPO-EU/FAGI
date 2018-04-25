@@ -1,5 +1,18 @@
 <rules>
 	<defaultDatasetAction>keep-right</defaultDatasetAction>	
+	  <validationRule>
+		<defaultAction>accept</defaultAction>
+		<actionRuleSet>
+		  <actionRule>
+			<action>accept</action>
+			<condition>
+			  <function>isPhoneNumberParsable(a0)</function>
+			</condition>
+		  </actionRule>
+		</actionRuleSet>
+		<externalProperty id="a0">http://slipo.eu/def#phone http://slipo.eu/def#contactValue</externalProperty>
+		<externalProperty id="b0">http://slipo.eu/def#name http://slipo.eu/def#nameValue</externalProperty>
+	  </validationRule>	
 	<rule>
 		<propertyA>http://slipo.eu/def#phone http://slipo.eu/def#contactValue</propertyA>
 		<propertyB>http://slipo.eu/def#phone http://slipo.eu/def#contactValue</propertyB>
@@ -50,7 +63,7 @@
 						</and>
 					</expression>		
 				</condition>
-				<action>accept-mark-ambiguous</action>
+				<action>keep-left</action>
 			</actionRule>						
 		</actionRuleSet>
 		<defaultAction>keep-right</defaultAction>

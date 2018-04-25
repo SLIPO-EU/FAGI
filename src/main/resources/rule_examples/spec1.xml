@@ -24,12 +24,7 @@
 	<target>
 		<id>fused</id>
 		<resourceURI>left</resourceURI>	
-		<mergeWith>new</mergeWith>
+		<mode></mode>
 		<file></file>
 	</target>
 </specification>
-
-
-
-
-

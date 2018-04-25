@@ -25,7 +25,6 @@
 		<id>FUSED_OSM_WIKIMAPIA</id>
 		<resourceURI>left</resourceURI>
 		<mode>L_MODE</mode>
-		<mergeWith>new</mergeWith>
 		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fused.nt</file>
 	</target>
 </specification>
