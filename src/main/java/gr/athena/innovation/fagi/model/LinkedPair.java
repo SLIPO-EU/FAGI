@@ -32,7 +32,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -735,28 +734,15 @@ public class LinkedPair {
 
         Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
 
-        String leftID = getIDFromURI(leftNode.getResourceURI());
-        String rightID = getIDFromURI(rightNode.getResourceURI());
+        String leftLocalName = leftNode.getLocalName();
+        String rightLocalName = rightNode.getLocalName();
 
-        String resourceString = Namespace.SLIPO_PREFIX + leftID + "_" + rightID;
+        String resourceString = Namespace.SLIPO_PREFIX + leftLocalName + "_" + rightLocalName;
         Resource resource = ResourceFactory.createResource(resourceString);
 
         Statement statement = ResourceFactory.createStatement(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource);
 
         return statement;
-    }
-
-    private String getIDFromURI(String URI) {
-
-        String id;
-        int startIndex = URI.lastIndexOf("/");
-        if (startIndex > -1) {
-            id = URI.substring(startIndex + 1, URI.length());
-        } else {
-            id = URI;
-        }
-
-        return id;
     }
 
     private void resolveModeURIs(Entity entity1, Entity entity2) {

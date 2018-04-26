@@ -17,19 +17,17 @@
 		<categories></categories>
 	</right>
 	<links>
-		<id></id>
+		<id>links</id>
 		<endpoint></endpoint>
 		<file></file>
 	</links>	
 	<target>
-		<id></id>
-		<resourceURI></resourceURI>	
+		<id>fused</id>
 		<mode></mode>
-		<file></file>
+		<outputDir></outputDir>
+		<fileA></fileA>
+		<fileB></fileB>
+		<fileC></fileC>
+		<stats></stats>
 	</target>
 </specification>
-
-
-
-
-

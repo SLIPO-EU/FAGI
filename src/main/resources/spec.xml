@@ -23,9 +23,12 @@
 	</links>	
 	<target>
 		<id>FUSED_OSM_WIKIMAPIA</id>
-		<resourceURI>left</resourceURI>
 		<mode>L_MODE</mode>
-		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/fused.nt</file>
+		<outputDir>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/output/</outputDir>
+		<fileA></fileA>
+		<fileB></fileB>
+		<fileC></fileC>
+		<stats></stats>
 	</target>
 </specification>
 

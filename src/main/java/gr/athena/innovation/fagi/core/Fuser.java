@@ -91,10 +91,12 @@ public class Fuser implements IFuser{
             LinkedPair pair = new LinkedPair();
 
             String leftURI = link.getNodeA();
+            String leftLocalName = link.getLocalNameA();
             String rightURI = link.getNodeB();
+            String rightLocalName = link.getLocalNameB();
             
-            Entity entityA = constructEntity(modelA, leftURI);
-            Entity entityB = constructEntity(modelB, rightURI);
+            Entity entityA = constructEntity(modelA, leftURI, leftLocalName);
+            Entity entityB = constructEntity(modelB, rightURI, rightLocalName);
 
             pair.setLeftNode(entityA);
             pair.setRightNode(entityB);
@@ -104,8 +106,10 @@ public class Fuser implements IFuser{
             Entity newFusedEntity = new Entity();
 
             String targetURI = resolveURI(mode, leftURI, rightURI);
+            String targetLocalName = resolveLocalName(mode, leftLocalName, rightLocalName);
             
             newFusedEntity.setResourceURI(targetURI);
+            newFusedEntity.setLocalName(targetLocalName);
 
             pair.setFusedEntity(newFusedEntity);
             
@@ -174,7 +178,6 @@ public class Fuser implements IFuser{
             case L_MODE:
             {
                 logger.info("L_MODE, writing to " + outputPathC);
-                //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -190,60 +193,97 @@ public class Fuser implements IFuser{
             {
                 logger.info("AB_MODE, writing to " + outputPathA);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
-                Model rightModel = RightDataset.getRightDataset().getModel();
                 
-                Set<String> leftURIs = new HashSet<>();
+                Set<String> leftLocalNames = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     leftModel.add(fusedDataModel);
-                    String uri = pair.getLeftNode().getResourceURI();
-                    leftURIs.add(uri);                    
+                    String localName = pair.getLeftNode().getLocalName();
+                    leftLocalNames.add(localName);                    
                     
                 }
 
                 leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
                 
-                addUnlinkedTriples(outputPathA, RightDataset.getRightDataset().getFilepath(), leftURIs);
+                addUnlinkedTriples(outputPathA, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
 
                 break;
             }
             case BA_MODE:
+            {
                 logger.info("AB_MODE, writing to " + outputPathB);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
-                Set<String> rightURIs = new HashSet<>();
+                Set<String> rightLocalNames = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
                     
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     rightModel.add(fusedDataModel);
-                    String uri = pair.getRightNode().getResourceURI();
-                    rightURIs.add(uri);
+                    String localName = pair.getRightNode().getLocalName();
+                    rightLocalNames.add(localName);
                 }
 
                 leftModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());   
 
-                addUnlinkedTriples(outputPathB, LeftDataset.getLeftDataset().getFilepath(), rightURIs);
+                addUnlinkedTriples(outputPathB, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
                 
                 break;
+            }
             case A_MODE:
-                throw new UnsupportedOperationException("Not supported yet.");
-                //break;
+            {
+                logger.info("A_MODE, writing to " + outputPathA + ". Excluding unlinked entities from " + outputPathB);
+                Model leftModel = LeftDataset.getLeftDataset().getModel();
+                
+                Set<String> rightLocalNames = new HashSet<>();
+                for(LinkedPair pair : fusedEntities){
+
+                    Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    leftModel.add(fusedDataModel);
+                    String localName = pair.getRightNode().getLocalName();
+                    rightLocalNames.add(localName);                    
+                    
+                }
+
+                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                
+                removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, outputPathB);
+
+                break;
+            }
             case B_MODE:
-                throw new UnsupportedOperationException("Not supported yet.");
-                //break;
+            {
+                logger.info("B_MODE, writing to " + outputPathB + ". Excluding unlinked entities from " + outputPathA);
+                Model rightModel = RightDataset.getRightDataset().getModel();
+                
+                Set<String> leftLocalNames = new HashSet<>();
+                for(LinkedPair pair : fusedEntities){
+
+                    Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+                    rightModel.add(fusedDataModel);
+                    String localName = pair.getLeftNode().getLocalName();
+                    leftLocalNames.add(localName);                    
+                    
+                }
+
+                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
+                
+                removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, outputPathA);
+
+                break;
+            }
             default:
-                throw new UnsupportedOperationException("Wrong Output mode!");
-                //break;                
+                throw new UnsupportedOperationException("Wrong Output mode!");               
         }
     }
     
-    private Entity constructEntity(Model model, String resourceURI) throws ParseException {
+    private Entity constructEntity(Model model, String resourceURI, String localName) throws ParseException {
         
         Entity entity = new Entity();
         EntityData entityData = new EntityData(model);
         entity.setResourceURI(resourceURI);
+        entity.setLocalName(localName);
         entity.setEntityData(entityData);
         
         return entity;
@@ -293,6 +333,29 @@ public class Fuser implements IFuser{
         }
         return resourceURI;
     }
+
+    private String resolveLocalName(EnumOutputMode mode, String leftLocalName, String rightLocalName) {
+        String localName;
+        switch (mode) {
+            
+            case AA_MODE:
+            case AB_MODE:
+            case A_MODE:
+            case L_MODE:
+            case DEFAULT:
+                localName = leftLocalName;
+                break;                
+            case BB_MODE:
+            case BA_MODE:
+            case B_MODE:
+                localName = rightLocalName;
+                break;
+            default:
+                logger.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
+                throw new IllegalArgumentException();
+        }
+        return localName;
+    }
     
     /**
      * Returns the count of linked entities that were not found in the source datasets.
@@ -322,10 +385,9 @@ public class Fuser implements IFuser{
 
     private void addUnlinkedTriples(String outputPath, String datasetPath, Set<String> uriSet) throws IOException {
 
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8)) {
-            
-            BufferedWriter output = new BufferedWriter(new FileWriter(outputPath, true));
-            
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
+             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, true))) {
+
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
@@ -333,34 +395,32 @@ public class Fuser implements IFuser{
                 String id = getResourceURI(idPart);
 
                 if(!uriSet.contains(id)){
-                    output.append(line);
-                    output.newLine();
+                    bufferedWriter.append(line);
+                    bufferedWriter.newLine();
                 }
             }
         }   
     }
 
-    private void removeUnlinkedTriples(String datasetPath, Set<String> uriSet) throws IOException {
-
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8)) {
-            
-            BufferedWriter output = new BufferedWriter(new FileWriter(datasetPath, true));
+    private void removeUnlinkedTriples(String datasetPath, Set<String> localNames, String outputPath) throws IOException {
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, false))) {
             
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
 
-                String id = getResourceURI(idPart);
+                String localName = getResourceURI(idPart);
 
-                if(!uriSet.contains(id)){
-                    output.append(line);
-                    output.newLine();
+                if(!localNames.contains(localName)){
+                    bufferedWriter.append(line);
+                    bufferedWriter.newLine();
                 }
             }
         }   
     }
     
-    public static String getResourceURI(String part) {
+    private static String getResourceURI(String part) {
         int endPosition = StringUtils.lastIndexOf(part, "/");
         int startPosition = StringUtils.ordinalIndexOf(part, "/", 5) + 1;
         
@@ -373,5 +433,4 @@ public class Fuser implements IFuser{
 
         return res;
     }
-
 }
