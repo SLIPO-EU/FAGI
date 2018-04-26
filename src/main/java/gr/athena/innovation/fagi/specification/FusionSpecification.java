@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class FusionSpecification {
     
-    private static final Logger logger = LogManager.getLogger(FusionSpecification.class);
+    private static final Logger LOG = LogManager.getLogger(FusionSpecification.class);
     
     private static FusionSpecification fusionSpecification;
     
@@ -124,7 +124,7 @@ public class FusionSpecification {
         if(minOptionalDepth <= optionalDepth && optionalDepth <= maxOptionalDepth){
             this.optionalDepth = optionalDepth;
         } else {
-            logger.warn("Optional Depth: " + optionalDepth + " is not allowed. Setting default value.");
+            LOG.warn("Optional Depth: " + optionalDepth + " is not allowed. Setting default value.");
             this.optionalDepth = 2;
         }
     }
@@ -258,7 +258,7 @@ public class FusionSpecification {
     }
 
     public void setOutputDir(String outputDir) throws WrongInputException {
-        logger.info("output path: " + outputDir);
+        LOG.info("output path: " + outputDir);
         if(StringUtils.isBlank(outputDir)){
             throw new WrongInputException("Output directory is blank! Add " 
                     + SpecificationConstants.Spec.OUTPUT_DIR + " tag in " + SpecificationConstants.Spec.SPEC_XML);
@@ -271,7 +271,7 @@ public class FusionSpecification {
         }
         
     }
-
+    
     public String getFileA() {
         return fileA;
     }
@@ -284,7 +284,7 @@ public class FusionSpecification {
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
             
-            this.fileA = outputDir + "outputA.nt";
+            this.fileA = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_A;
         } else {
             this.fileA = fileA;
         }
@@ -302,7 +302,7 @@ public class FusionSpecification {
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
             
-            this.fileB = outputDir + "outputB.nt";
+            this.fileB = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_B;
         } else {
             this.fileB = fileB;
         }
@@ -320,7 +320,7 @@ public class FusionSpecification {
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
             
-            this.fileC = outputDir + "outputC.nt";
+            this.fileC = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_C;
         } else {
             this.fileC = fileC;
         }

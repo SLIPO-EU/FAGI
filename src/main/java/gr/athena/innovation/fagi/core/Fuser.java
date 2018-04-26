@@ -79,6 +79,9 @@ public class Fuser implements IFuser{
 
         for (Link link : links.getLinks()){
    
+            LinkedPair linkedPair = new LinkedPair();
+            linkedPair.setLink(link);
+            
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
@@ -88,8 +91,6 @@ public class Fuser implements IFuser{
                 continue;
             }
 
-            LinkedPair pair = new LinkedPair();
-
             String leftURI = link.getNodeA();
             String leftLocalName = link.getLocalNameA();
             String rightURI = link.getNodeB();
@@ -98,10 +99,10 @@ public class Fuser implements IFuser{
             Entity entityA = constructEntity(modelA, leftURI, leftLocalName);
             Entity entityB = constructEntity(modelB, rightURI, rightLocalName);
 
-            pair.setLeftNode(entityA);
-            pair.setRightNode(entityB);
+            linkedPair.setLeftNode(entityA);
+            linkedPair.setRightNode(entityB);
 
-            EnumValidationAction validation = pair.validateLink(ruleCatalog.getValidationRules(), functionMap);
+            EnumValidationAction validation = linkedPair.validateLink(ruleCatalog.getValidationRules(), functionMap);
 
             Entity newFusedEntity = new Entity();
 
@@ -111,11 +112,11 @@ public class Fuser implements IFuser{
             newFusedEntity.setResourceURI(targetURI);
             newFusedEntity.setLocalName(targetLocalName);
 
-            pair.setFusedEntity(newFusedEntity);
+            linkedPair.setFusedEntity(newFusedEntity);
             
-            pair.fusePair(ruleCatalog, functionMap, validation);
+            linkedPair.fusePair(ruleCatalog, functionMap, validation);
             
-            fusedList.add(pair);
+            fusedList.add(linkedPair);
             
             fusedPairsCount++;
         }

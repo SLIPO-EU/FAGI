@@ -18,6 +18,7 @@ public class Namespace {
     public static final String DATE_OSM_MODIFIED = "http://purl.org/dc/terms/modified";
     
     public static final String SLIPO_PREFIX = "http://slipo.eu/def#";
+    public static final String SAME_AS = "<http://www.w3.org/2002/07/owl#sameAs>";
     
     public static final String CATEGORY_VALUE = "<http://slipo.eu/def#value>";
     public static final String CATEGORY = "<http://slipo.eu/def#category>";
@@ -44,7 +45,7 @@ public class Namespace {
     public static final String PHONE = "<http://slipo.eu/def#phone>";
     
     //public static final String AMBIGUOUS_PROPERTY = "http://slipo.eu/def#ambiguousValue";
-    public static final String AMBIGUOUS_LINK_PROPERTY = "http://slipo.eu/def#ambiguousLink" ;
+    public static final String AMBIGUOUS_LINK_PROPERTY = "http://slipo.eu/def#ambiguousLink";
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;

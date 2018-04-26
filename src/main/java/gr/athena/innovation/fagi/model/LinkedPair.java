@@ -44,12 +44,21 @@ import org.apache.logging.log4j.Logger;
 public class LinkedPair {
 
     private static final Logger logger = LogManager.getLogger(LinkedPair.class);
+    private Link link;
     private Entity leftNode;
     private Entity rightNode;
     private Entity fusedEntity;
 
     EnumValidationAction validation = EnumValidationAction.UNDEFINED;
 
+    public Link getLink() {
+        return link;
+    }
+
+    public void setLink(Link link) {
+        this.link = link;
+    }
+    
     public Entity getLeftNode() {
         return leftNode;
     }
@@ -371,6 +380,9 @@ public class LinkedPair {
                 break;
             case REJECT: {
 
+                //removes link from the list and from the model also.
+                LinksModel.getLinksModel().removeLink(link);
+                
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
                 }
@@ -395,6 +407,8 @@ public class LinkedPair {
             }
             case REJECT_MARK_AMBIGUOUS: {
 
+                LinksModel.getLinksModel().removeLink(link);
+                
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
                 }

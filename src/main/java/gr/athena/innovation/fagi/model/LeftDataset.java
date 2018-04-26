@@ -3,7 +3,8 @@ package gr.athena.innovation.fagi.model;
 import org.apache.jena.rdf.model.Model;
 
 /**
- *
+ * Class holding information about the left dataset of the specification.
+ * 
  * @author nkarag
  */
 public final class LeftDataset {

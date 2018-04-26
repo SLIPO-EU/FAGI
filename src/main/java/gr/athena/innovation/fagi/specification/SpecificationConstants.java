@@ -46,6 +46,11 @@ public class SpecificationConstants {
         public static final String FILE_A = "fileA";
         public static final String FILE_B = "fileB";
         public static final String FILE_C = "fileC";
+        
+        public static final String DEFAULT_FILENAME_A = "outputA.nt";
+        public static final String DEFAULT_FILENAME_B = "outputB.nt";
+        public static final String DEFAULT_FILENAME_C = "outputC.nt";
+        
         public static final String STATS_FILEPATH = "stats";
     }  
         
