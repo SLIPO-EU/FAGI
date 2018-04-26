@@ -110,7 +110,6 @@ public class SchemaDefinition {
 "		  <xs:complexType>\n" +
 "			<xs:sequence>\n" +
 "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
-"			  <xs:element name=\"resourceURI\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"mode\">\n" +
 "				<xs:simpleType>\n" +
 "				  <xs:restriction base=\"xs:string\">\n" +
@@ -123,8 +122,12 @@ public class SchemaDefinition {
 "				    <xs:enumeration value=\"l_mode\"/>				    \n" +
 "				  </xs:restriction>\n" +
 "				</xs:simpleType>\n" +
-"			  </xs:element>\n" +
-"			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
+"			  </xs:element>			  \n" +
+"			  <xs:element name=\"outputDir\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"fileA\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"fileB\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"fileC\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"stats\" type=\"xs:anyURI\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>				\n" +

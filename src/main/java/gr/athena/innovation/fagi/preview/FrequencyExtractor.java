@@ -21,7 +21,7 @@ public class FrequencyExtractor {
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FrequencyExtractor.class);
 
     public void extract(int frequentTopK, String categoryMappingsNTPath, Model model, 
-            String outputPath, Locale locale, EnumDataset dataset){
+            String outputDir, Locale locale, EnumDataset dataset){
 
             //Category frequencies
             RDFFrequencyCounter categoryCounter = new RDFFrequencyCounter();
@@ -30,9 +30,6 @@ public class FrequencyExtractor {
 
             Frequency categoryFrequencies = categoryCounter.exportCategoryFrequency(Namespace.CATEGORY, model);
 
-            File propertyFile = new File(outputPath);
-            File parentDir = propertyFile.getParentFile();
-            
             String filename;
             switch(dataset){
                 case LEFT:
@@ -46,7 +43,7 @@ public class FrequencyExtractor {
                             + "Only LEFT or RIGHT allowed.");
             }
 
-            String outputFilename = parentDir.getPath() + "/frequencies/" + filename;
+            String outputFilename = outputDir + "frequencies/" + filename;
             File outputFile = new File(outputFilename);
 
             logger.info("Category frequency file: " + outputFile);

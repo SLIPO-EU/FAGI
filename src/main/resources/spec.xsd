@@ -102,7 +102,6 @@
 		  <xs:complexType>
 			<xs:sequence>
 			  <xs:element name="id" type="xs:string"/>
-			  <xs:element name="resourceURI" type="xs:anyURI"/>
 			  <xs:element name="mode">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -116,7 +115,11 @@
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:element>			  
-			  <xs:element name="file" type="xs:anyURI"/>
+			  <xs:element name="outputDir" type="xs:anyURI"/>
+			  <xs:element name="fileA" type="xs:anyURI"/>
+			  <xs:element name="fileB" type="xs:anyURI"/>
+			  <xs:element name="fileC" type="xs:anyURI"/>
+			  <xs:element name="stats" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>				

@@ -40,9 +40,9 @@ public class RDFInputSimilarityViewer {
     private static final Logger logger = LogManager.getLogger(RDFInputSimilarityViewer.class);
     private final FusionSpecification fusionSpecification;
 
-    public RDFInputSimilarityViewer(FusionSpecification fusionSpecification) {
+    public RDFInputSimilarityViewer() {
 
-        this.fusionSpecification = fusionSpecification;
+        this.fusionSpecification = FusionSpecification.getInstance();
     }
 
     public void printRDFSimilarityResults(List<String> rdfProperties) throws ParseException, IOException {
@@ -51,9 +51,7 @@ public class RDFInputSimilarityViewer {
         for (String rdfProperty : rdfProperties) {
             String propertyPath;
 
-            File propertyFile = new File(fusionSpecification.getPathOutput());
-            File parentDir = propertyFile.getParentFile();
-
+            //Create user friendly filename for property.
             String filename;
             if (rdfProperty.lastIndexOf("#") != -1) {
                 filename = rdfProperty.substring(rdfProperty.lastIndexOf("#") + 1);
@@ -63,7 +61,7 @@ public class RDFInputSimilarityViewer {
                 filename = "_" + index;
             }
 
-            propertyPath = parentDir.getPath() + "/similarityMetrics/" + filename + ".txt";
+            propertyPath = fusionSpecification.getOutputDir() + "similarityMetrics/" + filename + ".txt";
 
             File file = new File(propertyPath);
             if (file.exists()) {

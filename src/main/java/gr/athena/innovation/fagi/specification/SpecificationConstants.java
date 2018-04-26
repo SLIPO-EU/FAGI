@@ -42,6 +42,11 @@ public class SpecificationConstants {
         public static final String ID = "id";
         public static final String FILE = "file";
         public static final String ENDPOINT = "endpoint";
+        public static final String OUTPUT_DIR = "outputDir";
+        public static final String FILE_A = "fileA";
+        public static final String FILE_B = "fileB";
+        public static final String FILE_C = "fileC";
+        public static final String STATS_FILEPATH = "stats";
     }  
         
     public static class Rule {

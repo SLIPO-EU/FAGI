@@ -17,11 +17,9 @@ public class StatisticsExporter {
     
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(StatisticsExporter.class);
     
-    public void exportStatistics(StatisticsContainer container, String specOutputPath){
+    public void exportStatistics(StatisticsContainer container, String outputDir){
 
-        File outputPath = new File(specOutputPath);
-        File parentDir = outputPath.getParentFile();
-        String statsPath = parentDir.getPath() + "/stats.txt";
+        String statsPath = outputDir + "stats.txt";
             
         File outputFile = new File(statsPath);
 

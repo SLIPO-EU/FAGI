@@ -18,25 +18,20 @@ import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.stream.Stream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -137,20 +132,19 @@ public class Fuser implements IFuser{
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException, IOException{
-        
-        OutputStream outputStream;
 
-        if(fusionSpecification.getPathOutput().equalsIgnoreCase("System.out")){
-            outputStream = System.out;
+        String outputPathA = fusionSpecification.getFileA();
+        String outputPathB = fusionSpecification.getFileB();
+        String outputPathC = fusionSpecification.getFileC();
 
-        } else {
-            outputStream = new FileOutputStream(fusionSpecification.getPathOutput(), false);
-        }
+        OutputStream outputStreamA = new FileOutputStream(outputPathA, false);
+        OutputStream outputStreamB = new FileOutputStream(outputPathB, false);
+        OutputStream outputStreamC = new FileOutputStream(outputPathC, false);
 
         switch(fusionSpecification.getOutputMode()) {
             case AA_MODE:
             {
-                logger.info("AA_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AA_MODE, writing to " + outputPathA);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -160,12 +154,12 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());                
+                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());                
                 break;
             }
             case BB_MODE:
             {
-                logger.info("BB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("BB_MODE, writing to " + outputPathB);
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 for(LinkedPair p : fusedEntities){
@@ -174,12 +168,12 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(outputStream, fusionSpecification.getOutputRDFFormat());              
+                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());              
                 break;
             }
             case L_MODE:
             {
-                logger.info("L_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("L_MODE, writing to " + outputPathC);
                 //user default is NEW dataset.
                 Model newModel = ModelFactory.createDefaultModel();
                 
@@ -189,45 +183,48 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(outputStream, fusionSpecification.getOutputRDFFormat());              
+                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat());              
                 break; 
             }
             case AB_MODE:
             {
-                logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AB_MODE, writing to " + outputPathA);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
+                Set<String> leftURIs = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     leftModel.add(fusedDataModel);
+                    String uri = pair.getLeftNode().getResourceURI();
+                    leftURIs.add(uri);                    
                     
                 }
 
-                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());                  
-                leftModel.close();
+                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
                 
-                addUnlinkedTriples(fusionSpecification.getPathOutput(), RightDataset.getRightDataset().getFilepath());
+                addUnlinkedTriples(outputPathA, RightDataset.getRightDataset().getFilepath(), leftURIs);
 
                 break;
             }
             case BA_MODE:
-                logger.info("AB_MODE, writing to " + fusionSpecification.getPathOutput());
+                logger.info("AB_MODE, writing to " + outputPathB);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
+                Set<String> rightURIs = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
                     
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
                     rightModel.add(fusedDataModel);
-                    //rightModel
+                    String uri = pair.getRightNode().getResourceURI();
+                    rightURIs.add(uri);
                 }
 
-                leftModel.write(outputStream, fusionSpecification.getOutputRDFFormat());   
-                
-                //TODO: 
-                addUnlinkedTriples(fusionSpecification.getPathOutput(), LeftDataset.getLeftDataset().getFilepath());
+                leftModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());   
+
+                addUnlinkedTriples(outputPathB, LeftDataset.getLeftDataset().getFilepath(), rightURIs);
                 
                 break;
             case A_MODE:
@@ -323,10 +320,9 @@ public class Fuser implements IFuser{
         return fusedPairsCount;
     }
 
-    private void addUnlinkedTriples(String outputPath, String datasetPath) throws IOException {
+    private void addUnlinkedTriples(String outputPath, String datasetPath, Set<String> uriSet) throws IOException {
 
-        //TODO: create set with the corresponding URIs from the links. Check merged dataset with contains and add accordingly
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(outputPath), StandardCharsets.UTF_8)) {
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8)) {
             
             BufferedWriter output = new BufferedWriter(new FileWriter(outputPath, true));
             
@@ -336,7 +332,27 @@ public class Fuser implements IFuser{
 
                 String id = getResourceURI(idPart);
 
-                if(!line.contains(id)){
+                if(!uriSet.contains(id)){
+                    output.append(line);
+                    output.newLine();
+                }
+            }
+        }   
+    }
+
+    private void removeUnlinkedTriples(String datasetPath, Set<String> uriSet) throws IOException {
+
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8)) {
+            
+            BufferedWriter output = new BufferedWriter(new FileWriter(datasetPath, true));
+            
+            for (String line; (line = br.readLine()) != null;) {
+                String[] parts = line.split(" ");
+                String idPart = parts[0];
+
+                String id = getResourceURI(idPart);
+
+                if(!uriSet.contains(id)){
                     output.append(line);
                     output.newLine();
                 }

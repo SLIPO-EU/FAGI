@@ -22,26 +22,26 @@ public class FrequencyCalculationProcess {
         int topK = 0; //topK zero and negative values return the complete list
 
         //Frequent terms
-        FileFrequencyCounter termFrequency = new FileFrequencyCounter(fusionSpec, topK);
+        FileFrequencyCounter termFrequency = new FileFrequencyCounter(topK);
         termFrequency.setLocale(fusionSpec.getLocale());
 
         termFrequency.setProperties(rdfProperties);
 
-        termFrequency.export(fusionSpec.getPathA(), EnumDataset.LEFT);
+        termFrequency.export(fusionSpec.getPathDatasetA(), EnumDataset.LEFT);
         
-        termFrequency.export(fusionSpec.getPathB(), EnumDataset.RIGHT);
+        termFrequency.export(fusionSpec.getPathDatasetB(), EnumDataset.RIGHT);
 
         if (!StringUtils.isBlank(fusionSpec.getCategoriesA())) {
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
             frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftDataset.getLeftDataset().getModel(),
-                    fusionSpec.getPathOutput(), fusionSpec.getLocale(), EnumDataset.LEFT);
+                    fusionSpec.getOutputDir(), fusionSpec.getLocale(), EnumDataset.LEFT);
         }
 
         if (!StringUtils.isBlank(fusionSpec.getCategoriesB())) {
 
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
             frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightDataset.getRightDataset().getModel(),
-                    fusionSpec.getPathOutput(), fusionSpec.getLocale(), EnumDataset.RIGHT);
+                    fusionSpec.getOutputDir(), fusionSpec.getLocale(), EnumDataset.RIGHT);
         }
     }
 }

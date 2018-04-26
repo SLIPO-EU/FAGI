@@ -36,8 +36,8 @@ public class FileFrequencyCounter implements FrequencyCounter {
     private final FusionSpecification fusionSpecification;
     private final int frequentTopK;
 
-    public FileFrequencyCounter(FusionSpecification fusionSpecification, int frequentTopK) {
-        this.fusionSpecification = fusionSpecification;
+    public FileFrequencyCounter(int frequentTopK) {
+        this.fusionSpecification = FusionSpecification.getInstance();
         this.frequentTopK = frequentTopK;
     }
 
@@ -54,8 +54,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
                 prop.insert(prop.length(), ">");
             }
 
-            File propertyFile = new File(fusionSpecification.getPathOutput());
-            File parentDir = propertyFile.getParentFile();
+            //Create a user friendly filename based on each property and input dataset.
             String filenamePrefix;
 
             if (property.lastIndexOf("#") != -1) {
@@ -90,7 +89,8 @@ public class FileFrequencyCounter implements FrequencyCounter {
                     
             }
             
-            String outputFilename = parentDir.getPath() + "/frequencies/" + filenamePrefix + filename + filenameSuffix;
+            String outputFilename = fusionSpecification.getOutputDir() + "frequencies/" 
+                    + filenamePrefix + filename + filenameSuffix;
             File outputFile = new File(outputFilename);
 
             logger.info("frequency file:" + outputFilename);

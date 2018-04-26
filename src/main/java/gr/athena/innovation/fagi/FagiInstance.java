@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
  */
 public class FagiInstance {
 
-    private static final Logger logger = LogManager.getLogger(FagiInstance.class);
+    private static final Logger LOG = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
     private final String rulesXml;
 
@@ -72,23 +72,23 @@ public class FagiInstance {
 
         InputValidator validator = new InputValidator(rulesXml, specXml, functionSet);
 
-        logger.info("Validating input..");
+        LOG.info("Validating input..");
 
         if (!validator.isValidInput()) {
-            logger.info(SpecificationConstants.HELP);
+            LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
 
-        logger.info("XML files seem valid.");
+        LOG.info("XML files seem valid.");
 
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpec = specificationParser.parse(specXml);
         
         //validate output filepath:
-        if(!validator.isValidOutput(fusionSpec)){
-            logger.info("Please specify a file output in specification.");
-            logger.info(SpecificationConstants.HELP);
+        if(!validator.isValidOutputDirPath(fusionSpec.getOutputDir())){
+            LOG.info("Please specify a file output in specification.");
+            LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
         
@@ -102,8 +102,8 @@ public class FagiInstance {
         long startTimeReadFiles = System.currentTimeMillis();
 
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
-        genericRDFRepository.parseLeft(fusionSpec.getPathA());
-        genericRDFRepository.parseRight(fusionSpec.getPathB());
+        genericRDFRepository.parseLeft(fusionSpec.getPathDatasetA());
+        genericRDFRepository.parseRight(fusionSpec.getPathDatasetB());
         genericRDFRepository.parseLinks(fusionSpec.getPathLinks());
 
         long stopTimeReadFiles = System.currentTimeMillis();
@@ -124,43 +124,43 @@ public class FagiInstance {
         long startTimeFusion = System.currentTimeMillis();
 
         if(exportFrequencies){
-            logger.info("Exporting frequencies...");
+            LOG.info("Exporting frequencies...");
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
             freqProcess.run(fusionSpec, rdfProperties);
         }
 
         if (exportStatistics) {
-            logger.info("Calculating statistics...");
+            LOG.info("Calculating statistics...");
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
             
             if(container.isValid()){
                 StatisticsExporter exporter = new StatisticsExporter();
-                exporter.exportStatistics(container, fusionSpec.getPathOutput());                
+                exporter.exportStatistics(container, fusionSpec.getOutputDir());                
             } else {
-                logger.warn("Could not export statistics. Input dataset(s) do not contain " 
+                LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
                         + Namespace.SOURCE + " property that is being used to count the entities.");
             }
         }
         
         if(exportSimilaritiesPerLink){
             //similarity viewer for each pair and a,b,c normalization
-            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer(fusionSpec);
+            RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer();
 
             try {
 
                 qualityViewer.printRDFSimilarityResults(rdfProperties);
 
             } catch (com.vividsolutions.jts.io.ParseException | IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
             }            
         }
 
         //Produce quality metric results for previewing, if enabled
         if (runEvaluation) {
-            logger.info("Running evaluation...");
+            LOG.info("Running evaluation...");
             Evaluation evaluation = new Evaluation();
             String csvPath = "";
             evaluation.run(fusionSpec, csvPath);
@@ -168,13 +168,13 @@ public class FagiInstance {
         }
 
         if(train){
-            logger.info("Training...");
+            LOG.info("Training...");
             Trainer trainer = new Trainer(fusionSpec);
             trainer.train();
         }
 
         if(fuse){
-            logger.info("Initiating fusion process...");
+            LOG.info("Initiating fusion process...");
             
             Fuser fuser = new Fuser();
             Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
@@ -186,22 +186,22 @@ public class FagiInstance {
             //Combine result datasets and write to file
             long startTimeWrite = System.currentTimeMillis();
 
-            logger.info("Writing results...");
+            LOG.info("Writing results...");
             fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
 
             long stopTimeWrite = System.currentTimeMillis();
             
-            logger.info(fusionSpec.toString());
+            LOG.info(fusionSpec.toString());
 
-            logger.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-            logger.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
+            LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
+            LOG.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
                     + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
-            logger.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
-            logger.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
-            logger.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
-            logger.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
-            logger.info("Total time {}ms.", stopTimeWrite - startTimeInput);
-            logger.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");            
+            LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
+            LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
+            LOG.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
+            LOG.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
+            LOG.info("Total time {}ms.", stopTimeWrite - startTimeInput);
+            LOG.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");            
         }
     }
 }

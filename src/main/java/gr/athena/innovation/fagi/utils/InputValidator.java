@@ -6,10 +6,8 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Set;
 import javax.xml.XMLConstants;
@@ -133,20 +131,8 @@ public class InputValidator {
         return true;
     }
     
-    public boolean isValidOutput(FusionSpecification fusionSpec){
-        
-        OutputStream out;
-        if(fusionSpec.getPathOutput().equalsIgnoreCase("System.out")){
-            out = System.out;
-        } else {
-            try {
-                out = new FileOutputStream(fusionSpec.getPathOutput());
-            } catch (FileNotFoundException ex) {
-                logger.fatal(ex);
-                return false;
-            }
-        }
-        
-        return true;
+    public boolean isValidOutputDirPath(String path){
+        File file = new File(path);
+        return file.isDirectory();
     }
 }

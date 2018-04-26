@@ -20,14 +20,18 @@ public class FusionSpecification {
     
     private String idA;
     private String endpointA;
-    private String pathA;
-    private String pathB;
+    private String pathDatasetA;
+    private String pathDatasetB;
     private String idB;
     private String endpointB;
     private String pathLinks;
     private String idLinks;
     private String endpointLinks;
-    private String pathOutput;
+    private String outputDir;
+    private String statsFilepath;
+    private String fileA;
+    private String fileB;
+    private String fileC;
     private String resourceUri;
     private String idOutput;
     private String endpointOutput;
@@ -59,30 +63,30 @@ public class FusionSpecification {
         return fusionSpecification;
     }
     
-    public void setPathA(String pathA) throws WrongInputException {
+    public void setPathDatasetA(String pathDatasetA) throws WrongInputException {
         
-        if(StringUtils.isBlank(pathA)){
+        if(StringUtils.isBlank(pathDatasetA)){
             throw new WrongInputException("Dataset A path is blank!");
         }
         
-        this.pathA = pathA;
+        this.pathDatasetA = pathDatasetA;
     }
     
-    public String getPathA() {
-        return pathA;
+    public String getPathDatasetA() {
+        return pathDatasetA;
     }
 
-    public void setPathB(String pathB) throws WrongInputException {
+    public void setPathDatasetB(String pathDatasetB) throws WrongInputException {
         
-        if(StringUtils.isBlank(pathB)){
+        if(StringUtils.isBlank(pathDatasetB)){
             throw new WrongInputException("Dataset B path is blank!");
         }
 
-        this.pathB = pathB;
+        this.pathDatasetB = pathDatasetB;
     }
 
-    public String getPathB() {
-        return pathB;
+    public String getPathDatasetB() {
+        return pathDatasetB;
     }
 
     public String getPathLinks() {
@@ -94,17 +98,6 @@ public class FusionSpecification {
             throw new WrongInputException("Links path is blank!");
         }        
         this.pathLinks = pathLinks;
-    }
-
-    public String getPathOutput() {
-        return pathOutput;
-    }
-
-    public void setPathOutput(String pathOutput) throws WrongInputException {
-        if(StringUtils.isBlank(pathOutput)){
-            throw new WrongInputException("Output path is blank!");
-        }          
-        this.pathOutput = pathOutput;
     }
 
     public String getOutputRDFFormat() {
@@ -259,21 +252,113 @@ public class FusionSpecification {
     public void setOutputMode(EnumOutputMode outputMode) {
         this.outputMode = outputMode;
     }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) throws WrongInputException {
+        logger.info("output path: " + outputDir);
+        if(StringUtils.isBlank(outputDir)){
+            throw new WrongInputException("Output directory is blank! Add " 
+                    + SpecificationConstants.Spec.OUTPUT_DIR + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+        }          
+       
+        if(outputDir.endsWith("/")){
+            this.outputDir = outputDir;
+        } else {
+            this.outputDir = outputDir + "/";
+        }
+        
+    }
+
+    public String getFileA() {
+        return fileA;
+    }
+
+    public void setFileA(String fileA) throws WrongInputException {
+        if(StringUtils.isBlank(fileA)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_A 
+                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+            }
+            
+            this.fileA = outputDir + "outputA.nt";
+        } else {
+            this.fileA = fileA;
+        }
+    }
+
+    public String getFileB() {
+        return fileB;
+    }
+
+    public void setFileB(String fileB) throws WrongInputException {
+        if(StringUtils.isBlank(fileB)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_B 
+                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+            }
+            
+            this.fileB = outputDir + "outputB.nt";
+        } else {
+            this.fileB = fileB;
+        }
+    }
+
+    public String getFileC() {
+        return fileC;
+    }
+
+    public void setFileC(String fileC) throws WrongInputException {
+        if(StringUtils.isBlank(fileC)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_C
+                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+            }
+            
+            this.fileC = outputDir + "outputC.nt";
+        } else {
+            this.fileC = fileC;
+        }
+    }
+    
+    public String getStatsFilepath() {
+        return statsFilepath;
+    }
+
+    public void setStatsFilepath(String statsFilepath) throws WrongInputException {
+        if(StringUtils.isBlank(statsFilepath)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.STATS_FILEPATH 
+                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+            }
+            
+            this.statsFilepath = outputDir + "stats.txt";
+        } else {
+            this.statsFilepath = statsFilepath;
+        }
+    }
     
     @Override
     public String toString() {
         return "FusionSpecification{" + 
                     "\n idA=" + idA + 
                     "\n endpointA=" + endpointA + 
-                    "\n pathA=" + pathA + 
-                    "\n pathB=" + pathB + 
+                    "\n pathA=" + pathDatasetA + 
+                    "\n pathB=" + pathDatasetB + 
                     "\n idB=" + idB + 
                     "\n endpointB=" + endpointB + 
                     "\n pathLinks=" + pathLinks + 
                     "\n idLinks=" + idLinks + 
                     "\n endpointLinks=" + endpointLinks + 
-                    "\n pathOutput=" + pathOutput + 
                     "\n outputMode=" + outputMode +
+                    "\n outputDir=" + outputDir +
+                    "\n stats=" + statsFilepath +
                     "\n resourceUri=" + resourceUri +
                     "\n finalDataset=" + finalDataset + 
                     "\n outputRDFFormat=" + outputRDFFormat + 

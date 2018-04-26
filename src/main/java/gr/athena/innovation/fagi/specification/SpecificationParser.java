@@ -129,7 +129,7 @@ public class SpecificationParser {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathA(n.getTextContent());
+                        fusionSpecification.setPathDatasetA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
@@ -151,7 +151,7 @@ public class SpecificationParser {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathB(n.getTextContent());
+                        fusionSpecification.setPathDatasetB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
@@ -191,10 +191,14 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathOutput(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.TARGET_RESOURCE_URI)) {
-                        fusionSpecification.setResourceUri(n.getTextContent());
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.OUTPUT_DIR)) {
+                        fusionSpecification.setOutputDir(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_A)) {
+                        fusionSpecification.setFileA(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_B)) {
+                        fusionSpecification.setFileB(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_C)) {
+                        fusionSpecification.setFileC(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
                         fusionSpecification.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
