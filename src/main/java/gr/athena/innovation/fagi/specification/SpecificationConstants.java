@@ -16,6 +16,8 @@ public class SpecificationConstants {
                                     + "-spec requires the spec.xml file path\n"
                                     + "-rules requires the rules.xml file path\n";
     
+    public static final String EMPTY_OUTPUT_MESSAGE = "#This output should be empty.";
+    
     public static class Spec {
 
         public static final String RULES_XML = "rules.xml";
@@ -90,6 +92,15 @@ public class SpecificationConstants {
         public static final int ROUND_DECIMALS_5 = 5;
         public static final int ROUND_DECIMALS_3 = 3;
         public static final int ROUND_DECIMALS_2 = 2;
+        
+        public static final String COSINE = "cosine";
+        public static final String JACCARD = "jaccard";
+        public static final String LEVENSHTEIN = "levenshtein";
+        public static final String JARO = "jaro";
+        public static final String JARO_WINKLER = "jarowinkler";
+        public static final String SORTED_JARO_WINKLER = "sortedjarowinkler";
+        public static final String LCS = "longestcommonsubsequence";
+        public static final String GRAM_2 = "2Gram";
     
     }  
 

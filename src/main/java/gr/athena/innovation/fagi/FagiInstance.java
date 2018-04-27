@@ -55,11 +55,30 @@ public class FagiInstance {
     private final boolean train = false;
     private final boolean fuse = true;
 
+    /**
+     * FagiInstance Constructor. Expects absolute paths of specification XML and rules XML.
+     * 
+     * @param specXml
+     * @param rulesXml
+     */
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
         this.rulesXml = rulesXml;
     }
 
+    /**
+     *
+     * Initiates the fusion process. 
+     * 
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws ParseException
+     * @throws com.vividsolutions.jts.io.ParseException
+     * @throws WrongInputException
+     * @throws ApplicationException
+     * @throws org.json.simple.parser.ParseException
+     */
     public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
             com.vividsolutions.jts.io.ParseException, WrongInputException,
             ApplicationException, org.json.simple.parser.ParseException {

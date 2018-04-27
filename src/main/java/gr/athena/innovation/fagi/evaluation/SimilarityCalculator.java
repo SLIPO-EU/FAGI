@@ -15,6 +15,7 @@ import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -166,14 +167,14 @@ public class SimilarityCalculator {
 
             + " \n(b)"
             + " \nSimple normalization: " + basicA.getNormalized() + " <--> " + basicB.getNormalized()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "longestcommonsubsequence")
-            //+ " \n\tJaccard              :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "jaccard")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, "sortedjarowinkler")
+            + " \n\tLevenstein           :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.LEVENSHTEIN)
+            + " \n\t2Gram                :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.GRAM_2)
+            + " \n\tCosine               :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.COSINE)
+            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.LCS)
+            //+ " \n\tJaccard              :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.JACC)
+            + " \n\tJaro                 :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.JARO)
+            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.JARO_WINKLER)
+            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeBSimilarity(basicA, basicB, SpecificationConstants.Similarity.SORTED_JARO_WINKLER)
 
             + " \n(c)"
             + " \nCustom normalization full: " + normalizedPair.getCompleteA() + " <--> " + normalizedPair.getCompleteB()
@@ -181,24 +182,24 @@ public class SimilarityCalculator {
             + " \nMismatch: " + normalizedPair.mismatchToStringA() + " <--> " + normalizedPair.mismatchToStringB()
             + " \nSpecial terms: " + normalizedPair.specialTermsToStringA() + " <--> " + normalizedPair.specialTermsToStringB()
             + " \nCommon terms: " + normalizedPair.commonTermsToString()
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "longestcommonsubsequence")
-            //+ " \n\tJaccard              :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "jaccard")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeCSimilarity(normalizedPair, "sortedjarowinkler")                
+            + " \n\tLevenstein           :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.LEVENSHTEIN)
+            + " \n\t2Gram                :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.GRAM_2)
+            + " \n\tCosine               :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.COSINE)
+            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.LCS)
+            //+ " \n\tJaccard              :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JACC)
+            + " \n\tJaro                 :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO)
+            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO_WINKLER)
+            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.SORTED_JARO_WINKLER)                
 
             + " \n(d)"             
-            + " \n\tLevenstein           :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "levenshtein")
-            + " \n\t2Gram                :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "2Gram")
-            + " \n\tCosine               :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "cosine")
-            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "longestcommonsubsequence")
-            //+ " \n\tJaccard              :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "jaccard")
-            + " \n\tJaro                 :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "jaro")
-            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "jarowinkler")
-            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeDSimilarity(normalizedPair, "sortedjarowinkler")     
+            + " \n\tLevenstein           :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.LEVENSHTEIN)
+            + " \n\t2Gram                :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.GRAM_2)
+            + " \n\tCosine               :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.COSINE)
+            + " \n\tLongestCommonSubseq  :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.LCS)
+            //+ " \n\tJaccard              :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JACC)
+            + " \n\tJaro                 :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO)
+            + " \n\tJaroWinkler          :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO_WINKLER)
+            + " \n\tSortedJaroWinkler    :" + WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.SORTED_JARO_WINKLER)     
                 
             + " \n" + acceptance + "\n";
         return namesLine;

@@ -849,14 +849,14 @@ public class MetricProcessor {
         constructPrecisionMap(bJaroWinklerPrecisionMap, acceptance, bJaroWinkler);
         constructPrecisionMap(bSortedJaroWinklerPrecisionMap, acceptance, bSortedJaroWinkler);
                 
-        double cLeven = WeightedSimilarity.computeCSimilarity(normalizedPair, "levenshtein");
-        double cNGram = WeightedSimilarity.computeCSimilarity(normalizedPair, "2Gram");
-        double cCosine = WeightedSimilarity.computeCSimilarity(normalizedPair, "cosine");
-        double cLqs = WeightedSimilarity.computeCSimilarity(normalizedPair, "longestcommonsubsequence");
-        double cJaccard = WeightedSimilarity.computeCSimilarity(normalizedPair, "jaccard");
-        double cJaro = WeightedSimilarity.computeCSimilarity(normalizedPair, "jaro");
-        double cJaroWinkler = WeightedSimilarity.computeCSimilarity(normalizedPair, "jarowinkler");
-        double cSortedJaroWinkler = WeightedSimilarity.computeCSimilarity(normalizedPair, "sortedjarowinkler");
+        double cLeven = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.LEVENSHTEIN);
+        double cNGram = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.GRAM_2);
+        double cCosine = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.COSINE);
+        double cLqs = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.LCS);
+        double cJaccard = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JACCARD);
+        double cJaro = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO);
+        double cJaroWinkler = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO_WINKLER);
+        double cSortedJaroWinkler = WeightedSimilarity.computeCSimilarity(normalizedPair, SpecificationConstants.Similarity.SORTED_JARO_WINKLER);
         
         constructPrecisionMap(cLevenPrecisionMap, acceptance, cLeven);
         constructPrecisionMap(cNGramPrecisionMap, acceptance, cNGram);
@@ -867,14 +867,14 @@ public class MetricProcessor {
         constructPrecisionMap(cJaroWinklerPrecisionMap, acceptance, cJaroWinkler);
         constructPrecisionMap(cSortedJaroWinklerPrecisionMap, acceptance, cSortedJaroWinkler);
 
-        double dLeven = WeightedSimilarity.computeDSimilarity(normalizedPair, "levenshtein");
-        double dNGram = WeightedSimilarity.computeDSimilarity(normalizedPair, "2Gram");
-        double dCosine = WeightedSimilarity.computeDSimilarity(normalizedPair, "cosine");
-        double dLqs = WeightedSimilarity.computeDSimilarity(normalizedPair, "longestcommonsubsequence");
-        double dJaccard = WeightedSimilarity.computeDSimilarity(normalizedPair, "jaccard");
-        double dJaro = WeightedSimilarity.computeDSimilarity(normalizedPair, "jaro");
-        double dJaroWinkler = WeightedSimilarity.computeDSimilarity(normalizedPair, "jarowinkler");
-        double dSortedJaroWinkler = WeightedSimilarity.computeDSimilarity(normalizedPair, "sortedjarowinkler");
+        double dLeven = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.LEVENSHTEIN);
+        double dNGram = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.GRAM_2);
+        double dCosine = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.COSINE);
+        double dLqs = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.LCS);
+        double dJaccard = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JACCARD);
+        double dJaro = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO);
+        double dJaroWinkler = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.JARO_WINKLER);
+        double dSortedJaroWinkler = WeightedSimilarity.computeDSimilarity(normalizedPair, SpecificationConstants.Similarity.SORTED_JARO_WINKLER);
         
         constructPrecisionMap(dLevenPrecisionMap, acceptance, dLeven);
         constructPrecisionMap(dNGramPrecisionMap, acceptance, dNGram);

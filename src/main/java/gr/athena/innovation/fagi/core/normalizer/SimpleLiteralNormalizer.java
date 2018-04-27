@@ -2,7 +2,6 @@ package gr.athena.innovation.fagi.core.normalizer;
 
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.Locale;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Normalized the given literal with some basic steps. Namely, removes punctuation and transforms to lower case using
@@ -12,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
  */
 public class SimpleLiteralNormalizer implements INormalizer {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(BasicGenericNormalizer.class);
     private Locale locale = null;
 
     /**

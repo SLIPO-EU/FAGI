@@ -17,11 +17,13 @@ import java.util.Locale;
 import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * The class takes some more normalization steps on already normalized literals. 
+ * The advanced normalization process expects "normalizedLiteral" objects that have been already produced by 
+ * the basic normalization process.
+ * 
  * @author nkarag
  */
 public class AdvancedGenericNormalizer {

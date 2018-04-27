@@ -15,6 +15,7 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -56,7 +57,7 @@ public class Fuser implements IFuser{
     private int fusedPairsCount = 0;
 
     /**
-     * Fuses all links using the Rules from file.
+     * Fuses all links using the Rules defined in the XML file.
      * 
      * @param fusionSpec
      * @param ruleCatalog
@@ -126,8 +127,8 @@ public class Fuser implements IFuser{
     }
     
     /**
-     * Constructs the output result by creating a new graph to the specified output 
-     * or combining the fused entities into the source datasets.
+     * Produces the output result by creating a new graph to the specified output 
+     * or combines the fused entities with the source datasets based on the fusion mode.
      * 
      * @param fusionSpecification
      * @param fusedEntities
@@ -145,11 +146,14 @@ public class Fuser implements IFuser{
         OutputStream outputStreamA = new FileOutputStream(outputPathA, false);
         OutputStream outputStreamB = new FileOutputStream(outputPathB, false);
         OutputStream outputStreamC = new FileOutputStream(outputPathC, false);
+        
+        EnumOutputMode mode = fusionSpecification.getOutputMode();
 
-        switch(fusionSpecification.getOutputMode()) {
+        switch(mode) {
             case AA_MODE:
             {
-                logger.info("AA_MODE, writing to " + outputPathA);
+                logger.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + outputPathA);
+                
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -159,12 +163,15 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());                
+                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                addMessageToEmptyOutput(outputPathB);
+                addMessageToEmptyOutput(outputPathC);
                 break;
             }
             case BB_MODE:
             {
-                logger.info("BB_MODE, writing to " + outputPathB);
+                logger.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + outputPathB);
+
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 for(LinkedPair p : fusedEntities){
@@ -173,12 +180,16 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());              
+                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
+                addMessageToEmptyOutput(outputPathA);
+                addMessageToEmptyOutput(outputPathC);
+                
                 break;
             }
             case L_MODE:
             {
-                logger.info("L_MODE, writing to " + outputPathC);
+                logger.info(EnumOutputMode.L_MODE + ": Output result will be written to " + outputPathC);
+                
                 Model newModel = ModelFactory.createDefaultModel();
                 
                 for(LinkedPair pair : fusedEntities){
@@ -187,12 +198,15 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat());              
+                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat()); 
+                addMessageToEmptyOutput(outputPathA);
+                addMessageToEmptyOutput(outputPathB);
+                
                 break; 
             }
             case AB_MODE:
             {
-                logger.info("AB_MODE, writing to " + outputPathA);
+                logger.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + outputPathA);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 Set<String> leftLocalNames = new HashSet<>();
@@ -202,18 +216,21 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                     String localName = pair.getLeftNode().getLocalName();
                     leftLocalNames.add(localName);                    
-                    
+
                 }
 
                 leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
                 
                 addUnlinkedTriples(outputPathA, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
+                
+                addMessageToEmptyOutput(outputPathB);
+                addMessageToEmptyOutput(outputPathC);
 
                 break;
             }
             case BA_MODE:
             {
-                logger.info("AB_MODE, writing to " + outputPathB);
+                logger.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + outputPathB);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
@@ -230,13 +247,18 @@ public class Fuser implements IFuser{
 
                 addUnlinkedTriples(outputPathB, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
                 
+                addMessageToEmptyOutput(outputPathA);
+                addMessageToEmptyOutput(outputPathC);
+
                 break;
             }
             case A_MODE:
             {
-                logger.info("A_MODE, writing to " + outputPathA + ". Excluding unlinked entities from " + outputPathB);
-                Model leftModel = LeftDataset.getLeftDataset().getModel();
+                logger.info(EnumOutputMode.A_MODE + ": Output results will be written to " + outputPathA 
+                        + " and " + outputPathB + ". Unlinked entities will be excluded from B.");
                 
+                Model leftModel = LeftDataset.getLeftDataset().getModel();
+
                 Set<String> rightLocalNames = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
 
@@ -251,11 +273,15 @@ public class Fuser implements IFuser{
                 
                 removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, outputPathB);
 
+                addMessageToEmptyOutput(outputPathC);
+
                 break;
             }
             case B_MODE:
             {
-                logger.info("B_MODE, writing to " + outputPathB + ". Excluding unlinked entities from " + outputPathA);
+                logger.info(EnumOutputMode.B_MODE + ": Output results will be written to " + outputPathB 
+                        + " and " + outputPathA + ". Unlinked entities will be excluded from A.");
+                
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
                 Set<String> leftLocalNames = new HashSet<>();
@@ -269,8 +295,10 @@ public class Fuser implements IFuser{
                 }
 
                 rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
-                
+
                 removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, outputPathA);
+
+                addMessageToEmptyOutput(outputPathC);
 
                 break;
             }
@@ -433,5 +461,11 @@ public class Fuser implements IFuser{
         }
 
         return res;
+    }
+    
+    private void addMessageToEmptyOutput(String outputPath) throws IOException{
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, false))) {
+            bufferedWriter.append(SpecificationConstants.EMPTY_OUTPUT_MESSAGE);
+        }          
     }
 }

@@ -92,30 +92,30 @@ public class SpecificationParser {
             }
 
             switch (similarityText.toUpperCase()) {
-                case "":
                 case "SORTEDJAROWINKLER":
-                    similarity = "sortedjarowinkler";
+                    similarity = SpecificationConstants.Similarity.SORTED_JARO_WINKLER;
                     break;
                 case "JAROWINKLER":
-                    similarity = "jarowinkler";
+                    similarity = SpecificationConstants.Similarity.JARO_WINKLER;
                     break;                    
                 case "COSINE":
-                    similarity = "cosine";
+                    similarity = SpecificationConstants.Similarity.COSINE;
                     break;                       
                 case "LEVENSHTEIN":
-                    similarity = "levenshtein";
+                    similarity = SpecificationConstants.Similarity.LEVENSHTEIN;
                     break;  
                 case "JARO":
-                    similarity = "jaro";
+                    similarity = SpecificationConstants.Similarity.JARO;
                     break;  
                 case "2GRAM":
-                    similarity = "2Gram";
+                    similarity = SpecificationConstants.Similarity.GRAM_2;
                     break;  
                 case "LONGESTCOMMONSUBSEQUENCE":
-                    similarity = "longestcommonsubsequence";
-                    break;                    
+                    similarity = SpecificationConstants.Similarity.LCS;
+                    break;  
+                case "":
                 default:
-                    similarity = "jarowinkler";
+                    similarity = SpecificationConstants.Similarity.JARO_WINKLER;
             }
 
             fusionSpecification.setSimilarity(similarity);

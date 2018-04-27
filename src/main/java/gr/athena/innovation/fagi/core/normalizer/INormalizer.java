@@ -1,14 +1,14 @@
 package gr.athena.innovation.fagi.core.normalizer;
 
 /**
- * Interface for a transformation
+ * Interface for a normalization class.
  * 
  * @author nkarag
  */
 public interface INormalizer {
 
     /**
-     * Returns the name of the transformation.
+     * Returns the name of the normalizer.
      * 
      * @return the name of the transformation as a String
      */

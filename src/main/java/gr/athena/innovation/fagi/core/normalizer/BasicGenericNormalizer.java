@@ -12,15 +12,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * The class provides methods for some basic normalization on String literals.
+ * 
  * @author nkarag
  */
 public class BasicGenericNormalizer implements INormalizer {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(BasicGenericNormalizer.class);
     private Locale locale = null;
     
     /**
