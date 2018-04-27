@@ -72,6 +72,8 @@ Specifically:
 
 `fileC`: Optional tag. Specifies the output filepath of the fused dataset (`l_mode` only). If no value is specified the default name will be "outputC.nt" under the output directory defined above.
 
+`ambiguous`: Optional tag. Specifies the output filepath of the dataset containing ambiguous linked entities. If no value is specified the default name will be "ambiguous.nt" under the output directory defined above.
+
 `stats`: Optional tag. Specifies the path of the statistics file. By default a file with name "stats.txt" will be written under the output directory defined above.
 
 | Mode        | Description     

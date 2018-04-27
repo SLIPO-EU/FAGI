@@ -1,14 +1,16 @@
 package gr.athena.innovation.fagi.specification;
 
+import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Dataset enumeration class.
+ * 
  * @author nkarag
  */
 public enum EnumDataset {
-    DEFAULT(0), LEFT(1), RIGHT(2), NEW(3);
+    LEFT(0), RIGHT(1);
     
 	private final int value;
 
@@ -29,28 +31,25 @@ public enum EnumDataset {
     
 	public static EnumDataset fromInteger(int value) {
 		EnumDataset type = intToTypeMap.get(value);
-		if (type == null)
-			return EnumDataset.DEFAULT;
+
 		return type;
 	}
 
-	public static EnumDataset fromString(String value) {
+	public static EnumDataset fromString(String value) throws WrongInputException {
 		for (EnumDataset item : EnumDataset.values()) {
 			if (item.toString().equalsIgnoreCase(value)) {
 				return item;
 			}
 		}
-		return EnumDataset.DEFAULT;
+		throw new WrongInputException("Wrong input for dataset. " + value);
 	}
     
     @Override
     public String toString() {
         switch(this) {
-            case DEFAULT: return "default";
             case LEFT: return "left";
             case RIGHT: return "right";
-            case NEW: return "new";
-            default: return "new";
+            default: return "default";
         }
     }    
 }

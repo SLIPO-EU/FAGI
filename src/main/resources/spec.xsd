@@ -119,6 +119,7 @@
 			  <xs:element name="fileA" type="xs:anyURI"/>
 			  <xs:element name="fileB" type="xs:anyURI"/>
 			  <xs:element name="fileC" type="xs:anyURI"/>
+			  <xs:element name="ambiguous" type="xs:anyURI"/>
 			  <xs:element name="stats" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>

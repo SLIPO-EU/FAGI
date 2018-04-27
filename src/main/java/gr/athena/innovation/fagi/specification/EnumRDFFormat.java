@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Enumeration of RDF formats. 
+ * 
  * @author nkarag
  */
 public enum EnumRDFFormat {

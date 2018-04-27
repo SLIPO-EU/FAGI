@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -15,13 +16,21 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Class for parsing the specification XML. 
+ * 
  * @author nkarag
  */
 public class SpecificationParser {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SpecificationParser.class);
 
+    /**
+     * Parses the specification XML and produces a FusionSpecification object.
+     * 
+     * @param fusionSpecificationPath
+     * @return the fusion specification object.
+     * @throws WrongInputException
+     */
     public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException {
 
         logger.info("Parsing Fusion Specification: " + fusionSpecificationPath);
@@ -127,12 +136,14 @@ public class SpecificationParser {
                 Node n = leftChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
                         fusionSpecification.setPathDatasetA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                        if(!StringUtils.isBlank(n.getTextContent())){
+                            throw new UnsupportedOperationException("Endpoints are not supported yet.");
+                        }
                         fusionSpecification.setEndpointA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesA(n.getTextContent());
@@ -155,6 +166,9 @@ public class SpecificationParser {
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                        if(!StringUtils.isBlank(n.getTextContent())){
+                            throw new UnsupportedOperationException("Endpoints are not supported yet.");
+                        }                        
                         fusionSpecification.setEndpointB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesB(n.getTextContent());
@@ -177,6 +191,9 @@ public class SpecificationParser {
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdLinks(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                        if(!StringUtils.isBlank(n.getTextContent())){
+                            throw new UnsupportedOperationException("Endpoints are not supported yet.");
+                        }                        
                         fusionSpecification.setEndpointLinks(n.getTextContent());
                     }
                 }
@@ -199,11 +216,18 @@ public class SpecificationParser {
                         fusionSpecification.setFileB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_C)) {
                         fusionSpecification.setFileC(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.AMBIGUOUS)) {
+                        fusionSpecification.setAmbiguousDatasetFilepath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.STATS_FILEPATH)) {
+                        fusionSpecification.setStatsFilepath(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
                         fusionSpecification.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
                         fusionSpecification.setIdOutput(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                        if(!StringUtils.isBlank(n.getTextContent())){
+                            throw new UnsupportedOperationException("Endpoints are not supported yet.");
+                        }                        
                         fusionSpecification.setEndpointOutput(n.getTextContent());
                     }
                 }

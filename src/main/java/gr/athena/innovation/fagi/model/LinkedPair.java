@@ -374,7 +374,6 @@ public class LinkedPair {
         Model fusedModel = fusedEntityData.getModel();
 
         switch (validationAction) {
-
             case ACCEPT:
                 //do nothing
                 break;
@@ -382,7 +381,7 @@ public class LinkedPair {
 
                 //removes link from the list and from the model also.
                 LinksModel.getLinksModel().removeLink(link);
-                
+
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
                 }
@@ -393,7 +392,8 @@ public class LinkedPair {
                 return; //stop link fusion
             }
             case ACCEPT_MARK_AMBIGUOUS: {
-                Statement statement = getAmbiguousLinkStatement();
+                //todo, add to ambiguous dataset.
+                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
@@ -406,14 +406,14 @@ public class LinkedPair {
                 break;
             }
             case REJECT_MARK_AMBIGUOUS: {
-
+                //todo, add to ambiguous dataset.
                 LinksModel.getLinksModel().removeLink(link);
-                
+
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
                 }
 
-                Statement statement = getAmbiguousLinkStatement();
+                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
 
                 fusedModel.add(statement);
                 fusedEntityData.setModel(fusedModel);
@@ -742,23 +742,37 @@ public class LinkedPair {
         return model.isEmpty() || model.size() == 1;
     }
 
-    private Statement getAmbiguousLinkStatement() {
+//    private Statement getAmbiguousLinkStatement() {
+//
+//        String fusedURI = fusedEntity.getResourceURI();
+//
+//        Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
+//
+//        String leftLocalName = leftNode.getLocalName();
+//        String rightLocalName = rightNode.getLocalName();
+//
+//        String resourceString = Namespace.SLIPO_PREFIX + leftLocalName + "_" + rightLocalName;
+//        Resource resource = ResourceFactory.createResource(resourceString);
+//
+//        Statement statement = ResourceFactory.createStatement(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource);
+//
+//        return statement;
+//    }
 
-        String fusedURI = fusedEntity.getResourceURI();
+    private Statement getAmbiguousLinkStatement(String uri1, String uri2) {
 
-        Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
+        //String fusedURI = fusedEntity.getResourceURI();
 
-        String leftLocalName = leftNode.getLocalName();
-        String rightLocalName = rightNode.getLocalName();
+        Property ambiguousLink = ResourceFactory.createProperty(Namespace.LINKED_AMBIGUOUSLY);
 
-        String resourceString = Namespace.SLIPO_PREFIX + leftLocalName + "_" + rightLocalName;
-        Resource resource = ResourceFactory.createResource(resourceString);
+        Resource resource1 = ResourceFactory.createResource(uri1);
+        Resource resource2 = ResourceFactory.createResource(uri2);
 
-        Statement statement = ResourceFactory.createStatement(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource);
+        Statement statement = ResourceFactory.createStatement(resource1, ambiguousLink, resource2);
 
         return statement;
     }
-
+    
     private void resolveModeURIs(Entity entity1, Entity entity2) {
         EnumOutputMode mode = FusionSpecification.getInstance().getOutputMode();
         switch (mode) {

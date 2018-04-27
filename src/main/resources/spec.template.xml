@@ -28,6 +28,7 @@
 		<fileA></fileA>
 		<fileB></fileB>
 		<fileC></fileC>
+		<ambiguous></ambiguous>
 		<stats></stats>
 	</target>
 </specification>

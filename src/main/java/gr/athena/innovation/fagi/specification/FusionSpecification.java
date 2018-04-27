@@ -32,14 +32,13 @@ public class FusionSpecification {
     private String fileA;
     private String fileB;
     private String fileC;
-    private String resourceUri;
+    private String ambiguousDatasetFilepath;
     private String idOutput;
     private String endpointOutput;
     
     private String categoriesA;
     private String categoriesB;
 
-    private EnumDataset finalDataset;
     private EnumOutputMode outputMode;
     private String outputRDFFormat;
     private String inputRDFFormat;
@@ -129,14 +128,6 @@ public class FusionSpecification {
         }
     }
 
-    public EnumDataset getFinalDataset() {
-        return finalDataset;
-    }
-
-    public void setFinalDataset(EnumDataset finalDataset) {
-        this.finalDataset = finalDataset;
-    }
-
     public String getIdA() {
         return idA;
     }
@@ -199,14 +190,6 @@ public class FusionSpecification {
 
     public void setEndpointOutput(String endpointOutput) {
         this.endpointOutput = endpointOutput;
-    }
-    
-    public String getResourceUri() {
-        return resourceUri;
-    }
-
-    public void setResourceUri(String resourceUri) {
-        this.resourceUri = resourceUri;
     }
 
     public Locale getLocale() {
@@ -325,7 +308,7 @@ public class FusionSpecification {
             this.fileC = fileC;
         }
     }
-    
+
     public String getStatsFilepath() {
         return statsFilepath;
     }
@@ -337,39 +320,57 @@ public class FusionSpecification {
                         + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
-            
-            this.statsFilepath = outputDir + "stats.txt";
+
+            this.statsFilepath = outputDir + SpecificationConstants.Spec.DEFAULT_STATS_FILENAME;
         } else {
             this.statsFilepath = statsFilepath;
         }
     }
-    
+
+    public String getAmbiguousDatasetFilepath() {
+        return ambiguousDatasetFilepath;
+    }
+
+    public void setAmbiguousDatasetFilepath(String ambiguousDatasetFilepath) throws WrongInputException {
+        if(StringUtils.isBlank(ambiguousDatasetFilepath)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.AMBIGUOUS
+                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
+            }
+            
+            this.ambiguousDatasetFilepath = outputDir + SpecificationConstants.Spec.DEFAULT_AMBIGUOUS_FILENAME;
+        } else {
+            this.ambiguousDatasetFilepath = ambiguousDatasetFilepath;
+        }
+    }
+
     @Override
     public String toString() {
-        return "FusionSpecification{" + 
+        return "\nFusionSpecification{" + 
                     "\n idA=" + idA + 
-                    "\n endpointA=" + endpointA + 
+                    //"\n endpointA=" + endpointA + 
                     "\n pathA=" + pathDatasetA + 
-                    "\n pathB=" + pathDatasetB + 
+                    "\n categoriesA=" + categoriesA +
+                    "\n\n pathB=" + pathDatasetB + 
                     "\n idB=" + idB + 
-                    "\n endpointB=" + endpointB + 
-                    "\n pathLinks=" + pathLinks + 
+                    //"\n endpointB=" + endpointB + 
+                    "\n categoriesB=" + categoriesB +
+                    "\n\n pathLinks=" + pathLinks + 
                     "\n idLinks=" + idLinks + 
-                    "\n endpointLinks=" + endpointLinks + 
-                    "\n outputMode=" + outputMode +
+                    //"\n endpointLinks=" + endpointLinks + 
+                    "\n\n outputMode=" + outputMode +
                     "\n outputDir=" + outputDir +
+                    "\n fileA=" + fileA +
+                    "\n fileB=" + fileB +
+                    "\n fileC=" + fileC +
+                    "\n ambiguous=" + ambiguousDatasetFilepath +
                     "\n stats=" + statsFilepath +
-                    "\n resourceUri=" + resourceUri +
-                    "\n finalDataset=" + finalDataset + 
-                    "\n outputRDFFormat=" + outputRDFFormat + 
+                    "\n\n outputRDFFormat=" + outputRDFFormat + 
                     "\n inputRDFFormat=" + inputRDFFormat + 
                     "\n locale=" + locale +
-                    "\n categoriesA=" + categoriesA +
-                    "\n categoriesB=" + categoriesB +
                     "\n similarity=" + similarity +
                     "\n optionalDepth=" + optionalDepth + 
-                    "\n maxOptionalDepth=" + maxOptionalDepth + 
-                    "\n minOptionalDepth=" + minOptionalDepth + 
                     "\n}";
     }
 }

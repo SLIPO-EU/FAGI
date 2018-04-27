@@ -79,10 +79,10 @@ public class Fuser implements IFuser{
         EnumOutputMode mode = fusionSpec.getOutputMode();
 
         for (Link link : links.getLinks()){
-   
+
             LinkedPair linkedPair = new LinkedPair();
             linkedPair.setLink(link);
-            
+
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
@@ -96,29 +96,31 @@ public class Fuser implements IFuser{
             String leftLocalName = link.getLocalNameA();
             String rightURI = link.getNodeB();
             String rightLocalName = link.getLocalNameB();
-            
+
             Entity entityA = constructEntity(modelA, leftURI, leftLocalName);
             Entity entityB = constructEntity(modelB, rightURI, rightLocalName);
 
             linkedPair.setLeftNode(entityA);
             linkedPair.setRightNode(entityB);
 
+            /* VALIDATION */
             EnumValidationAction validation = linkedPair.validateLink(ruleCatalog.getValidationRules(), functionMap);
 
             Entity newFusedEntity = new Entity();
 
             String targetURI = resolveURI(mode, leftURI, rightURI);
             String targetLocalName = resolveLocalName(mode, leftLocalName, rightLocalName);
-            
+
             newFusedEntity.setResourceURI(targetURI);
             newFusedEntity.setLocalName(targetLocalName);
 
             linkedPair.setFusedEntity(newFusedEntity);
-            
+
+            /* FUSION */
             linkedPair.fusePair(ruleCatalog, functionMap, validation);
-            
+
             fusedList.add(linkedPair);
-            
+
             fusedPairsCount++;
         }
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
@@ -164,8 +166,10 @@ public class Fuser implements IFuser{
                 }
 
                 leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                
                 addMessageToEmptyOutput(outputPathB);
                 addMessageToEmptyOutput(outputPathC);
+                
                 break;
             }
             case BB_MODE:
@@ -181,6 +185,7 @@ public class Fuser implements IFuser{
                 }
 
                 rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
+                
                 addMessageToEmptyOutput(outputPathA);
                 addMessageToEmptyOutput(outputPathC);
                 
@@ -198,7 +203,8 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat()); 
+                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat());
+
                 addMessageToEmptyOutput(outputPathA);
                 addMessageToEmptyOutput(outputPathB);
                 

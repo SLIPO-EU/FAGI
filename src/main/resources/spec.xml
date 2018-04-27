@@ -7,32 +7,28 @@
 	<left>
 		<id>OSM</id>
 		<endpoint></endpoint>
-		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/osm.nt</file>
+		<file>src/main/resources/single_synthetic/osm.nt</file>
 		<categories></categories>
 	</left>
 	<right>
 		<id>WIKIMAPIA</id>
 		<endpoint></endpoint>
-		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/wikimapia.nt</file>
+		<file>src/main/resources/single_synthetic/wikimapia.nt</file>
 		<categories></categories>
 	</right>
 	<links>
 		<id>LINKS_OSM_WIKIMAPIA</id>
 		<endpoint></endpoint>
-		<file>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/single_synthetic/link.nt</file>
+		<file>src/main/resources/single_synthetic/link.nt</file>
 	</links>	
 	<target>
 		<id>FUSED_OSM_WIKIMAPIA</id>
 		<mode>L_MODE</mode>
-		<outputDir>/home/nkarag/SLIPO/FAGI-gis/src/main/resources/output/</outputDir>
+		<outputDir>src/main/resources/output/</outputDir>
 		<fileA></fileA>
 		<fileB></fileB>
 		<fileC></fileC>
+		<ambiguous></ambiguous>
 		<stats></stats>
 	</target>
 </specification>
-
-
-
-
-

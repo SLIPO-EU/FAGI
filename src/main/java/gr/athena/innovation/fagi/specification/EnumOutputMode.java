@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * Fused dataset modes.
+ * Fused dataset mode enumeration.
  * 
  * AA_MODE: Only linked triples are handled:
  * Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A).
