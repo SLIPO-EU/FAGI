@@ -17,6 +17,7 @@ import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
+import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.Namespace;
@@ -179,7 +180,7 @@ public class LinkedPair {
                 actionRuleCount++;
 
                 if (isActionRuleToBeApplied) {
-                    logger.trace("Condition : " + condition + " evaluated true. Validating link with: " + validationAction);
+                    logger.debug("Condition : " + condition + " evaluated true. Validating link with: " + validationAction);
 
                     validation = validationAction;
 
@@ -190,7 +191,12 @@ public class LinkedPair {
 
             //No action rule applied. Use default Action (accept)
             if (actionRuleToApply == false) {
+                
                 EnumValidationAction defaultAction = validationRule.getDefaultValidationAction();
+                
+                logger.debug("All conditions evaluated to false in validation. Using default validation action: " 
+                        + defaultAction);
+                
                 validation = defaultAction;
             }
         }
@@ -300,8 +306,9 @@ public class LinkedPair {
                 actionRuleCount++;
 
                 if (isActionRuleToBeApplied) {
-                    logger.trace("Replacing in model: " + literalA + " <--> " + literalB + " using " + fusionAction);
-
+                    logger.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
+                    logger.debug("Literals to be fused: " + literalA + " <--> " + literalB);
+                    
                     fuseRuleAction(fusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
 
                     actionRuleToApply = true;
@@ -311,6 +318,8 @@ public class LinkedPair {
 
             //No action rule applied. Use default Action
             if (actionRuleToApply == false) {
+                logger.debug("All conditions evaluated to false in fusion rule. Using default fusion action: " 
+                        + defaultFusionAction);                
                 fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
             }
         }
@@ -372,11 +381,30 @@ public class LinkedPair {
         EntityData fusedEntityData = fusedEntity.getEntityData();
 
         Model fusedModel = fusedEntityData.getModel();
+        Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
         switch (validationAction) {
             case ACCEPT:
                 //do nothing
                 break;
+            case ACCEPT_MARK_AMBIGUOUS: {
+
+                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
+
+                if (isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                ambiguousModel.add(statement);
+                ambiguousModel.add(leftNode.getEntityData().getModel());
+                ambiguousModel.add(rightNode.getEntityData().getModel());
+
+                fusedModel.add(statement);
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            }                
             case REJECT: {
 
                 //removes link from the list and from the model also.
@@ -391,34 +419,33 @@ public class LinkedPair {
 
                 return; //stop link fusion
             }
-            case ACCEPT_MARK_AMBIGUOUS: {
-                //todo, add to ambiguous dataset.
-                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
-
-                if (isRejectedByPreviousRule(fusedModel)) {
-                    break;
-                }
-
-                fusedModel.add(statement);
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);
-
-                break;
-            }
             case REJECT_MARK_AMBIGUOUS: {
-                //todo, add to ambiguous dataset.
+                
                 LinksModel.getLinksModel().removeLink(link);
 
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
                 }
 
+                EnumDataset dataset = resolveRejectedEntityModel();
+
+                switch(dataset){
+                    case LEFT:
+                        ambiguousModel.add(leftNode.getEntityData().getModel());
+                        break;
+                    case RIGHT:
+                        ambiguousModel.add(rightNode.getEntityData().getModel());
+                        break;                        
+                }
+                
                 Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
+
+                ambiguousModel.add(statement);
 
                 fusedModel.add(statement);
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
-
+                
                 return; //stop link fusion
             }
         }
@@ -742,26 +769,7 @@ public class LinkedPair {
         return model.isEmpty() || model.size() == 1;
     }
 
-//    private Statement getAmbiguousLinkStatement() {
-//
-//        String fusedURI = fusedEntity.getResourceURI();
-//
-//        Property ambiguousProperty = ResourceFactory.createProperty(Namespace.AMBIGUOUS_LINK_PROPERTY);
-//
-//        String leftLocalName = leftNode.getLocalName();
-//        String rightLocalName = rightNode.getLocalName();
-//
-//        String resourceString = Namespace.SLIPO_PREFIX + leftLocalName + "_" + rightLocalName;
-//        Resource resource = ResourceFactory.createResource(resourceString);
-//
-//        Statement statement = ResourceFactory.createStatement(ResourceFactory.createResource(fusedURI), ambiguousProperty, resource);
-//
-//        return statement;
-//    }
-
     private Statement getAmbiguousLinkStatement(String uri1, String uri2) {
-
-        //String fusedURI = fusedEntity.getResourceURI();
 
         Property ambiguousLink = ResourceFactory.createProperty(Namespace.LINKED_AMBIGUOUSLY);
 
@@ -781,7 +789,7 @@ public class LinkedPair {
             case A_MODE:
             case L_MODE:
                 renameResourceURIs(entity2, entity1);
-                break;                
+                break;
             case BB_MODE:
             case BA_MODE:
             case B_MODE:
@@ -790,25 +798,46 @@ public class LinkedPair {
         }
     }
 
+    private EnumDataset resolveRejectedEntityModel() {
+        EnumOutputMode mode = FusionSpecification.getInstance().getOutputMode();
+        switch (mode) {
+            case AA_MODE:
+            case AB_MODE:
+            case A_MODE:
+            case L_MODE:
+                return EnumDataset.RIGHT;
+            case BB_MODE:
+            case BA_MODE:
+            case B_MODE:
+                return EnumDataset.LEFT;
+            default:
+                throw new ApplicationException("Wrong output mode: " + mode);
+        }
+    }
+    
     private void renameResourceURIs(Entity entity1, Entity entity2) {
         Model rightEntityModel = entity1.getEntityData().getModel();
-        Resource resource = rightEntityModel.getResource(entity1.getResourceURI());
+        
+        String entity2ResourceUri = entity2.getResourceURI();
+        
+        Resource resource1 = rightEntityModel.getResource(entity1.getResourceURI());
+        ResourceUtils.renameResource(resource1, entity2ResourceUri);
 
         List<Statement> list = rightEntityModel.listStatements().toList();
-        Iterator<Statement> stms = list.iterator();
-        while (stms.hasNext()) {
-            Statement st = stms.next();
-            Resource res = st.getSubject();
-            Property pred = st.getPredicate();
-            RDFNode obj = st.getObject();
-            ResourceUtils.renameResource(res, entity2.getResourceURI());
-            if (pred.isURIResource()) {
-                ResourceUtils.renameResource(pred, entity2.getResourceURI());
+        Iterator<Statement> statementIterator = list.iterator();
+        
+        while (statementIterator.hasNext()) {
+            Statement statement = statementIterator.next();
+            Resource subject = statement.getSubject();
+            Property predicate = statement.getPredicate();
+            RDFNode object = statement.getObject();
+            ResourceUtils.renameResource(subject, entity2ResourceUri);
+            if (predicate.isURIResource()) {
+                ResourceUtils.renameResource(predicate, entity2ResourceUri);
             }
-            if (obj.isURIResource()) {
-                ResourceUtils.renameResource(obj.asResource(), entity2.getResourceURI());
+            if (object.isURIResource()) {
+                ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
             }
         }
-        ResourceUtils.renameResource(resource, entity2.getResourceURI());
     }
 }

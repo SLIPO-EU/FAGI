@@ -50,7 +50,27 @@ public class SpecificationParser {
             fusionSpecification.setInputRDFFormat(inputFormat);
 
             NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.OUTPUT_FORMAT);
-            String outputFormat = outputNodeList.item(0).getTextContent();
+            String outputFormatString = outputNodeList.item(0).getTextContent();
+
+            String outputFormat;
+            //for future use. Only NT is supported.
+            switch (outputFormatString) {
+                case "":
+                case "TTL":
+                case "RDF":
+                case "OWL":
+                case "JSONLD":
+                case "RJ":
+                case "TRIG":    
+                case "TRIX":
+                case "NQ":
+                case "NT":
+                    outputFormat = "NT";
+                    break;
+                default:
+                    outputFormat = "NT";
+            }            
+
             fusionSpecification.setOutputRDFFormat(outputFormat);
 
             NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LOCALE);

@@ -254,5 +254,4 @@ A sample rules.xml file could look like this:
 | keep-left | Both | Keeps the value of the left source entity in the fused model.
 | keep-right | Both | Keeps the value of the right source entity in the fused model.
 | keep-both | Both | Keeps both values of the source entities in the fused model.
-| reject-link | Both | Rejects the link. No data will be passed or affected in the target dataset for this link.
 

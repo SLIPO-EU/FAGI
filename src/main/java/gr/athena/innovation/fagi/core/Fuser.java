@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.model.AmbiguousDataset;
 import gr.athena.innovation.fagi.rule.RuleCatalog;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.specification.FusionSpecification;
@@ -123,6 +124,7 @@ public class Fuser implements IFuser{
 
             fusedPairsCount++;
         }
+        
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
         
         return fusedList;
@@ -144,32 +146,35 @@ public class Fuser implements IFuser{
         String outputPathA = fusionSpecification.getFileA();
         String outputPathB = fusionSpecification.getFileB();
         String outputPathC = fusionSpecification.getFileC();
+        String outputPathAmbiguous = fusionSpecification.getAmbiguousDatasetFilepath();
 
         OutputStream outputStreamA = new FileOutputStream(outputPathA, false);
         OutputStream outputStreamB = new FileOutputStream(outputPathB, false);
         OutputStream outputStreamC = new FileOutputStream(outputPathC, false);
-        
+
+        OutputStream outputStreamAmbiguous = new FileOutputStream(outputPathAmbiguous, false);
+
         EnumOutputMode mode = fusionSpecification.getOutputMode();
 
         switch(mode) {
             case AA_MODE:
             {
                 logger.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + outputPathA);
-                
+
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
-                
+
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
-                    
+
                     leftModel.add(fusedDataModel);
                 }
 
                 leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
-                
+
                 addMessageToEmptyOutput(outputPathB);
                 addMessageToEmptyOutput(outputPathC);
-                
+
                 break;
             }
             case BB_MODE:
@@ -177,7 +182,7 @@ public class Fuser implements IFuser{
                 logger.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + outputPathB);
 
                 Model rightModel = RightDataset.getRightDataset().getModel();
-                
+
                 for(LinkedPair p : fusedEntities){
 
                     Model fusedModel = p.getFusedEntity().getEntityData().getModel();
@@ -185,18 +190,18 @@ public class Fuser implements IFuser{
                 }
 
                 rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
-                
+
                 addMessageToEmptyOutput(outputPathA);
                 addMessageToEmptyOutput(outputPathC);
-                
+
                 break;
             }
             case L_MODE:
             {
                 logger.info(EnumOutputMode.L_MODE + ": Output result will be written to " + outputPathC);
-                
+
                 Model newModel = ModelFactory.createDefaultModel();
-                
+
                 for(LinkedPair pair : fusedEntities){
 
                     Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
@@ -207,7 +212,7 @@ public class Fuser implements IFuser{
 
                 addMessageToEmptyOutput(outputPathA);
                 addMessageToEmptyOutput(outputPathB);
-                
+
                 break; 
             }
             case AB_MODE:
@@ -310,6 +315,14 @@ public class Fuser implements IFuser{
             }
             default:
                 throw new UnsupportedOperationException("Wrong Output mode!");               
+        }
+        
+        Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
+        
+        if(ambiguousModel.isEmpty()){
+            addMessageToEmptyOutput(outputPathAmbiguous);
+        } else {
+            ambiguousModel.write(outputStreamAmbiguous, fusionSpecification.getOutputRDFFormat());
         }
     }
     
