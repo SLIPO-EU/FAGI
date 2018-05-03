@@ -29,9 +29,8 @@ public class FusionSpecification {
     private String endpointLinks;
     private String outputDir;
     private String statsFilepath;
-    private String fileA;
-    private String fileB;
-    private String fileC;
+    private String fused;
+    private String remaining;
     private String ambiguousDatasetFilepath;
     private String idOutput;
     private String endpointOutput;
@@ -255,57 +254,39 @@ public class FusionSpecification {
         
     }
     
-    public String getFileA() {
-        return fileA;
+    public String getFused() {
+        return fused;
     }
 
-    public void setFileA(String fileA) throws WrongInputException {
-        if(StringUtils.isBlank(fileA)){
+    public void setFused(String fused) throws WrongInputException {
+        if(StringUtils.isBlank(fused)){
             if(StringUtils.isBlank(outputDir)){
-                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_A 
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.FUSED 
                         + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
             
-            this.fileA = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_A;
+            this.fused = outputDir + SpecificationConstants.Spec.DEFAULT_FUSED_FILENAME;
         } else {
-            this.fileA = fileA;
+            this.fused = fused;
         }
     }
 
-    public String getFileB() {
-        return fileB;
+    public String getRemaining() {
+        return remaining;
     }
 
-    public void setFileB(String fileB) throws WrongInputException {
-        if(StringUtils.isBlank(fileB)){
+    public void setRemaining(String remaining) throws WrongInputException {
+        if(StringUtils.isBlank(remaining)){
             if(StringUtils.isBlank(outputDir)){
-                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_B 
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.REMAINING 
                         + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
             
-            this.fileB = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_B;
+            this.remaining = outputDir + SpecificationConstants.Spec.DEFAULT_REMAINING_FILENAME;
         } else {
-            this.fileB = fileB;
-        }
-    }
-
-    public String getFileC() {
-        return fileC;
-    }
-
-    public void setFileC(String fileC) throws WrongInputException {
-        if(StringUtils.isBlank(fileC)){
-            if(StringUtils.isBlank(outputDir)){
-                throw new WrongInputException("Define " + SpecificationConstants.Spec.FILE_C
-                        + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
-                        + " tag in " + SpecificationConstants.Spec.SPEC_XML);
-            }
-            
-            this.fileC = outputDir + SpecificationConstants.Spec.DEFAULT_FILENAME_C;
-        } else {
-            this.fileC = fileC;
+            this.remaining = remaining;
         }
     }
 
@@ -316,7 +297,7 @@ public class FusionSpecification {
     public void setStatsFilepath(String statsFilepath) throws WrongInputException {
         if(StringUtils.isBlank(statsFilepath)){
             if(StringUtils.isBlank(outputDir)){
-                throw new WrongInputException("Define " + SpecificationConstants.Spec.STATS_FILEPATH 
+                throw new WrongInputException("Define " + SpecificationConstants.Spec.STATISTICS 
                         + " filepath after " + SpecificationConstants.Spec.OUTPUT_DIR 
                         + " tag in " + SpecificationConstants.Spec.SPEC_XML);
             }
@@ -361,9 +342,8 @@ public class FusionSpecification {
                     //"\n endpointLinks=" + endpointLinks + 
                     "\n\n outputMode=" + outputMode +
                     "\n outputDir=" + outputDir +
-                    "\n fileA=" + fileA +
-                    "\n fileB=" + fileB +
-                    "\n fileC=" + fileC +
+                    "\n fused=" + fused +
+                    "\n remaining=" + remaining +
                     "\n ambiguous=" + ambiguousDatasetFilepath +
                     "\n stats=" + statsFilepath +
                     "\n\n outputRDFFormat=" + outputRDFFormat + 

@@ -220,7 +220,7 @@ public class SpecificationParser {
                 n.getNextSibling();
             }
 
-            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.TARGET_DATASET);
+            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.TARGET);
             Node targetNode = targetNodeList.item(0);
             NodeList targetChilds = targetNode.getChildNodes();
             for (int i = 0; i < targetChilds.getLength(); i++) {
@@ -230,15 +230,13 @@ public class SpecificationParser {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.OUTPUT_DIR)) {
                         fusionSpecification.setOutputDir(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_A)) {
-                        fusionSpecification.setFileA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_B)) {
-                        fusionSpecification.setFileB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE_C)) {
-                        fusionSpecification.setFileC(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FUSED)) {
+                        fusionSpecification.setFused(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.REMAINING)) {
+                        fusionSpecification.setRemaining(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.AMBIGUOUS)) {
                         fusionSpecification.setAmbiguousDatasetFilepath(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.STATS_FILEPATH)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.STATISTICS)) {
                         fusionSpecification.setStatsFilepath(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
                         fusionSpecification.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));

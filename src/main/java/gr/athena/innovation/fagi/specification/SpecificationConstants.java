@@ -34,10 +34,8 @@ public class SpecificationConstants {
         public static final String LEFT_DATASET = "left";
         public static final String RIGHT_DATASET = "right";
 
-        public static final String TARGET_DATASET = "target";
-        public static final String TARGET_RESOURCE_URI = "resourceURI";
+        public static final String TARGET = "target";
         public static final String MODE = "mode";
-        public static final String MERGE_WITH = "mergeWith";
         public static final String LINKS = "links";
         public static final String CATEGORIES = "categories";
 
@@ -45,18 +43,19 @@ public class SpecificationConstants {
         public static final String FILE = "file";
         public static final String ENDPOINT = "endpoint";
         public static final String OUTPUT_DIR = "outputDir";
-        public static final String FILE_A = "fileA";
-        public static final String FILE_B = "fileB";
-        public static final String FILE_C = "fileC";
+        
+        public static final String FUSED = "fused";
+        public static final String REMAINING = "remaining";
         public static final String AMBIGUOUS = "ambiguous";
         
-        public static final String DEFAULT_FILENAME_A = "outputA.nt";
-        public static final String DEFAULT_FILENAME_B = "outputB.nt";
-        public static final String DEFAULT_FILENAME_C = "outputC.nt";
-        public static final String DEFAULT_AMBIGUOUS_FILENAME = "ambiguous.nt";
-        public static final String DEFAULT_STATS_FILENAME = "stats.txt";
+        public static final String DEFAULT_FUSED_FILENAME = "fused.nt";
+        public static final String DEFAULT_REMAINING_FILENAME = "remaining.nt";
         
-        public static final String STATS_FILEPATH = "stats";
+        public static final String STATISTICS = "statistics";
+        
+        public static final String DEFAULT_AMBIGUOUS_FILENAME = "ambiguous.nt";
+        public static final String DEFAULT_STATS_FILENAME = "statistics.txt";
+        
     }  
         
     public static class Rule {

@@ -23,12 +23,11 @@
 	</links>	
 	<target>
 		<id>FUSED_OSM_WIKIMAPIA</id>
-		<mode>L_MODE</mode>
+		<mode>l_mode</mode>
 		<outputDir>src/main/resources/output/</outputDir>
-		<fileA></fileA>
-		<fileB></fileB>
-		<fileC></fileC>
+		<fused></fused>
+		<remaining></remaining>
 		<ambiguous></ambiguous>
-		<stats></stats>
+		<statisticss></statistics>
 	</target>
 </specification>

@@ -66,15 +66,13 @@ Specifically:
 
 `outputDir`: This is the directory path under which all produced files will be written. The results should be one or two files with the fused datasets (based on selected fusion mode described below), and one file containing statistics about the datasets and the fusion process.
 
-`fileA`: Optional tag. Specifies the output filepath of the A (left) dataset. If no value is specified the default name will be "outputA.nt" under the output directory defined above.
+`fused`: Optional tag. Specifies the output filepath of the fused dataset (based on fusion mode). If no value is specified the default name will be "fused.nt" under the output directory defined above.
 
-`fileB`: Optional tag. Specifies the output filepath of the B (right) dataset. If no value is specified the default name will be "outputB.nt" under the output directory defined above.
-
-`fileC`: Optional tag. Specifies the output filepath of the fused dataset (`l_mode` only). If no value is specified the default name will be "outputC.nt" under the output directory defined above.
+`remaining`: Optional tag. Specifies the output filepath of the non-fused dataset (based on fusion mode). If no value is specified the default name will be "remaining.nt" under the output directory defined above.
 
 `ambiguous`: Optional tag. Specifies the output filepath of the dataset containing ambiguous linked entities. If no value is specified the default name will be "ambiguous.nt" under the output directory defined above.
 
-`stats`: Optional tag. Specifies the path of the statistics file. By default a file with name "stats.txt" will be written under the output directory defined above.
+`statistics`: Optional tag. Specifies the path of the statistics file. By default a file with name "statistics.txt" will be written under the output directory defined above.
 
 | Mode        | Description     
 | ------------- |:-------------:|

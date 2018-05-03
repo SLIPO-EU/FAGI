@@ -116,11 +116,10 @@
 				</xs:simpleType>
 			  </xs:element>			  
 			  <xs:element name="outputDir" type="xs:anyURI"/>
-			  <xs:element name="fileA" type="xs:anyURI"/>
-			  <xs:element name="fileB" type="xs:anyURI"/>
-			  <xs:element name="fileC" type="xs:anyURI"/>
+			  <xs:element name="fused" type="xs:anyURI"/>
+			  <xs:element name="remaining" type="xs:anyURI"/>
 			  <xs:element name="ambiguous" type="xs:anyURI"/>
-			  <xs:element name="stats" type="xs:anyURI"/>
+			  <xs:element name="statistics" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>				

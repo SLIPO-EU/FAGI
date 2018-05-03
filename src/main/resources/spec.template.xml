@@ -25,10 +25,9 @@
 		<id>fused</id>
 		<mode></mode>
 		<outputDir></outputDir>
-		<fileA></fileA>
-		<fileB></fileB>
-		<fileC></fileC>
+		<fused></fused>
+		<remaining></remaining>
 		<ambiguous></ambiguous>
-		<stats></stats>
+		<statistics></statistics>
 	</target>
 </specification>

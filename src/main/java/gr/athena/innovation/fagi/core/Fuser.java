@@ -143,23 +143,21 @@ public class Fuser implements IFuser{
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException, IOException{
 
-        String outputPathA = fusionSpecification.getFileA();
-        String outputPathB = fusionSpecification.getFileB();
-        String outputPathC = fusionSpecification.getFileC();
-        String outputPathAmbiguous = fusionSpecification.getAmbiguousDatasetFilepath();
+        String fused = fusionSpecification.getFused();
+        String remaining = fusionSpecification.getRemaining();
+        //String outputPathC = fusionSpecification.getFileC();
+        String ambiguous = fusionSpecification.getAmbiguousDatasetFilepath();
 
-        OutputStream outputStreamA = new FileOutputStream(outputPathA, false);
-        OutputStream outputStreamB = new FileOutputStream(outputPathB, false);
-        OutputStream outputStreamC = new FileOutputStream(outputPathC, false);
-
-        OutputStream outputStreamAmbiguous = new FileOutputStream(outputPathAmbiguous, false);
+        OutputStream fusedStream = new FileOutputStream(fused, false);
+        OutputStream remainingStream = new FileOutputStream(remaining, false);
+        OutputStream ambiguousStream = new FileOutputStream(ambiguous, false);
 
         EnumOutputMode mode = fusionSpecification.getOutputMode();
 
         switch(mode) {
             case AA_MODE:
             {
-                logger.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + outputPathA);
+                logger.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
 
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
 
@@ -170,16 +168,15 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
 
-                addMessageToEmptyOutput(outputPathB);
-                addMessageToEmptyOutput(outputPathC);
+                addMessageToEmptyOutput(remaining);
 
                 break;
             }
             case BB_MODE:
             {
-                logger.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + outputPathB);
+                logger.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
 
                 Model rightModel = RightDataset.getRightDataset().getModel();
 
@@ -189,16 +186,15 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
+                rightModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
 
-                addMessageToEmptyOutput(outputPathA);
-                addMessageToEmptyOutput(outputPathC);
+                addMessageToEmptyOutput(remaining);
 
                 break;
             }
             case L_MODE:
             {
-                logger.info(EnumOutputMode.L_MODE + ": Output result will be written to " + outputPathC);
+                logger.info(EnumOutputMode.L_MODE + ": Output result will be written to " + fused);
 
                 Model newModel = ModelFactory.createDefaultModel();
 
@@ -208,16 +204,13 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(outputStreamC, fusionSpecification.getOutputRDFFormat());
-
-                addMessageToEmptyOutput(outputPathA);
-                addMessageToEmptyOutput(outputPathB);
+                newModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
 
                 break; 
             }
             case AB_MODE:
             {
-                logger.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + outputPathA);
+                logger.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 Set<String> leftLocalNames = new HashSet<>();
@@ -230,18 +223,17 @@ public class Fuser implements IFuser{
 
                 }
 
-                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
                 
-                addUnlinkedTriples(outputPathA, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
+                addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
                 
-                addMessageToEmptyOutput(outputPathB);
-                addMessageToEmptyOutput(outputPathC);
+                addMessageToEmptyOutput(remaining);
 
                 break;
             }
             case BA_MODE:
             {
-                logger.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + outputPathB);
+                logger.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + fused);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
@@ -254,19 +246,18 @@ public class Fuser implements IFuser{
                     rightLocalNames.add(localName);
                 }
 
-                leftModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());   
+                leftModel.write(remainingStream, fusionSpecification.getOutputRDFFormat());   
 
-                addUnlinkedTriples(outputPathB, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
+                addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
                 
-                addMessageToEmptyOutput(outputPathA);
-                addMessageToEmptyOutput(outputPathC);
+                addMessageToEmptyOutput(remaining);
 
                 break;
             }
             case A_MODE:
             {
-                logger.info(EnumOutputMode.A_MODE + ": Output results will be written to " + outputPathA 
-                        + " and " + outputPathB + ". Unlinked entities will be excluded from B.");
+                logger.info(EnumOutputMode.A_MODE + ": Output results will be written to " + fused 
+                        + " and " + remaining + ". Unlinked entities will be excluded from B.");
                 
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
 
@@ -280,18 +271,17 @@ public class Fuser implements IFuser{
                     
                 }
 
-                leftModel.write(outputStreamA, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
                 
-                removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, outputPathB);
+                removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
 
-                addMessageToEmptyOutput(outputPathC);
 
                 break;
             }
             case B_MODE:
             {
-                logger.info(EnumOutputMode.B_MODE + ": Output results will be written to " + outputPathB 
-                        + " and " + outputPathA + ". Unlinked entities will be excluded from A.");
+                logger.info(EnumOutputMode.B_MODE + ": Output results will be written to " + remaining 
+                        + " and " + fused + ". Unlinked entities will be excluded from A.");
                 
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
@@ -305,11 +295,10 @@ public class Fuser implements IFuser{
                     
                 }
 
-                rightModel.write(outputStreamB, fusionSpecification.getOutputRDFFormat());
+                rightModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
 
-                removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, outputPathA);
+                removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, remaining);
 
-                addMessageToEmptyOutput(outputPathC);
 
                 break;
             }
@@ -320,9 +309,9 @@ public class Fuser implements IFuser{
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
         
         if(ambiguousModel.isEmpty()){
-            addMessageToEmptyOutput(outputPathAmbiguous);
+            addMessageToEmptyOutput(ambiguous);
         } else {
-            ambiguousModel.write(outputStreamAmbiguous, fusionSpecification.getOutputRDFFormat());
+            ambiguousModel.write(ambiguousStream, fusionSpecification.getOutputRDFFormat());
         }
     }
     

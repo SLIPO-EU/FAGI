@@ -124,11 +124,10 @@ public class SchemaDefinition {
 "				</xs:simpleType>\n" +
 "			  </xs:element>			  \n" +
 "			  <xs:element name=\"outputDir\" type=\"xs:anyURI\"/>\n" +
-"			  <xs:element name=\"fileA\" type=\"xs:anyURI\"/>\n" +
-"			  <xs:element name=\"fileB\" type=\"xs:anyURI\"/>\n" +
-"			  <xs:element name=\"fileC\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"fused\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"remaining\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"ambiguous\" type=\"xs:anyURI\"/>\n" +
-"			  <xs:element name=\"stats\" type=\"xs:anyURI\"/>\n" +
+"			  <xs:element name=\"statistics\" type=\"xs:anyURI\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>				\n" +
