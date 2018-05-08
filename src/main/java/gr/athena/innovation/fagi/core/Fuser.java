@@ -258,7 +258,7 @@ public class Fuser implements IFuser{
             {
                 logger.info(EnumOutputMode.A_MODE + ": Output results will be written to " + fused 
                         + " and " + remaining + ". Unlinked entities will be excluded from B.");
-                
+
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
 
                 Set<String> rightLocalNames = new HashSet<>();
@@ -268,13 +268,12 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                     String localName = pair.getRightNode().getLocalName();
                     rightLocalNames.add(localName);                    
-                    
+
                 }
 
                 leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
-                
-                removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
 
+                removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
 
                 break;
             }

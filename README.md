@@ -1,13 +1,12 @@
 # Fagi Command Line 
 ___
 ### Building from source
-In order to build the command line version from source, you should first clone the cli branch to a preferred location by running:
+The following instructions were tested with git version 1.9.1 and Apache Maven 3.3.3. In order to build the command line version from source, you should first clone the master branch to a preferred location by running:
 
 `git clone -b master --single-branch https://github.com/SLIPO-EU/FAGI-gis.git Fagi`
 
 Then, go the the root directory of the project (Fagi-gis) and run:
 `mvn clean install`
-Tested with git version 1.9.1 and Apache Maven 3.3.3
 
 ### Run Fagi-gis from command line
 Go to resources directory and change the spec.xml and rules.xml as described below.
