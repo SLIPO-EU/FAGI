@@ -74,7 +74,7 @@ public enum EnumFusionAction {
     
     /**
      * Returns the integer value of the action.
-     * @return
+     * @return The value
      */
     public int getValue() {
 		return this.value;
@@ -103,8 +103,8 @@ public enum EnumFusionAction {
     /**
      * Returns the EnumFusionAction object from its String value or UNDEFINED if the type does not exist.
      * 
-     * @param value
-     * @return
+     * @param value The string value.
+     * @return The fusion action.
      */
     public static EnumFusionAction fromString(String value) {
 		for (EnumFusionAction item : EnumFusionAction.values()) {
@@ -121,13 +121,13 @@ public enum EnumFusionAction {
     public static class Deserializer extends JsonDeserializer<EnumFusionAction> {
         
         /**
-         * Deserializes the EnumDatasetAction
+         * Deserializes the EnumFusionAction
          * 
          * @param parser the Json parser
          * @param context the deserialization context
-         * @return the EnumDatasetAction
-         * @throws java.io.IOException
-         * @throws com.fasterxml.jackson.core.JsonProcessingException
+         * @return the EnumFusionAction.
+         * @throws java.io.IOException I/O exception.
+         * @throws com.fasterxml.jackson.core.JsonProcessingException Json processing exception.
          */
 		@Override
 		public EnumFusionAction deserialize(JsonParser parser, DeserializationContext context) throws IOException,

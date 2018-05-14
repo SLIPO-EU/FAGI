@@ -46,8 +46,8 @@ public class AbbreviationAndAcronymResolver {
     /**
      * Returns the full text of a known abbreviation or acronym. Returns null if the abbreviation/acronym is not found.
      *
-     * @param word
-     * @return returns the full text of the given abbreviation if exists in the known abbreviation or null otherwise.
+     * @param word The word string.
+     * @return Returns the full text of the given abbreviation if exists in the known abbreviation or null otherwise.
      */
     public String getKnownAbbreviationOrAcronym(String word) {
         logger.trace("Get known abbreviation: " + word);
@@ -56,11 +56,11 @@ public class AbbreviationAndAcronymResolver {
 
     /**
      * Checks if the given literal contains an abbreviation by using a regular expression from the
-     * SpecificationConstants. Basically a modification of {@link IsLiteralAbbreviation} but the check is done against
+     * SpecificationConstants. Basically a modification of <code>IsLiteralAbbreviation</code> but the check is done against
      * all the words in the literal.
      *
-     * @param literal
-     * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
+     * @param literal The string literal.
+     * @return Returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
     public boolean containsAbbreviationOrAcronym(String literal) {
         logger.trace("check if literal contains abbreviation/acronym: " + literal);
@@ -73,9 +73,9 @@ public class AbbreviationAndAcronymResolver {
     /**
      * Return the abbreviation/acronym token within the given String if exists. Returns null otherwise.
      *
-     * @param literalA the first literal that may contain abbreviation/acronym.
-     * @param literalB the second literal which helps at the abbreviation/acronym discovery if anything else fails.
-     * @return return the abbreviation/acronym token or null.
+     * @param literalA The first literal that may contain abbreviation/acronym.
+     * @param literalB The second literal which helps at the abbreviation/acronym discovery if anything else fails.
+     * @return Return the abbreviation/acronym token or null.
      */
     public List<String> getAbbreviationOrAcronym(String literalA, String literalB) {
         logger.trace("getAbbreviationOrAcronym of: " + literalA);

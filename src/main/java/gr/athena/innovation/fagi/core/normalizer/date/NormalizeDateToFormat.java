@@ -16,9 +16,9 @@ public class NormalizeDateToFormat implements INormalizer{
     
     /**
      * Transforms the given date String to the provided format.
-     * @param dateString
-     * @param targetFormat the target date format
-     * @return the String date formatted with the given date format.
+     * @param dateString The date string.
+     * @param targetFormat The target date format.
+     * @return The String date formatted with the given date format.
      */
     public String normalize(String dateString, String targetFormat){
         

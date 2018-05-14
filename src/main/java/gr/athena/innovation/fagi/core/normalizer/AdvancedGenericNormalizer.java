@@ -38,9 +38,9 @@ public class AdvancedGenericNormalizer {
      * alphabetical mismatches based on Collator strength. Partitioning the words in different categories (base,
      * mismatch, linked terms) with additional weights. Mismatches and linked terms are excluded from each base literal.
      *
-     * @param normalizedLiteralA
-     * @param normalizedLiteralB
-     * @param locale
+     * @param normalizedLiteralA The normalizedLiteral object of the left (A) node.
+     * @param normalizedLiteralB The normalizedLiteral object of the left (B) node.
+     * @param locale The Locale.
      * @return the weighted pair literal.
      */
     public WeightedPairLiteral getWeightedPair(NormalizedLiteral normalizedLiteralA,

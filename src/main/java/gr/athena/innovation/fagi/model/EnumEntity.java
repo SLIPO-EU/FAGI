@@ -45,7 +45,7 @@ public enum EnumEntity {
 
     /**
      * Returns the integer value of the entity.
-     * @return
+     * @return The value.
      */
     public int getValue() {
 		return this.value;
@@ -65,8 +65,8 @@ public enum EnumEntity {
     /**
      * Returns the EnumEntity object from its String value or UNDEFINED.
      * 
-     * @param value
-     * @return
+     * @param value The value.
+     * @return The EnumEntity string value.
      */
     public static EnumEntity fromString(String value) {
 		for (EnumEntity item : EnumEntity.values()) {
@@ -88,8 +88,8 @@ public enum EnumEntity {
          * @param parser the Json parser
          * @param context the deserialization context
          * @return the EnumEntity
-         * @throws java.io.IOException
-         * @throws com.fasterxml.jackson.core.JsonProcessingException
+         * @throws java.io.IOException I/O exception.
+         * @throws com.fasterxml.jackson.core.JsonProcessingException Json processing exception.
          */
 		@Override
 		public EnumEntity deserialize(JsonParser parser, DeserializationContext context) throws IOException,

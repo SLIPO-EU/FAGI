@@ -28,33 +28,33 @@ public abstract class AbstractRepository {
     /**
      * Loads the given RDF file into a RDF model as the left dataset.
      * 
-     * @param filepath
-     * @throws gr.athena.innovation.fagi.exception.WrongInputException
+     * @param filepath The path of the file.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
      */
     public abstract void parseLeft(String filepath) throws WrongInputException;
     
     /**
      * Loads the given RDF file into a RDF model as the right dataset.
-     * @param filepath
-     * @throws gr.athena.innovation.fagi.exception.WrongInputException
+     * @param filepath The path of the file.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
      */  
     public abstract void parseRight(String filepath) throws WrongInputException;
     
     /**
      * Loads the given links file into a RDF model.
      * 
-     * @param filepath
+     * @param filepath The path of the file.
      * @throws java.text.ParseException if link file contains invalid links
-     * @throws gr.athena.innovation.fagi.exception.WrongInputException
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
      */    
     public abstract void parseLinks(String filepath) throws ParseException, WrongInputException;
     
     /**
-     * Parses given RDF link file into a list of @Link.
+     * Parses the given RDF link file into a list of <code>Link</code> objects.
      * 
-     * @param linksFile link file
-     * @return list of links
-     * @throws java.text.ParseException if link file contains invalid links
+     * @param linksFile The file path of the links.
+     * @return List of link objects.
+     * @throws java.text.ParseException Exception parsing the file.
      */    
     public static List<Link> parseLinksFile(final String linksFile) throws ParseException {
 

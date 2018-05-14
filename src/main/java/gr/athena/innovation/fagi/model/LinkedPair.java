@@ -408,7 +408,8 @@ public class LinkedPair {
             case REJECT: {
 
                 //removes link from the list and from the model also.
-                LinksModel.getLinksModel().removeLink(link);
+                //LinksModel.getLinksModel().removeLink(link);
+                LinksModel.getLinksModel().getRejected().add(link);
 
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();
@@ -421,7 +422,8 @@ public class LinkedPair {
             }
             case REJECT_MARK_AMBIGUOUS: {
                 
-                LinksModel.getLinksModel().removeLink(link);
+                //LinksModel.getLinksModel().removeLink(link);
+                LinksModel.getLinksModel().getRejected().add(link);
 
                 if (!fusedModel.isEmpty()) {
                     fusedModel.removeAll();

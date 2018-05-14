@@ -23,8 +23,8 @@ public class CentroidShiftTranslator {
     /**
      * Shifts a geometry to the target geometry. 
      *  
-     * @param originalGeometry 
-     * @return  the shifted geometry as Geometry object
+     * @param originalGeometry The original geometry object.
+     * @return The shifted geometry as Geometry object
      */ 
     public Geometry shift(Geometry originalGeometry) { 
         Geometry shiftedGeometry = (Geometry) originalGeometry.clone(); 
@@ -39,9 +39,9 @@ public class CentroidShiftTranslator {
     /**
      * Shifts a geometry to the target geometry. 
      *  
-     * @param originalGeometry 
-     * @param targetGeometry the target geometry
-     * @return  the shifted geometry as Geometry object
+     * @param originalGeometry The original geometry object.
+     * @param targetGeometry The target geometry.
+     * @return The shifted geometry as Geometry object
      */ 
     public Geometry shift(Geometry originalGeometry, Geometry targetGeometry) { 
         Geometry shiftedGeometry = (Geometry) originalGeometry.clone(); 
@@ -55,8 +55,8 @@ public class CentroidShiftTranslator {
     
     /**
      * Moves geometry so that delta is at (0,0). 
-     * @param geometry the Geometry to modify 
-     * @param deltaShift the Coordinate of the translation
+     * @param geometry The Geometry to modify.
+     * @param deltaShift The Coordinate of the translation.
      */ 
     public void translate(Geometry geometry, final Coordinate deltaShift) { 
         geometry.apply(new CoordinateFilter() {

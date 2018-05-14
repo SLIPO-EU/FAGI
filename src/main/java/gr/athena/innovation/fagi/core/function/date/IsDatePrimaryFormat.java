@@ -17,10 +17,10 @@ public class IsDatePrimaryFormat implements IFunction, IFunctionSingleParameter 
     
     /**
      * Checks if the given date String is written as a primary format as defined in the specification.
-     * See {@link SpecificationConstants.PRIMARY_DATE_FORMATS}
+     * See <code> SpecificationConstants.PRIMARY_DATE_FORMATS</code> class.
      * 
-     * @param dateString
-     * @return
+     * @param dateString The date string.
+     * @return True if the date belongs to a primary format as described in the specification, false otherwise.
      */
     @Override
     public boolean evaluate(String dateString){

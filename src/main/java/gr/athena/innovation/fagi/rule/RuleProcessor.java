@@ -35,7 +35,8 @@ import org.xml.sax.SAXException;
  *
  * Reads the XML file that contains the fusion rules and turns it into in-memory structures that the rest of the
  * application can access. This processor is does not validate the XML input. The validation is performed one step
- * before using the {@link gr.athena.innovation.fagi.utils.XmlValidator}
+ * before using the {@link gr.athena.innovation.fagi.utils.InputValidator}
+ * {@link gr.athena.innovation.fagi.utils.InputValidator#isValidInput() isValidInput} method.
  *
  * @author nkarag
  */
@@ -44,16 +45,16 @@ public class RuleProcessor {
     private static final Logger logger = LogManager.getLogger(RuleProcessor.class);
 
     /**
-     *
+     * 
      * The rules are parsed and modeled in memory as follows: Rule | ActionRule | Condition | Expression
      *
-     *
      * @param path of the rules XML file.
-     * @return a {@link gr.athena.innovation.fagi.rule.RuleCatalog} object that holds the rules configuration.
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws gr.athena.innovation.fagi.exception.WrongInputException
+     * @return The <code>RuleCatalog</code> object that holds the rules configuration.
+     * 
+     * @throws ParserConfigurationException indicates a configuration error.
+     * @throws SAXException encapsulates a general SAX error or warning.
+     * @throws IOException signals that an I/O exception of some sort has occurred.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException something is wrong with the provided input.
      */
     public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException {
         

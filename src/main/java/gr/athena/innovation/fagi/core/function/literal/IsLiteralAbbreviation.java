@@ -17,8 +17,8 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
     /**
      * Checks if the given literal is an abbreviation by using a regular expression from the SpecificationConstants.
      * 
-     * @param literal
-     * @return returns true if the literal matches the pattern of regular expression that represents an abbreviation
+     * @param literal The string literal.
+     * @return True if the literal matches the pattern of regular expression that represents an abbreviation.
      */
     @Override
     public boolean evaluate(String literal){

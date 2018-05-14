@@ -19,12 +19,12 @@ public interface IFuser {
     /**
      * Starts the fusion process for all the provided links from the input file using the provided rules.
      * 
-     * @param config
-     * @param ruleCatalog
-     * @param functionMap
+     * @param config The fusion specification object.
+     * @param ruleCatalog The rule catalog object.
+     * @param functionMap the map containing the name of the available functions mapped to the functions.
      * @return the list of the fused interlinked entities
-     * @throws ParseException
-     * @throws gr.athena.innovation.fagi.exception.WrongInputException
+     * @throws ParseException Thrown by a <code>WKTReader</code> when a parsing problem occurs.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates input error.
      */    
     public List<LinkedPair> fuseAll(FusionSpecification config, RuleCatalog ruleCatalog, 
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException;

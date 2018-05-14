@@ -3,7 +3,20 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gr.athena.innovation</groupId>
   <artifactId>fagi</artifactId>
+  <name>FAGI</name>
   <version>1.2.1-SNAPSHOT</version>
+  <description>FAGI is a software developed, mainly, to facilitate the fusion of interlinked RDF entities containing spatial data.</description>
+  <developers>
+    <developer>
+      <id>nkaragiannakis</id>
+      <name>Nikos Karagiannakis</name>
+      <email>nkaragiannakis at imis.athena-innovation.gr</email>
+    </developer>
+  </developers>
+  <organization>
+    <name>IMSI, Information Management Systems Institute</name>
+    <url>https://www.imsi.athenarc.gr/en</url>
+  </organization>
   <build>
     <plugins>
       <plugin>
@@ -106,6 +119,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+          <show>public</show>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

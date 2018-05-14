@@ -13,11 +13,11 @@ public class IsSamePhoneNumberUsingExitCode implements IFunction, IFunctionThree
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the
-     * normalized version described at the {@link #normalizePhoneNumber(String) normalizePhoneNumber} method.
+     * normalized version described at the {@link gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer#normalize(String,String) normalize} method.
      * 
-     * @param number1
-     * @param number2
-     * @param exitCodeDigits digits to replace the "+" symbol in an international telephone number. 
+     * @param number1 The first phone number.
+     * @param number2 The second phone number.
+     * @param exitCodeDigits Digits to replace the "+" symbol in an international telephone number. 
      * @return true if the numbers are the same or false otherwise.
      */
     @Override

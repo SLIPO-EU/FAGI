@@ -35,7 +35,7 @@ public final class Cosine {
      * 
      * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
      * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
-     * on the {@link SpecificationConstants.Similarity.ROUND_DECIMALS} decimal digits.
+     * on the <code>SpecificationConstants.Similarity.ROUND_DECIMALS</code> decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.
@@ -91,7 +91,7 @@ public final class Cosine {
      * 
      * Note that if the computed value is not close to the SIMILARITY_MAX or SIMILARITY_MIN 
      * the method returns a rounded number using the RoundingMode.HALF_UP strategy 
-     * on the {@link SpecificationConstants.Similarity.ROUND_DECIMALS} decimal digits.
+     * on the <code>SpecificationConstants.Similarity.ROUND_DECIMALS</code> decimal digits.
      * 
      * @param a the first string.
      * @param b the second string.

@@ -60,7 +60,7 @@ public class RuleCatalog{
     /**
      * Sets the FunctionRegistry object.
      * 
-     * @param functionRegistry
+     * @param functionRegistry the function registry object.
      */
     public void setFunctionRegistry(FunctionRegistry functionRegistry) {
         this.functionRegistry = functionRegistry;
@@ -76,7 +76,7 @@ public class RuleCatalog{
     /**
      * Sets the default Dataset action.
      * 
-     * @param defaultDatasetAction
+     * @param defaultDatasetAction the default dataset action.
      */
     public void setDefaultDatasetAction(EnumDatasetAction defaultDatasetAction) {
         this.defaultDatasetAction = defaultDatasetAction;

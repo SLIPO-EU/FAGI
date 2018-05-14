@@ -3,9 +3,9 @@ ___
 ### Building from source
 The following instructions were tested with git version 1.9.1 and Apache Maven 3.3.3. In order to build the command line version from source, you should first clone the master branch to a preferred location by running:
 
-`git clone -b master --single-branch https://github.com/SLIPO-EU/FAGI-gis.git Fagi`
+`git clone -b master --single-branch https://github.com/SLIPO-EU/FAGI.git fagi`
 
-Then, go the the root directory of the project (Fagi-gis) and run:
+Then, go the root directory of the project (fagi) and run:
 `mvn clean install`
 
 ### Run Fagi-gis from command line
@@ -49,7 +49,7 @@ The `similarity` is also optional and it is used as a part of the custom matchin
 * 2Gram
 * longestcommonsubsequence
 
-The `left`, `right`, `links` and `target` tags refer to the source and target datasets. Each of these XML tags contain additional tags that describe each of the datasets.
+The `left`, `right`, and `links` tags refer to the source datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 
 Specifically:
 
@@ -60,6 +60,8 @@ Specifically:
 `endpoint`: Optional tag. Instead of using files, add a SPARQL endpoint and leave the `file` tag empty.
 
 `categories`: This is again optional. It is used to extract statistics about the categories of the entities. If you want to use this feature you should provide a file in N-Triples format that contains the categorization.
+
+Furthermore, the `target` tag refers to the target/output dataset and contains the following configuration tags:
 
 `mode`: Specify the fused dataset mode. The supported modes are shown in the table below.
 
@@ -103,7 +105,6 @@ Each <rule> element consists of the following main childs:
 
 * `<propertyA>` and `<propertyB>` define the two RDF properties that the rule will apply.
 * `<externalProperty>` is optional and is used to combine different properties inside a condition. The fusion action does not affect the value of this property. The external property requires an id attribute as a parameter in the XML and the id must start with the letter a or be that refers to the corresponding value (left or right) and followed by an incrementing integer for each different property used in the same rule.
-* `<actionRuleSet>` is a set of condition-action pairs with priority the order of appearance.
 * `<defaultAction>` is the default fusion action to apply if no condition from the <actionRuleSet> is met.
 
 * `<actionRuleSet>` element:

@@ -65,8 +65,7 @@ public class Fagi {
             logger.info(SpecificationConstants.HELP);
             System.exit(-1);
         } catch (ParserConfigurationException | SAXException | IOException | ParseException 
-                | com.vividsolutions.jts.io.ParseException | ApplicationException 
-                | org.json.simple.parser.ParseException ex) {
+                | ApplicationException | org.json.simple.parser.ParseException ex) {
             logger.error(ex.getMessage(), ex);
             System.exit(-1);
         }

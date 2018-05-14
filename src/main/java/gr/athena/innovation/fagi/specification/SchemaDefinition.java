@@ -148,7 +148,6 @@ public class SchemaDefinition {
 "					  <xs:enumeration value=\"keep-left\"/>\n" +
 "					  <xs:enumeration value=\"keep-right\"/>\n" +
 "					  <xs:enumeration value=\"keep-both\"/>\n" +
-"					  <xs:enumeration value=\"reject-link\"/>\n" +
 "					</xs:restriction>\n" +
 "				  </xs:simpleType>\n" +
 "				</xs:element>\n" +

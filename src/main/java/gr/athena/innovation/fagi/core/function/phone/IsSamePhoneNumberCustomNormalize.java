@@ -17,9 +17,9 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
     /**
      * Checks if two telephone numbers are the same using a custom normalization method.
      * 
-     * @param phoneText1
-     * @param phoneText2
-     * @return true if the numbers are the same or extremely close and false otherwise.
+     * @param phoneText1 The first phone number as text.
+     * @param phoneText2 The second phone number as text.
+     * @return True if the numbers are the same or extremely close and false otherwise.
      */
     @Override
     public boolean evaluate(String phoneText1, String phoneText2){

@@ -18,10 +18,10 @@ public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
     
     /**
      * Checks if the given date String is written as a known format as defined in the specification.
-     * See {@link SpecificationConstants.DATE_FORMATS}
+     * See <code>SpecificationConstants.DATE_FORMATS</code> class.
      * 
-     * @param dateString
-     * @return
+     * @param dateString The date string.
+     * @return True if the date belongs to a known format as described in the specification, false otherwise.
      */
     @Override
     public boolean evaluate(String dateString){

@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.core;
 
-import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
@@ -53,21 +52,20 @@ import org.apache.logging.log4j.Logger;
  */
 public class Fuser implements IFuser{ 
     
-    private static final Logger logger = LogManager.getLogger(Fuser.class);
+    private static final Logger LOG = LogManager.getLogger(Fuser.class);
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
 
     /**
      * Fuses all links using the Rules defined in the XML file.
      * 
-     * @param fusionSpec
-     * @param ruleCatalog
-     * @param functionMap
-     * @throws ParseException
+     * @param fusionSpec The fusion specification object.
+     * @param ruleCatalog The rule catalog object.
+     * @param functionMap The map containing the available functions.
      */
     @Override
     public List<LinkedPair> fuseAll(FusionSpecification fusionSpec, RuleCatalog ruleCatalog, 
-            Map<String, IFunction> functionMap) throws ParseException, WrongInputException{
+            Map<String, IFunction> functionMap) throws WrongInputException{
 
         List<LinkedPair> fusedList = new ArrayList<>();
 
@@ -125,6 +123,7 @@ public class Fuser implements IFuser{
             fusedPairsCount++;
         }
         
+        //links.getLinks().removeAll(links.getRejected());
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
         
         return fusedList;
@@ -134,10 +133,10 @@ public class Fuser implements IFuser{
      * Produces the output result by creating a new graph to the specified output 
      * or combines the fused entities with the source datasets based on the fusion mode.
      * 
-     * @param fusionSpecification
-     * @param fusedEntities
-     * @param defaultDatasetAction
-     * @throws FileNotFoundException
+     * @param fusionSpecification The fusion specification object.
+     * @param fusedEntities The list with fused <code>LinkedPair</code> objects. 
+     * @param defaultDatasetAction the default dataset action enumeration.
+     * @throws FileNotFoundException Thrown when file was not found.
      */
     public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
@@ -157,7 +156,7 @@ public class Fuser implements IFuser{
         switch(mode) {
             case AA_MODE:
             {
-                logger.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
+                LOG.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
 
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
 
@@ -176,7 +175,7 @@ public class Fuser implements IFuser{
             }
             case BB_MODE:
             {
-                logger.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
+                LOG.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
 
                 Model rightModel = RightDataset.getRightDataset().getModel();
 
@@ -194,7 +193,7 @@ public class Fuser implements IFuser{
             }
             case L_MODE:
             {
-                logger.info(EnumOutputMode.L_MODE + ": Output result will be written to " + fused);
+                LOG.info(EnumOutputMode.L_MODE + ": Output result will be written to " + fused);
 
                 Model newModel = ModelFactory.createDefaultModel();
 
@@ -210,7 +209,7 @@ public class Fuser implements IFuser{
             }
             case AB_MODE:
             {
-                logger.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
+                LOG.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 
                 Set<String> leftLocalNames = new HashSet<>();
@@ -233,7 +232,7 @@ public class Fuser implements IFuser{
             }
             case BA_MODE:
             {
-                logger.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + fused);
+                LOG.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + fused);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
                 Model rightModel = RightDataset.getRightDataset().getModel();
                 
@@ -256,7 +255,7 @@ public class Fuser implements IFuser{
             }
             case A_MODE:
             {
-                logger.info(EnumOutputMode.A_MODE + ": Output results will be written to " + fused 
+                LOG.info(EnumOutputMode.A_MODE + ": Output results will be written to " + fused 
                         + " and " + remaining + ". Unlinked entities will be excluded from B.");
 
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
@@ -279,7 +278,7 @@ public class Fuser implements IFuser{
             }
             case B_MODE:
             {
-                logger.info(EnumOutputMode.B_MODE + ": Output results will be written to " + remaining 
+                LOG.info(EnumOutputMode.B_MODE + ": Output results will be written to " + remaining 
                         + " and " + fused + ". Unlinked entities will be excluded from A.");
                 
                 Model rightModel = RightDataset.getRightDataset().getModel();
@@ -314,7 +313,7 @@ public class Fuser implements IFuser{
         }
     }
     
-    private Entity constructEntity(Model model, String resourceURI, String localName) throws ParseException {
+    private Entity constructEntity(Model model, String resourceURI, String localName) {
         
         Entity entity = new Entity();
         EntityData entityData = new EntityData(model);
@@ -364,7 +363,7 @@ public class Fuser implements IFuser{
                 resourceURI = rightURI;
                 break;
             default:
-                logger.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
+                LOG.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
                 throw new IllegalArgumentException();
         }
         return resourceURI;
@@ -387,7 +386,7 @@ public class Fuser implements IFuser{
                 localName = rightLocalName;
                 break;
             default:
-                logger.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
+                LOG.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
                 throw new IllegalArgumentException();
         }
         return localName;
@@ -396,15 +395,16 @@ public class Fuser implements IFuser{
     /**
      * Returns the count of linked entities that were not found in the source datasets.
      * 
-     * @return
+     * @return the number of linked entities not found in the dataset.
      */
     public int getLinkedEntitiesNotFoundInDataset() {
         return linkedEntitiesNotFoundInDataset;
     }
 
     /**
-     *
-     * @param linkedEntitiesNotFoundInDataset
+     * Set the number of linked entities that were not found in the dataset.
+     * 
+     * @param linkedEntitiesNotFoundInDataset the number of linked entities not found in the dataset.
      */
     public void setLinkedEntitiesNotFoundInDataset(int linkedEntitiesNotFoundInDataset) {
         this.linkedEntitiesNotFoundInDataset = linkedEntitiesNotFoundInDataset;
@@ -413,7 +413,7 @@ public class Fuser implements IFuser{
     /**
      * Returns the total fused entities.
      * 
-     * @return
+     * @return the number of the fused entities.
      */
     public int getFusedPairsCount() {
         return fusedPairsCount;

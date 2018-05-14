@@ -14,7 +14,7 @@ public class ToLowerCase implements INormalizer{
      * Normalizes the given string literal to lowercase. Returns an empty string if the literal is blank.
      * 
      * @param literal the string literal
-     * @return 
+     * @return the string literal in lower case.
      */
     public String normalize(String literal) {
 

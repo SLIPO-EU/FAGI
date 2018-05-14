@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.model;
 
 import gr.athena.innovation.fagi.specification.Namespace;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -18,6 +19,7 @@ public final class LinksModel {
     private static LinksModel linksModel = null;
     private Model model;
     private List<Link> links;
+    private final List<Link> rejected = new ArrayList<>();
     private String filepath;
 
     private LinksModel() {
@@ -107,5 +109,9 @@ public final class LinksModel {
         
         Statement statement = ResourceFactory.createStatement(a, pred, b);
         model.remove(statement);
+    }
+
+    public List<Link> getRejected() {
+        return rejected;
     }
 }

@@ -16,7 +16,7 @@ public class Entity {
     /**
      * Returns the resource URI.
      * 
-     * @return the string representation of the resource in the dataset.
+     * @return The string representation of the resource in the dataset.
      */
     public String getResourceURI() {
         return resourceURI;
@@ -34,7 +34,7 @@ public class Entity {
     /**
      * Returns the local name of the entity's URI. This is usually the alphanumeric id of the resource.
      * 
-     * @return the localName
+     * @return The localName
      */
     public String getLocalName() {
         return localName;
@@ -52,7 +52,7 @@ public class Entity {
     /**
      * Return the data object of the entity. If data object is null, return a new object containing a default RDF model.
      * 
-     * @return the entity data object.
+     * @return The entity data object.
      */
     public EntityData getEntityData() {
         if(entityData == null){
@@ -64,7 +64,7 @@ public class Entity {
     /**
      * Set the entity data object.
      * 
-     * @param entityData
+     * @param entityData The entityData object.
      */
     public void setEntityData(EntityData entityData) {
         this.entityData = entityData;

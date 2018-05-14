@@ -16,11 +16,11 @@ public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the
-     * normalized version described at the {@link #normalizePhoneNumber(String) normalizePhoneNumber} method.
+     * normalized version described at the {@link gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer#normalize(String, String) normalize} method.
      * 
-     * @param number1
-     * @param number2
-     * @return true if the numbers are the same or false otherwise.
+     * @param number1 The first phone number.
+     * @param number2 The second phone number. 
+     * @return True if the numbers are the same or false otherwise.
      */
     @Override
     public boolean evaluate(String number1, String number2){

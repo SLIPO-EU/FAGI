@@ -67,13 +67,13 @@ public final class Levenshtein {
 
     /**
      * Returns the complement of Levenshtein Distance using the method 
-     * {@link #computeDistance(double) computeDistance}. 
+     * {@link gr.athena.innovation.fagi.core.similarity.Levenshtein#computeDistance(String, String, Integer) computeDistance}. 
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @param threshold the threshold, must not be negative, 
+     * @param a The first string.
+     * @param b The second string.
+     * @param threshold The threshold, must not be negative, 
      * may be null if the desired similarity should be computed without a threshold.
-     * @return the normalized similarity result. Returns 0.0 if the similarity is greater than the threshold.
+     * @return The normalized similarity result. Returns 0.0 if the similarity is greater than the threshold.
      */
     public static double computeSimilarity(String a, String b, Integer threshold){
         return 1 - computeDistance(a, b, threshold);
@@ -83,11 +83,11 @@ public final class Levenshtein {
      * Compute the number of insertions needed to change one string into another.
      * The method returns -1, if the distance is greater than the threshold.
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @param threshold the threshold, must not be negative, 
+     * @param a The first string.
+     * @param b The second string.
+     * @param threshold The threshold, must not be negative, 
      * may be null if the desired distance should be computed without a threshold.
-     * @return the distance result. Returns -1 if the distance is greater than the threshold.
+     * @return The distance result. Returns -1 if the distance is greater than the threshold.
      */
     public static int computeInsertions(String a, String b, Integer threshold){
 
@@ -108,11 +108,11 @@ public final class Levenshtein {
      * Compute the number of character deletion needed to change one string to the other.
      * The method returns -1, if the distance is greater than the threshold.
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @param threshold the threshold, must not be negative, 
+     * @param a The first string.
+     * @param b The second string.
+     * @param threshold The threshold, must not be negative, 
      * may be null if the desired distance should be computed without a threshold.
-     * @return the distance result. Returns -1 if the distance is greater than the threshold.
+     * @return The distance result. Returns -1 if the distance is greater than the threshold.
      */
     public static int computeDeletes(String a, String b, Integer threshold){
 
@@ -133,11 +133,11 @@ public final class Levenshtein {
      * Compute  the number of character substitution needed to change one string to the other.
      * The method returns -1, if the distance is greater than the threshold.
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @param threshold the threshold, must not be negative, 
+     * @param a The first string.
+     * @param b The second string.
+     * @param threshold The threshold, must not be negative, 
      * may be null if the desired distance should be computed without a threshold.
-     * @return the distance result. Returns -1 if the distance is greater than the threshold.
+     * @return The distance result. Returns -1 if the distance is greater than the threshold.
      */
     public static int computeSubstitutes(String a, String b, Integer threshold){
 

@@ -59,8 +59,8 @@ public class FagiInstance {
     /**
      * FagiInstance Constructor. Expects absolute paths of specification XML and rules XML.
      * 
-     * @param specXml
-     * @param rulesXml
+     * @param specXml The path of the specification file.
+     * @param rulesXml The path of the rules file.
      */
     public FagiInstance(String specXml, String rulesXml) {
         this.specXml = specXml;
@@ -71,17 +71,14 @@ public class FagiInstance {
      *
      * Initiates the fusion process. 
      * 
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws ParseException
-     * @throws com.vividsolutions.jts.io.ParseException
-     * @throws WrongInputException
-     * @throws ApplicationException
-     * @throws org.json.simple.parser.ParseException
+     * @throws javax.xml.parsers.ParserConfigurationException Indicates configuration error.
+     * @throws org.xml.sax.SAXException Encapsulate a general SAX error or warning.
+     * @throws java.io.IOException Signals that an I/O exception of some sort has occurred.
+     * @throws java.text.ParseException Signals that an error has been reached unexpectedly while parsing.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Wrong input exception.
+     * @throws org.json.simple.parser.ParseException Json parsing exception.
      */
-    public void run() throws ParserConfigurationException, SAXException, IOException, ParseException,
-            com.vividsolutions.jts.io.ParseException, WrongInputException,
+    public void run() throws ParserConfigurationException, SAXException, IOException, ParseException, WrongInputException,
             ApplicationException, org.json.simple.parser.ParseException {
 
         long startTimeInput = System.currentTimeMillis();
@@ -197,7 +194,7 @@ public class FagiInstance {
 
         if(fuse){
             LOG.info("Initiating fusion process...");
-            
+
             Fuser fuser = new Fuser();
             Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
 
@@ -212,7 +209,7 @@ public class FagiInstance {
             fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
 
             long stopTimeWrite = System.currentTimeMillis();
-            
+
             LOG.info(fusionSpec.toString());
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");

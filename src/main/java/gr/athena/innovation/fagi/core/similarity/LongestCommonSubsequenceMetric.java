@@ -42,7 +42,7 @@ public class LongestCommonSubsequenceMetric {
     }
 
     /**
-     * Returns the complement of the {@link #computeSimilarity(String,String) computeSimilarity} method.
+     * Returns the complement of the {@link gr.athena.innovation.fagi.core.similarity.LongestCommonSubsequenceMetric#computeSimilarity(String,String) computeSimilarity} method.
      * 
      * @param a the first string.
      * @param b the second string.

@@ -4,7 +4,8 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 
 /**
- *
+ * Class for evaluating a text phone number.
+ * 
  * @author nkarag
  */
 public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParameter{
@@ -13,8 +14,8 @@ public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParamete
      * Checks if the given number is represented as an integer. 
      * (Contains only numeric characters and no other symbols or spaces)
      * 
-     * @param number
-     * @return true if the telephone number representation can be parsed as an integer and false otherwise.
+     * @param number The phone number to evaluate.
+     * @return True if the telephone number representation can be parsed as an integer and false otherwise.
      * 
      */
     @Override

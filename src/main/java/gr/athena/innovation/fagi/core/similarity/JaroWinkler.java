@@ -19,9 +19,9 @@ public final class JaroWinkler {
      * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">
      * http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance</a>.
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @return the distance. Range is between [0,1].
+     * @param a The first string.
+     * @param b The second string.
+     * @return The distance. Range is between [0,1].
      */
     public static double computeSimilarity(String a, String b){
 
@@ -45,13 +45,13 @@ public final class JaroWinkler {
     
     /**
      * Computes the Jaro Winkler Distance using the complement of 
-     * {@link #computeSimilarity(double) computeSimilarity}.
+     * {@link gr.athena.innovation.fagi.core.similarity.JaroWinkler#computeSimilarity(String, String) computeSimilarity}.
      * <a href="http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance">
      * http://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance</a>.
      * 
-     * @param a the first string.
-     * @param b the second string.
-     * @return the distance. Range is between [0,1].
+     * @param a The first string.
+     * @param b The second string.
+     * @return The distance. Range is between [0,1].
      */
     public static double computeDistance(String a, String b){
         return 1 - computeSimilarity(a,b);

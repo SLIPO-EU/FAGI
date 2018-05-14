@@ -27,9 +27,9 @@ public class SpecificationParser {
     /**
      * Parses the specification XML and produces a FusionSpecification object.
      * 
-     * @param fusionSpecificationPath
+     * @param fusionSpecificationPath the fusion specification file path.
      * @return the fusion specification object.
-     * @throws WrongInputException
+     * @throws WrongInputException Indicates that something is wrong with the input.
      */
     public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException {
 

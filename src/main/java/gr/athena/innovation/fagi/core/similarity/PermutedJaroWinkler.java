@@ -83,7 +83,7 @@ public class PermutedJaroWinkler {
     
     /**
      * Computes the permuted version of Jaro-Winkler distance, using the complement of 
-     * {@link #computeSimilarity(double) computeSimilarity}. 
+     * {@link gr.athena.innovation.fagi.core.similarity.PermutedJaroWinkler#computeSimilarity(String, String) computeSimilarity}. 
      * 
      * @param a the first string.
      * @param b the second string.

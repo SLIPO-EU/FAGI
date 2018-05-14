@@ -17,7 +17,6 @@ public enum EnumValidationAction {
 
     /**
      * Undefined value of the validation action.
-     *
      */
     UNDEFINED(0), 
     
@@ -50,7 +49,7 @@ public enum EnumValidationAction {
     
     /**
      * Returns the integer value of the action.
-     * @return
+     * @return The value.
      */
     public int getValue() {
 		return this.value;
@@ -79,8 +78,8 @@ public enum EnumValidationAction {
     /**
      * Returns the EnumValidationAction object from its String value or UNDEFINED if the type does not exist.
      * 
-     * @param value
-     * @return
+     * @param value The value
+     * @return The string value of the action.
      */
     public static EnumValidationAction fromString(String value) {
 		for (EnumValidationAction item : EnumValidationAction.values()) {
@@ -101,9 +100,9 @@ public enum EnumValidationAction {
          * 
          * @param parser the Json parser
          * @param context the deserialization context
-         * @return the EnumDatasetAction
-         * @throws java.io.IOException
-         * @throws com.fasterxml.jackson.core.JsonProcessingException
+         * @return the EnumValidationAction
+         * @throws java.io.IOException I/O exception.
+         * @throws com.fasterxml.jackson.core.JsonProcessingException Json processing exception.
          */
 		@Override
 		public EnumValidationAction deserialize(JsonParser parser, DeserializationContext context) throws IOException,
