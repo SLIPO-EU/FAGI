@@ -76,7 +76,8 @@ public class SchemaDefinition {
 "			  <xs:enumeration value=\"longestcommonsubsequence\"/>\n" +
 "			</xs:restriction>\n" +
 "		  </xs:simpleType>\n" +
-"		</xs:element>				\n" +
+"		</xs:element>\n" +
+"		<xs:element name=\"rules\" type=\"xs:anyURI\"/>		\n" +
 "		<xs:element name=\"left\">\n" +
 "		  <xs:complexType>\n" +
 "			<xs:sequence>\n" +

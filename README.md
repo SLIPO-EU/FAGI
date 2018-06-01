@@ -13,7 +13,7 @@ Go to resources directory and change the spec.xml and rules.xml as described bel
 
 Then go to the target directory of the project and run:
 
-`java -jar fagi-1.0-SNAPSHOT.jar -spec /path/to/spec.xml -rules /path/to/rules.xml`
+`java -jar fagi-1.0-SNAPSHOT.jar -spec /path/to/spec.xml`
 
 ### How to fill in the spec.xml file
 Inside the resources directory of the project there is a spec.template.xml file and a spec.xml as an example for convenience. The Specification holds general configuration for the fusion process and is filled with text values between an opening and a closing tag. 
@@ -48,6 +48,8 @@ The `similarity` is also optional and it is used as a part of the custom matchin
 * levenshtein
 * 2Gram
 * longestcommonsubsequence
+
+The `rules` tag expects the absolute path of the "rules.xml" file. 
 
 The `left`, `right`, and `links` tags refer to the source datasets. Each of these XML tags contain additional tags that describe each of the datasets.
 

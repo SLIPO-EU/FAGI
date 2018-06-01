@@ -4,6 +4,7 @@
 	<outputFormat>NT</outputFormat>
 	<locale></locale>
 	<similarity>jarowinkler</similarity>
+	<rules>/path/to/rules.xml</rules>
 	<left>
 		<id>OSM</id>
 		<endpoint></endpoint>

@@ -41,6 +41,7 @@ public class FusionSpecification {
     private EnumOutputMode outputMode;
     private String outputRDFFormat;
     private String inputRDFFormat;
+    private String rulesPath;
     
     private Locale locale = null;
     private String similarity;
@@ -326,6 +327,14 @@ public class FusionSpecification {
         }
     }
 
+    public String getRulesPath() {
+        return rulesPath;
+    }
+
+    public void setRulesPath(String rulesPath) {
+        this.rulesPath = rulesPath;
+    }
+    
     @Override
     public String toString() {
         return "\nFusionSpecification{" + 

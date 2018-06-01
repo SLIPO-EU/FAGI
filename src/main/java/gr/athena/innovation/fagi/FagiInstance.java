@@ -48,7 +48,6 @@ public class FagiInstance {
 
     private static final Logger LOG = LogManager.getLogger(FagiInstance.class);
     private final String specXml;
-    private final String rulesXml;
 
     private final boolean runEvaluation = false;
     private final boolean exportFrequencies = false;
@@ -61,11 +60,9 @@ public class FagiInstance {
      * FagiInstance Constructor. Expects absolute paths of specification XML and rules XML.
      * 
      * @param specXml The path of the specification file.
-     * @param rulesXml The path of the rules file.
      */
-    public FagiInstance(String specXml, String rulesXml) {
+    public FagiInstance(String specXml) {
         this.specXml = specXml;
-        this.rulesXml = rulesXml;
     }
 
     /**
@@ -88,21 +85,29 @@ public class FagiInstance {
         functionRegistry.init();
         Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
 
-        InputValidator validator = new InputValidator(rulesXml, specXml, functionSet);
+        InputValidator validator = new InputValidator(specXml, functionSet);
 
         LOG.info("Validating input..");
-
-        if (!validator.isValidInput()) {
+        
+        if (!validator.isValidSpecWithXSD()) {
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
-
-        LOG.info("XML files seem valid.");
 
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
         FusionSpecification fusionSpec = specificationParser.parse(specXml);
         
+        if (!validator.isValidRulesWithXSD(fusionSpec.getRulesPath())) {
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+        
+        if (!validator.isValidFunctions(fusionSpec.getRulesPath())) {
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+
         //validate output filepath:
         if(!validator.isValidOutputDirPath(fusionSpec.getOutputDir())){
             LOG.info("Please specify a file output in specification.");
@@ -110,8 +115,10 @@ public class FagiInstance {
             System.exit(-1);
         }
         
+        LOG.info("XML files seem syntactically valid.");
+        
         RuleProcessor ruleProcessor = new RuleProcessor();
-        RuleCatalog ruleCatalog = ruleProcessor.parseRules(rulesXml);
+        RuleCatalog ruleCatalog = ruleProcessor.parseRules(fusionSpec.getRulesPath());
         ruleCatalog.setFunctionRegistry(functionRegistry);
 
         long stopTimeInput = System.currentTimeMillis();

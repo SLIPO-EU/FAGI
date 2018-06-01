@@ -68,7 +68,8 @@
 			  <xs:enumeration value="longestcommonsubsequence"/>
 			</xs:restriction>
 		  </xs:simpleType>
-		</xs:element>				
+		</xs:element>
+		<xs:element name="rules" type="xs:anyURI"/>		
 		<xs:element name="left">
 		  <xs:complexType>
 			<xs:sequence>

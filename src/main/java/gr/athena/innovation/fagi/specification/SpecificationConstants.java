@@ -30,6 +30,7 @@ public class SpecificationConstants {
         public static final String OUTPUT_FORMAT = "outputFormat";
         public static final String LOCALE = "locale";
         public static final String SIMILARITY = "similarity";
+        public static final String RULES = "rules";
 
         public static final String LEFT_DATASET = "left";
         public static final String RIGHT_DATASET = "right";

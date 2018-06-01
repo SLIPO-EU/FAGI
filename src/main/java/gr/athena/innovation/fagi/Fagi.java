@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
  */
 public class Fagi {
 
-    private static final Logger logger = LogManager.getRootLogger();
+    private static final Logger LOG = LogManager.getRootLogger();
 
     /**
      *
@@ -29,7 +29,6 @@ public class Fagi {
     public static void main(String[] args) {
 
         String specXml = null;
-        String rulesXml = null;
 
         String arg;
         String value;
@@ -40,15 +39,13 @@ public class Fagi {
             arg = args[i];
             if (arg.startsWith("-")) {
                 if (arg.equals("-help")) {
-                    logger.info(SpecificationConstants.HELP);
+                    LOG.info(SpecificationConstants.HELP);
                     System.exit(-1);
                 }
             }
             value = args[i + 1];
             if (arg.equals("-spec")) {
                 specXml = value;
-            } else if (arg.equals("-rules")) {
-                rulesXml = value;
                 break;
             }
             i++;
@@ -56,17 +53,17 @@ public class Fagi {
 
         try {
 
-            FagiInstance fagi = new FagiInstance(specXml, rulesXml);
+            FagiInstance fagi = new FagiInstance(specXml);
 
             fagi.run();
 
         } catch (WrongInputException e) {
-            logger.error(e.getMessage(), e);
-            logger.info(SpecificationConstants.HELP);
+            LOG.error(e.getMessage(), e);
+            LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         } catch (ParserConfigurationException | SAXException | IOException | ParseException 
                 | ApplicationException | org.json.simple.parser.ParseException ex) {
-            logger.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
             System.exit(-1);
         }
     }

@@ -4,6 +4,7 @@
 	<outputFormat>NT</outputFormat>
 	<locale></locale>
 	<similarity>jarowinkler</similarity>
+	<rules></rules>
 	<left>
 		<id></id>
 		<endpoint></endpoint>

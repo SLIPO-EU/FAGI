@@ -149,6 +149,10 @@ public class SpecificationParser {
 
             fusionSpecification.setSimilarity(similarity);
 
+            NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.RULES);
+            String rules = rulesNodeList.item(0).getTextContent();
+            fusionSpecification.setRulesPath(rules);
+            
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();

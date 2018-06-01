@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.utils;
 
-import gr.athena.innovation.fagi.specification.FusionSpecification;
 import gr.athena.innovation.fagi.specification.SchemaDefinition;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.File;
@@ -33,15 +32,15 @@ public class InputValidator {
 
     private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(InputValidator.class);
     
-    private final String rulesXmlPath;
+    //private final String rulesXmlPath;
     private final String specXmlPath;
     private final Set<String> functionSet;
     
     private final XmlValidator xmlValidator = new XmlValidator();
     
-    public InputValidator(String rulesXmlPath, String specificationPath, Set<String> functionSet){
+    public InputValidator(String specificationPath, Set<String> functionSet){
         
-        this.rulesXmlPath = rulesXmlPath;
+        //this.rulesXmlPath = rulesXmlPath;
         this.specXmlPath = specificationPath;
         this.functionSet = functionSet;
     }
@@ -77,24 +76,33 @@ public class InputValidator {
         }    
     }
 
-    public boolean isValidInput() {
+    public boolean isValidSpecWithXSD() {
         boolean isValid;
         try {
-            isValid = isValidSpecification() && isValidRulesXml() && isValidFunctions();
+            isValid = isValidSpecification();
             
         } catch (FileNotFoundException ex) {
             logger.fatal("Input is not valid! " + ex);
-            return false;
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            logger.fatal("Input is not valid! " + ex);
-            //TODO: change return value after implementation is complete
             return false;
         }
         
         return isValid;
     }
     
-    private boolean isValidRulesXml() throws FileNotFoundException{
+    public boolean isValidRulesWithXSD(String rulesXmlPath) {
+        boolean isValid;
+        try {
+            isValid = isValidRulesXml(rulesXmlPath);
+            
+        } catch (FileNotFoundException ex) {
+            logger.fatal("Input is not valid! " + ex);
+            return false;
+        }
+        
+        return isValid;
+    }
+    
+    private boolean isValidRulesXml(String rulesXmlPath) throws FileNotFoundException{
         return xmlValidator.validateAgainstXSD(rulesXmlPath, SchemaDefinition.RULE_XSD);
     }
     
@@ -102,7 +110,7 @@ public class InputValidator {
         return xmlValidator.validateAgainstXSD(specXmlPath, SchemaDefinition.SPEC_XSD);
     }
     
-    private boolean isValidFunctions() throws ParserConfigurationException, SAXException, IOException{
+    public boolean isValidFunctions(String rulesXmlPath) throws ParserConfigurationException, SAXException, IOException{
 
         File fXmlFile = new File(rulesXmlPath);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
