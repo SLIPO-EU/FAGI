@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.specification;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import java.util.Date;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,8 @@ public class FusionSpecification {
     
     private String categoriesA;
     private String categoriesB;
+    private Date dateA;
+    private Date dateB;    
 
     private EnumOutputMode outputMode;
     private String outputRDFFormat;
@@ -219,6 +222,22 @@ public class FusionSpecification {
         this.categoriesB = categoriesB;
     }
 
+    public Date getDateA() {
+        return dateA;
+    }
+
+    public void setDateA(Date dateA) {
+        this.dateA = dateA;
+    }
+
+    public Date getDateB() {
+        return dateB;
+    }
+
+    public void setDateB(Date dateB) {
+        this.dateB = dateB;
+    }  
+    
     public String getSimilarity() {
         return similarity;
     }
@@ -227,6 +246,13 @@ public class FusionSpecification {
         this.similarity = similarity;
     }
 
+    public String getRulesPath() {
+        return rulesPath;
+    }
+
+    public void setRulesPath(String rulesPath) {
+        this.rulesPath = rulesPath;
+    }
 
     public EnumOutputMode getOutputMode() {
         return outputMode;
@@ -326,26 +352,21 @@ public class FusionSpecification {
             this.ambiguousDatasetFilepath = ambiguousDatasetFilepath;
         }
     }
-
-    public String getRulesPath() {
-        return rulesPath;
-    }
-
-    public void setRulesPath(String rulesPath) {
-        this.rulesPath = rulesPath;
-    }
-    
+  
     @Override
     public String toString() {
         return "\nFusionSpecification{" + 
+                    "\n rulesPath=" + rulesPath +                 
                     "\n idA=" + idA + 
                     //"\n endpointA=" + endpointA + 
                     "\n pathA=" + pathDatasetA + 
                     "\n categoriesA=" + categoriesA +
+                    "\n dateA=" + dateA +
                     "\n\n pathB=" + pathDatasetB + 
                     "\n idB=" + idB + 
                     //"\n endpointB=" + endpointB + 
                     "\n categoriesB=" + categoriesB +
+                    "\n dateB=" + dateB +                
                     "\n\n pathLinks=" + pathLinks + 
                     "\n idLinks=" + idLinks + 
                     //"\n endpointLinks=" + endpointLinks + 

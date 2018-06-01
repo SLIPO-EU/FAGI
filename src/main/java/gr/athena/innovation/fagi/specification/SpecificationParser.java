@@ -3,6 +3,9 @@ package gr.athena.innovation.fagi.specification;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -171,6 +174,22 @@ public class SpecificationParser {
                         fusionSpecification.setEndpointA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesA(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
+                        String dateString = n.getTextContent();
+                        if(StringUtils.isBlank(dateString)){
+                            fusionSpecification.setDateB(null);
+                        } else {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
+                            simpleDateFormat.setLenient(false);
+                            try {
+                                Date dateA = simpleDateFormat.parse(dateString);
+                                fusionSpecification.setDateA(dateA);
+                            } catch (ParseException ex) {
+                                logger.error(ex);
+                                throw new WrongInputException("Date in \"left\" dataset does not have the expected format. "
+                                        + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
+                            }                            
+                        }
                     }
                 }
                 n.getNextSibling();
@@ -192,10 +211,26 @@ public class SpecificationParser {
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
-                        }                        
+                        }
                         fusionSpecification.setEndpointB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
                         fusionSpecification.setCategoriesB(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
+                        String dateString = n.getTextContent();
+                        if(StringUtils.isBlank(dateString)){
+                            fusionSpecification.setDateB(null);
+                        } else {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
+                            simpleDateFormat.setLenient(false);
+                            try {
+                                Date dateB = simpleDateFormat.parse(dateString);
+                                fusionSpecification.setDateB(dateB);
+                            } catch (ParseException ex) {
+                                logger.error(ex);
+                                throw new WrongInputException("Date in \"right\" dataset does not have the expected format. "
+                                        + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
+                            }                            
+                        }
                     }
                 }
                 n.getNextSibling();

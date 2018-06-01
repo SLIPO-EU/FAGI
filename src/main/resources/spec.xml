@@ -10,12 +10,14 @@
 		<endpoint></endpoint>
 		<file>src/main/resources/single_synthetic/osm.nt</file>
 		<categories></categories>
+		<date>2016-04-14</date>
 	</left>
 	<right>
 		<id>WIKIMAPIA</id>
 		<endpoint></endpoint>
 		<file>src/main/resources/single_synthetic/wikimapia.nt</file>
 		<categories></categories>
+		<date>2018-03-22</date>
 	</right>
 	<links>
 		<id>LINKS_OSM_WIKIMAPIA</id>

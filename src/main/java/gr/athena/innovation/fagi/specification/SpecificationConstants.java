@@ -39,6 +39,8 @@ public class SpecificationConstants {
         public static final String MODE = "mode";
         public static final String LINKS = "links";
         public static final String CATEGORIES = "categories";
+        public static final String DATE = "date";
+        public static final String DATE_FORMAT = "yyyy-MM-dd";
 
         public static final String ID = "id";
         public static final String FILE = "file";

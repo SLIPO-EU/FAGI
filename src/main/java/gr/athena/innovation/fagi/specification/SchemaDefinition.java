@@ -85,6 +85,7 @@ public class SchemaDefinition {
 "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"categories\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"date\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element> \n" +
@@ -95,6 +96,7 @@ public class SchemaDefinition {
 "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"categories\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"date\" type=\"xs:string\" minOccurs=\"0\" />\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>\n" +

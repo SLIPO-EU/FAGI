@@ -77,6 +77,7 @@
 			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
 			  <xs:element name="file" type="xs:anyURI"/>
 			  <xs:element name="categories" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="date" type="xs:string" minOccurs="0"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element> 
@@ -87,6 +88,7 @@
 			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
 			  <xs:element name="file" type="xs:anyURI"/>
 			  <xs:element name="categories" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="date" type="xs:string" minOccurs="0" />
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>

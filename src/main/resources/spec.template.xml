@@ -10,12 +10,14 @@
 		<endpoint></endpoint>
 		<file></file>
 		<categories></categories>
+		<date></date>
 	</left>
 	<right>
 		<id></id>
 		<endpoint></endpoint>
 		<file></file>
 		<categories></categories>
+		<date></date>
 	</right>
 	<links>
 		<id>links</id>

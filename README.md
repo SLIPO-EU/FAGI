@@ -63,6 +63,8 @@ Specifically:
 
 `categories`: This is again optional. It is used to extract statistics about the categories of the entities. If you want to use this feature you should provide a file in N-Triples format that contains the categorization.
 
+`date`: Optional tag. Denotes which dataset is the most recent. Format expected: yyyy-MM-dd
+
 Furthermore, the `target` tag refers to the target/output dataset and contains the following configuration tags:
 
 `mode`: Specify the fused dataset mode. The supported modes are shown in the table below.
