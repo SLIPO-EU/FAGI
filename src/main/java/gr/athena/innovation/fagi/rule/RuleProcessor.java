@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  */
 public class RuleProcessor {
 
-    private static final Logger logger = LogManager.getLogger(RuleProcessor.class);
+    private static final Logger LOG = LogManager.getLogger(RuleProcessor.class);
 
     /**
      * 
@@ -60,7 +60,7 @@ public class RuleProcessor {
         
         RuleCatalog ruleCatalog = new RuleCatalog();
 
-        logger.info("Parsing rules: " + path);
+        LOG.info("Parsing rules: " + path);
 
         File fXmlFile = new File(path);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -86,7 +86,6 @@ public class RuleProcessor {
         //get all <rule> elements of the XML. The rule elements are all in the same level
         NodeList rules = doc.getElementsByTagName(SpecificationConstants.Rule.RULE);
         for (int temp = 0; temp < rules.getLength(); temp++) {
-            logger.info("----- Rule " + temp);
 
             Node ruleNode = rules.item(temp);
             NodeList ruleNodeList = ruleNode.getChildNodes();
@@ -98,7 +97,6 @@ public class RuleProcessor {
         //get all <validationRule> elements of the XML. The rule elements are all in the same level
         NodeList validationRules = doc.getElementsByTagName(SpecificationConstants.Rule.VALIDATION_RULE);
         for (int temp = 0; temp < validationRules.getLength(); temp++) {
-            logger.info("----- Validation Rule " + temp);
 
             Node validationRulesNode = validationRules.item(temp);
             NodeList validationRuleNodeList = validationRulesNode.getChildNodes();
@@ -122,10 +120,10 @@ public class RuleProcessor {
             if (ruleNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element ruleElement = (Element) ruleNodeList.item(i);
                 if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.PROPERTY_A)) {
-                    logger.debug("property A: " + ruleElement.getTextContent());
+                    LOG.debug("property A: " + ruleElement.getTextContent());
                     rule.setPropertyA(ruleElement.getTextContent());
                 } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.PROPERTY_B)) {
-                    logger.debug("property B: " + ruleElement.getTextContent());
+                    LOG.debug("property B: " + ruleElement.getTextContent());
                     rule.setPropertyB(ruleElement.getTextContent());
                 } else if (ruleElement.getNodeName().contains(SpecificationConstants.Rule.EXTERNAL_PROPERTY)) {
 
@@ -163,8 +161,8 @@ public class RuleProcessor {
         }
 
         if (actionRuleSet == null) {
-            logger.trace("# RULE without action rule set");
-            logger.trace(rule.getDefaultFusionAction());
+            LOG.trace("# RULE without action rule set");
+            LOG.trace(rule.getDefaultFusionAction());
         }
 
         return rule;
@@ -233,7 +231,7 @@ public class RuleProcessor {
         //Extract condition
         NodeList conditionsList = actionRuleElement.getElementsByTagName(SpecificationConstants.Rule.CONDITION);
 
-        logger.trace(" condition size: " + conditionsList.getLength());
+        LOG.trace(" condition size: " + conditionsList.getLength());
         if (conditionsList.getLength() != 1) {
             //TODO - remove this check after xsd validation is complete
             throw new WrongInputException("Condition should be exactly one inside " + SpecificationConstants.Rule.ACTION_RULE
@@ -258,10 +256,10 @@ public class RuleProcessor {
         //2) Contains an expression
         //1) Contains a single function:
         if (parentNodeContainsSingleFunction(conditionNode)) {
-            logger.trace("Condition contains only function");
+            LOG.trace("Condition contains only function");
 
             String func = getSingleFunction(conditionNode);
-            logger.trace("found single function: " + func);
+            LOG.trace("found single function: " + func);
             Function function = new Function(func);
             condition.setSingleFunction(true);
             condition.setFunction(func);
@@ -456,7 +454,7 @@ public class RuleProcessor {
     }
 
     private String getLogicalOperationType(Node parentExpression) throws WrongInputException {
-        logger.trace("Extracting logical operation: " + parentExpression.getNodeName());
+        LOG.trace("Extracting logical operation: " + parentExpression.getNodeName());
         Node child = parentExpression.getFirstChild();
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
@@ -504,7 +502,7 @@ public class RuleProcessor {
         while (true) {
 
             if (logicalOperationNode.getNodeType() == Node.ELEMENT_NODE) {
-                logger.trace("logical operation: " + logicalOperationNode.getNodeName());
+                LOG.trace("logical operation: " + logicalOperationNode.getNodeName());
                 if (logicalOperationNode.getNodeName().equalsIgnoreCase(AND)
                         || logicalOperationNode.getNodeName().equalsIgnoreCase(OR)
                         || logicalOperationNode.getNodeName().equalsIgnoreCase(NOT)) {

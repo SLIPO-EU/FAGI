@@ -35,7 +35,8 @@ public class SparqlRepository {
         if (objectList.size() == 1) {
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                return object.toString();
+                //logger.warn(object.asLiteral().getLexicalForm());
+                return object.asLiteral().getLexicalForm();
             } else {
                 logger.fatal("Object is not a Literal! " + object.toString());
                 return null;
@@ -44,7 +45,9 @@ public class SparqlRepository {
             //Possible duplicate triple. Happens with synthetic data. Returns the first literal
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                return object.toString();
+                //logger.info("more than one object with property: " + p);
+                //logger.warn(object.asLiteral().getLexicalForm());
+                return object.asLiteral().getLexicalForm();
             } else {
                 logger.fatal("Object is not a Literal! " + object.toString());
                 return null;
@@ -56,7 +59,7 @@ public class SparqlRepository {
     }
 
     public static String getObjectOfPropertyChain(String p1, String p2, Model model) {
-        
+
         String var = "o2";
         String result = null;
         String queryString = SparqlConstructor.selectObjectFromChainQuery(p1,p2);
@@ -71,7 +74,7 @@ public class SparqlRepository {
 
                 RDFNode c = soln.get(var);
                 if (c.isLiteral()) {
-                    result = c.toString();
+                    result = c.asLiteral().getLexicalForm();
                 }
             }
         }
@@ -79,11 +82,51 @@ public class SparqlRepository {
     }
 
     public static Resource getSubjectWithLiteral(String property, String literal, Model model) {
-        
+
         String var = "s";
         String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property, literal);
 
-        Query query = QueryFactory.create(queryString);
+        Query query = null;
+        try {
+            query = QueryFactory.create(queryString);
+        } catch (org.apache.jena.query.QueryParseException ex){
+            logger.warn("Query parse exception with query:\n" + queryString);
+        }
+        
+        if(query == null){
+            return null;
+        }
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode result = soln.get(var);
+                if (result.isResource()) {
+                    return (Resource) result;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Resource getSubjectWithGeometry(String property, String literal, Model model) {
+
+        String var = "s";
+        String queryString = SparqlConstructor.selectNodeWithGeometryQuery(property, literal);
+
+        Query query = null;
+        try {
+            query = QueryFactory.create(queryString);
+        } catch (org.apache.jena.query.QueryParseException ex){
+            logger.warn("Query parse exception with query:\n" + queryString);
+        }
+        
+        if(query == null){
+            return null;
+        }
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
             ResultSet results = qexec.execSelect();

@@ -211,7 +211,7 @@ public class Fuser implements IFuser{
             {
                 LOG.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
                 Model leftModel = LeftDataset.getLeftDataset().getModel();
-                
+
                 Set<String> leftLocalNames = new HashSet<>();
                 for(LinkedPair pair : fusedEntities){
 

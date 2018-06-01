@@ -39,10 +39,8 @@ public class CategoryWeight {
             zeroBaseSimilarity = true;
         }
 
-        System.out.println("CWmismatchA :" + mismatchA.size() + "| CWmismatchB :" + mismatchB.size() + "|");
         if((mismatchA.isEmpty() && !mismatchB.isEmpty()) || (!mismatchA.isEmpty() && mismatchB.isEmpty())){
             halfEmptyMismatch = true;
-            System.out.println("halfEmptyMismatch");
         }
 
         if(mismatchA.isEmpty() && mismatchB.isEmpty()){

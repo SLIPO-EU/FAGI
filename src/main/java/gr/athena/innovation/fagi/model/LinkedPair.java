@@ -1,6 +1,9 @@
 package gr.athena.innovation.fagi.model;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -26,6 +29,8 @@ import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -44,7 +49,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class LinkedPair {
 
-    private static final Logger logger = LogManager.getLogger(LinkedPair.class);
+    private static final Logger LOG = LogManager.getLogger(LinkedPair.class);
     private Link link;
     private Entity leftNode;
     private Entity rightNode;
@@ -78,7 +83,7 @@ public class LinkedPair {
 
     public Entity getFusedEntity() {
         if (fusedEntity == null) {
-            logger.fatal("Current pair is not fused: " + this);
+            LOG.fatal("Current pair is not fused: " + this);
             throw new ApplicationException("Current pair is not fused: " + this);
         }
         return fusedEntity;
@@ -95,41 +100,18 @@ public class LinkedPair {
         EntityData rightEntityData = rightNode.getEntityData();
 
         for (Rule validationRule : validationRules) {
-            logger.trace("Validating with Rule: " + validationRule);
+            LOG.trace("Validating with Rule: " + validationRule);
 
-            String validationProperty;
-
-            //the property here is assumed to be one node above the literal value in order  to align with the ontology.
-            //For example the property is the p1 in the following linked triples.
-            // s p1 o1 . o1 p2 o2 
-            String literalA;
-            String literalB;
-
-            if (validationRule.getParentPropertyA() == null) {
-                validationProperty = validationRule.getPropertyA();
-                literalA = getLiteralValue(validationRule.getPropertyA(), leftEntityData.getModel());
-
-            } else {
-                validationProperty = validationRule.getParentPropertyA();
-                literalA = getLiteralValueFromChain(validationRule.getParentPropertyA(), validationRule.getPropertyA(),
-                        leftEntityData.getModel());
-            }
-
-            if (validationRule.getParentPropertyB() == null) {
-                literalB = getLiteralValue(validationRule.getPropertyB(), rightEntityData.getModel());
-            } else {
-                literalB = getLiteralValueFromChain(validationRule.getParentPropertyB(), validationRule.getPropertyB(),
-                        rightEntityData.getModel());
-            }
-
-            if (literalA == null && literalB == null) {
-                continue;
-            }
+            //assign nulls. Validation rule does not use basic properties, only external properties. 
+            //These values will be ignored at condition evaluation. Consider a refactoring
+            String validationProperty = null;
+            String literalA = null;
+            String literalB = null;
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if (validationRule.getActionRuleSet() == null) {
-                logger.trace("Rule without ACTION RULE SET, accepting link.");
+                LOG.trace("Rule without ACTION RULE SET, accepting link.");
 
                 validation = EnumValidationAction.ACCEPT;
 
@@ -141,7 +123,7 @@ public class LinkedPair {
             boolean actionRuleToApply = false;
             for (ActionRule actionRule : actionRules) {
 
-                logger.info("-- Action rule: " + actionRuleCount);
+                LOG.debug("-- Action rule: " + actionRuleCount);
 
                 EnumValidationAction validationAction = null;
 
@@ -180,7 +162,7 @@ public class LinkedPair {
                 actionRuleCount++;
 
                 if (isActionRuleToBeApplied) {
-                    logger.debug("Condition : " + condition + " evaluated true. Validating link with: " + validationAction);
+                    LOG.debug("Condition : " + condition + " evaluated true. Validating link with: " + validationAction);
 
                     validation = validationAction;
 
@@ -194,7 +176,7 @@ public class LinkedPair {
                 
                 EnumValidationAction defaultAction = validationRule.getDefaultValidationAction();
                 
-                logger.debug("All conditions evaluated to false in validation. Using default validation action: " 
+                LOG.debug("All conditions evaluated to false in validation. Using default validation action: " 
                         + defaultAction);
                 
                 validation = defaultAction;
@@ -218,7 +200,7 @@ public class LinkedPair {
         List<Rule> rules = ruleCatalog.getRules();
 
         for (Rule rule : rules) {
-            logger.trace("Fusing with Rule: " + rule);
+            LOG.debug("Fusing with Rule: " + rule);
 
             EnumFusionAction defaultFusionAction = rule.getDefaultFusionAction();
 
@@ -255,7 +237,7 @@ public class LinkedPair {
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if (rule.getActionRuleSet() == null) {
-                logger.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
+                LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
                     fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
                 }
@@ -267,7 +249,7 @@ public class LinkedPair {
             boolean actionRuleToApply = false;
             for (ActionRule actionRule : actionRules) {
 
-                logger.info("-- Action rule: " + actionRuleCount);
+                LOG.debug("-- Action rule: " + actionRuleCount);
 
                 EnumFusionAction fusionAction = null;
 
@@ -306,8 +288,8 @@ public class LinkedPair {
                 actionRuleCount++;
 
                 if (isActionRuleToBeApplied) {
-                    logger.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
-                    logger.debug("Literals to be fused: " + literalA + " <--> " + literalB);
+                    LOG.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
+                    LOG.debug("Literals to be fused: " + literalA + " <--> " + literalB);
                     
                     fuseRuleAction(fusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
 
@@ -318,7 +300,7 @@ public class LinkedPair {
 
             //No action rule applied. Use default Action
             if (actionRuleToApply == false) {
-                logger.debug("All conditions evaluated to false in fusion rule. Using default fusion action: " 
+                LOG.debug("All conditions evaluated to false in fusion rule. Using default fusion action: " 
                         + defaultFusionAction);                
                 fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
             }
@@ -348,7 +330,7 @@ public class LinkedPair {
                 fusedModel.add(leftData.getModel());
                 fusedData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedData);
-
+                
                 break;
             }
             case KEEP_RIGHT: {
@@ -487,7 +469,8 @@ public class LinkedPair {
                 break;
             }
             case CONCATENATE: {
-
+                checkPropertyType(property, action);
+                
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
@@ -504,8 +487,40 @@ public class LinkedPair {
 
                 break;
             }
-            case KEEP_LONGEST: {
+            case CONCATENATE_GEOMETRY: {
 
+                checkWKTProperty(property, action);
+
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+
+                Geometry[] geometries = new Geometry[]{leftGeometry, rightGeometry};
+                
+                Geometry geometryCollection = new GeometryCollection(geometries, new GeometryFactory());
+
+                String wktFusedGeometry = getWKTLiteral(geometryCollection);
+
+                if (isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
+                
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+                String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+
+                fusedModel.add(node, property, geometryLiteral);
+
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            }
+            case KEEP_LONGEST: {
+                checkPropertyType(property, action);
+                
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
@@ -551,15 +566,18 @@ public class LinkedPair {
                 Geometry leftGeometry = parseGeometry(literalA);
                 Geometry rightGeometry = parseGeometry(literalB);
 
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+                
                 if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
 
                     if (isRejectedByPreviousRule(fusedModel)) {
                         break;
                     }
 
-                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
 
-                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));
+                    Literal geometryLiteral = ResourceFactory.createTypedLiteral(literalA, geometryDatatype);
+                    fusedModel.add(node, property, geometryLiteral);
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -572,9 +590,10 @@ public class LinkedPair {
                         break;
                     }
 
-                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
 
-                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalB));
+                    Literal geometryLiteral = ResourceFactory.createTypedLiteral(literalB, geometryDatatype);
+                    fusedModel.add(node, property, geometryLiteral);
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -588,6 +607,8 @@ public class LinkedPair {
 
                 Geometry leftGeometry = parseGeometry(literalA);
                 Geometry rightGeometry = parseGeometry(literalB);
+                
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
 
                 if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
                     CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
@@ -598,9 +619,12 @@ public class LinkedPair {
                         break;
                     }
 
-                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                    Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
 
-                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));
+                    String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                    Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+                    
+                    fusedModel.add(node, property, geometryLiteral);
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -616,9 +640,12 @@ public class LinkedPair {
                         break;
                     }
 
-                    Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-
-                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));
+                    Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
+                    
+                    String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                    Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+                    
+                    fusedModel.add(node, property, geometryLiteral);
 
                     fusedEntityData = fusedEntity.getEntityData();
                     fusedEntityData.setModel(fusedModel);
@@ -632,6 +659,8 @@ public class LinkedPair {
 
                 Geometry leftGeometry = parseGeometry(literalA);
                 Geometry rightGeometry = parseGeometry(literalB);
+                
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
 
                 CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
                 Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
@@ -641,9 +670,12 @@ public class LinkedPair {
                     break;
                 }
 
-                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-
-                fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));
+                Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
+                
+                String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+                
+                fusedModel.add(node, property, geometryLiteral);
 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -656,6 +688,8 @@ public class LinkedPair {
 
                 Geometry leftGeometry = parseGeometry(literalA);
                 Geometry rightGeometry = parseGeometry(literalB);
+                
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
 
                 CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
                 Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);
@@ -665,9 +699,12 @@ public class LinkedPair {
                     break;
                 }
 
-                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
 
-                fusedModel.add(node, property, ResourceFactory.createStringLiteral(wktFusedGeometry));
+                String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+                
+                fusedModel.add(node, property, geometryLiteral);
 
                 fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
@@ -679,8 +716,7 @@ public class LinkedPair {
     }
 
     //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
-    //The method also returns the resource that the literalA or B was found in order to be used as subject and preserve
-    //the triple chain
+    //The method returns the resource that the literalA or B was found in order to be used as subject and preserve the triple chain.
     private Resource getResourceAndRemoveLiteral(Model model, Property property, String literalA, String literalB) {
         Resource node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
         if (node == null) {
@@ -694,14 +730,28 @@ public class LinkedPair {
         return node;
     }
 
+    //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
+    //The method returns the resource that the literalA or B was found in order to be used as subject and preserve the triple chain.
+    private Resource getResourceAndRemoveGeometry(Model model, Property property, String literalA, String literalB) {
+        Resource node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalA, model);
+        if (node == null) {
+            node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalB, model);
+            if (node != null) {
+                model.removeAll(node, property, (RDFNode) null);
+            }
+        } else {
+            model.removeAll(node, property, (RDFNode) null);
+        }
+        return node;
+    }
+    
     private String getLiteralValue(String property, Model model) {
         Property propertyRDF = getRDFPropertyFromString(property);
 
         if (propertyRDF != null) {
             return SparqlRepository.getObjectOfProperty(propertyRDF, model);
         } else {
-            logger.warn("Could not find literal with property {}", property);
-
+            LOG.warn("Could not find literal with property {}", property);
             return "";
         }
     }
@@ -711,7 +761,7 @@ public class LinkedPair {
         if (property1 != null) {
             return SparqlRepository.getObjectOfPropertyChain(property1, property2, model);
         } else {
-            logger.warn("Could not find literal with property {}", property1);
+            LOG.warn("Could not find literal with properties {}", property1, property2);
             return "";
         }
     }
@@ -737,13 +787,20 @@ public class LinkedPair {
 
     private Geometry parseGeometry(String literal) {
 
-        WKTReader wellKnownTextReader = new WKTReader();
+        String literalWithoutCRS = literal.replace(Namespace.CRS_4326 + " ", "");
+
+        int sourceSRID = 4326; //All features assumed in WGS84 lon/lat coordinates
+
+        GeometryFactory geomFactory = new GeometryFactory(new PrecisionModel(), sourceSRID);
+
+        WKTReader wellKnownTextReader = new WKTReader(geomFactory);
+
         Geometry geometry = null;
         try {
-            geometry = wellKnownTextReader.read(literal);
+            geometry = wellKnownTextReader.read(literalWithoutCRS);
         } catch (ParseException ex) {
-            logger.fatal("Error parsing geometry literal " + literal);
-            logger.fatal(ex);
+            LOG.fatal("Error parsing geometry literal " + literalWithoutCRS);
+            LOG.fatal(ex);
         }
 
         return geometry;
@@ -759,10 +816,17 @@ public class LinkedPair {
 
     private void checkWKTProperty(Property property, EnumFusionAction action) throws WrongInputException {
         if (!property.toString().equals(Namespace.WKT)) {
-            logger.error("The selected action " + action.toString() + " applies only for WKT geometry literals");
+            LOG.error("The selected action " + action.toString() + " applies only for WKT geometry literals");
             throw new WrongInputException("The selected action " + action.toString() + " applies only for WKT geometry literals");
         }
     }
+    
+    private void checkPropertyType(Property property, EnumFusionAction action) throws WrongInputException {
+        if (property.toString().equals(Namespace.WKT)) {
+            LOG.error("The selected action " + action.toString() + " does not apply on geometries.");
+            throw new WrongInputException("The selected action " + action.toString() + " does not apply on geometries.");
+        }
+    }    
 
     private boolean isRejectedByPreviousRule(Model model) {
         //the link has been rejected (or rejected and marked ambiguous) by previous rule.

@@ -60,11 +60,16 @@ public enum EnumFusionAction {
      * Concatenates the two literals and keeps them in the same property.
      */      
     CONCATENATE(8),
+
+    /**
+     *  Produces a geometry collection from the given geometries.
+     */      
+    CONCATENATE_GEOMETRY(9),    
     
     /**
      * Keeps the model of the entity with the longest value. 
      */      
-    KEEP_LONGEST(9);
+    KEEP_LONGEST(10);
     
 	private final int value;
 
@@ -143,6 +148,7 @@ public enum EnumFusionAction {
         case KEEP_LEFT: return "keep-left";
         case KEEP_RIGHT: return "keep-right";
         case CONCATENATE: return "concatenate";
+        case CONCATENATE_GEOMETRY: return "concatenate-geometry";
         case KEEP_LONGEST: return "keep-longest";        
         case KEEP_BOTH: return "keep-both";
         case KEEP_MORE_POINTS: return "keep-more-points";

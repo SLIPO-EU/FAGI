@@ -147,7 +147,15 @@ public class SparqlConstructor {
                         + "?s <" + predicate + "> \"" + literal +"\" "
                         + "}";
         return query;
-    }    
+    }  
+    
+    public static String selectNodeWithGeometryQuery(String predicate, String literal){
+        String query = "SELECT ?s " 
+                        + "WHERE {"
+                        + "?s <" + predicate + "> \"" + literal +"\"" + Namespace.WKT_DATATYPE + " "
+                        + "}";
+        return query;
+    }     
 
     public static String selectObjectFromChainQuery(String predicate1, String predicate2){
         String query = "SELECT ?o2 " 

@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -139,15 +140,14 @@ public class FagiInstance {
         TermResolver.setTerms(specialTerms);
         CallingCodeResolver.setCodes(codes);
 
-        //Start fusion process
-        long startTimeFusion = System.currentTimeMillis();
-
         if(exportFrequencies){
             LOG.info("Exporting frequencies...");
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
             freqProcess.run(fusionSpec, rdfProperties);
         }
 
+        long startTimeComputeStatistics = System.currentTimeMillis(); 
+        
         if (exportStatistics) {
             LOG.info("Calculating statistics...");
             //statistics obtained using RDF
@@ -162,6 +162,8 @@ public class FagiInstance {
                         + Namespace.SOURCE + " property that is being used to count the entities.");
             }
         }
+        
+        long stopTimeComputeStatistics = System.currentTimeMillis();
         
         if(exportSimilaritiesPerLink){
             //similarity viewer for each pair and a,b,c normalization
@@ -192,6 +194,9 @@ public class FagiInstance {
             trainer.train();
         }
 
+        //Start fusion process
+        long startTimeFusion = System.currentTimeMillis();        
+        
         if(fuse){
             LOG.info("Initiating fusion process...");
 
@@ -217,10 +222,20 @@ public class FagiInstance {
                     + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
             LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
+            LOG.info("Statistics computed in " + (stopTimeComputeStatistics - startTimeComputeStatistics) + "ms.");
             LOG.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
             LOG.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
             LOG.info("Total time {}ms.", stopTimeWrite - startTimeInput);
             LOG.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");            
         }
     }
+
+    public static String getFormattedTime(long millis) {
+        String time = String.format("%02d min, %02d sec", 
+            TimeUnit.MILLISECONDS.toMinutes(millis),
+            TimeUnit.MILLISECONDS.toSeconds(millis) - 
+            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+        ); 
+        return time;
+    }    
 }

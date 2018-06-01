@@ -162,6 +162,7 @@
 											  <xs:enumeration value="keep-left"/>
 											  <xs:enumeration value="keep-right"/>
 											  <xs:enumeration value="concatenate"/>
+											  <xs:enumeration value="concatenate-geometry"/>
 											  <xs:enumeration value="keep-longest"/>
 											  <xs:enumeration value="keep-both"/>
 											  <xs:enumeration value="keep-more-points"/>
@@ -183,6 +184,7 @@
 								  <xs:enumeration value="keep-left"/>
 								  <xs:enumeration value="keep-right"/>
 								  <xs:enumeration value="concatenate"/>
+								  <xs:enumeration value="concatenate-geometry"/>								  
 								  <xs:enumeration value="keep-longest"/>
 								  <xs:enumeration value="keep-both"/>
 								  <xs:enumeration value="keep-more-points"/>
