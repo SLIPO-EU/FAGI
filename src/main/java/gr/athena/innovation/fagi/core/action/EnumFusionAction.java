@@ -34,43 +34,48 @@ public enum EnumFusionAction {
     /**
      * Keeps both models of the entity from left and right source datasets.
      */
-    KEEP_BOTH(3), 
-
-    /**
-     * Keeps the geometry containing more points than the other.
-     */
-    KEEP_MORE_POINTS(4),
-
-    /**
-     * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
-     */
-    KEEP_MORE_POINTS_AND_SHIFT(5),
-
-    /**
-     * Shifts the geometry of the left source entity to the centroid of the right.
-     */
-    SHIFT_LEFT_GEOMETRY(6),
-
-    /**
-     * Shifts the geometry of the right source entity to the centroid of the left.
-     */
-    SHIFT_RIGHT_GEOMETRY(7),
-    
-    /**
-     * Concatenates the two literals and keeps them in the same property.
-     */      
-    CONCATENATE(8),
-
-    /**
-     *  Produces a geometry collection from the given geometries.
-     */      
-    CONCATENATE_GEOMETRY(9),    
+    KEEP_BOTH(3),
     
     /**
      * Keeps the model of the entity with the longest value. 
      */      
-    KEEP_LONGEST(10);
+    KEEP_LONGEST(4),
     
+    /**
+     * Concatenates the two literals and keeps them in the same property.
+     */      
+    CONCATENATE(5),    
+    
+    /**
+     * Keeps the most recent model, based on the dataset dates provided in the specification.
+     */
+    KEEP_MOST_RECENT(6),     
+
+    /**
+     * Keeps the geometry containing more points than the other.
+     */
+    KEEP_MORE_POINTS(7),
+
+    /**
+     * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
+     */
+    KEEP_MORE_POINTS_AND_SHIFT(8),
+
+    /**
+     * Shifts the geometry of the left source entity to the centroid of the right.
+     */
+    SHIFT_LEFT_GEOMETRY(9),
+
+    /**
+     * Shifts the geometry of the right source entity to the centroid of the left.
+     */
+    SHIFT_RIGHT_GEOMETRY(10),
+
+    /**
+     *  Produces a geometry collection from the given geometries.
+     */      
+    CONCATENATE_GEOMETRY(11);    
+
 	private final int value;
 
 	private EnumFusionAction(int value) {
@@ -147,10 +152,11 @@ public enum EnumFusionAction {
         case UNDEFINED: return "undefined";
         case KEEP_LEFT: return "keep-left";
         case KEEP_RIGHT: return "keep-right";
+        case KEEP_BOTH: return "keep-both"; 
+        case KEEP_LONGEST: return "keep-longest";
+        case KEEP_MOST_RECENT: return "keep-most-recent";         
         case CONCATENATE: return "concatenate";
         case CONCATENATE_GEOMETRY: return "concatenate-geometry";
-        case KEEP_LONGEST: return "keep-longest";        
-        case KEEP_BOTH: return "keep-both";
         case KEEP_MORE_POINTS: return "keep-more-points";
         case KEEP_MORE_POINTS_AND_SHIFT: return "keep-more-points-and-shift";
         case SHIFT_LEFT_GEOMETRY: return "shift-left-geometry";

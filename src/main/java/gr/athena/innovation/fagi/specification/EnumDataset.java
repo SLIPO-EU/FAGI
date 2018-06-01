@@ -10,7 +10,7 @@ import java.util.Map;
  * @author nkarag
  */
 public enum EnumDataset {
-    LEFT(0), RIGHT(1);
+    UNDEFINED(0), LEFT(1), RIGHT(2);
     
 	private final int value;
 
@@ -47,6 +47,7 @@ public enum EnumDataset {
     @Override
     public String toString() {
         switch(this) {
+            case UNDEFINED: return "undefined";
             case LEFT: return "left";
             case RIGHT: return "right";
             default: return "default";

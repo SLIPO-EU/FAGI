@@ -468,51 +468,16 @@ public class LinkedPair {
 
                 break;
             }
-            case CONCATENATE: {
-                checkPropertyType(property, action);
-                
-                if (isRejectedByPreviousRule(fusedModel)) {
-                    break;
-                }
+            case KEEP_BOTH: {
+                EntityData leftEntityData = leftNode.getEntityData();
+                EntityData rightEntityData = rightNode.getEntityData();
 
-                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
-
-                String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
-
-                fusedModel.add(node, property, ResourceFactory.createStringLiteral(concatenated));
-
-                fusedEntityData = fusedEntity.getEntityData();
-                fusedEntityData.setModel(fusedModel);
-                fusedEntity.setEntityData(fusedEntityData);
-
-                break;
-            }
-            case CONCATENATE_GEOMETRY: {
-
-                checkWKTProperty(property, action);
-
-                Geometry leftGeometry = parseGeometry(literalA);
-                Geometry rightGeometry = parseGeometry(literalB);
-
-                Geometry[] geometries = new Geometry[]{leftGeometry, rightGeometry};
-                
-                Geometry geometryCollection = new GeometryCollection(geometries, new GeometryFactory());
-
-                String wktFusedGeometry = getWKTLiteral(geometryCollection);
+                fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
-                
-                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
-                String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
-                Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
-
-                fusedModel.add(node, property, geometryLiteral);
-
-                fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
 
@@ -545,21 +510,54 @@ public class LinkedPair {
 
                 break;
             }
-            case KEEP_BOTH: {
-                EntityData leftEntityData = leftNode.getEntityData();
-                EntityData rightEntityData = rightNode.getEntityData();
-
-                fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
-
+            case CONCATENATE: {
+                checkPropertyType(property, action);
+                
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
+                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+
+                String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
+
+                fusedModel.add(node, property, ResourceFactory.createStringLiteral(concatenated));
+
+                fusedEntityData = fusedEntity.getEntityData();
                 fusedEntityData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedEntityData);
 
                 break;
             }
+            case KEEP_MOST_RECENT: {
+                
+                if (isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                EnumDataset mostRecent = FusionSpecification.getInstance().getMostRecentDataset();
+
+                switch (mostRecent) {
+                    case LEFT:
+                    {
+                        Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                        fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));
+                        break;
+                    }
+                    case RIGHT:
+                    {
+                        Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+                        fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalB));
+                        break;
+                    }
+                    case UNDEFINED:
+                    default:
+                        //do not remove statement. Default dataset action should be kept in this case (no dates provided)
+                        break;
+                }
+
+                break;
+            }            
             case KEEP_MORE_POINTS: {
                 checkWKTProperty(property, action);
 
@@ -712,6 +710,37 @@ public class LinkedPair {
 
                 break;
             }
+            case CONCATENATE_GEOMETRY: {
+
+                checkWKTProperty(property, action);
+
+                Geometry leftGeometry = parseGeometry(literalA);
+                Geometry rightGeometry = parseGeometry(literalB);
+
+                Geometry[] geometries = new Geometry[]{leftGeometry, rightGeometry};
+                
+                Geometry geometryCollection = new GeometryCollection(geometries, new GeometryFactory());
+
+                String wktFusedGeometry = getWKTLiteral(geometryCollection);
+
+                if (isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                Resource node = getResourceAndRemoveGeometry(fusedModel, property, literalA, literalB);
+                
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+                String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
+                Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
+
+                fusedModel.add(node, property, geometryLiteral);
+
+                fusedEntityData = fusedEntity.getEntityData();
+                fusedEntityData.setModel(fusedModel);
+                fusedEntity.setEntityData(fusedEntityData);
+
+                break;
+            }            
         }
     }
 

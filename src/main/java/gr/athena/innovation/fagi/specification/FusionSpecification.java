@@ -229,6 +229,18 @@ public class FusionSpecification {
     public void setDateA(Date dateA) {
         this.dateA = dateA;
     }
+    
+    public EnumDataset getMostRecentDataset(){
+        if(dateA != null && dateB != null){
+            if(dateA.after(dateB)){
+                return EnumDataset.LEFT;
+            } else {
+                return EnumDataset.RIGHT;
+            }
+        } else {
+            return EnumDataset.UNDEFINED;
+        }
+    }
 
     public Date getDateB() {
         return dateB;
