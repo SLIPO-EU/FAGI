@@ -169,6 +169,7 @@ public class Fuser implements IFuser{
 
                 leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
 
+                //
                 addMessageToEmptyOutput(remaining);
 
                 break;

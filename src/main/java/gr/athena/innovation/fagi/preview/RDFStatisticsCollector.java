@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
+import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.math.BigDecimal;
@@ -21,10 +22,10 @@ import org.apache.logging.log4j.Logger;
  */
 public class RDFStatisticsCollector implements StatisticsCollector{
 
-    private static final Logger logger = LogManager.getLogger(RDFStatisticsCollector.class);
+    private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
     
-    private int totalEntitiesA;
-    private int totalEntitiesB;
+    private int totalPOIsA;
+    private int totalPOIsB;
     
     private int sumA = 0;
     private int sumB = 0;
@@ -37,7 +38,28 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         container = new StatisticsContainer();
 
         StatisticResultPair totalEntities = countTotalEntities();
-        container.setTotalEntities(totalEntities); 
+        container.setTotalPOIs(totalEntities);
+
+        StatisticResultPair totalTriples = countTriples();
+        container.setTotalTriples(totalTriples);
+        
+        StatisticResultPair nonEmptyNames = countNonEmptyNames();
+        container.setNonEmptyNames(nonEmptyNames);
+
+        StatisticResultPair nonEmptyPhones = countNonEmptyPhones();
+        container.setNonEmptyPhones(nonEmptyNames);
+
+        StatisticResultPair nonEmptyStreets = countNonEmptyStreets();
+        container.setNonEmptyStreets(nonEmptyStreets);
+
+        StatisticResultPair nonEmptyStreetNumbers = countNonEmptyStreetNumbers();
+        container.setNonEmptyStreetNumbers(nonEmptyStreetNumbers);
+
+        StatisticResultPair nonEmptyWebsites = countNonEmptyWebsites();
+        container.setNonEmptyWebsites(nonEmptyWebsites);
+
+        StatisticResultPair nonEmptyEmails = countNonEmptyEmails();
+        container.setNonEmptyEmails(nonEmptyEmails);
         
         StatisticResultPair distinctProperties = countDistinctProperties();
         container.setDistinctProperties(distinctProperties);
@@ -66,10 +88,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair percentageOfLocalities = calculateLocalityPercentage();
         container.setLocalityPercentage(percentageOfLocalities);
 
+        //depends on previous percentages calculation.
         StatisticResultPair percentageOfTotalProperties = calculateAllNonEmptyPropertiesPercentage();
         container.setNonEmptyTotalProperties(percentageOfTotalProperties);
 
-        if(totalEntitiesA == 0 || totalEntitiesB == 0){
+        if(totalPOIsA == 0 || totalPOIsB == 0){
             container.setValid(false);
         } else {
             container.setValid(true);
@@ -80,15 +103,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     
     private StatisticResultPair countTotalEntities(){
 
-        //count total entities using a the lat property. 
         Integer totalA = SparqlRepository.countPOIs(LeftDataset.getLeftDataset().getModel());
         Integer totalB = SparqlRepository.countPOIs(RightDataset.getRightDataset().getModel());
 
-        totalEntitiesA = totalA;
-        totalEntitiesB = totalB;
+        totalPOIsA = totalA;
+        totalPOIsB = totalB;
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
@@ -107,10 +129,71 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countNonEmptyDates(){
+    private StatisticResultPair countNonEmptyNames(){
 
-        Integer datesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.DATE);
-        Integer datesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.DATE);
+        Integer namesA = countNonEmptyProperty(Namespace.NAME_VALUE, EnumDataset.LEFT);
+        Integer namesB = countNonEmptyProperty(Namespace.NAME_VALUE, EnumDataset.RIGHT);
+
+        StatisticResultPair pair = new StatisticResultPair(namesA.toString(), namesB.toString());
+        pair.setName("Non empty Names");
+        
+        return pair;
+    }
+    
+    private StatisticResultPair countNonEmptyPhones(){
+
+        Integer phonesA = countNonEmptyProperty(Namespace.PHONE, EnumDataset.LEFT);
+        Integer phonesB = countNonEmptyProperty(Namespace.PHONE, EnumDataset.RIGHT);
+        
+        StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString());
+        pair.setName("Non empty Phones");
+        
+        return pair;
+    }
+    
+    private StatisticResultPair countNonEmptyStreets(){
+
+        Integer streetsA = countNonEmptyProperty(Namespace.STREET, EnumDataset.LEFT);
+        Integer streetsB = countNonEmptyProperty(Namespace.STREET, EnumDataset.RIGHT);
+        StatisticResultPair pair = new StatisticResultPair(streetsA.toString(), streetsB.toString());
+        pair.setName("Non empty Streets");
+        
+        return pair;
+    } 
+    
+    private StatisticResultPair countNonEmptyStreetNumbers(){
+
+        Integer stNumbersA = countNonEmptyProperty(Namespace.STREET_NUMBER, EnumDataset.LEFT);
+        Integer stNumbersB = countNonEmptyProperty(Namespace.STREET_NUMBER, EnumDataset.RIGHT);
+        StatisticResultPair pair = new StatisticResultPair(stNumbersA.toString(), stNumbersB.toString());
+        pair.setName("Non empty Street Numbers");
+        
+        return pair;
+    } 
+
+    private StatisticResultPair countNonEmptyWebsites(){
+
+        Integer websitesA = countNonEmptyProperty(Namespace.WEBSITE, EnumDataset.LEFT);
+        Integer websitesB = countNonEmptyProperty(Namespace.WEBSITE, EnumDataset.RIGHT);
+        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString());
+        pair.setName("Non empty Websites");
+        
+        return pair;
+    }     
+
+    private StatisticResultPair countNonEmptyEmails(){
+
+        Integer websitesA = countNonEmptyProperty(Namespace.EMAIL, EnumDataset.LEFT);
+        Integer websitesB = countNonEmptyProperty(Namespace.EMAIL, EnumDataset.RIGHT);
+        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString());
+        pair.setName("Non empty Websites");
+        
+        return pair;
+    }  
+    
+    private StatisticResultPair countNonEmptyDates(){
+        Integer datesA = countNonEmptyProperty(Namespace.DATE, EnumDataset.LEFT);
+        Integer datesB = countNonEmptyProperty(Namespace.DATE, EnumDataset.RIGHT);
         StatisticResultPair pair = new StatisticResultPair(datesA.toString(), datesB.toString());
         pair.setName("Non empty Dates");
         
@@ -178,12 +261,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int namesB = SparqlRepository.countPropertyWithObject(RightDataset.getRightDataset().getModel(), 
                 Namespace.NAME_TYPE, Namespace.OFFICIAL_LITERAL);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
 
-        Double percentageA = roundHalfDown((100 * namesA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * namesB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * namesA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * namesB) / (double) totalPOIsB);
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
         pair.setName("Percentage of names in each dataset");
@@ -197,12 +280,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int websiteA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.WEBSITE);
         int websiteB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.WEBSITE);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
         
-        Double percentageA = roundHalfDown((100 * websiteA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * websiteB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * websiteA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * websiteB) / (double) totalPOIsB);
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
         
@@ -217,12 +300,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int phonesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.PHONE);
         int phonesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.PHONE);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
         
-        Double percentageA = roundHalfDown((100 * phonesA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * phonesB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * phonesA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * phonesB) / (double) totalPOIsB);
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
         
@@ -237,12 +320,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetsA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET);
         int streetsB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
         
-        Double percentageA = roundHalfDown((100 * streetsA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * streetsB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * streetsA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * streetsB) / (double) totalPOIsB);
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
         
@@ -257,12 +340,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetΝumbersA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET_NUMBER);
         int streetNumbersB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET_NUMBER);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
 
-        Double percentageA = roundHalfDown((100 * streetΝumbersA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * streetNumbersB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * streetΝumbersA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * streetNumbersB) / (double) totalPOIsB);
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
 
@@ -277,20 +360,31 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int localitiesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.LOCALITY);
         int localitiesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.LOCALITY);
 
-        if(warn(totalEntitiesA, totalEntitiesB, Namespace.SOURCE)){
-            return new StatisticResultPair("0","0");
+        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
+            return new StatisticResultPair("-","-");
         }
 
-        Double percentageA = roundHalfDown((100 * localitiesA) / (double) totalEntitiesA);
-        Double percentageB = roundHalfDown((100 * localitiesB) / (double) totalEntitiesB);
+        Double percentageA = roundHalfDown((100 * localitiesA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * localitiesB) / (double) totalPOIsB);
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
 
         pair.setName("Percentage of locality in each dataset");
 
         return pair;
-    } 
+    }
+    
+    private StatisticResultPair countTriples(){
 
+        Long totalA = LeftDataset.getLeftDataset().getModel().size();
+        Long totalB = LeftDataset.getLeftDataset().getModel().size();
+
+        StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
+        pair.setName("Total triples");
+
+        return pair;
+    }
+    
     private StatisticResultPair calculateAllNonEmptyPropertiesPercentage(){
         
         Double nA = Double.parseDouble(container.getNamePercentage().getA());
@@ -318,16 +412,47 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
     
+    private Integer countNonEmptyProperty(String property, EnumDataset dataset){
+        Integer count;
+        switch (dataset){
+            case LEFT:
+                count = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), property);
+                break;
+            case RIGHT:
+                count = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), property);
+                break;
+            default:
+                throw new ApplicationException("Undefined dataset value.");
+        }
+        
+        return count;
+    }
+    
+    private Integer countNonEmptyProperty(String property1, String property2, EnumDataset dataset){
+        Integer count;
+        switch (dataset){
+            case LEFT:
+                count = SparqlRepository.countPropertyChain(LeftDataset.getLeftDataset().getModel(), property1, property2);
+                break;
+            case RIGHT:
+                count = SparqlRepository.countPropertyChain(RightDataset.getRightDataset().getModel(), property1, property2);
+                break;
+            default:
+                throw new ApplicationException("Undefined dataset value.");
+        }
+        return count;
+    }    
+    
     private double roundHalfDown(Double d){
         return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
     }
     
     private boolean warn(int entitiesA, int entitiesB, String propertyName) {
         if (entitiesA == 0) {
-            logger.warn("Zero entities in dataset A. Check " + propertyName + " property.");
+            LOG.warn("Zero entities in dataset A. Check " + propertyName + " property.");
             return true;
         } else if (entitiesB == 0) {
-            logger.warn("Zero entities in dataset B. Check " + propertyName + " property.");
+            LOG.warn("Zero entities in dataset B. Check " + propertyName + " property.");
             return true;
         }
         return false;

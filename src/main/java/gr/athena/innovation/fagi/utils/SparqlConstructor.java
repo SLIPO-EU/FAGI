@@ -198,5 +198,13 @@ public class SparqlConstructor {
                        "WHERE\n" +
                        "{?s " + predicate + " ?o}";
         return query;
-    }    
+    }
+
+    public static String countPropertyChain(String countVar, String predicate1, String predicate2){
+        String query = "SELECT (COUNT (?o2) AS ?" + countVar + ")\n" +
+                       "WHERE {" + 
+                       "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2" + 
+                       "}";
+        return query;
+    }
 }

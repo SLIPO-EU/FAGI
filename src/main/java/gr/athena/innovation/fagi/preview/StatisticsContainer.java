@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.preview;
 
+import com.google.gson.Gson;
+
 /**
  *
  * @author nkarag
@@ -8,10 +10,19 @@ public class StatisticsContainer {
     
     private boolean valid;
     
-    private StatisticResultPair distinctProperties;
+    private StatisticResultPair totalPOIs;
+    private StatisticResultPair totalTriples;
+    
+    private StatisticResultPair nonEmptyNames;
+    private StatisticResultPair nonEmptyPhones;
+    private StatisticResultPair nonEmptyStreets;
+    private StatisticResultPair nonEmptyStreetNumbers;
+    private StatisticResultPair nonEmptyWebsites;
+    private StatisticResultPair nonEmptyEmails;
     private StatisticResultPair nonEmptyDates;
+    
+    private StatisticResultPair distinctProperties;
     private StatisticResultPair percentageOfDateKnownFormats;
-    private StatisticResultPair totalEntities;
     private StatisticResultPair namePercentage;
     private StatisticResultPair websitePercentage;
     private StatisticResultPair phonePercentage;
@@ -22,12 +33,50 @@ public class StatisticsContainer {
 
     @Override
     public String toString() {
-        return "\n" + distinctProperties + "\n" + nonEmptyDates + "\n" + percentageOfDateKnownFormats + 
-               "\n" + totalEntities + "\n" + namePercentage + "\n" + websitePercentage + "\n" + phonePercentage + 
-               "\n" + streetPercentage + "\n" + streetNumberPercentage + "\n" + localityPercentage + 
-               "\n" + nonEmptyTotalProperties;
+
+        return "StatisticsContainer{" 
+                + "totalPOIs=" + totalPOIs 
+                + ", totalTriples=" + totalTriples 
+                + ", nonEmptyNames=" + nonEmptyNames 
+                + ", nonEmptyPhones=" + nonEmptyPhones 
+                + ", nonEmptyStreets=" + nonEmptyStreets 
+                + ", nonEmptyStreetNumbers=" + nonEmptyStreetNumbers 
+                + ", nonEmptyWebsites=" + nonEmptyWebsites 
+                + ", nonEmptyEmails=" + nonEmptyEmails 
+                + ", nonEmptyDates=" + nonEmptyDates 
+                + ", distinctProperties=" + distinctProperties 
+                + ", percentageOfDateKnownFormats=" + percentageOfDateKnownFormats 
+                + ", namePercentage=" + namePercentage 
+                + ", websitePercentage=" + websitePercentage 
+                + ", phonePercentage=" + phonePercentage 
+                + ", streetPercentage=" + streetPercentage 
+                + ", streetNumberPercentage=" + streetNumberPercentage 
+                + ", localityPercentage=" + localityPercentage 
+                + ", nonEmptyTotalProperties=" + nonEmptyTotalProperties + '}';
     }
 
+    public String toJson() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;        
+    }
+
+    public StatisticResultPair getTotalPOIs() {
+        return totalPOIs;
+    }
+
+    public void setTotalPOIs(StatisticResultPair totalPOIs) {
+        this.totalPOIs = totalPOIs;
+    }
+    
+    public StatisticResultPair getTotalTriples() {
+        return totalTriples;
+    }
+
+    public void setTotalTriples(StatisticResultPair totalTriples) {
+        this.totalTriples = totalTriples;
+    }
+    
     public StatisticResultPair getDistinctProperties() {
         return distinctProperties;
     }
@@ -50,14 +99,6 @@ public class StatisticsContainer {
 
     public void setNonEmptyDates(StatisticResultPair nonEmptyDates) {
         this.nonEmptyDates = nonEmptyDates;
-    }
-
-    public StatisticResultPair getTotalEntities() {
-        return totalEntities;
-    }
-
-    public void setTotalEntities(StatisticResultPair totalEntities) {
-        this.totalEntities = totalEntities;
     }
 
     public StatisticResultPair getNamePercentage() {
@@ -124,4 +165,51 @@ public class StatisticsContainer {
         this.valid = valid;
     }
 
+    public StatisticResultPair getNonEmptyNames() {
+        return nonEmptyNames;
+    }
+
+    public void setNonEmptyNames(StatisticResultPair nonEmptyNames) {
+        this.nonEmptyNames = nonEmptyNames;
+    }
+
+    public StatisticResultPair getNonEmptyPhones() {
+        return nonEmptyPhones;
+    }
+
+    public void setNonEmptyPhones(StatisticResultPair nonEmptyPhones) {
+        this.nonEmptyPhones = nonEmptyPhones;
+    }
+
+    public StatisticResultPair getNonEmptyStreets() {
+        return nonEmptyStreets;
+    }
+
+    public void setNonEmptyStreets(StatisticResultPair nonEmptyStreets) {
+        this.nonEmptyStreets = nonEmptyStreets;
+    }
+
+    public StatisticResultPair getNonEmptyStreetNumbers() {
+        return nonEmptyStreetNumbers;
+    }
+
+    public void setNonEmptyStreetNumbers(StatisticResultPair nonEmptyStreetNumbers) {
+        this.nonEmptyStreetNumbers = nonEmptyStreetNumbers;
+    }
+
+    public StatisticResultPair getNonEmptyWebsites() {
+        return nonEmptyWebsites;
+    }
+
+    public void setNonEmptyWebsites(StatisticResultPair nonEmptyWebsites) {
+        this.nonEmptyWebsites = nonEmptyWebsites;
+    }
+
+    public StatisticResultPair getNonEmptyEmails() {
+        return nonEmptyEmails;
+    }
+
+    public void setNonEmptyEmails(StatisticResultPair nonEmptyEmails) {
+        this.nonEmptyEmails = nonEmptyEmails;
+    }
 }

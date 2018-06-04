@@ -307,6 +307,29 @@ public class SparqlRepository {
         }
         return count;
     }
+
+    public static int countPropertyChain(Model model, String property1, String property2) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countPropertyChain(countVar, property1, property2);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
     
     public static Frequency selectCategories(Model model, String category) {
 

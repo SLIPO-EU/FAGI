@@ -54,9 +54,9 @@ public class StatisticsExporter {
     
     private void write(StatisticsContainer container, File outputFile) throws IOException{
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
-            writer.append("#Statistics");
-            writer.newLine();
-            writer.append(container.toString());
+            //writer.append("#Statistics");
+            //writer.newLine();
+            writer.append(container.toJson());
             writer.newLine();
         }        
     }
