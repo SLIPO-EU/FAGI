@@ -1,6 +1,14 @@
 package gr.athena.innovation.fagi.preview;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import gr.athena.innovation.fagi.exception.ApplicationException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -8,7 +16,10 @@ import com.google.gson.Gson;
  */
 public class StatisticsContainer {
     
-    private boolean valid;
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(StatisticsContainer.class);
+    
+    @JsonIgnore
+    private transient boolean valid;
     
     private StatisticResultPair totalPOIs;
     private StatisticResultPair totalTriples;
@@ -20,6 +31,16 @@ public class StatisticsContainer {
     private StatisticResultPair nonEmptyWebsites;
     private StatisticResultPair nonEmptyEmails;
     private StatisticResultPair nonEmptyDates;
+    private StatisticResultPair totalNonEmptyProperties;
+    
+    private StatisticResultPair emptyNames;
+    private StatisticResultPair emptyPhones;
+    private StatisticResultPair emptyStreets;
+    private StatisticResultPair emptyStreetNumbers;
+    private StatisticResultPair emptyWebsites;
+    private StatisticResultPair emptyEmails;
+    private StatisticResultPair emptyDates;
+    private StatisticResultPair totalEmptyProperties;
     
     private StatisticResultPair distinctProperties;
     private StatisticResultPair percentageOfDateKnownFormats;
@@ -29,36 +50,50 @@ public class StatisticsContainer {
     private StatisticResultPair streetPercentage;
     private StatisticResultPair streetNumberPercentage;
     private StatisticResultPair localityPercentage;
-    private StatisticResultPair nonEmptyTotalProperties;
+    private StatisticResultPair datePercentage;
+    private StatisticResultPair percentNonEmptyTotalProperties;
+    
+    private StatisticResultPair linkedVsUnlinked;
 
     @Override
     public String toString() {
-
         return "StatisticsContainer{" 
-                + "totalPOIs=" + totalPOIs 
-                + ", totalTriples=" + totalTriples 
-                + ", nonEmptyNames=" + nonEmptyNames 
-                + ", nonEmptyPhones=" + nonEmptyPhones 
-                + ", nonEmptyStreets=" + nonEmptyStreets 
-                + ", nonEmptyStreetNumbers=" + nonEmptyStreetNumbers 
-                + ", nonEmptyWebsites=" + nonEmptyWebsites 
-                + ", nonEmptyEmails=" + nonEmptyEmails 
-                + ", nonEmptyDates=" + nonEmptyDates 
-                + ", distinctProperties=" + distinctProperties 
-                + ", percentageOfDateKnownFormats=" + percentageOfDateKnownFormats 
-                + ", namePercentage=" + namePercentage 
-                + ", websitePercentage=" + websitePercentage 
-                + ", phonePercentage=" + phonePercentage 
-                + ", streetPercentage=" + streetPercentage 
-                + ", streetNumberPercentage=" + streetNumberPercentage 
-                + ", localityPercentage=" + localityPercentage 
-                + ", nonEmptyTotalProperties=" + nonEmptyTotalProperties + '}';
+                + "valid=" + valid + ", totalPOIs=" + totalPOIs + ", totalTriples=" + totalTriples 
+                + ", nonEmptyNames=" + nonEmptyNames + ", nonEmptyPhones=" + nonEmptyPhones + ", nonEmptyStreets=" 
+                + nonEmptyStreets + ", nonEmptyStreetNumbers=" + nonEmptyStreetNumbers + ", nonEmptyWebsites=" 
+                + nonEmptyWebsites + ", nonEmptyEmails=" + nonEmptyEmails + ", nonEmptyDates=" + nonEmptyDates 
+                + ", totalNonEmptyProperties=" + totalNonEmptyProperties + ", emptyNames=" + emptyNames 
+                + ", emptyPhones=" + emptyPhones + ", emptyStreets=" + emptyStreets + ", emptyStreetNumbers=" 
+                + emptyStreetNumbers + ", emptyWebsites=" + emptyWebsites + ", emptyEmails=" + emptyEmails 
+                + ", emptyDates=" + emptyDates + ", totalEmptyProperties=" + totalEmptyProperties 
+                + ", distinctProperties=" + distinctProperties + ", percentageOfDateKnownFormats=" 
+                + percentageOfDateKnownFormats + ", namePercentage=" + namePercentage + ", websitePercentage=" 
+                + websitePercentage + ", phonePercentage=" + phonePercentage + ", streetPercentage=" 
+                + streetPercentage + ", streetNumberPercentage=" + streetNumberPercentage + ", localityPercentage=" 
+                + localityPercentage + ", datePercentage=" + datePercentage + ", nonEmptyTotalProperties=" 
+                + percentNonEmptyTotalProperties + '}';
     }
 
     public String toJson() {
-        Gson gson = new Gson();
-        String json = gson.toJson(this);
-        return json;        
+        
+        String formattedJson = null;
+        
+        try {
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            
+            String originalJson = objectMapper.writeValueAsString(this);
+
+            JsonNode tree = objectMapper.readTree(originalJson);
+            formattedJson = objectMapper.writeValueAsString(tree);
+
+        } catch (IOException ex) {
+            LOG.error(ex);
+            throw new ApplicationException("Json serialization failed.");
+        }
+        
+        return formattedJson;
     }
 
     public StatisticResultPair getTotalPOIs() {
@@ -149,12 +184,20 @@ public class StatisticsContainer {
         this.localityPercentage = localityPercentage;
     }
 
-    public StatisticResultPair getNonEmptyTotalProperties() {
-        return nonEmptyTotalProperties;
+    public StatisticResultPair getDatePercentage() {
+        return datePercentage;
     }
 
-    public void setNonEmptyTotalProperties(StatisticResultPair nonEmptyTotalProperties) {
-        this.nonEmptyTotalProperties = nonEmptyTotalProperties;
+    public void setDatePercentage(StatisticResultPair datePercentage) {
+        this.datePercentage = datePercentage;
+    }
+    
+    public StatisticResultPair getPercentNonEmptyTotalProperties() {
+        return percentNonEmptyTotalProperties;
+    }
+
+    public void setPercentNonEmptyTotalProperties(StatisticResultPair percentNonEmptyTotalProperties) {
+        this.percentNonEmptyTotalProperties = percentNonEmptyTotalProperties;
     }
 
     public boolean isValid() {
@@ -211,5 +254,85 @@ public class StatisticsContainer {
 
     public void setNonEmptyEmails(StatisticResultPair nonEmptyEmails) {
         this.nonEmptyEmails = nonEmptyEmails;
+    }
+
+    public StatisticResultPair getEmptyNames() {
+        return emptyNames;
+    }
+
+    public void setEmptyNames(StatisticResultPair emptyNames) {
+        this.emptyNames = emptyNames;
+    }
+
+    public StatisticResultPair getEmptyPhones() {
+        return emptyPhones;
+    }
+
+    public void setEmptyPhones(StatisticResultPair emptyPhones) {
+        this.emptyPhones = emptyPhones;
+    }
+
+    public StatisticResultPair getEmptyStreets() {
+        return emptyStreets;
+    }
+
+    public void setEmptyStreets(StatisticResultPair emptyStreets) {
+        this.emptyStreets = emptyStreets;
+    }
+
+    public StatisticResultPair getEmptyStreetNumbers() {
+        return emptyStreetNumbers;
+    }
+
+    public void setEmptyStreetNumbers(StatisticResultPair emptyStreetNumbers) {
+        this.emptyStreetNumbers = emptyStreetNumbers;
+    }
+
+    public StatisticResultPair getEmptyWebsites() {
+        return emptyWebsites;
+    }
+
+    public void setEmptyWebsites(StatisticResultPair emptyWebsites) {
+        this.emptyWebsites = emptyWebsites;
+    }
+
+    public StatisticResultPair getEmptyEmails() {
+        return emptyEmails;
+    }
+
+    public void setEmptyEmails(StatisticResultPair emptyEmails) {
+        this.emptyEmails = emptyEmails;
+    }
+
+    public StatisticResultPair getEmptyDates() {
+        return emptyDates;
+    }
+
+    public void setEmptyDates(StatisticResultPair emptyDates) {
+        this.emptyDates = emptyDates;
+    }
+
+    public StatisticResultPair getTotalNonEmptyProperties() {
+        return totalNonEmptyProperties;
+    }
+
+    public void setTotalNonEmptyProperties(StatisticResultPair totalNonEmptyProperties) {
+        this.totalNonEmptyProperties = totalNonEmptyProperties;
+    }
+
+    public StatisticResultPair getTotalEmptyProperties() {
+        return totalEmptyProperties;
+    }
+
+    public void setTotalEmptyProperties(StatisticResultPair totalEmptyProperties) {
+        this.totalEmptyProperties = totalEmptyProperties;
+    }
+
+    public StatisticResultPair getLinkedVsUnlinked() {
+        return linkedVsUnlinked;
+    }
+
+    public void setLinkedVsUnlinked(StatisticResultPair linkedVsUnlinked) {
+        this.linkedVsUnlinked = linkedVsUnlinked;
     }
 }

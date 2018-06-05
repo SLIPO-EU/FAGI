@@ -49,7 +49,7 @@ public class FusionSpecification {
     private Locale locale = null;
     private String similarity;
 
-    private int optionalDepth = 2; //depth of optional in sparql queries
+    private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;    
 

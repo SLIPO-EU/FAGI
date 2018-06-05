@@ -8,11 +8,11 @@ public class StatisticResultPair{
 
     private final String a;
     private final String b;
-    private String name;
+    private String label;
 
     @Override
     public String toString() {
-        return name + "\na=" + a + ", b=" + b + "\n\n";
+        return label + "\na=" + a + ", b=" + b + "\n\n";
     }
 
     public StatisticResultPair(String a, String b) {
@@ -28,11 +28,11 @@ public class StatisticResultPair{
         return b;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

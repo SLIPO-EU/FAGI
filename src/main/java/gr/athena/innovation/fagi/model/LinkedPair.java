@@ -38,6 +38,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -360,6 +361,8 @@ public class LinkedPair {
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
+        
+        //TODO bug: left and right node models contain resources without localnames when adding to ambiguous.
         EntityData fusedEntityData = fusedEntity.getEntityData();
 
         Model fusedModel = fusedEntityData.getModel();
@@ -376,10 +379,10 @@ public class LinkedPair {
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
-
-                ambiguousModel.add(statement);
+                
                 ambiguousModel.add(leftNode.getEntityData().getModel());
                 ambiguousModel.add(rightNode.getEntityData().getModel());
+                ambiguousModel.add(statement);
 
                 fusedModel.add(statement);
                 fusedEntityData.setModel(fusedModel);
@@ -390,7 +393,6 @@ public class LinkedPair {
             case REJECT: {
 
                 //removes link from the list and from the model also.
-                //LinksModel.getLinksModel().removeLink(link);
                 LinksModel.getLinksModel().getRejected().add(link);
 
                 if (!fusedModel.isEmpty()) {
@@ -404,7 +406,6 @@ public class LinkedPair {
             }
             case REJECT_MARK_AMBIGUOUS: {
                 
-                //LinksModel.getLinksModel().removeLink(link);
                 LinksModel.getLinksModel().getRejected().add(link);
 
                 if (!fusedModel.isEmpty()) {
@@ -414,14 +415,16 @@ public class LinkedPair {
                 EnumDataset dataset = resolveRejectedEntityModel();
 
                 switch(dataset){
-                    case LEFT:
+                    case LEFT:{
                         ambiguousModel.add(leftNode.getEntityData().getModel());
                         break;
-                    case RIGHT:
+                    }
+                    case RIGHT:{                        
                         ambiguousModel.add(rightNode.getEntityData().getModel());
-                        break;                        
+                        break; 
+                    }
                 }
-                
+
                 Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
 
                 ambiguousModel.add(statement);
@@ -733,6 +736,7 @@ public class LinkedPair {
                 String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
                 Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
 
+                LOG.warn(node.asResource().toString());
                 fusedModel.add(node, property, geometryLiteral);
 
                 fusedEntityData = fusedEntity.getEntityData();
