@@ -332,7 +332,7 @@ public class Fuser implements IFuser{
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);
         QueryExecution queryExecution = QueryExecutionFactory.create(query, sourceModel);
-        Model model = queryExecution.execConstruct(); //todo - maybe exclude geometry from model
+        Model model = queryExecution.execConstruct();
 
         StmtIterator jenaIterator = model.listStatements();
 

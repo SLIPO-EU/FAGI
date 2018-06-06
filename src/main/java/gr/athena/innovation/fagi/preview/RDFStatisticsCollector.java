@@ -20,19 +20,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Class for calculating statistics.
+ * 
  * @author nkarag
  */
 public class RDFStatisticsCollector implements StatisticsCollector{
 
     private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
-    
+
     private int totalPOIsA;
     private int totalPOIsB;
-    
+
     private int sumA = 0;
     private int sumB = 0;
-    
+
     StatisticsContainer container;
     List<StatisticResultPair> stats = new ArrayList<>();
 
@@ -71,10 +72,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         container.setNonEmptyEmails(nonEmptyEmails);
         
         StatisticResultPair nonEmptyDates = countNonEmptyDates();
-        container.setNonEmptyDates(nonEmptyDates);
-        
-        StatisticResultPair totalNonEmptyProperties = countTotalNonEmptyProperties();
-        container.setTotalNonEmptyProperties(totalNonEmptyProperties);        
+        container.setNonEmptyDates(nonEmptyDates);      
         
         /* Empty properties */
         
@@ -98,9 +96,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair emptyDates = countEmptyDates();
         container.setEmptyDates(emptyDates);
-
-        StatisticResultPair totalEmptyProperties = countTotalEmptyProperties();
-        container.setTotalEmptyProperties(totalEmptyProperties); 
         
         /* Distinct properties */
         
@@ -133,12 +128,22 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair percentageOfDates = calculateDatePercentage();
         container.setDatePercentage(percentageOfDates);
 
-        /* Link statistics */
-        
+        /* Statistics for linked POIs*/
+
         StatisticResultPair linkedVsUnlinked = countLinkedVsUnlinked();
         container.setLinkedVsUnlinked(linkedVsUnlinked);
         
-        //depends on previous percentages calculation.
+        List<StatisticResultPair> linkStats = computeLinkStats();
+        container.setLinkedNonEmptyNames(linkStats.get(0));
+
+        /* Aggregate statistics */
+
+        StatisticResultPair totalNonEmptyProperties = countTotalNonEmptyProperties();
+        container.setTotalNonEmptyProperties(totalNonEmptyProperties);
+
+        StatisticResultPair totalEmptyProperties = countTotalEmptyProperties();
+        container.setTotalEmptyProperties(totalEmptyProperties); 
+
         StatisticResultPair percentageOfTotalProperties = calculateAllNonEmptyPropertiesPercentage();
         container.setPercentNonEmptyTotalProperties(percentageOfTotalProperties);
 
@@ -147,7 +152,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } else {
             container.setValid(true);
         }
-        
+
         return container;
     }
     
@@ -647,10 +652,32 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             default:
                 throw new ApplicationException("Undefined dataset value.");
         }
-        
+
         return count;
     }
-    
+
+    private List<StatisticResultPair> computeLinkStats(){
+        
+        List<StatisticResultPair> linkStats = new ArrayList<>();
+
+        Model linksModel = LinksModel.getLinksModel().getModel();
+
+        Model modelA = LeftDataset.getLeftDataset().getModel();
+        Model modelB = LeftDataset.getLeftDataset().getModel();
+
+        Model linkedA = modelA.union(linksModel);
+        Model linkedB = modelB.union(linksModel);
+        
+        Integer namesA = SparqlRepository.countLinkedWithProperty(linkedA, Namespace.NAME);
+        Integer namesB = SparqlRepository.countLinkedWithProperty(linkedA, Namespace.NAME);
+        
+        StatisticResultPair pair1 = new StatisticResultPair(namesA.toString(), namesB.toString());
+        pair1.setLabel("Linked non empty names");
+        linkStats.add(pair1);
+
+        return linkStats;
+    }
+
     private Integer countNonEmptyProperty(String property1, String property2, EnumDataset dataset){
         Integer count;
         switch (dataset){

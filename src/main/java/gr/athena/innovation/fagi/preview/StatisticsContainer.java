@@ -42,6 +42,8 @@ public class StatisticsContainer {
     private StatisticResultPair emptyDates;
     private StatisticResultPair totalEmptyProperties;
     
+    private StatisticResultPair linkedNonEmptyNames;
+    
     private StatisticResultPair distinctProperties;
     private StatisticResultPair percentageOfDateKnownFormats;
     private StatisticResultPair namePercentage;
@@ -334,5 +336,13 @@ public class StatisticsContainer {
 
     public void setLinkedVsUnlinked(StatisticResultPair linkedVsUnlinked) {
         this.linkedVsUnlinked = linkedVsUnlinked;
+    }
+
+    public StatisticResultPair getLinkedNonEmptyNames() {
+        return linkedNonEmptyNames;
+    }
+
+    public void setLinkedNonEmptyNames(StatisticResultPair linkedNonEmptyNames) {
+        this.linkedNonEmptyNames = linkedNonEmptyNames;
     }
 }
