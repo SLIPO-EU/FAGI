@@ -122,6 +122,20 @@ public class SpecificationConstants {
     
     }  
 
+    public static class Stats {
+
+        public static final String DELIMETER = ".";
+        public static final String NAMES = "names";
+        public static final String PHONES = "phones";
+        public static final String EMPTY = "empty";
+        public static final String NON_EMPTY = "nonEmpty";
+        public static final String PERCENT = "percent";
+        public static final String TOTAL = "total";
+        public static final String INPUT_A = "dataset_a";
+        public static final String INPUT_B = "dataset_b";
+    
+    } 
+    
     public static class Regex {
 
         //v0.1

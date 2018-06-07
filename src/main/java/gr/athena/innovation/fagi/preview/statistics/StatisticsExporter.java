@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.preview;
+package gr.athena.innovation.fagi.preview.statistics;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.io.BufferedWriter;

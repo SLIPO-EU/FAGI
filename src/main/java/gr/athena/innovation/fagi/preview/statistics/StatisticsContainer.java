@@ -1,4 +1,4 @@
-package gr.athena.innovation.fagi.preview;
+package gr.athena.innovation.fagi.preview.statistics;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
