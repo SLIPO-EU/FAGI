@@ -89,10 +89,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* Statistics for linked POIs*/
 
-        countLinkedVsUnlinked();
-
-        List<StatisticResultPair> linkStats = computeLinkStats();
-        //container.setLinkedNonEmptyNames(linkStats.get(0));
+        countLinkedVsTotal();
+        computeLinkStats();
 
         /* Aggregate statistics */
 
@@ -589,7 +587,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countLinkedVsUnlinked(){
+    private StatisticResultPair countLinkedVsTotal(){
 
         Long totalA = LeftDataset.getLeftDataset().getModel().size();
         Long totalB = LeftDataset.getLeftDataset().getModel().size();
@@ -598,9 +596,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Long total = totalA + totalB;
 
         StatisticResultPair pair = new StatisticResultPair(totalLinks.toString(), total.toString());
-        pair.setLabel("Linked vs Unlinked entities.");
+        pair.setLabel("Linked vs Total POIS.");
 
-        map.put("linkedVsUnlinked", pair);
+        map.put("linkedVsTotal", pair);
         return pair;
     }
     
@@ -648,30 +646,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return count;
     }
 
-    private List<StatisticResultPair> computeLinkStats(){
-
-        List<StatisticResultPair> linkStats = new ArrayList<>();
-
-        Model linksModel = LinksModel.getLinksModel().getModel();
-
-        Model modelA = LeftDataset.getLeftDataset().getModel();
-        Model modelB = LeftDataset.getLeftDataset().getModel();
-
-        Model linkedA = modelA.union(linksModel);
-        Model linkedB = modelB.union(linksModel);
-        
-        Integer namesA = SparqlRepository.countLinkedWithProperty(linkedA, Namespace.NAME);
-        Integer namesB = SparqlRepository.countLinkedWithProperty(linkedA, Namespace.NAME);
-        
-        StatisticResultPair pair1 = new StatisticResultPair(namesA.toString(), namesB.toString());
-        pair1.setLabel("Linked non empty names");
-        linkStats.add(pair1);
-
-        map.put("linkedNonEmptyNames", pair1);
-        return linkStats;
-    }
-
-    private Integer countNonEmptyProperty(String property1, String property2, EnumDataset dataset){
+    private Integer countNonEmptyPropertyChain(String property1, String property2, EnumDataset dataset){
         Integer count;
         switch (dataset){
             case LEFT:
@@ -684,16 +659,59 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                 throw new ApplicationException("Undefined dataset value.");
         }
         return count;
-    }    
+    }  
+
+    private List<StatisticResultPair> computeLinkStats(){
+
+        List<StatisticResultPair> linkStats = new ArrayList<>();
+
+        Model linksModel = LinksModel.getLinksModel().getModel();
+
+        Model modelA = LeftDataset.getLeftDataset().getModel();
+        Model modelB = LeftDataset.getLeftDataset().getModel();
+
+        Model linkedA = modelA.union(linksModel);
+        Model linkedB = modelB.union(linksModel);
+
+        StatisticResultPair pair1 = computeNonEmptyLinked(linkedA, linkedB, Namespace.NAME);
+        StatisticResultPair pair2 = computeNonEmptyLinked(linkedA, linkedB, Namespace.PHONE);
+        StatisticResultPair pair3 = computeNonEmptyLinked(linkedA, linkedB, Namespace.STREET);
+        StatisticResultPair pair4 = computeNonEmptyLinked(linkedA, linkedB, Namespace.STREET_NUMBER);
+        StatisticResultPair pair5 = computeNonEmptyLinked(linkedA, linkedB, Namespace.WEBSITE);
+        StatisticResultPair pair6 = computeNonEmptyLinked(linkedA, linkedB, Namespace.EMAIL);
+        StatisticResultPair pair7 = computeNonEmptyLinked(linkedA, linkedB, Namespace.DATE);
+
+        pair1.setLabel("Linked Non Empty Names");
+        pair2.setLabel("Linked Non Empty Phones");
+        pair3.setLabel("Linked Non Empty Streets");
+        pair4.setLabel("Linked Non Empty Street Numbers");
+        pair5.setLabel("Linked Non Empty Websites");
+        pair6.setLabel("Linked Non Empty Emails");
+        pair7.setLabel("Linked Non Empty Dates");
+
+        map.put("linkedNonEmptyNames", pair1);
+        map.put("linkedNonEmptyPhones", pair2);
+        map.put("linkedNonEmptyStreets", pair3);
+        map.put("linkedNonEmptyStreetNumbers", pair4);
+        map.put("linkedNonEmptyWebsites", pair5);
+        map.put("linkedNonEmptyEmails", pair6);
+        map.put("linkedNonEmptyDates", pair7);
+
+        return linkStats;
+    }
+
+    private static StatisticResultPair computeNonEmptyLinked(Model linkedA, Model linkedB, String property){
+
+        Integer nonEmptyCountA = SparqlRepository.countLinkedWithProperty(linkedA, property);
+        Integer nonEmptyCountB = SparqlRepository.countLinkedWithProperty(linkedB, property);
+
+        StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString());
+
+        return pair;
+    }  
     
     private double roundHalfDown(Double d){
         return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
-    }
-    
-    private StatisticResultPair newStatisticResultPair(String a, String b, String label){
-        StatisticResultPair pair = new StatisticResultPair(a, b);
-        pair.setLabel(label);
-        return pair;
     }
     
     private boolean warn(int entitiesA, int entitiesB, String propertyName) {

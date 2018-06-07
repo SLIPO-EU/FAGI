@@ -136,25 +136,7 @@ public class LinkedPair {
 
                 //switch case for evaluation using external properties.
                 for (Map.Entry<String, ExternalProperty> externalPropertyEntry : validationRule.getExternalProperties().entrySet()) {
-
-                    //The rule model does not represent the external properties with chain relationships.
-                    //So, there are two cases here: Property refers to literal the external property contains a chain
-                    //separated by a whitespace.
-                    String extPropertyText = externalPropertyEntry.getValue().getProperty();
-                    String valueA;
-                    String valueB;
-
-                    if (extPropertyText.contains(" ")) {
-                        String[] chains = extPropertyText.split(" ");
-                        valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
-                        valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
-                    } else {
-                        valueA = getLiteralValue(externalPropertyEntry.getValue().getProperty(), leftEntityData.getModel());
-                        valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
-                    }
-
-                    externalPropertyEntry.getValue().setValueA(valueA);
-                    externalPropertyEntry.getValue().setValueB(valueB);
+                    evaluateExternalProperty(externalPropertyEntry, leftEntityData, rightEntityData);
                 }
 
                 boolean isActionRuleToBeApplied = condition.evaluate(functionMap, this, validationProperty,
@@ -263,24 +245,7 @@ public class LinkedPair {
                 //switch case for evaluation using external properties.
                 for (Map.Entry<String, ExternalProperty> externalPropertyEntry : rule.getExternalProperties().entrySet()) {
 
-                    //The rule model does not represent the external properties with chain relationships.
-                    //So, there are two cases here: Property refers to literal the external property contains a chain
-                    //separated by a whitespace.
-                    String extPropertyText = externalPropertyEntry.getValue().getProperty();
-                    String valueA;
-                    String valueB;
-
-                    if (extPropertyText.contains(" ")) {
-                        String[] chains = extPropertyText.split(" ");
-                        valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
-                        valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
-                    } else {
-                        valueA = getLiteralValue(externalPropertyEntry.getValue().getProperty(), leftEntityData.getModel());
-                        valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
-                    }
-
-                    externalPropertyEntry.getValue().setValueA(valueA);
-                    externalPropertyEntry.getValue().setValueB(valueB);
+                    evaluateExternalProperty(externalPropertyEntry, leftEntityData, rightEntityData);
                 }
 
                 boolean isActionRuleToBeApplied = condition.evaluate(functionMap, this, fusionProperty,
@@ -306,6 +271,28 @@ public class LinkedPair {
                 fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
             }
         }
+    }
+
+    private void evaluateExternalProperty(Map.Entry<String, ExternalProperty> externalPropertyEntry, 
+            EntityData leftEntityData, EntityData rightEntityData) {
+        //The rule model does not represent the external properties with chain relationships.
+        //So, there are two cases here: (a) Property refers to literal. (b) the external property contains a chain
+        //separated by a whitespace.
+        String extPropertyText = externalPropertyEntry.getValue().getProperty();
+        String valueA;
+        String valueB;
+        
+        if (extPropertyText.contains(" ")) {
+            String[] chains = extPropertyText.split(" ");
+            valueA = getLiteralValueFromChain(chains[0], chains[1], leftEntityData.getModel());
+            valueB = getLiteralValueFromChain(chains[0], chains[1], rightEntityData.getModel());
+        } else {
+            valueA = getLiteralValue(externalPropertyEntry.getValue().getProperty(), leftEntityData.getModel());
+            valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
+        }
+        
+        externalPropertyEntry.getValue().setValueA(valueA);
+        externalPropertyEntry.getValue().setValueB(valueB);
     }
 
     public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction) throws WrongInputException {
