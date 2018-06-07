@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -15,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class StatisticsExporter {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(StatisticsExporter.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(StatisticsExporter.class);
     
     public void exportStatistics(StatisticsContainer container, String outputDir){
 
@@ -31,33 +33,31 @@ public class StatisticsExporter {
                 write(container, outputFile);
                 
             } catch (FileNotFoundException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
             }
         } else {
-            
+
             try {
                 outputFile.getParentFile().mkdirs();
                 outputFile.createNewFile();
-                
+
                 write(container, outputFile);
-                
+
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
             }
-        }        
+        }
     }
-    
+
     private void write(StatisticsContainer container, File outputFile) throws IOException{
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
-            //writer.append("#Statistics");
-            //writer.newLine();
-            writer.append(container.toJson());
+            writer.append(container.toJsonMap());
             writer.newLine();
         }        
-    }
+    }   
 }

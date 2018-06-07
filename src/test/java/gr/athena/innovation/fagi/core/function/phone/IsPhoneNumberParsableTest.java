@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class IsPhoneNumberParsableTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsPhoneNumberParsableTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsPhoneNumberParsableTest.class);
     
     public IsPhoneNumberParsableTest() {
     }
@@ -25,7 +25,7 @@ public class IsPhoneNumberParsableTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate");
+        LOG.info("evaluate");
         
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
         String number1 = "0123456789";
@@ -50,7 +50,7 @@ public class IsPhoneNumberParsableTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
         String expResult = SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE;
         String result = isPhoneNumberParsable.getName();

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsGeometryMoreComplex implements IFunction, IFunctionTwoParameters {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsGeometryMoreComplex.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsGeometryMoreComplex.class);
 
     @Override
     public boolean evaluate(String wktA, String wktB) {
@@ -25,16 +25,16 @@ public class IsGeometryMoreComplex implements IFunction, IFunctionTwoParameters 
         try {
             geometryA = reader.read(wktA);
         } catch (ParseException ex) {
-            logger.warn(ex);
-            logger.warn("Could not parse WKT: " + wktA + "\nReturning false.");
+            LOG.warn(ex);
+            LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
             geometryB = reader.read(wktB);
         } catch (ParseException ex) {
-            logger.warn(ex);
-            logger.warn("Could not parse WKT: " + wktB + "\nReturning false.");
+            LOG.warn(ex);
+            LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;
         }
 

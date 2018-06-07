@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class DataGridProcessor {
 
-    private static final Logger logger = LogManager.getRootLogger();
+    private static final Logger LOG = LogManager.getRootLogger();
     private final String filepath;
 
     public DataGridProcessor(String filepath){
@@ -44,7 +44,7 @@ public class DataGridProcessor {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if(line.contains(Namespace.WKT)){
-                    logger.trace("Found geometry");
+                    LOG.trace("Found geometry");
                 }
                 // System.out.println(line);
             }

@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class AdvancedGenericNormalizer {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizer.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(AdvancedGenericNormalizer.class);
 
     private static final char CONNECTOR = SpecificationConstants.CONNECTOR;
 

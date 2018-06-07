@@ -18,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class AbbreviationAndAcronymResolver {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AbbreviationAndAcronymResolver.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(AbbreviationAndAcronymResolver.class);
 
     private static AbbreviationAndAcronymResolver abbreviationAcronymResolver;
     private static Map<String, String> abbreviationsAndAcronyms;
@@ -50,7 +50,7 @@ public class AbbreviationAndAcronymResolver {
      * @return Returns the full text of the given abbreviation if exists in the known abbreviation or null otherwise.
      */
     public String getKnownAbbreviationOrAcronym(String word) {
-        logger.trace("Get known abbreviation: " + word);
+        LOG.trace("Get known abbreviation: " + word);
         return abbreviationsAndAcronyms.get(word);
     }
 
@@ -63,7 +63,7 @@ public class AbbreviationAndAcronymResolver {
      * @return Returns true if the literal matches the pattern of regular expression that represents an abbreviation
      */
     public boolean containsAbbreviationOrAcronym(String literal) {
-        logger.trace("check if literal contains abbreviation/acronym: " + literal);
+        LOG.trace("check if literal contains abbreviation/acronym: " + literal);
         List<String> recognized = getAbbreviationOrAcronym(literal, " - ");
         
         return !recognized.isEmpty();
@@ -78,7 +78,7 @@ public class AbbreviationAndAcronymResolver {
      * @return Return the abbreviation/acronym token or null.
      */
     public List<String> getAbbreviationOrAcronym(String literalA, String literalB) {
-        logger.trace("getAbbreviationOrAcronym of: " + literalA);
+        LOG.trace("getAbbreviationOrAcronym of: " + literalA);
 
         String[] wordsA = tokenize(literalA);
         String[] wordsB = tokenize(literalB);
@@ -94,7 +94,7 @@ public class AbbreviationAndAcronymResolver {
             String resolved = abbreviationsAndAcronyms.get(word);
 
             if (resolved != null) {
-                logger.trace("\n\nabbreviation/acronym \"" + word + "\" is a known abbreviation/acronym. Full text is " + resolved);
+                LOG.trace("\n\nabbreviation/acronym \"" + word + "\" is a known abbreviation/acronym. Full text is " + resolved);
                 possibleAbbreviations.add(word);
                 continue;
             }
@@ -102,7 +102,7 @@ public class AbbreviationAndAcronymResolver {
             //b) Check if it is a non-standard abbreviation/acronym (single character capitalized token).
             char[] chars = word.toCharArray();
             if (chars.length == 1 && Character.isUpperCase(chars[0])) {
-                logger.trace(word + " is a single capitalized character.");
+                LOG.trace(word + " is a single capitalized character.");
                 possibleAbbreviations.add(word);
                 continue;
             }
@@ -110,7 +110,7 @@ public class AbbreviationAndAcronymResolver {
             //c) Check if the word contain more than one capitalized characters.
             char[] upperCaseChars = CharMatcher.javaUpperCase().retainFrom(word).toCharArray();
             if (upperCaseChars.length > 1) {
-                logger.trace(word + " uppercase characters more than 1.");
+                LOG.trace(word + " uppercase characters more than 1.");
                 possibleAbbreviations.add(word);
                 continue;
             }
@@ -119,7 +119,7 @@ public class AbbreviationAndAcronymResolver {
             if (word.indexOf(".", word.indexOf(".") + 1) != -1) {
                 if (chars.length < 8) {
                     //return the word if it is less than 8 characters including dots.
-                    logger.trace(word + " has less than 8 chars including dots.");
+                    LOG.trace(word + " has less than 8 chars including dots.");
                     possibleAbbreviations.add(word);
                     continue;
                 }
@@ -165,7 +165,7 @@ public class AbbreviationAndAcronymResolver {
                 }
             }
         }
-        logger.trace("recognized acronym from B: " + word);
+        LOG.trace("recognized acronym from B: " + word);
         return word;
     }
 
@@ -285,7 +285,7 @@ public class AbbreviationAndAcronymResolver {
      * @return return the full text of the given acronym or null on fail.
      */
     public String recoverAcronym(String acronym, String text) {
-        logger.trace("recoverAcronym of: " + acronym + " from " + text);
+        LOG.trace("recoverAcronym of: " + acronym + " from " + text);
 
         String[] wordsB = tokenize(text);
 

@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Condition {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Condition.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(Condition.class);
 
     private boolean singleFunction;
     private String function;
@@ -45,7 +45,7 @@ public class Condition {
                 return evaluateOperator(functionMap, func, pair, fusionProperty, valueA, valueB, externalProperties);
             }
         } else if (expression.getGroupsOfChildFunctions().isEmpty()) {
-            logger.trace("Condition is not a single function");
+            LOG.trace("Condition is not a single function");
             String parentOperation = expression.getLogicalOperatorParent();
 
             switch (parentOperation) {
@@ -58,7 +58,7 @@ public class Condition {
                             return !evaluateOperator(functionMap, notFunction, pair, fusionProperty, valueA, valueB, externalProperties);
                         }
                     } else {
-                        logger.error(functions);
+                        LOG.error(functions);
                         throw new WrongInputException("NOT expression in rules.xml does not contain a single function!");
                     }
 

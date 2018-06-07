@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class IsSamePhoneNumberUsingExitCodeTest {
     
-    private static final org.apache.logging.log4j.Logger logger 
+    private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(IsSamePhoneNumberUsingExitCodeTest.class);
     
     public IsSamePhoneNumberUsingExitCodeTest() {
@@ -42,7 +42,7 @@ public class IsSamePhoneNumberUsingExitCodeTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate");
+        LOG.info("evaluate");
         
         //+ symbol represents the exit code digits, so the below numbers should be considered the same
         String number5 = "00123-44 5678 999";
@@ -68,7 +68,7 @@ public class IsSamePhoneNumberUsingExitCodeTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsSamePhoneNumberUsingExitCode isSamePhoneNumberUsingExitCode = new IsSamePhoneNumberUsingExitCode();
         String expResult = SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE;
         String result = isSamePhoneNumberUsingExitCode.getName();

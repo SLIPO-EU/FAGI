@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class AlphabeticalNormalizerTest {
     
-    private static final org.apache.logging.log4j.Logger logger 
+    private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(AlphabeticalNormalizerTest.class);
     
     public AlphabeticalNormalizerTest() {
@@ -42,7 +42,7 @@ public class AlphabeticalNormalizerTest {
      */
     @Test
     public void testNormalize() {
-        logger.info("normalize");
+        LOG.info("normalize");
         
         AlphabeticalNormalizer alphabeticalNormalizer = new AlphabeticalNormalizer();
         
@@ -58,7 +58,7 @@ public class AlphabeticalNormalizerTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         AlphabeticalNormalizer alphabeticalNormalizer = new AlphabeticalNormalizer();
         String expResult = SpecificationConstants.Normalize.NORMALIZE_ALPHABETICALLY;
         String result = alphabeticalNormalizer.getName();

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class CallingCodeResolver {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CallingCodeResolver.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(CallingCodeResolver.class);
     
     private static CallingCodeResolver resolver;
     private static Map<String, String> codes;

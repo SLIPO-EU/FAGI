@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public class IsSamePhoneNumberTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsSamePhoneNumberTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSamePhoneNumberTest.class);
 
     /**
      * Test of evaluate method, of class IsSamePhoneNumber.
@@ -19,7 +19,7 @@ public class IsSamePhoneNumberTest {
     @Test
     public void testEvaluate() {
         
-        logger.info("evaluate");
+        LOG.info("evaluate");
         
         IsSamePhoneNumber isSamePhoneNumber = new IsSamePhoneNumber();
         String number1 = "0123456789";
@@ -41,7 +41,7 @@ public class IsSamePhoneNumberTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsSamePhoneNumber isSamePhoneNumber = new IsSamePhoneNumber();
         String expResult = SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER;
         String result = isSamePhoneNumber.getName();

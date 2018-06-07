@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
  * @author nkarag
  */
 public final class JaroWinkler {
-    private static final org.apache.logging.log4j.Logger logger = 
+    private static final org.apache.logging.log4j.Logger LOG = 
             LogManager.getLogger(JaroWinkler.class);
 
     /**

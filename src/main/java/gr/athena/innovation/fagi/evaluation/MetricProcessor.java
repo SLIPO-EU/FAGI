@@ -43,7 +43,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class MetricProcessor {
 
-    private static final Logger logger = LogManager.getLogger(MetricProcessor.class);
+    private static final Logger LOG = LogManager.getLogger(MetricProcessor.class);
     private static final String SEP = ",";
     private final FusionSpecification fusionSpecification;
     private static final String ACCEPT = "ACCEPT";
@@ -186,7 +186,7 @@ public class MetricProcessor {
             metricsFile.createNewFile();
         }
         
-        logger.info("Evaluation output at " + metricsFile.getAbsolutePath());
+        LOG.info("Evaluation output at " + metricsFile.getAbsolutePath());
 
         try (BufferedWriter metricsWriter = new BufferedWriter(new FileWriter(metricsFile, true))) {
             
@@ -285,7 +285,7 @@ public class MetricProcessor {
             Accuracy aAccuracy, Accuracy bAccuracy, Accuracy cAccuracy, Accuracy dAccuracy) 
             throws FileNotFoundException, IOException{
         
-        logger.trace("Calculating for threshold " + threshold);
+        LOG.trace("Calculating for threshold " + threshold);
         
         totalRows = 0;
                 
@@ -1117,7 +1117,7 @@ public class MetricProcessor {
     
     private double calculateAccuracy(int count, int rows) {
         if(rows == 0){
-            logger.warn("Could not calculate accuracy. No rows found.");
+            LOG.warn("Could not calculate accuracy. No rows found.");
             return 0;
         } else {
             return roundHalfUp(count / (double)rows);

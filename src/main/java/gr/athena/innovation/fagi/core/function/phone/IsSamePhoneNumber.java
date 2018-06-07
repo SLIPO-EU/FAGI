@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsSamePhoneNumber.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSamePhoneNumber.class);
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the

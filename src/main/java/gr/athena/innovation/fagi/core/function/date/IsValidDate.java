@@ -32,8 +32,8 @@ public class IsValidDate implements IFunction, IFunctionTwoParameters{
             isValid = true;
 
         } catch (ParseException ex) {
-            //logger.error("Error parsing date: " + date + " with format: " + format);
-            //logger.error(ex);
+            //LOG.error("Error parsing date: " + date + " with format: " + format);
+            //LOG.error(ex);
             isValid = false;
         }
 

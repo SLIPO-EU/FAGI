@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class ToLowerCaseTest {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ToLowerCaseTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(ToLowerCaseTest.class);
     
     public ToLowerCaseTest() {
     }
@@ -41,7 +41,7 @@ public class ToLowerCaseTest {
      */
     @Test
     public void testNormalize() {
-        logger.info("normalize");
+        LOG.info("normalize");
         
         ToLowerCase toLowerCase = new ToLowerCase();
         String literal = "FaGi";
@@ -56,7 +56,7 @@ public class ToLowerCaseTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         ToLowerCase toLowerCase = new ToLowerCase();
         String expResult = SpecificationConstants.Normalize.TO_LOWER_CASE;
         String result = toLowerCase.getName();

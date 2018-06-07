@@ -34,7 +34,7 @@ import org.apache.logging.log4j.LogManager;
 public enum EnumOutputMode {
     DEFAULT(0), AA_MODE(1), BB_MODE(2), AB_MODE(3), BA_MODE(4), A_MODE(5), B_MODE(6), L_MODE(7);
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(EnumOutputMode.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(EnumOutputMode.class);
     private final int value;
     
 	private EnumOutputMode(int value) {

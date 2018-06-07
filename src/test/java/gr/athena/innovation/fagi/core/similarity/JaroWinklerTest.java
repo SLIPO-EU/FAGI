@@ -11,14 +11,14 @@ import static org.junit.Assert.*;
  */
 public class JaroWinklerTest {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(JaroWinklerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(JaroWinklerTest.class);
     
     /**
      * Test of compute method, of class JaroWinkler.
      */
     @Test
     public void testComputeDistance() {
-        logger.info("computeDistance");
+        LOG.info("computeDistance");
 
         double expResult1 = 0.0; //jaro-winkler similarity is zero for any zero length string
         double result1 = JaroWinkler.computeSimilarity("", ""); 

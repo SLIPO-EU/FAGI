@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class RDFFrequencyCounter{
     
-    private static final Logger logger = LogManager.getLogger(RDFFrequencyCounter.class);
+    private static final Logger LOG = LogManager.getLogger(RDFFrequencyCounter.class);
     
     public Map<String, String> getCategoryMap(String categoriesPath){
         Map<String, String> categoryMap = new HashMap<>();

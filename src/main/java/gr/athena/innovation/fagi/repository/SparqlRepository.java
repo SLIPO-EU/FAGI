@@ -25,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class SparqlRepository {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SparqlRepository.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SparqlRepository.class);
 
     public static String getObjectOfProperty(Property p, Model model) {
         String rdfObjectValue = null;
@@ -35,25 +35,25 @@ public class SparqlRepository {
         if (objectList.size() == 1) {
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                //logger.warn(object.asLiteral().getLexicalForm());
+                //LOG.warn(object.asLiteral().getLexicalForm());
                 return object.asLiteral().getLexicalForm();
             } else {
-                logger.fatal("Object is not a Literal! " + object.toString());
+                LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
             }
         } else if (objectList.size() > 1) {
             //Possible duplicate triple. Happens with synthetic data. Returns the first literal
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                //logger.info("more than one object with property: " + p);
-                //logger.warn(object.asLiteral().getLexicalForm());
+                //LOG.info("more than one object with property: " + p);
+                //LOG.warn(object.asLiteral().getLexicalForm());
                 return object.asLiteral().getLexicalForm();
             } else {
-                logger.fatal("Object is not a Literal! " + object.toString());
+                LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
             }
         } else {
-            logger.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
+            LOG.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
         }
         return rdfObjectValue;
     }
@@ -90,7 +90,7 @@ public class SparqlRepository {
         try {
             query = QueryFactory.create(queryString);
         } catch (org.apache.jena.query.QueryParseException ex){
-            logger.warn("Query parse exception with query:\n" + queryString);
+            LOG.warn("Query parse exception with query:\n" + queryString);
         }
         
         if(query == null){
@@ -121,7 +121,7 @@ public class SparqlRepository {
         try {
             query = QueryFactory.create(queryString);
         } catch (org.apache.jena.query.QueryParseException ex){
-            logger.warn("Query parse exception with query:\n" + queryString);
+            LOG.warn("Query parse exception with query:\n" + queryString);
         }
         
         if(query == null){
@@ -154,7 +154,7 @@ public class SparqlRepository {
             if (object.isLiteral()) {
                 return object.toString();
             } else {
-                logger.fatal("Object is not a Literal! " + object.toString());
+                LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
             }
         } else if (objectList.size() > 1) {
@@ -163,11 +163,11 @@ public class SparqlRepository {
             if (object.isLiteral()) {
                 return object.toString();
             } else {
-                logger.fatal("Object is not a Literal! " + object.toString());
+                LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
             }
         } else {
-            logger.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
+            LOG.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
         }
         return rdfObjectValue;
     }
@@ -186,7 +186,7 @@ public class SparqlRepository {
         Statement statement = model.getProperty(s, p);
 
         if (statement == null) {
-            logger.debug("Could not find " + property + " for " + resource);
+            LOG.debug("Could not find " + property + " for " + resource);
             return null;
         }
 

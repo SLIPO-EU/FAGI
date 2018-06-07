@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  */
 public class BasicGenericNormalizerTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(BasicGenericNormalizerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(BasicGenericNormalizerTest.class);
     
     public BasicGenericNormalizerTest() {
     }
@@ -33,7 +33,7 @@ public class BasicGenericNormalizerTest {
         try {
             knownAbbreviations = resourceFileLoader.getKnownAbbreviationsMap();
         } catch (IOException | ApplicationException ex) {
-            logger.error(ex);
+            LOG.error(ex);
         }
         
         AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
@@ -45,7 +45,7 @@ public class BasicGenericNormalizerTest {
      */
     @Test
     public void testGetNormalizedLiteral() {
-        logger.info("getNormalizedLiteral");
+        LOG.info("getNormalizedLiteral");
         
         String literalA = "bobab aaaba Dr. cacc";
         String literalB = "aaaba bbab Doktor";
@@ -74,7 +74,7 @@ public class BasicGenericNormalizerTest {
      */
     @Test
     public void testNormalize() {
-        logger.info("normalize");
+        LOG.info("normalize");
 
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
@@ -95,7 +95,7 @@ public class BasicGenericNormalizerTest {
         String literal3b = "literal with the full text of the abbreviation Aaa Bbb Bb rrr.";
         String expResult3 = "aaa abbreviation bb bbb containing rrr sentence";
         String result3 = normalizer.normalize(literal3a, literal3b);
-        logger.warn(result3);
+        LOG.warn(result3);
         assertEquals(expResult3, result3);
         
     }
@@ -105,7 +105,7 @@ public class BasicGenericNormalizerTest {
      */
     @Test
     public void testTokenize() {
-        logger.info("tokenize");
+        LOG.info("tokenize");
         CharSequence text = "tokenize on non-character words     and get&result of size 11.- ";
         String[] expResult = {"tokenize", "on", "non","character", "words", "and", "get", "result", "of", "size", "11"};
         String[] result = BasicGenericNormalizer.tokenize(text);
@@ -117,7 +117,7 @@ public class BasicGenericNormalizerTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
         String expResult = SpecificationConstants.Normalize.BASIC_NORMALIZER;
         String result = normalizer.getName();

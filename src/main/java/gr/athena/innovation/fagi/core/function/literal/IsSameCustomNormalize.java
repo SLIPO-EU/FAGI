@@ -18,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsSameCustomNormalize implements IFunction, IFunctionThreeParameters {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsSameCustomNormalize.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameCustomNormalize.class);
 
     /**
      * Compares the two literals and returns true if they are same. If the standard equals is not true, it normalizes

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class TermResolver {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(TermResolver.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(TermResolver.class);
     
     private static TermResolver termResolver;
     private static Set<String> terms;

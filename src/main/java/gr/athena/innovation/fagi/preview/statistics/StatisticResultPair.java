@@ -1,14 +1,17 @@
 package gr.athena.innovation.fagi.preview.statistics;
 
+import java.io.Serializable;
+
 /**
  *
  * @author nkarag
  */
-public class StatisticResultPair{
+public class StatisticResultPair implements Serializable{
 
     private final String a;
     private final String b;
     private String label;
+    private EnumStatisticType type;
 
     @Override
     public String toString() {

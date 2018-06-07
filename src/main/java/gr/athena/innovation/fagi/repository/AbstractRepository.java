@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class AbstractRepository {
     
-    private static final Logger logger = LogManager.getLogger(AbstractRepository.class);
+    private static final Logger LOG = LogManager.getLogger(AbstractRepository.class);
     
     public abstract void readFile(String path);
     

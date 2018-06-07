@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsSameNormalized implements IFunction, IFunctionTwoParameters{
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsSameNormalized.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameNormalized.class);
     
     /**
      * Compares the two literals and returns true if they are same. 

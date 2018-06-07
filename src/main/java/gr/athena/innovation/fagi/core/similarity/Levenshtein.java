@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public final class Levenshtein {
 
-    private static final org.apache.logging.log4j.Logger logger = 
+    private static final org.apache.logging.log4j.Logger LOG = 
             LogManager.getLogger(Levenshtein.class);
 
     /**
@@ -41,11 +41,11 @@ public final class Levenshtein {
             LevenshteinDetailedDistance ld = new LevenshteinDetailedDistance(threshold);
             int result = ld.apply(a, b).getDistance();
 
-            logger.trace(result + ": Levenshtein Distance for strings: " + a + " <-> " + b);
+            LOG.trace(result + ": Levenshtein Distance for strings: " + a + " <-> " + b);
 
             double normalizedResult = (double) result/ (double) maxLength;
 
-            logger.trace("Normalized value: " + normalizedResult + " " + result +" / " + maxLength);
+            LOG.trace("Normalized value: " + normalizedResult + " " + result +" / " + maxLength);
 
             if(result == -1){
                 return 1;
@@ -60,7 +60,7 @@ public final class Levenshtein {
             return normalizedResult;            
          
         } catch (IllegalArgumentException ex){
-            logger.error("Threshold must not be negative", ex);
+            LOG.error("Threshold must not be negative", ex);
             return 1;
         }
     }
@@ -99,7 +99,7 @@ public final class Levenshtein {
             return result;            
          
         } catch (IllegalArgumentException ex){
-            logger.error("Threshold must not be negative", ex);
+            LOG.error("Threshold must not be negative", ex);
             return -1;
         }
     }
@@ -124,7 +124,7 @@ public final class Levenshtein {
             return result;            
          
         } catch (IllegalArgumentException ex){
-            logger.error("Threshold must not be negative", ex);
+            LOG.error("Threshold must not be negative", ex);
             return -1;
         }
     }  
@@ -149,7 +149,7 @@ public final class Levenshtein {
             return result;            
          
         } catch (IllegalArgumentException ex){
-            logger.error("Threshold must not be negative", ex);
+            LOG.error("Threshold must not be negative", ex);
             return -1;
         }
     }     

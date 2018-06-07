@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class RDFInputSimilarityViewer {
 
-    private static final Logger logger = LogManager.getLogger(RDFInputSimilarityViewer.class);
+    private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
     private final FusionSpecification fusionSpecification;
 
     public RDFInputSimilarityViewer() {
@@ -96,7 +96,7 @@ public class RDFInputSimilarityViewer {
                     continue;
                 }
 
-                logger.info("Literals: {}, {}", literalA, literalB);
+                LOG.info("Literals: {}, {}", literalA, literalB);
 
                 BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
                 String a = normalizer.normalize(literalA, literalB);

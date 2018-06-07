@@ -18,7 +18,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class FrequencyExtractor {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FrequencyExtractor.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FrequencyExtractor.class);
 
     public void extract(int frequentTopK, String categoryMappingsNTPath, Model model, 
             String outputDir, Locale locale, EnumDataset dataset){
@@ -46,7 +46,7 @@ public class FrequencyExtractor {
             String outputFilename = outputDir + "frequencies/" + filename;
             File outputFile = new File(outputFilename);
 
-            logger.info("Category frequency file: " + outputFile);
+            LOG.info("Category frequency file: " + outputFile);
             
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
                 writer.append("# category frequencies");    
@@ -60,7 +60,7 @@ public class FrequencyExtractor {
 
                 }
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
         }        
     }

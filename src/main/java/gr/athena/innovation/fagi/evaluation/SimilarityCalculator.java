@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class SimilarityCalculator {
 
-    private static final Logger logger = LogManager.getLogger(RDFInputSimilarityViewer.class);
+    private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
     private final FusionSpecification fusionSpecification;
 
     public SimilarityCalculator(FusionSpecification fusionSpecification) {
@@ -127,10 +127,10 @@ public class SimilarityCalculator {
             
             namesWriter.close();
             
-            logger.info("Total lines: " + l);
+            LOG.info("Total lines: " + l);
             
         } catch(IOException ex){  
-            logger.error(ex);
+            LOG.error(ex);
             throw new ApplicationException(ex.getMessage());
         } finally {
             try {
@@ -138,7 +138,7 @@ public class SimilarityCalculator {
                     namesWriter.close();
                 }
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
                 throw new ApplicationException(ex.getMessage());
             }
         }

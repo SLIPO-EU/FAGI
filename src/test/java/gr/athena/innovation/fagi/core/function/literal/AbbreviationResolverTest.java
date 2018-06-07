@@ -17,7 +17,7 @@ import org.junit.BeforeClass;
  */
 public class AbbreviationResolverTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AbbreviationResolverTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(AbbreviationResolverTest.class);
 
     @BeforeClass
     public static void setUpClass() throws IOException {
@@ -35,11 +35,11 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testGetInstance() {
-        logger.info("getInstance");
+        LOG.info("getInstance");
         try{
             AbbreviationAndAcronymResolver.getInstance();
         } catch(ApplicationException ex){
-            logger.error(ex);
+            LOG.error(ex);
             fail("AbbreviationResolver is not initialized with knownAbbreviations.");
         }
     }
@@ -49,7 +49,7 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testGetKnownAbbreviation() {
-        logger.info("getInstance");
+        LOG.info("getInstance");
         //TODO: update test after the knownAbbreviations list is populated
 //        AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
 //        String result = resolver.getKnownAbbreviationOrAcronym("Dr.");
@@ -70,7 +70,7 @@ public class AbbreviationResolverTest {
             //TODO: update test when this list is populated again
             assertTrue(knownAbbreviations.isEmpty());
         } catch (IOException | ApplicationException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             fail("AbbreviationResolver could not be initialized with knownAbbreviations");
         }
     }
@@ -80,11 +80,11 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testContainsAbbreviation() {
-        logger.info("containsAbbreviation");
+        LOG.info("containsAbbreviation");
         String literal = "this literal contains an acronym at the end: A.B.B.R.";
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         boolean expResult = true;
-        logger.debug("#10 " + literal);
+        LOG.debug("#10 " + literal);
         boolean result = resolver.containsAbbreviationOrAcronym(literal);
         assertEquals(expResult, result);
     }
@@ -94,7 +94,7 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testGetAbbreviation() {
-        logger.info("getAbbreviation");
+        LOG.info("getAbbreviation");
         
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         
@@ -145,7 +145,7 @@ public class AbbreviationResolverTest {
      */
     @Test
     public void testRecoverAbbreviation() {
-        logger.info("recoverAbbreviation");
+        LOG.info("recoverAbbreviation");
         
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         

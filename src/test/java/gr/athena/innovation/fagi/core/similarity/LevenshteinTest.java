@@ -10,14 +10,14 @@ import static org.junit.Assert.*;
  */
 public class LevenshteinTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(LevenshteinTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(LevenshteinTest.class);
 
     /**
      * Test of compute method, of class LevenshteinDistance.
      */
     @Test
     public void testComputeDistance() {
-        logger.info("compute");
+        LOG.info("compute");
         
         String a = "the first string for the test is longer than the second and all its characters are different.";
         String b = "###$$%%";

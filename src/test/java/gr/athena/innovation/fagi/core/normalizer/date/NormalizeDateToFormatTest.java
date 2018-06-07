@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public class NormalizeDateToFormatTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(NormalizeDateToFormatTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(NormalizeDateToFormatTest.class);
     
     public NormalizeDateToFormatTest() {
     }
@@ -21,7 +21,7 @@ public class NormalizeDateToFormatTest {
      */
     @Test
     public void testNormalize() {
-        logger.info("normalize");
+        LOG.info("normalize");
         
         NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
         
@@ -44,7 +44,7 @@ public class NormalizeDateToFormatTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         NormalizeDateToFormat transformToFormat = new NormalizeDateToFormat();
         String expResult = SpecificationConstants.Normalize.NORMALIZE_DATE_TO_FORMAT;
         String result = transformToFormat.getName();

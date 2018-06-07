@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class FunctionRegistry {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FunctionRegistry.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FunctionRegistry.class);
     private boolean isInitialized = false;
     private HashMap<String, IFunction> functionMap;
     

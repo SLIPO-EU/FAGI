@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class RemoveSpecialCharactersTest {
     
-    private static final org.apache.logging.log4j.Logger logger 
+    private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(RemoveSpecialCharactersTest.class);
     
     public RemoveSpecialCharactersTest() {
@@ -42,7 +42,7 @@ public class RemoveSpecialCharactersTest {
      */
     @Test
     public void testNormalize() {
-        logger.info("normalize");
+        LOG.info("normalize");
         
         RemoveSpecialCharacters removeSpecialCharacters = new RemoveSpecialCharacters();
         
@@ -58,7 +58,7 @@ public class RemoveSpecialCharactersTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         RemoveSpecialCharacters removeSpecialCharacters = new RemoveSpecialCharacters();
         String expResult = SpecificationConstants.Normalize.REMOVE_SPECIAL_CHARACTERS;
         String result = removeSpecialCharacters.getName();

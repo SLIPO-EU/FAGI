@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class Jaro {
 
-    private static final org.apache.logging.log4j.Logger logger
+    private static final org.apache.logging.log4j.Logger LOG
             = LogManager.getLogger(Jaro.class);
 
     /**

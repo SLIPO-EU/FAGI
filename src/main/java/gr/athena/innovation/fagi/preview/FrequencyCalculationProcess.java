@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class FrequencyCalculationProcess {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(FrequencyCalculationProcess.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FrequencyCalculationProcess.class);
 
     public void run(FusionSpecification fusionSpec, List<String> rdfProperties) {
 

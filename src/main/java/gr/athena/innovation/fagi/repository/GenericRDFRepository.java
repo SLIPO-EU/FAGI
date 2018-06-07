@@ -19,11 +19,11 @@ import org.apache.logging.log4j.Logger;
  */
 public class GenericRDFRepository extends AbstractRepository{
 
-    private static final Logger logger = LogManager.getLogger(GenericRDFRepository.class);
+    private static final Logger LOG = LogManager.getLogger(GenericRDFRepository.class);
     
     @Override
     public void parseLeft(String filepath) throws WrongInputException{
-        logger.debug("Loading left dataset file:\" " + filepath + "\" with Generic Loader");
+        LOG.debug("Loading left dataset file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
             throw new WrongInputException("Invalid path for Left dataset: " + filepath + ". Check the config file.");
@@ -33,14 +33,14 @@ public class GenericRDFRepository extends AbstractRepository{
         model.read(filepath, null); //null base URI, since URIs are absolute
 
         LeftDataset leftModel = LeftDataset.getLeftDataset();
-        logger.debug("Jena model size for left dataset: " + model.size());
+        LOG.debug("Jena model size for left dataset: " + model.size());
         leftModel.setModel(model);
         leftModel.setFilepath(filepath);
     }
     
     @Override
     public void parseRight(String filepath) throws WrongInputException {
-        logger.debug("Loading right dataset file:\" " + filepath + "\" with Generic Loader");
+        LOG.debug("Loading right dataset file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
             throw new WrongInputException("Invalid path for Right dataset: " + filepath + ". Check the config file.");
@@ -50,7 +50,7 @@ public class GenericRDFRepository extends AbstractRepository{
         model.read(filepath, null); //null base URI, since URIs are absolute
         
         RightDataset rightModel = RightDataset.getRightDataset();
-        logger.debug("Jena model size for right dataset: " + model.size());
+        LOG.debug("Jena model size for right dataset: " + model.size());
         rightModel.setModel(model);
         rightModel.setFilepath(filepath);
     }   
@@ -58,7 +58,7 @@ public class GenericRDFRepository extends AbstractRepository{
     @Override
     public void parseLinks(String filepath) throws ParseException, WrongInputException{
         
-        logger.debug("Loading links file:\" " + filepath + "\" with Generic Loader");
+        LOG.debug("Loading links file:\" " + filepath + "\" with Generic Loader");
         
         if(!isValidPath(filepath)){
             throw new WrongInputException("Invalid path for Links file: " + filepath + ". Check the config file.");

@@ -39,7 +39,7 @@ public class NormalizeDateToFormat implements INormalizer{
                     //When simpleDateFormat.parse throws an exception the format does not match with the date.
                     //The check is done for each known format with the hope that it does not raise an exception
                     //which means that the format is belongs to the known formats
-                    //logger.error("Error parsing date format: " + dateString, ex);
+                    //LOG.error("Error parsing date format: " + dateString, ex);
                 }
             }
         }        

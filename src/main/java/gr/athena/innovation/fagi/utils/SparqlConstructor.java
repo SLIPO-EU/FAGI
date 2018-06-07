@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class SparqlConstructor {
     
-    private static final Logger logger = LogManager.getLogger(SparqlConstructor.class);
+    private static final Logger LOG = LogManager.getLogger(SparqlConstructor.class);
     
     public static String selectNodeQueryWithDepth(String nodeURI, int depth){
         String query = null;

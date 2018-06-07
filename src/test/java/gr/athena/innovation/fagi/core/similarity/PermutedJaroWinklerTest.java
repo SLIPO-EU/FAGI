@@ -11,14 +11,14 @@ import static org.junit.Assert.*;
  */
 public class PermutedJaroWinklerTest {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(PermutedJaroWinklerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(PermutedJaroWinklerTest.class);
 
     /**
      * Test of computeSimilarity method, of class PermutedJaroWinkler.
      */
     @Test
     public void testComputeSimilarity() {
-        logger.info("computeSimilarity");
+        LOG.info("computeSimilarity");
         
         PermutedJaroWinkler permutedJaroWinkler = new PermutedJaroWinkler();
 

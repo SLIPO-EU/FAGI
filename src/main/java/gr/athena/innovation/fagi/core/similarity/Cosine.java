@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public final class Cosine {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(Cosine.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(Cosine.class);
 
     /**
      * Computes a normalized value of the Cosine similarity for the given strings. 

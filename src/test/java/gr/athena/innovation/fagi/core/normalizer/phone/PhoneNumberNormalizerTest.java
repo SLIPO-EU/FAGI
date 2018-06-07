@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class PhoneNumberNormalizerTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(PhoneNumberNormalizerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(PhoneNumberNormalizerTest.class);
     
     public PhoneNumberNormalizerTest() {
     }
@@ -41,7 +41,7 @@ public class PhoneNumberNormalizerTest {
      */
     @Test
     public void testNormalizePhoneNumber() {
-        logger.info("normalize");
+        LOG.info("normalize");
         
         PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
         
@@ -62,7 +62,7 @@ public class PhoneNumberNormalizerTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         PhoneNumberNormalizer phoneNumberNormalizer = new PhoneNumberNormalizer();
         String expResult = SpecificationConstants.Normalize.PHONE_NUMBER_NORMALIZER;
         String result = phoneNumberNormalizer.getName();

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
  */
     public final class Function{
 
-        private static final Logger logger = LogManager.getLogger(Function.class);
+        private static final Logger LOG = LogManager.getLogger(Function.class);
         private String name;
         private String[] parameters;
         private int parameterCount;
@@ -40,10 +40,10 @@ import org.apache.logging.log4j.Logger;
                     setParameters(commas);
                 }
 
-                logger.trace("Function parameters: " + Arrays.toString(commas));
+                LOG.trace("Function parameters: " + Arrays.toString(commas));
 
             } else {
-                logger.fatal("Function " + functionString + " is malformed (Parenthesis missing). Check rules.xml file!");
+                LOG.fatal("Function " + functionString + " is malformed (Parenthesis missing). Check rules.xml file!");
                 throw new IllegalArgumentException();                
             }
         }

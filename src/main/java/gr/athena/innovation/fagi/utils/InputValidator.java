@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  */
 public class InputValidator {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(InputValidator.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(InputValidator.class);
     
     //private final String rulesXmlPath;
     private final String specXmlPath;
@@ -63,14 +63,14 @@ public class InputValidator {
                 Validator validator = schema.newValidator();
                 validator.validate(new StreamSource(xml));
 
-                logger.debug(xmlPath + " is valid");
+                LOG.debug(xmlPath + " is valid");
                 return true;
 
             } catch (SAXException e) {
-                logger.error("Failed to validate " + xmlPath + " with corresponding XSD. Reason:\n" + e);
+                LOG.error("Failed to validate " + xmlPath + " with corresponding XSD. Reason:\n" + e);
                 return false;
             } catch (IOException e) {
-                logger.error(e);
+                LOG.error(e);
                 return false;
             }  
         }    
@@ -82,7 +82,7 @@ public class InputValidator {
             isValid = isValidSpecification();
             
         } catch (FileNotFoundException ex) {
-            logger.fatal("Input is not valid! " + ex);
+            LOG.fatal("Input is not valid! " + ex);
             return false;
         }
         
@@ -95,7 +95,7 @@ public class InputValidator {
             isValid = isValidRulesXml(rulesXmlPath);
             
         } catch (FileNotFoundException ex) {
-            logger.fatal("Input is not valid! " + ex);
+            LOG.fatal("Input is not valid! " + ex);
             return false;
         }
         
@@ -129,7 +129,7 @@ public class InputValidator {
                 if (index != -1){
                     String functionNameBeforeParenthesis = function.substring(0, index).toLowerCase();
                     if(!functionSet.contains(functionNameBeforeParenthesis)){
-                        logger.fatal("Functions defined in " + SpecificationConstants.Spec.RULES_XML + " is not valid. "
+                        LOG.fatal("Functions defined in " + SpecificationConstants.Spec.RULES_XML + " is not valid. "
                                 + functionNameBeforeParenthesis + " is malformed or not supported.");
                         return false;
                     }

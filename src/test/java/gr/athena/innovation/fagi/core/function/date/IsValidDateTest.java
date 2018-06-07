@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  */
 public class IsValidDateTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsValidDateTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsValidDateTest.class);
     
     public IsValidDateTest() {
     }
@@ -42,7 +42,7 @@ public class IsValidDateTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate");
+        LOG.info("evaluate");
         
         IsValidDate isValidDate = new IsValidDate();
         
@@ -64,7 +64,7 @@ public class IsValidDateTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsValidDate isValidDate = new IsValidDate();
 
         String expResult = SpecificationConstants.Functions.IS_VALID_DATE;

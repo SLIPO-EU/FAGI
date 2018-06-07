@@ -14,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
  * @author nkarag
  */
 public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsDateKnownFormat.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**
      * Checks if the given date String is written as a known format as defined in the specification.
@@ -40,7 +40,7 @@ public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
                     //When simpleDateFormat.parse throws an exception the format does not match with the date.
                     //The check is done for each known format with the hope that it does not raise an exception
                     //which means that the format is belongs to the known formats
-                    //logger.error("Error parsing date format: " + dateString, ex);
+                    //LOG.error("Error parsing date format: " + dateString, ex);
                 }
             }
         }

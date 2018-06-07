@@ -11,14 +11,14 @@ import static org.junit.Assert.*;
  */
 public class CosineTest {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CosineTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(CosineTest.class);
     
     /**
      * Test of tokenize method, of class Cosine.
      */
     @Test
     public void testTokenize() {
-        logger.info("tokenize");
+        LOG.info("tokenize");
         
         CharSequence text = "word tokens&should be#five   %";
 
@@ -34,7 +34,7 @@ public class CosineTest {
      */
     @Test
     public void testComputeSimilarity() {
-        logger.info("computeSimilarity");
+        LOG.info("computeSimilarity");
 
         String a = "This is a foo bar string .";
         String b = "This string is similar to a foo bar string .";
@@ -63,7 +63,7 @@ public class CosineTest {
      */
     @Test
     public void testComputeDistance() {
-        logger.info("computeDistance");
+        LOG.info("computeDistance");
         
         String a = "This is a foo bar string .";
         String b = "This string is similar to a foo bar string .";

@@ -28,7 +28,7 @@ public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParamete
             Integer.parseInt(number);
             
         }catch(NumberFormatException e){
-            //logger.debug("Number is not parsable, but it is ok. \n");
+            //LOG.debug("Number is not parsable, but it is ok. \n");
             parsable = false;
         }           
 

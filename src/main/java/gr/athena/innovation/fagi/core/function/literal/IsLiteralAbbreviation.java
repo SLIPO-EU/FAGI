@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParameter{
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsLiteralAbbreviation.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsLiteralAbbreviation.class);
     
     /**
      * Checks if the given literal is an abbreviation by using a regular expression from the SpecificationConstants.
@@ -22,7 +22,7 @@ public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParamete
      */
     @Override
     public boolean evaluate(String literal){
-        logger.trace("Evaluating literal: " + literal);
+        LOG.trace("Evaluating literal: " + literal);
         //1) check dictionary/wordsList
         
         //2) https://stackoverflow.com/questions/7331462/check-if-a-string-is-a-possible-abbrevation-for-a-name

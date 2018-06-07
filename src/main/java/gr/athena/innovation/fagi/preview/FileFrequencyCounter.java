@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class FileFrequencyCounter implements FrequencyCounter {
 
-    private static final Logger logger = LogManager.getLogger(FileFrequencyCounter.class);
+    private static final Logger LOG = LogManager.getLogger(FileFrequencyCounter.class);
 
     private Locale locale;
     private List<String> properties;
@@ -93,7 +93,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
                     + filenamePrefix + filename + filenameSuffix;
             File outputFile = new File(outputFilename);
 
-            logger.info("frequency file:" + outputFilename);
+            LOG.info("frequency file:" + outputFilename);
             PrintWriter pw = null;
             try {
 
@@ -167,7 +167,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
             if (writer != null) {
                 writer.close();
             }
-            logger.error(ex);
+            LOG.error(ex);
             throw new ApplicationException(ex.getMessage());
         }
     }

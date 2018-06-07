@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
  */
 public class IsSamePhoneNumberCustomNormalizeTest {
     
-    private static final org.apache.logging.log4j.Logger logger 
+    private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(IsSamePhoneNumberCustomNormalizeTest.class);
     
     /**
@@ -19,7 +19,7 @@ public class IsSamePhoneNumberCustomNormalizeTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate");
+        LOG.info("evaluate");
         IsSamePhoneNumberCustomNormalize instance = new IsSamePhoneNumberCustomNormalize();
 
         //considered same
@@ -84,7 +84,7 @@ public class IsSamePhoneNumberCustomNormalizeTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsSamePhoneNumberCustomNormalize isSamePhoneNumberCustomNormalize = new IsSamePhoneNumberCustomNormalize();
         String expResult = SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE;
         String result = isSamePhoneNumberCustomNormalize.getName();

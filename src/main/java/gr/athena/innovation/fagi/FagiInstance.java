@@ -161,9 +161,9 @@ public class FagiInstance {
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
             
-            if(container.isValid()){
+            if(container.isValid() && container.isComplete()){
                 StatisticsExporter exporter = new StatisticsExporter();
-                exporter.exportStatistics(container, fusionSpec.getOutputDir());                
+                exporter.exportStatistics(container, fusionSpec.getOutputDir());
             } else {
                 LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
                         + Namespace.SOURCE + " property that is being used to count the entities.");

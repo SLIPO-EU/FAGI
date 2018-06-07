@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
  */
 public class AdvancedGenericNormalizerTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AdvancedGenericNormalizerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(AdvancedGenericNormalizerTest.class);
     
     public AdvancedGenericNormalizerTest() {
     }
@@ -45,7 +45,7 @@ public class AdvancedGenericNormalizerTest {
      */
     @Test
     public void testGetWeightedPair() {
-        logger.info("getWeightedPair");
+        LOG.info("getWeightedPair");
         
         String expResBaseValueA;
         String expResBaseValueB;

@@ -25,7 +25,7 @@ import org.xml.sax.SAXException;
  */
 public class SpecificationParser {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SpecificationParser.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SpecificationParser.class);
 
     /**
      * Parses the specification XML and produces a FusionSpecification object.
@@ -36,7 +36,7 @@ public class SpecificationParser {
      */
     public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException {
 
-        logger.info("Parsing Fusion Specification: " + fusionSpecificationPath);
+        LOG.info("Parsing Fusion Specification: " + fusionSpecificationPath);
         FusionSpecification fusionSpecification = FusionSpecification.getInstance();
 
         try {
@@ -185,7 +185,7 @@ public class SpecificationParser {
                                 Date dateA = simpleDateFormat.parse(dateString);
                                 fusionSpecification.setDateA(dateA);
                             } catch (ParseException ex) {
-                                logger.error(ex);
+                                LOG.error(ex);
                                 throw new WrongInputException("Date in \"left\" dataset does not have the expected format. "
                                         + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
                             }                            
@@ -226,7 +226,7 @@ public class SpecificationParser {
                                 Date dateB = simpleDateFormat.parse(dateString);
                                 fusionSpecification.setDateB(dateB);
                             } catch (ParseException ex) {
-                                logger.error(ex);
+                                LOG.error(ex);
                                 throw new WrongInputException("Date in \"right\" dataset does not have the expected format. "
                                         + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
                             }                            
@@ -292,7 +292,7 @@ public class SpecificationParser {
             }
 
         } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
-            logger.fatal("Exception occured while parsing the fusion specification: "
+            LOG.fatal("Exception occured while parsing the fusion specification: "
                     + fusionSpecificationPath + "\n" + e);
         }
 

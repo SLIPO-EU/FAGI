@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTwoParameters{
     
-    private static final org.apache.logging.log4j.Logger logger 
+    private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(IsSamePhoneNumberCustomNormalize.class);
     
     /**

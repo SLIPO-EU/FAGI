@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class LongestCommonSubsequenceMetric {
 
-    private static final org.apache.logging.log4j.Logger logger = 
+    private static final org.apache.logging.log4j.Logger LOG = 
             LogManager.getLogger(LongestCommonSubsequenceMetric.class);    
     /**
      * Computes the longest Common Subsequence similarity score of the two given strings.

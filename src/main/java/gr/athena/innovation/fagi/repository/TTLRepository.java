@@ -9,11 +9,11 @@ import org.apache.logging.log4j.Logger;
  * @author nkarag
  */
 public class TTLRepository extends AbstractRepository{
-    private static final Logger logger = LogManager.getLogger(TTLRepository.class);
+    private static final Logger LOG = LogManager.getLogger(TTLRepository.class);
     
     @Override
     public void readFile(String path) {
-        logger.info("Reading from path", path);
+        LOG.info("Reading from path", path);
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

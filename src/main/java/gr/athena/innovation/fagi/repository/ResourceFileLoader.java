@@ -29,7 +29,7 @@ import org.json.simple.parser.ParseException;
  */
 public class ResourceFileLoader {
 
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(ResourceFileLoader.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(ResourceFileLoader.class);
     
     public static Map<String, String> getProperties(String file) throws IOException, ApplicationException {
         final int left = 0;

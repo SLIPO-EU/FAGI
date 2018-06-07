@@ -11,14 +11,14 @@ import org.junit.Test;
  */
 public class SortedJaroWinklerTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(SortedJaroWinklerTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SortedJaroWinklerTest.class);
 
     /**
      * Test of computeSimilarity method, of class SortedJaroWinkler.
      */
     @Test
     public void testComputeSimilarity() {
-        logger.info("computeSimilarity");
+        LOG.info("computeSimilarity");
 
         double expResult1 = 0.0; //jaro-winkler similarity is zero for any zero string length.
         double result1 = SortedJaroWinkler.computeSimilarity("", ""); 

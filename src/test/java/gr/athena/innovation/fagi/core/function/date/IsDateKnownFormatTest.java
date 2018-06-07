@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  */
 public class IsDateKnownFormatTest {
     
-    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(IsDateKnownFormatTest.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDateKnownFormatTest.class);
     
     public IsDateKnownFormatTest() {
     }
@@ -42,7 +42,7 @@ public class IsDateKnownFormatTest {
      */
     @Test
     public void testEvaluate() {
-        logger.info("evaluate");
+        LOG.info("evaluate");
         String dateString = "12/11/2016";
         IsDateKnownFormat isDateKnownFormat = new IsDateKnownFormat();
 
@@ -77,7 +77,7 @@ public class IsDateKnownFormatTest {
      */
     @Test
     public void testGetName() {
-        logger.info("getName");
+        LOG.info("getName");
         IsDateKnownFormat isDateKnownFormat = new IsDateKnownFormat();
 
         String expResult = SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT;
