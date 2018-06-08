@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -21,7 +19,7 @@ public class StatisticsExporter {
     
     public void exportStatistics(StatisticsContainer container, String outputDir){
 
-        String statsPath = outputDir + "stats.txt";
+        String statsPath = outputDir + "stats.json";
             
         File outputFile = new File(statsPath);
 
