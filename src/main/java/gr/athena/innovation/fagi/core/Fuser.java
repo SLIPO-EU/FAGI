@@ -15,7 +15,6 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
-import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
@@ -41,7 +40,6 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
@@ -299,15 +297,14 @@ public class Fuser implements IFuser{
 
                 removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, remaining);
 
-
                 break;
             }
             default:
                 throw new UnsupportedOperationException("Wrong Output mode!");               
         }
-        
+
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
-        
+
         if(ambiguousModel.isEmpty()){
             addMessageToEmptyOutput(ambiguous);
         } else {

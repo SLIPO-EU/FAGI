@@ -50,24 +50,29 @@ public class StatisticsContainer {
         if(map == null){
             throw new ApplicationException("Statistics container is not initialized properly.");
         }
-        
-        String formattedJson = null;
-        
-        try {
-            
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-            
-            String originalJson = objectMapper.writeValueAsString(map);
 
-            JsonNode tree = objectMapper.readTree(originalJson);
-            formattedJson = objectMapper.writeValueAsString(tree);
+        String formattedJson;
 
-        } catch (IOException ex) {
-            LOG.error(ex);
-            throw new ApplicationException("Json serialization failed.");
+        if(valid && complete){
+            try {
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+                String originalJson = objectMapper.writeValueAsString(map);
+
+                JsonNode tree = objectMapper.readTree(originalJson);
+                formattedJson = objectMapper.writeValueAsString(tree);
+
+            } catch (IOException ex) {
+                LOG.error(ex);
+                throw new ApplicationException("Json serialization failed.");
+            }
+        } else {
+            //TODO: some stats can be still be returned even when container is not complete.
+            formattedJson = "{}";
         }
-        
+
         return formattedJson;
     }
 

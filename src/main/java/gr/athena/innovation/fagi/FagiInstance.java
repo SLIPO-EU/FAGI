@@ -161,13 +161,14 @@ public class FagiInstance {
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
-
+            StatisticsExporter exporter = new StatisticsExporter();
+            
             if(container.isValid() && container.isComplete()){
-                StatisticsExporter exporter = new StatisticsExporter();
-                exporter.exportStatistics(container, fusionSpec.getStatsFilepath());
+                exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
             } else {
                 LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
-                        + Namespace.SOURCE + " property that is being used to count the entities.");
+                        + Namespace.SOURCE + " property that is being used to count the entities.");                
+                exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
             }
         }
         

@@ -38,7 +38,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.ResourceUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,9 +111,9 @@ public class LinkedPair {
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
             if (validationRule.getActionRuleSet() == null) {
-                LOG.trace("Rule without ACTION RULE SET, accepting link.");
+                LOG.trace("Rule without ACTION RULE SET, using default validation action.");
 
-                validation = EnumValidationAction.ACCEPT;
+                validation = validationRule.getDefaultValidationAction();
 
                 break;
             }
@@ -182,6 +181,7 @@ public class LinkedPair {
 
         List<Rule> rules = ruleCatalog.getRules();
 
+        int count = 0;
         for (Rule rule : rules) {
             LOG.debug("Fusing with Rule: " + rule);
 
@@ -214,6 +214,7 @@ public class LinkedPair {
             }
 
             if (literalA == null && literalB == null) {
+                count++;
                 continue;
             }
 
@@ -270,6 +271,11 @@ public class LinkedPair {
                         + defaultFusionAction);                
                 fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
             }
+        }
+        
+        if(count >= rules.size()){
+            LOG.trace("No rules were applied for this link. Failed to retrieve literals for any of the given properties. "
+                    + "" + this.getLink().getKey());
         }
     }
 

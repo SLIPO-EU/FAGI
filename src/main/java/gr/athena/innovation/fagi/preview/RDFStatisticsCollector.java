@@ -585,7 +585,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         if(warn(totalPOIsA, totalPOIsB, Namespace.NAME)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
-            map.put("emptyDates", pair);
+            map.put("namesPercent", pair);
             return pair;
         }
 
@@ -605,6 +605,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int websiteB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.WEBSITE);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.WEBSITE)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("websitesPercent", pair);
             return new StatisticResultPair("0","0");
         }
         
@@ -625,6 +627,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int phonesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.PHONE);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.PHONE)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("phonesPercent", pair);            
             return new StatisticResultPair("0","0");
         }
         
@@ -645,6 +649,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetsB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.STREET)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("streetsPercent", pair);            
             return new StatisticResultPair("0","0");
         }
         
@@ -665,6 +671,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int streetNumbersB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET_NUMBER);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.STREET_NUMBER)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("streetNumbersPercent", pair);            
             return new StatisticResultPair("0","0");
         }
 
@@ -685,6 +693,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int localitiesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.LOCALITY);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.LOCALITY)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("localityPercent", pair);            
             return new StatisticResultPair("0","0");
         }
 
@@ -704,6 +714,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         int datesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.DATE);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.DATE)){
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            map.put("datesPercent", pair);            
             return new StatisticResultPair("0","0");
         }
 
@@ -771,7 +783,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
             totalPropPercentageA = (nA + pA + sA + snA + wA +lA + dA) / 7;
             totalPropPercentageB = (nB + pB + sB + snB + wB +lB + dB) / 7;
-        
+
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute total non empty percentages due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -879,11 +891,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     }
 
     private boolean warn(int entitiesA, int entitiesB, String propertyName) {
-        if (entitiesA == 0) {
-            LOG.warn("Zero entities in dataset A. Check " + propertyName + " property.");
+        if(entitiesA == 0 && entitiesB == 0){
+            LOG.warn("Could not count POIs in datasets. Check " + propertyName + " property.");
+            return true;            
+        } else if (entitiesA == 0) {
+            LOG.warn("Could not count POIs in dataset A. Check " + propertyName + " property.");
             return true;
         } else if (entitiesB == 0) {
-            LOG.warn("Zero entities in dataset B. Check " + propertyName + " property.");
+            LOG.warn("Could not count POIs in dataset B. Check " + propertyName + " property.");
             return true;
         }
         return false;

@@ -17,7 +17,7 @@ public class StatisticsExporter {
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(StatisticsExporter.class);
     
-    public void exportStatistics(StatisticsContainer container, String filepath){
+    public void exportStatistics(String statsJsonString, String filepath){
 
         File outputFile = new File(filepath);
 
@@ -26,7 +26,7 @@ public class StatisticsExporter {
                 //clear contents
                 pw.close();
                 
-                write(container, outputFile);
+                write(statsJsonString, outputFile);
                 
             } catch (FileNotFoundException ex) {
                 LOG.error(ex);
@@ -41,7 +41,7 @@ public class StatisticsExporter {
                 outputFile.getParentFile().mkdirs();
                 outputFile.createNewFile();
 
-                write(container, outputFile);
+                write(statsJsonString, outputFile);
 
             } catch (IOException ex) {
                 LOG.error(ex);
@@ -50,9 +50,9 @@ public class StatisticsExporter {
         }
     }
 
-    private void write(StatisticsContainer container, File outputFile) throws IOException{
+    private void write(String statsJsonString, File outputFile) throws IOException{
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
-            writer.append(container.toJsonMap());
+            writer.append(statsJsonString);
             writer.newLine();
         }        
     }   
