@@ -57,7 +57,7 @@ public class SpecificationConstants {
         public static final String STATISTICS = "statistics";
         
         public static final String DEFAULT_AMBIGUOUS_FILENAME = "ambiguous.nt";
-        public static final String DEFAULT_STATS_FILENAME = "statistics.txt";
+        public static final String DEFAULT_STATS_FILENAME = "stats.json";
         
     }  
         

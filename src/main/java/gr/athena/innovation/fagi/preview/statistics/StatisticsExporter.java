@@ -17,11 +17,9 @@ public class StatisticsExporter {
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(StatisticsExporter.class);
     
-    public void exportStatistics(StatisticsContainer container, String outputDir){
+    public void exportStatistics(StatisticsContainer container, String filepath){
 
-        String statsPath = outputDir + "stats.json";
-            
-        File outputFile = new File(statsPath);
+        File outputFile = new File(filepath);
 
         if (outputFile.exists()) {
             try (PrintWriter pw = new PrintWriter(outputFile)) {

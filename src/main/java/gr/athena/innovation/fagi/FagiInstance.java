@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -154,16 +155,16 @@ public class FagiInstance {
         }
 
         long startTimeComputeStatistics = System.currentTimeMillis(); 
-        
+
         if (exportStatistics) {
             LOG.info("Calculating statistics...");
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
-            
+
             if(container.isValid() && container.isComplete()){
                 StatisticsExporter exporter = new StatisticsExporter();
-                exporter.exportStatistics(container, fusionSpec.getOutputDir());
+                exporter.exportStatistics(container, fusionSpec.getStatsFilepath());
             } else {
                 LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
                         + Namespace.SOURCE + " property that is being used to count the entities.");
