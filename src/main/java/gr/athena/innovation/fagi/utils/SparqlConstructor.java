@@ -172,6 +172,13 @@ public class SparqlConstructor {
         return query;
     }
 
+    public static String countLinkedPOIs(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s " + Namespace.SOURCE+ " ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
+        return query;
+    }
+    
     public static String countPropertyWithObject(String countVar, String property, String object){
         String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
@@ -185,6 +192,13 @@ public class SparqlConstructor {
                        "{?s ?p ?o}";
         return query;
     }
+
+    public static String countDistinctObjects(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?o) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o}";
+        return query;
+    }
     
     public static String countDistinctProperties(String countVar){
         String query = "SELECT (COUNT(DISTINCT ?p) AS ?" + countVar + ")\n" +
@@ -192,7 +206,7 @@ public class SparqlConstructor {
                        "{?s ?p ?o}";
         return query;
     }
-    
+
     public static String countProperties(String countVar, String predicate){
         String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +

@@ -723,7 +723,6 @@ public class LinkedPair {
                 String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
                 Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
 
-                LOG.warn(node.asResource().toString());
                 fusedModel.add(node, property, geometryLiteral);
 
                 fusedEntityData = fusedEntity.getEntityData();
