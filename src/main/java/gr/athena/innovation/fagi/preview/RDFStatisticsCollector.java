@@ -840,7 +840,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedPOIs", linkedPOIs);
         map.put("linkedVsTotal", linkedVsUnlinkedPOIs);
         map.put("linkedTriples", linkedTotalTriples);
-        
+
         StatisticResultPair pair1 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.NAME);
         StatisticResultPair pair2 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.PHONE);
         StatisticResultPair pair3 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.STREET);
@@ -848,7 +848,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair pair5 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.WEBSITE);
         StatisticResultPair pair6 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.EMAIL);
         StatisticResultPair pair7 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.DATE);
-        
+
         pair1.setLabel("Linked Non Empty Names");
         pair2.setLabel("Linked Non Empty Phones");
         pair3.setLabel("Linked Non Empty Streets");
@@ -864,7 +864,46 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedNonEmptyWebsites", pair5);
         map.put("linkedNonEmptyEmails", pair6);
         map.put("linkedNonEmptyDates", pair7);
+        
+        Integer namesA = Integer.parseInt(pair1.getA());
+        Integer namesB = Integer.parseInt(pair1.getB());
+        Integer phonesA = Integer.parseInt(pair2.getA());
+        Integer phonesB = Integer.parseInt(pair2.getB());
+        Integer streetsA = Integer.parseInt(pair3.getA());
+        Integer streetsB = Integer.parseInt(pair3.getB());
+        Integer streetNumbersA = Integer.parseInt(pair4.getA());
+        Integer streetNumbersB = Integer.parseInt(pair4.getB());
+        Integer websitesA = Integer.parseInt(pair5.getA());
+        Integer websitesB = Integer.parseInt(pair5.getB());
+        Integer emailsA = Integer.parseInt(pair6.getA());
+        Integer emailsB = Integer.parseInt(pair6.getB());
+        Integer datesA = Integer.parseInt(pair7.getA());
+        Integer datesB = Integer.parseInt(pair7.getB());
+        
+        StatisticResultPair linkedEmptyNames = computeEmptyLinkedProperty(namesA, namesB);
+        StatisticResultPair linkedEmptyPhones = computeEmptyLinkedProperty(phonesA, phonesB);
+        StatisticResultPair linkedEmptyStreets = computeEmptyLinkedProperty(streetsA, streetsB);
+        StatisticResultPair linkedEmptyStreetNumbers = computeEmptyLinkedProperty(streetNumbersA, streetNumbersB);
+        StatisticResultPair linkedEmptyWebsites = computeEmptyLinkedProperty(websitesA, websitesB);
+        StatisticResultPair linkedEmptyEmails = computeEmptyLinkedProperty(emailsA, emailsB);
+        StatisticResultPair linkedEmptyDates = computeEmptyLinkedProperty(datesA, datesB);
 
+        linkedEmptyNames.setLabel("Linked Empty Names");
+        linkedEmptyPhones.setLabel("Linked Empty Phones");
+        linkedEmptyStreets.setLabel("Linked Empty Streets");
+        linkedEmptyStreetNumbers.setLabel("Linked Empty Street Numbers");
+        linkedEmptyWebsites.setLabel("Linked Empty Websites");
+        linkedEmptyEmails.setLabel("Linked Empty Emails");
+        linkedEmptyDates.setLabel("Linked Empty Dates");
+        
+        map.put("linkedEmptyNames", linkedEmptyNames);
+        map.put("linkedEmptyPhones", linkedEmptyPhones);
+        map.put("linkedEmptyStreets", linkedEmptyStreets);
+        map.put("linkedEmptyStreetNumbers", linkedEmptyStreetNumbers);
+        map.put("linkedEmptyWebsites", linkedEmptyWebsites);
+        map.put("linkedEmptyEmails", linkedEmptyEmails);
+        map.put("linkedEmptyDates", linkedEmptyDates);
+   
         StatisticResultPair totalNonEmptyLinked = computeNonEmptyLinkedTotalProperties();
         map.put("linkedNonEmptyProperties", totalNonEmptyLinked); //already labeled
 
@@ -883,6 +922,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
+    private StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
+
+        Integer emptyA = totalPOIsA - nonEmptyA;
+        Integer emptyB = totalPOIsB - nonEmptyB;
+        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString());
+        return pair;
+    }
+    
     private StatisticResultPair computeNonEmptyLinkedTotalProperties(){
         Integer totalA;
         Integer totalB;
