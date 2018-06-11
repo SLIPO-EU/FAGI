@@ -1,8 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
 import gr.athena.innovation.fagi.specification.Namespace;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Utilities for constructing SPARQL queries
@@ -10,8 +8,6 @@ import org.apache.logging.log4j.Logger;
  * @author nkarag
  */
 public class SparqlConstructor {
-    
-    private static final Logger LOG = LogManager.getLogger(SparqlConstructor.class);
     
     public static String selectNodeQueryWithDepth(String nodeURI, int depth){
         String query = null;
@@ -178,18 +174,25 @@ public class SparqlConstructor {
                        "{?s ?p ?o }";
         return query;
     }
-    
+
     public static String countLinkedPOIsB(String countVar){
         String query = "SELECT (COUNT(DISTINCT ?o) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s ?p ?o }";
         return query;
     }
-    
-    public static String countLinkedTriples(String countVar){
+
+    public static String countLinkedTriplesA(String countVar){
         String query = "SELECT (COUNT(?p) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s ?p ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
+        return query;
+    }
+
+    public static String countLinkedTriplesB(String countVar){
+        String query = "SELECT (COUNT(?p) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o . ?o1 <http://www.w3.org/2002/07/owl#sameAs> ?s . }";
         return query;
     }
     

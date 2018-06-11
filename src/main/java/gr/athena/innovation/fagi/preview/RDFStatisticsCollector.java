@@ -61,7 +61,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         countNonEmptyDates();
 
         /* Empty properties */
-        
+
         countEmptyNames();
         countEmptyPhones();
         countEmptyStreets();
@@ -71,11 +71,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         countEmptyDates();
 
         /* Distinct properties */
-        
+
         countDistinctProperties();
-        
+
         /* Percenteges */
-        
+
         calculatePercentageOfPrimaryDateFormats();
         calculateNamePercentage();
         calculateWebsitePercentage();
@@ -100,10 +100,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } else {
             container.setValid(true);
         }
-        
+
         container.setMap(map);
         container.setComplete(true && container.isValid());
-        
+
         return container;
     }
     
@@ -165,17 +165,17 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private StatisticResultPair countTotalLinkedTriples(Model linkedA, Model linkedB){
 
-        Integer linkedTriplesA = SparqlRepository.countLinkedTriples(linkedA);
-        Integer linkedTriplesB = SparqlRepository.countLinkedTriples(linkedB);
+        Integer linkedTriplesA = SparqlRepository.countLinkedTriplesA(linkedA);
+        Integer linkedTriplesB = SparqlRepository.countLinkedTriplesB(linkedB);
 
         StatisticResultPair pair = new StatisticResultPair(linkedTriplesA.toString(), linkedTriplesB.toString());
         pair.setLabel("Linked Triples");
 
         return pair;
-    }  
-    
+    }
+
     private StatisticResultPair countDistinctProperties(){
-        
+
         Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(LeftDataset.getLeftDataset().getModel());
         Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(RightDataset.getRightDataset().getModel());
         StatisticResultPair pair = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString());
@@ -196,7 +196,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("nonEmptyNames", pair);
         return pair;
     }
-    
+
     private StatisticResultPair countNonEmptyPhones(){
 
         Integer phonesA = countNonEmptyProperty(Namespace.PHONE, EnumDataset.LEFT);
@@ -742,29 +742,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private StatisticResultPair countTriples(){
 
         Long totalA = LeftDataset.getLeftDataset().getModel().size();
-        Long totalB = LeftDataset.getLeftDataset().getModel().size();
+        Long totalB = RightDataset.getRightDataset().getModel().size();
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
         pair.setLabel("Total triples");
 
         map.put("totalTriples", pair);
-        return pair;
-    }
-
-    private StatisticResultPair countLinkedVsTotal(){
-
-        Long totalA = LeftDataset.getLeftDataset().getModel().size();
-        
-        Long totalB = LeftDataset.getLeftDataset().getModel().size();
-        
-        Long totalLinks = LinksModel.getLinksModel().getModel().size();
-        
-        Long total = totalA + totalB;
-
-        StatisticResultPair pair = new StatisticResultPair(totalLinks.toString(), total.toString());
-        pair.setLabel("Linked vs Total POIS");
-
-        map.put("linkedVsTotal", pair);
         return pair;
     }
     
@@ -838,7 +821,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                 throw new ApplicationException("Undefined dataset value.");
         }
         return count;
-    }  
+    }
 
     private void computeLinkStats(){
 
