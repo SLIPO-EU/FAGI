@@ -152,10 +152,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countLinkedPOIs(Model linkedA, Model linkedB){
+    private StatisticResultPair countLinkedPOIs(Model links){
 
-        Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(linkedA);
-        Integer linkedPOIsB = SparqlRepository.countDistinctObjects(linkedB);
+        Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(links);
+        Integer linkedPOIsB = SparqlRepository.countDistinctObjects(links);
 
         StatisticResultPair pair = new StatisticResultPair(linkedPOIsA.toString(), linkedPOIsB.toString());
         pair.setLabel("Linked POIs");
@@ -518,7 +518,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
             
         } catch(NumberFormatException ex){
-            LOG.warn("Could not compute total empty propertis due to missing values. ", ex);
+            LOG.warn("Could not compute total empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
             pair.setLabel("Could not compute");
             
@@ -833,7 +833,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Model linkedA = modelA.union(linksModel);
         Model linkedB = modelB.union(linksModel);
 
-        StatisticResultPair linkedPOIs = countLinkedPOIs(linkedA, linkedB);//already labeled
+        StatisticResultPair linkedPOIs = countLinkedPOIs(linksModel);//already labeled
         StatisticResultPair linkedVsUnlinkedPOIs = countLinkedVsTotalPOIs(linksModel); //already labeled
         StatisticResultPair linkedTotalTriples = countTotalLinkedTriples(linkedA, linkedB); //already labeled
 
@@ -841,14 +841,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedVsTotal", linkedVsUnlinkedPOIs);
         map.put("linkedTriples", linkedTotalTriples);
         
-        StatisticResultPair pair1 = computeNonEmptyLinked(linkedA, linkedB, Namespace.NAME);
-        StatisticResultPair pair2 = computeNonEmptyLinked(linkedA, linkedB, Namespace.PHONE);
-        StatisticResultPair pair3 = computeNonEmptyLinked(linkedA, linkedB, Namespace.STREET);
-        StatisticResultPair pair4 = computeNonEmptyLinked(linkedA, linkedB, Namespace.STREET_NUMBER);
-        StatisticResultPair pair5 = computeNonEmptyLinked(linkedA, linkedB, Namespace.WEBSITE);
-        StatisticResultPair pair6 = computeNonEmptyLinked(linkedA, linkedB, Namespace.EMAIL);
-        StatisticResultPair pair7 = computeNonEmptyLinked(linkedA, linkedB, Namespace.DATE);
-
+        StatisticResultPair pair1 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.NAME);
+        StatisticResultPair pair2 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.PHONE);
+        StatisticResultPair pair3 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.STREET);
+        StatisticResultPair pair4 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.STREET_NUMBER);
+        StatisticResultPair pair5 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.WEBSITE);
+        StatisticResultPair pair6 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.EMAIL);
+        StatisticResultPair pair7 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.DATE);
+        
         pair1.setLabel("Linked Non Empty Names");
         pair2.setLabel("Linked Non Empty Phones");
         pair3.setLabel("Linked Non Empty Streets");
@@ -865,18 +865,97 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedNonEmptyEmails", pair6);
         map.put("linkedNonEmptyDates", pair7);
 
+        StatisticResultPair totalNonEmptyLinked = computeNonEmptyLinkedTotalProperties();
+        map.put("linkedNonEmptyProperties", totalNonEmptyLinked); //already labeled
+
+        StatisticResultPair totalEmptyLinked = computeEmptyLinkedTotalProperties();
+        map.put("linkedEmptyProperties", totalEmptyLinked); //already labeled
+
     }
 
-    private static StatisticResultPair computeNonEmptyLinked(Model linkedA, Model linkedB, String property){
+    private static StatisticResultPair computeNonEmptyLinkedProperty(Model linkedA, Model linkedB, String property){
 
-        Integer nonEmptyCountA = SparqlRepository.countLinkedWithProperty(linkedA, property);
-        Integer nonEmptyCountB = SparqlRepository.countLinkedWithProperty(linkedB, property);
+        Integer nonEmptyCountA = SparqlRepository.countLinkedWithPropertyA(linkedA, property);
+        Integer nonEmptyCountB = SparqlRepository.countLinkedWithPropertyB(linkedB, property);
 
         StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString());
 
         return pair;
     }
 
+    private StatisticResultPair computeNonEmptyLinkedTotalProperties(){
+        Integer totalA;
+        Integer totalB;
+                
+        try{
+            
+            Integer a1 = Integer.parseInt(map.get("linkedNonEmptyNames").getA());
+            Integer a2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getA());
+            Integer a3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getA());
+            Integer a4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getA());
+            Integer a5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getA());
+            Integer a6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getA());
+            Integer a7 = Integer.parseInt(map.get("linkedNonEmptyDates").getA());
+
+            Integer b1 = Integer.parseInt(map.get("linkedNonEmptyNames").getB());
+            Integer b2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getB());
+            Integer b3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getB());
+            Integer b4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getB());
+            Integer b5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getB());
+            Integer b6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getB());
+            Integer b7 = Integer.parseInt(map.get("linkedNonEmptyDates").getB());
+
+            totalA = a1 + a2 + a3 + a4 + a5 + a6 + a7;
+            totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
+            
+        } catch(NumberFormatException ex){
+            LOG.warn("Could not compute linked non empty properties due to missing values. ", ex);
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            pair.setLabel("Could not compute");
+            
+            return pair;
+        } 
+
+        StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
+        pair.setLabel("Linked Non Empty properties");
+
+        return pair;
+    }
+
+    private StatisticResultPair computeEmptyLinkedTotalProperties(){
+        Integer totalNonEmptyA;
+        Integer totalNonEmptyB;
+        Integer totalA;
+        Integer totalB;
+        Integer totalEmptyA;
+        Integer totalEmptyB;
+
+        try{
+            
+            totalNonEmptyA = Integer.parseInt(map.get("linkedNonEmptyProperties").getA());
+            totalNonEmptyB = Integer.parseInt(map.get("linkedNonEmptyProperties").getB());
+            
+            totalA = Integer.parseInt(map.get("linkedTriples").getA());
+            totalB = Integer.parseInt(map.get("linkedTriples").getB());
+            
+            totalEmptyA = totalA - totalNonEmptyA;
+            totalEmptyB = totalB - totalNonEmptyB;
+            
+           
+        } catch(NumberFormatException ex){
+            LOG.warn("Could not compute linked empty properties due to missing values. ", ex);
+            StatisticResultPair pair = new StatisticResultPair("0","0");
+            pair.setLabel("Could not compute");
+            
+            return pair;
+        } 
+
+        StatisticResultPair pair = new StatisticResultPair(totalEmptyA.toString(), totalEmptyB.toString());
+        pair.setLabel("Linked Empty properties");
+
+        return pair;
+    }
+    
     private double roundHalfDown(Double d){
         return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
     }

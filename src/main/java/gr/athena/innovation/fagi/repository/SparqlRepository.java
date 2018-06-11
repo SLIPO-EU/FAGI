@@ -447,12 +447,35 @@ public class SparqlRepository {
         return count;
     }
 
-    public static int countLinkedWithProperty(Model model, String property) {
+    public static int countLinkedWithPropertyA(Model model, String property) {
 
         int count = 0;
 
         String countVar = "cnt";
-        String queryString = SparqlConstructor.countLinkedWithProperty(countVar, property);
+        String queryString = SparqlConstructor.countLinkedWithPropertyA(countVar, property);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int countLinkedWithPropertyB(Model model, String property) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countLinkedWithPropertyB(countVar, property);
         Query query = QueryFactory.create(queryString);
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
