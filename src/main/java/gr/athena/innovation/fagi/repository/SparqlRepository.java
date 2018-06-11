@@ -239,12 +239,58 @@ public class SparqlRepository {
         return count;
     }
 
-    public static int countLinkedPOIs(Model model) {
+    public static int countLinkedPOIsA(Model model) {
 
         int count = 0;
 
         String countVar = "cnt";
-        String queryString = SparqlConstructor.countLinkedPOIs(countVar);
+        String queryString = SparqlConstructor.countLinkedPOIsA(countVar);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+                
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static int countLinkedPOIsB(Model model) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countLinkedPOIsB(countVar);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+                
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+    
+    public static int countLinkedTriples(Model model) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countLinkedTriples(countVar);
         Query query = QueryFactory.create(queryString);
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
@@ -282,6 +328,7 @@ public class SparqlRepository {
                 }
             }
         }
+        
         return count;
     }
 

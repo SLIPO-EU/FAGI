@@ -172,10 +172,24 @@ public class SparqlConstructor {
         return query;
     }
 
-    public static String countLinkedPOIs(String countVar){
+    public static String countLinkedPOIsA(String countVar){
         String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
-                       "{?s " + Namespace.SOURCE+ " ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
+                       "{?s ?p ?o }";
+        return query;
+    }
+    
+    public static String countLinkedPOIsB(String countVar){
+        String query = "SELECT (COUNT(DISTINCT ?o) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o }";
+        return query;
+    }
+    
+    public static String countLinkedTriples(String countVar){
+        String query = "SELECT (COUNT(?p) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s ?p ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
         return query;
     }
     

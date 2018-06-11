@@ -14,9 +14,7 @@ import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -132,11 +130,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countLinkedVsTotalPOIs(Model linkedA, Model linkedB){
+    private StatisticResultPair countLinkedVsTotalPOIs(Model links){
 
-        //TODO: count distinct subjects and objects from links model
-        Integer totalA = SparqlRepository.countLinkedPOIs(linkedA);
-        Integer totalB = SparqlRepository.countLinkedPOIs(linkedB);
+        Integer totalA = SparqlRepository.countLinkedPOIsA(links);
+        Integer totalB = SparqlRepository.countLinkedPOIsB(links);
 
         Integer linked = (totalA + totalB);
 
@@ -157,14 +154,25 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private StatisticResultPair countLinkedPOIs(Model linkedA, Model linkedB){
 
-        Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(LinksModel.getLinksModel().getModel());
-        Integer linkedPOIsB = SparqlRepository.countDistinctObjects(LinksModel.getLinksModel().getModel());
+        Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(linkedA);
+        Integer linkedPOIsB = SparqlRepository.countDistinctObjects(linkedB);
 
         StatisticResultPair pair = new StatisticResultPair(linkedPOIsA.toString(), linkedPOIsB.toString());
         pair.setLabel("Linked POIs");
 
         return pair;
-    }    
+    }
+
+    private StatisticResultPair countTotalLinkedTriples(Model linkedA, Model linkedB){
+
+        Integer linkedTriplesA = SparqlRepository.countLinkedTriples(linkedA);
+        Integer linkedTriplesB = SparqlRepository.countLinkedTriples(linkedB);
+
+        StatisticResultPair pair = new StatisticResultPair(linkedTriplesA.toString(), linkedTriplesB.toString());
+        pair.setLabel("Linked Triples");
+
+        return pair;
+    }  
     
     private StatisticResultPair countDistinctProperties(){
         
@@ -300,6 +308,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         Integer nA;
         Integer nB;
+        
         try {
             
             nA = Integer.parseInt(map.get("nonEmptyNames").getA());
@@ -312,18 +321,19 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             
             return pair;
         }
-        
+
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString());
         pair.setLabel("Empty Names");
 
         map.put("emptyNames", pair);
+
         return pair;
     }
-    
+
     private StatisticResultPair countEmptyPhones(){
-        
+
         Integer nA;
         Integer nB;
         
@@ -454,30 +464,29 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("emptyEmails", pair);
         return pair;
     }  
-    
+
     private StatisticResultPair countEmptyDates(){
-        
+
         Integer nA;
         Integer nB;
         
         try{
             nA = Integer.parseInt(map.get("nonEmptyDates").getA());
             nB = Integer.parseInt(map.get("nonEmptyDates").getB());
-            
+
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty dates due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
             pair.setLabel("Could not compute");
-            
-            return pair;
-        }         
 
+            return pair;
+        }
 
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString());
         pair.setLabel("Empty Dates");
-        
+
         map.put("emptyDates", pair);
         return pair;
     }
@@ -831,22 +840,23 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return count;
     }  
 
-    private List<StatisticResultPair> computeLinkStats(){
-
-        List<StatisticResultPair> linkStats = new ArrayList<>();
+    private void computeLinkStats(){
 
         Model linksModel = LinksModel.getLinksModel().getModel();
 
         Model modelA = LeftDataset.getLeftDataset().getModel();
-        Model modelB = LeftDataset.getLeftDataset().getModel();
+        Model modelB = RightDataset.getRightDataset().getModel();
 
         Model linkedA = modelA.union(linksModel);
         Model linkedB = modelB.union(linksModel);
 
-        StatisticResultPair pairLinked = countLinkedPOIs(linkedA, linkedB);//already labeled
-        StatisticResultPair pair0 = countLinkedVsTotalPOIs(linkedA, linkedB); //already labeled
-        map.put("linkedPOIs", pairLinked);
-        map.put("linkedVsTotal", pair0);        
+        StatisticResultPair linkedPOIs = countLinkedPOIs(linkedA, linkedB);//already labeled
+        StatisticResultPair linkedVsUnlinkedPOIs = countLinkedVsTotalPOIs(linksModel); //already labeled
+        StatisticResultPair linkedTotalTriples = countTotalLinkedTriples(linkedA, linkedB); //already labeled
+
+        map.put("linkedPOIs", linkedPOIs);
+        map.put("linkedVsTotal", linkedVsUnlinkedPOIs);
+        map.put("linkedTriples", linkedTotalTriples);
         
         StatisticResultPair pair1 = computeNonEmptyLinked(linkedA, linkedB, Namespace.NAME);
         StatisticResultPair pair2 = computeNonEmptyLinked(linkedA, linkedB, Namespace.PHONE);
@@ -856,7 +866,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair pair6 = computeNonEmptyLinked(linkedA, linkedB, Namespace.EMAIL);
         StatisticResultPair pair7 = computeNonEmptyLinked(linkedA, linkedB, Namespace.DATE);
 
-        //pair0 is already labeled
         pair1.setLabel("Linked Non Empty Names");
         pair2.setLabel("Linked Non Empty Phones");
         pair3.setLabel("Linked Non Empty Streets");
@@ -873,7 +882,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedNonEmptyEmails", pair6);
         map.put("linkedNonEmptyDates", pair7);
 
-        return linkStats;
     }
 
     private static StatisticResultPair computeNonEmptyLinked(Model linkedA, Model linkedB, String property){
