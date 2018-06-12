@@ -6,6 +6,7 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticResultPair;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.LeftDataset;
+import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
@@ -15,6 +16,7 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
@@ -89,6 +91,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         computeLinkStats();
 
+        /* Average statistics */
+        calculateAveragePropertiesPerPOI();
+        calculateAveragePropertiesOfLinkedPOIs();
+        
         /* Aggregate statistics */
 
         countTotalNonEmptyProperties();
@@ -755,9 +761,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         Double totalPropPercentageA;
         Double totalPropPercentageB;
-        
+
         try{
-            
+
             Double nA = Double.parseDouble(map.get("namesPercent").getA());
             Double nB = Double.parseDouble(map.get("namesPercent").getB());
             Double pA = Double.parseDouble(map.get("phonesPercent").getA());
@@ -780,7 +786,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             LOG.warn("Could not compute total non empty percentages due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
             pair.setLabel("Could not compute");
-            
+
             return pair;
         } 
 
@@ -1001,6 +1007,60 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         pair.setLabel("Linked Empty properties");
 
         return pair;
+    }
+
+    private void calculateAveragePropertiesPerPOI() {
+
+        StatisticResultPair dis = map.get("distinctProperties");
+
+        int distinctPropertiesA = Integer.parseInt(dis.getA());
+        int distinctPropertiesB = Integer.parseInt(dis.getB());
+
+        Model leftModel = LeftDataset.getLeftDataset().getModel();
+        Model rightModel = RightDataset.getRightDataset().getModel();
+
+        Double averagePropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA);
+        Double averagePropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB);
+
+        StatisticResultPair averageProperties 
+                = new StatisticResultPair(averagePropertiesA.toString(), averagePropertiesB.toString());
+        
+        averageProperties.setLabel("Average number of properties per POI");
+        map.put("averageProperties", averageProperties);
+
+    }
+
+    private void calculateAveragePropertiesOfLinkedPOIs() {
+
+        Model left = LeftDataset.getLeftDataset().getModel();
+        Model right = RightDataset.getRightDataset().getModel();
+
+        List<Link> links = LinksModel.getLinksModel().getLinks();
+
+        int sumA = 0;
+        int sumB = 0;
+
+        for(Link link : links){
+
+            String nodeA = link.getNodeA();
+            String nodeB = link.getNodeB();
+
+            int propertiesA = SparqlRepository.countDistinctPropertiesOfResource(left, nodeA);
+            int propertiesB = SparqlRepository.countDistinctPropertiesOfResource(right, nodeB);
+
+            sumA = sumA + propertiesA;
+            sumB = sumB + propertiesB;
+
+        }
+        
+        Double averageLinkedPropertiesA = sumA / (double)totalPOIsA;
+        Double averageLinkedPropertiesB = sumB / (double)totalPOIsB;
+        
+        StatisticResultPair averageLinkedProperties 
+                = new StatisticResultPair(averageLinkedPropertiesA.toString(), averageLinkedPropertiesB.toString());
+        
+        averageLinkedProperties.setLabel("Average number of properties of linked POI");
+        map.put("averageLinkedProperties", averageLinkedProperties);        
     }
     
     private double roundHalfDown(Double d){

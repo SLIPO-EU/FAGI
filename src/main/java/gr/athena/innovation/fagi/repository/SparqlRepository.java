@@ -216,6 +216,59 @@ public class SparqlRepository {
         return count;
     }
 
+    public static double averagePropertiesPerPOI(Model model, int distinctProperties) {
+
+        int sum = 0;
+        int total = 0;
+
+        String var = "s";
+        String queryString = SparqlConstructor.selectAllPOIs(var);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                Resource c1 = soln.getResource(var);
+                int c2 = countDistinctPropertiesOfResource(model, c1.toString());
+
+                sum = sum + c2;
+                total++;
+            }
+        }
+        
+        double res = sum/(double)total;
+        
+        return res;
+    }
+
+    public static int countDistinctPropertiesOfResource(Model model, String resource) {
+
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countDistinctPropertiesOfResource(countVar, resource);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+
+        return count;
+    }
+
     public static int countPOIs(Model model) {
 
         int count = 0;

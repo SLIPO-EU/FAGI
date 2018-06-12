@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -163,13 +162,12 @@ public class FagiInstance {
             StatisticsContainer container = collector.collect();
             StatisticsExporter exporter = new StatisticsExporter();
             
-            if(container.isValid() && container.isComplete()){
-                exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
-            } else {
+            if(!container.isValid() && !container.isComplete()){
                 LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
-                        + Namespace.SOURCE + " property that is being used to count the entities.");                
-                exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
+                        + Namespace.SOURCE + " property that is being used to count the entities."); 
             }
+
+            exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
         }
         
         long stopTimeComputeStatistics = System.currentTimeMillis();
@@ -205,7 +203,7 @@ public class FagiInstance {
 
         //Start fusion process
         long startTimeFusion = System.currentTimeMillis();        
-        
+
         if(fuse){
             LOG.info("Initiating fusion process...");
 

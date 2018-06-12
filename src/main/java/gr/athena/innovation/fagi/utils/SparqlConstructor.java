@@ -224,6 +224,20 @@ public class SparqlConstructor {
         return query;
     }
 
+    public static String countDistinctPropertiesOfResource(String countVar, String resource){
+        String query = "SELECT ((COUNT(DISTINCT ?p)) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{ <" + resource + "> ?p ?o }";
+        return query;
+    }
+
+    public static String selectAllPOIs(String var){
+        String query = "SELECT ?" + var + " " +
+                       "WHERE\n" +
+                       "{ ?" + var + " " + Namespace.SOURCE + " ?o . }";
+        return query;
+    }
+    
     public static String countProperties(String countVar, String predicate){
         String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
