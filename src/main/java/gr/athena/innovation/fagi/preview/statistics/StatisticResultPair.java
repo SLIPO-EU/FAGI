@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.preview.statistics;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -11,7 +12,49 @@ public class StatisticResultPair implements Serializable{
     private final String a;
     private final String b;
     private String label;
-    private EnumStatisticType type;
+
+    @Override
+    public int hashCode() {
+        
+        int hash = 3;
+        hash = 29 * hash + Objects.hashCode(this.a);
+        hash = 29 * hash + Objects.hashCode(this.b);
+        hash = 29 * hash + Objects.hashCode(this.label);
+        
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        
+        if (this == obj) {
+            return true;
+        }
+        
+        if (obj == null) {
+            return false;
+        }
+        
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        final StatisticResultPair other = (StatisticResultPair) obj;
+        
+        if (!Objects.equals(this.a, other.a)) {
+            return false;
+        }
+        
+        if (!Objects.equals(this.b, other.b)) {
+            return false;
+        }
+        
+        if (!Objects.equals(this.label, other.label)) {
+            return false;
+        }
+        
+        return true;
+    }
 
     @Override
     public String toString() {

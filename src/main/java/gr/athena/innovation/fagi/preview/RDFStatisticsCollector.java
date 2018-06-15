@@ -48,19 +48,22 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         container = new StatisticsContainer();
         container.setComplete(false);
 
+        Model leftModel = LeftDataset.getLeftDataset().getModel();
+        Model rightModel = RightDataset.getRightDataset().getModel();
+        
         /* POIs and triples count */
-        countTotalEntities();
-        countTriples();
+        countTotalEntities(leftModel, rightModel);
+        countTriples(leftModel, rightModel);
 
         /* Non empty properties */
 
-        countNonEmptyNames();
-        countNonEmptyPhones();
-        countNonEmptyStreets();
-        countNonEmptyStreetNumbers();
-        countNonEmptyWebsites();
-        countNonEmptyEmails();
-        countNonEmptyDates();
+        countNonEmptyNames(leftModel, rightModel);
+        countNonEmptyPhones(leftModel, rightModel);
+        countNonEmptyStreets(leftModel, rightModel);
+        countNonEmptyStreetNumbers(leftModel, rightModel);
+        countNonEmptyWebsites(leftModel, rightModel);
+        countNonEmptyEmails(leftModel, rightModel);
+        countNonEmptyDates(leftModel, rightModel);
 
         /* Empty properties */
 
@@ -89,7 +92,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* Statistics for linked POIs*/
 
-        computeLinkStats();
+        computeLinkStats(totalPOIsA, totalPOIsB);
 
         /* Aggregate statistics */
 
@@ -114,10 +117,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return container;
     }
 
-    private StatisticResultPair countTotalEntities(){
+    public StatisticResultPair countTotalEntities(Model a, Model b){
 
-        Integer totalA = SparqlRepository.countPOIs(LeftDataset.getLeftDataset().getModel());
-        Integer totalB = SparqlRepository.countPOIs(RightDataset.getRightDataset().getModel());
+        Integer totalA = SparqlRepository.countPOIs(a);
+        Integer totalB = SparqlRepository.countPOIs(b);
 
         totalPOIsA = totalA;
         totalPOIsB = totalB;
@@ -136,8 +139,20 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         return pair;
     }
+    
+    public StatisticResultPair countTriples(Model a, Model b){
 
-    private StatisticResultPair countLinkedVsTotalPOIs(Model links){
+        Long totalA = a.size();
+        Long totalB = b.size();
+
+        StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
+        pair.setLabel("Total triples");
+
+        map.put("totalTriples", pair);
+        return pair;
+    }
+    
+    public StatisticResultPair countLinkedVsTotalPOIs(Model links, int totalPOIsA, int totalPOIsB){
 
         Integer totalA = SparqlRepository.countLinkedPOIsA(links);
         Integer totalB = SparqlRepository.countLinkedPOIsB(links);
@@ -159,7 +174,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countLinkedPOIs(Model links){
+    public StatisticResultPair countLinkedPOIs(Model links){
 
         Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(links);
         Integer linkedPOIsB = SparqlRepository.countDistinctObjects(links);
@@ -170,7 +185,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countTotalLinkedTriples(Model linkedA, Model linkedB){
+    public StatisticResultPair countTotalLinkedTriples(Model linkedA, Model linkedB){
 
         Integer linkedTriplesA = SparqlRepository.countLinkedTriplesA(linkedA);
         Integer linkedTriplesB = SparqlRepository.countLinkedTriplesB(linkedB);
@@ -181,7 +196,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countDistinctProperties(){
+    public StatisticResultPair countDistinctProperties(){
 
         Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(LeftDataset.getLeftDataset().getModel());
         Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(RightDataset.getRightDataset().getModel());
@@ -192,10 +207,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countNonEmptyNames(){
+    public StatisticResultPair countNonEmptyNames(Model a, Model b){
 
-        Integer namesA = countNonEmptyProperty(Namespace.NAME_VALUE, EnumDataset.LEFT);
-        Integer namesB = countNonEmptyProperty(Namespace.NAME_VALUE, EnumDataset.RIGHT);
+        Integer namesA = countNonEmptyProperty(Namespace.NAME_VALUE, a);
+        Integer namesB = countNonEmptyProperty(Namespace.NAME_VALUE, b);
 
         StatisticResultPair pair = new StatisticResultPair(namesA.toString(), namesB.toString());
         pair.setLabel("Non empty Names");
@@ -204,10 +219,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countNonEmptyPhones(){
+    public StatisticResultPair countNonEmptyPhones(Model a, Model b){
 
-        Integer phonesA = countNonEmptyProperty(Namespace.PHONE, EnumDataset.LEFT);
-        Integer phonesB = countNonEmptyProperty(Namespace.PHONE, EnumDataset.RIGHT);
+        Integer phonesA = countNonEmptyProperty(Namespace.PHONE, a);
+        Integer phonesB = countNonEmptyProperty(Namespace.PHONE, b);
 
         StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString());
         pair.setLabel("Non empty Phones");
@@ -216,10 +231,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countNonEmptyStreets(){
+    public StatisticResultPair countNonEmptyStreets(Model a, Model b){
 
-        Integer streetsA = countNonEmptyProperty(Namespace.STREET, EnumDataset.LEFT);
-        Integer streetsB = countNonEmptyProperty(Namespace.STREET, EnumDataset.RIGHT);
+        Integer streetsA = countNonEmptyProperty(Namespace.STREET, a);
+        Integer streetsB = countNonEmptyProperty(Namespace.STREET, b);
         StatisticResultPair pair = new StatisticResultPair(streetsA.toString(), streetsB.toString());
         pair.setLabel("Non empty Streets");
         
@@ -227,10 +242,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
     
-    private StatisticResultPair countNonEmptyStreetNumbers(){
+    public StatisticResultPair countNonEmptyStreetNumbers(Model a, Model b){
 
-        Integer stNumbersA = countNonEmptyProperty(Namespace.STREET_NUMBER, EnumDataset.LEFT);
-        Integer stNumbersB = countNonEmptyProperty(Namespace.STREET_NUMBER, EnumDataset.RIGHT);
+        Integer stNumbersA = countNonEmptyProperty(Namespace.STREET_NUMBER, a);
+        Integer stNumbersB = countNonEmptyProperty(Namespace.STREET_NUMBER, b);
         StatisticResultPair pair = new StatisticResultPair(stNumbersA.toString(), stNumbersB.toString());
         pair.setLabel("Non empty Street Numbers");
         
@@ -238,10 +253,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
 
-    private StatisticResultPair countNonEmptyWebsites(){
+    public StatisticResultPair countNonEmptyWebsites(Model a, Model b){
 
-        Integer websitesA = countNonEmptyProperty(Namespace.WEBSITE, EnumDataset.LEFT);
-        Integer websitesB = countNonEmptyProperty(Namespace.WEBSITE, EnumDataset.RIGHT);
+        Integer websitesA = countNonEmptyProperty(Namespace.WEBSITE, a);
+        Integer websitesB = countNonEmptyProperty(Namespace.WEBSITE, b);
         StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString());
         pair.setLabel("Non empty Websites");
         
@@ -249,10 +264,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }     
 
-    private StatisticResultPair countNonEmptyEmails(){
+    public StatisticResultPair countNonEmptyEmails(Model a, Model b){
 
-        Integer websitesA = countNonEmptyProperty(Namespace.EMAIL, EnumDataset.LEFT);
-        Integer websitesB = countNonEmptyProperty(Namespace.EMAIL, EnumDataset.RIGHT);
+        Integer websitesA = countNonEmptyProperty(Namespace.EMAIL, a);
+        Integer websitesB = countNonEmptyProperty(Namespace.EMAIL, b);
         StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString());
         pair.setLabel("Non empty Emails");
         
@@ -260,9 +275,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }  
     
-    private StatisticResultPair countNonEmptyDates(){
-        Integer datesA = countNonEmptyProperty(Namespace.DATE, EnumDataset.LEFT);
-        Integer datesB = countNonEmptyProperty(Namespace.DATE, EnumDataset.RIGHT);
+    public StatisticResultPair countNonEmptyDates(Model a, Model b){
+        Integer datesA = countNonEmptyProperty(Namespace.DATE, a);
+        Integer datesB = countNonEmptyProperty(Namespace.DATE, b);
         StatisticResultPair pair = new StatisticResultPair(datesA.toString(), datesB.toString());
         pair.setLabel("Non empty Dates");
         
@@ -270,7 +285,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair countTotalNonEmptyProperties(){
+    public StatisticResultPair countTotalNonEmptyProperties(){
 
         Integer totalA;
         Integer totalB;
@@ -311,7 +326,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }    
 
-    private StatisticResultPair countEmptyNames(){
+    public StatisticResultPair countEmptyNames(){
 
         Integer nA;
         Integer nB;
@@ -339,7 +354,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair countEmptyPhones(){
+    public StatisticResultPair countEmptyPhones(){
 
         Integer nA;
         Integer nB;
@@ -366,7 +381,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair countEmptyStreets(){
+    public StatisticResultPair countEmptyStreets(){
         Integer nA;
         Integer nB;
         
@@ -392,7 +407,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
     
-    private StatisticResultPair countEmptyStreetNumbers(){
+    public StatisticResultPair countEmptyStreetNumbers(){
         Integer nA;
         Integer nB;
         
@@ -418,7 +433,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
 
-    private StatisticResultPair countEmptyWebsites(){
+    public StatisticResultPair countEmptyWebsites(){
         Integer nA;
         Integer nB;
         
@@ -444,7 +459,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }     
 
-    private StatisticResultPair countEmptyEmails(){
+    public StatisticResultPair countEmptyEmails(){
         
         Integer nA;
         Integer nB;
@@ -472,7 +487,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }  
 
-    private StatisticResultPair countEmptyDates(){
+    public StatisticResultPair countEmptyDates(){
 
         Integer nA;
         Integer nB;
@@ -498,7 +513,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair countTotalEmptyProperties(){
+    public StatisticResultPair countTotalEmptyProperties(){
 
         Integer totalA;
         Integer totalB;
@@ -539,7 +554,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair calculatePercentageOfPrimaryDateFormats(){
+    public StatisticResultPair calculatePercentageOfPrimaryDateFormats(){
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
@@ -594,7 +609,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair calculateNamePercentage(){
+    public StatisticResultPair calculateNamePercentage(){
 
         int namesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.NAME);
         int namesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.NAME);
@@ -615,7 +630,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair calculateWebsitePercentage(){
+    public StatisticResultPair calculateWebsitePercentage(){
 
         int websiteA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.WEBSITE);
         int websiteB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.WEBSITE);
@@ -637,7 +652,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair calculatePhonePercentage(){
+    public StatisticResultPair calculatePhonePercentage(){
 
         int phonesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.PHONE);
         int phonesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.PHONE);
@@ -659,7 +674,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair calculateStreetPercentage(){
+    public StatisticResultPair calculateStreetPercentage(){
 
         int streetsA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET);
         int streetsB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET);
@@ -681,7 +696,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }   
 
-    private StatisticResultPair calculateStreetNumberPercentage(){
+    public StatisticResultPair calculateStreetNumberPercentage(){
 
         int streetΝumbersA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET_NUMBER);
         int streetNumbersB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET_NUMBER);
@@ -703,7 +718,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
 
-    private StatisticResultPair calculateLocalityPercentage(){
+    public StatisticResultPair calculateLocalityPercentage(){
 
         int localitiesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.LOCALITY);
         int localitiesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.LOCALITY);
@@ -725,7 +740,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair calculateDatePercentage(){
+    public StatisticResultPair calculateDatePercentage(){
         int datesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.DATE);
         int datesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.DATE);
 
@@ -746,19 +761,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair countTriples(){
-
-        Long totalA = LeftDataset.getLeftDataset().getModel().size();
-        Long totalB = RightDataset.getRightDataset().getModel().size();
-
-        StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString());
-        pair.setLabel("Total triples");
-
-        map.put("totalTriples", pair);
-        return pair;
-    }
-    
-    private StatisticResultPair calculateTotalNonEmptyPropertiesPercentage(){
+    public StatisticResultPair calculateTotalNonEmptyPropertiesPercentage(){
 
         Double totalPropPercentageA;
         Double totalPropPercentageB;
@@ -799,23 +802,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
     
-    private Integer countNonEmptyProperty(String property, EnumDataset dataset){
-        Integer count;
-        switch (dataset){
-            case LEFT:
-                count = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), property);
-                break;
-            case RIGHT:
-                count = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), property);
-                break;
-            default:
-                throw new ApplicationException("Undefined dataset value.");
-        }
-
-        return count;
+    public Integer countNonEmptyProperty(String property, Model model){
+        return SparqlRepository.countProperty(model, property);
     }
 
-    private Integer countNonEmptyPropertyChain(String property1, String property2, EnumDataset dataset){
+    public Integer countNonEmptyPropertyChain(String property1, String property2, EnumDataset dataset){
         Integer count;
         switch (dataset){
             case LEFT:
@@ -830,7 +821,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return count;
     }
 
-    private void computeLinkStats(){
+    public void computeLinkStats(int totalPOIsA, int totalPOIsB){
 
         Model linksModel = LinksModel.getLinksModel().getModel();
 
@@ -841,7 +832,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Model linkedB = modelB.union(linksModel);
 
         StatisticResultPair linkedPOIs = countLinkedPOIs(linksModel);//already labeled
-        StatisticResultPair linkedVsUnlinkedPOIs = countLinkedVsTotalPOIs(linksModel); //already labeled
+        StatisticResultPair linkedVsUnlinkedPOIs = countLinkedVsTotalPOIs(linksModel, totalPOIsA, totalPOIsB); //already labeled
         StatisticResultPair linkedTotalTriples = countTotalLinkedTriples(linkedA, linkedB); //already labeled
 
         map.put("linkedPOIs", linkedPOIs);
@@ -919,7 +910,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     }
 
-    private static StatisticResultPair computeNonEmptyLinkedProperty(Model linkedA, Model linkedB, String property){
+    public static StatisticResultPair computeNonEmptyLinkedProperty(Model linkedA, Model linkedB, String property){
 
         Integer nonEmptyCountA = SparqlRepository.countLinkedWithPropertyA(linkedA, property);
         Integer nonEmptyCountB = SparqlRepository.countLinkedWithPropertyB(linkedB, property);
@@ -929,7 +920,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
+    public StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
 
         Integer emptyA = totalPOIsA - nonEmptyA;
         Integer emptyB = totalPOIsB - nonEmptyB;
@@ -937,7 +928,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    private StatisticResultPair computeNonEmptyLinkedTotalProperties(){
+    public StatisticResultPair computeNonEmptyLinkedTotalProperties(){
         Integer totalA;
         Integer totalB;
                 
@@ -976,7 +967,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private StatisticResultPair computeEmptyLinkedTotalProperties(){
+    public StatisticResultPair computeEmptyLinkedTotalProperties(){
         Integer totalNonEmptyA;
         Integer totalNonEmptyB;
         Integer totalA;
@@ -1010,7 +1001,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    private void calculateAveragePropertiesPerPOI() {
+    public void calculateAveragePropertiesPerPOI() {
 
         StatisticResultPair distinctProperties = map.get("distinctProperties");
 
@@ -1020,18 +1011,27 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
 
-        Double averagePropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA);
-        Double averagePropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB);
+        Double averagePropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA)[0];
+        Double averagePropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB)[0];
 
+        Double averageEmptyPropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA)[1];
+        Double averageEmptyPropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB)[1];
+        
         StatisticResultPair averageProperties 
                 = new StatisticResultPair(averagePropertiesA.toString(), averagePropertiesB.toString());
 
         averageProperties.setLabel("Average number of properties per POI");
         map.put("averageProperties", averageProperties);
+        
+        StatisticResultPair averageEmptyProperties 
+                = new StatisticResultPair(averageEmptyPropertiesA.toString(), averageEmptyPropertiesB.toString());
+
+        averageProperties.setLabel("Average number of empty properties per POI");
+        map.put("averageEmptyProperties", averageEmptyProperties);        
 
     }
 
-    private void calculateAveragePropertiesOfLinkedPOIs() {
+    public void calculateAveragePropertiesOfLinkedPOIs() {
 
         Model left = LeftDataset.getLeftDataset().getModel();
         Model right = RightDataset.getRightDataset().getModel();
@@ -1064,7 +1064,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("averageLinkedProperties", averageLinkedProperties);        
     }
 
-    private void calculateAverageEmptyPropertiesOfLinkedPOIs() {
+    public void calculateAverageEmptyPropertiesOfLinkedPOIs() {
         
         StatisticResultPair nonEmptyProperties = map.get("nonEmptyProperties");
         
