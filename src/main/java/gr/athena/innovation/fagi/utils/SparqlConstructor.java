@@ -251,11 +251,28 @@ public class SparqlConstructor {
                        "{?s " + predicate + " ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
         return query;
     }
-
+    
+    public static String countLinkedWithPropertyA(String countVar, String predicate1, String predicate2){
+        String query = "SELECT (COUNT (?s1) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s1 " + predicate1 + " ?o1 . ?o1 " + predicate2 + " ?o2 . " + 
+                       "?s1 <http://www.w3.org/2002/07/owl#sameAs> ?s2 . }";
+        return query;
+    }
+    
     public static String countLinkedWithPropertyB(String countVar, String predicate){
         String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s " + predicate + " ?o . ?o1 <http://www.w3.org/2002/07/owl#sameAs> ?s . }";
+        return query;
+    }
+
+    public static String countLinkedWithPropertyB(String countVar, String predicate1, String predicate2){
+        String query = "SELECT (COUNT (?s1) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s1 " + predicate1 + " ?o . " + 
+                       "?o " + predicate2 + " ?o2 . " + 
+                       "?s2 <http://www.w3.org/2002/07/owl#sameAs> ?s1 . }";
         return query;
     }
     

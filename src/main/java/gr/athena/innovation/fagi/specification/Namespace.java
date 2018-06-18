@@ -46,12 +46,13 @@ public class Namespace {
     
     public static final String SOURCE = "<http://slipo.eu/def#source>";
     public static final String LOCALITY = "<http://slipo.eu/def#locality>";
+    public static final String ADDRESS = "<http://slipo.eu/def#address>";
     public static final String STREET = "<http://slipo.eu/def#street>";
     public static final String STREET_NUMBER = "<http://slipo.eu/def#number>";
-    public static final String WEBSITE = "<http://slipo.eu/def#homepage>";
+    public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
     public static final String EMAIL = "<http://slipo.eu/def#email>";
     public static final String PHONE = "<http://slipo.eu/def#phone>";
-    public static final String PHONE_VALUE = "<http://slipo.eu/def#contactValue>";
+    public static final String CONTACT_VALUE = "<http://slipo.eu/def#contactValue>";
 
     public static final String LINKED_AMBIGUOUSLY = "http://slipo.eu/def#linked-ambiguously-with";
 

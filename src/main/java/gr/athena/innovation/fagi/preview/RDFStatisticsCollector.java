@@ -81,13 +81,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         /* Percenteges */
 
         calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
-        calculateNamePercentage();
-        calculateWebsitePercentage();
-        calculatePhonePercentage();
-        calculateStreetPercentage();
-        calculateStreetNumberPercentage();
-        calculateLocalityPercentage();
-        calculateDatePercentage();
+        calculateNamePercentage(leftModel, rightModel);
+        calculateWebsitePercentage(leftModel, rightModel);
+        calculatePhonePercentage(leftModel, rightModel);
+        calculateStreetPercentage(leftModel, rightModel);
+        calculateStreetNumberPercentage(leftModel, rightModel);
+        calculateLocalityPercentage(leftModel, rightModel);
+        calculateDatePercentage(leftModel, rightModel);
 
         /* Statistics for linked POIs*/
 
@@ -254,8 +254,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     public StatisticResultPair countNonEmptyWebsites(Model a, Model b){
 
-        Integer websitesA = countNonEmptyProperty(Namespace.WEBSITE, a);
-        Integer websitesB = countNonEmptyProperty(Namespace.WEBSITE, b);
+        Integer websitesA = countNonEmptyProperty(Namespace.HOMEPAGE, a);
+        Integer websitesB = countNonEmptyProperty(Namespace.HOMEPAGE, b);
         StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString());
         pair.setLabel("Non empty Websites");
         
@@ -569,21 +569,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         IsDatePrimaryFormat isDatePrimaryFormat = new IsDatePrimaryFormat();
         
-        int knownFormatCounter = 0;
+        int primaryFormatCounter = 0;
         NodeIterator objectsA = SparqlRepository.getObjectsOfProperty(date, leftModel);
         while(objectsA.hasNext()){
             RDFNode node = objectsA.next();
             if(node.isLiteral()){
                 String literalDate = node.asLiteral().getString();
                 if(isDatePrimaryFormat.evaluate(literalDate)){
-                    knownFormatCounter++;
+                    primaryFormatCounter++;
                 }       
             }
         }
         
-        Double percentA = roundHalfDown(knownFormatCounter / (double) totalDatesA);
+        Double percentA = roundHalfDown(primaryFormatCounter / (double) totalDatesA);
         
-        knownFormatCounter = 0;
+        primaryFormatCounter = 0;
 
         NodeIterator objectsB = SparqlRepository.getObjectsOfProperty(date, rightModel);
         while(objectsB.hasNext()){
@@ -591,12 +591,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             if(node.isLiteral()){
                 String literalDate = node.asLiteral().getString();
                 if(isDatePrimaryFormat.evaluate(literalDate)){
-                    knownFormatCounter++;
+                    primaryFormatCounter++;
                 }       
             }
         }
 
-        Double percentB = roundHalfDown(knownFormatCounter / (double) totalDatesB);
+        Double percentB = roundHalfDown(primaryFormatCounter / (double) totalDatesB);
 
         StatisticResultPair pair = new StatisticResultPair(percentA.toString(), percentB.toString());
 
@@ -605,10 +605,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair calculateNamePercentage(){
+    public StatisticResultPair calculateNamePercentage(Model a, Model b){
 
-        int namesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.NAME);
-        int namesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.NAME);
+        int namesA = SparqlRepository.countProperty(a, Namespace.NAME);
+        int namesB = SparqlRepository.countProperty(b, Namespace.NAME);
         
         if(warn(totalPOIsA, totalPOIsB, Namespace.NAME)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -626,12 +626,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair calculateWebsitePercentage(){
+    public StatisticResultPair calculateWebsitePercentage(Model a, Model b){
 
-        int websiteA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.WEBSITE);
-        int websiteB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.WEBSITE);
+        int websiteA = SparqlRepository.countProperty(a, Namespace.HOMEPAGE);
+        int websiteB = SparqlRepository.countProperty(b, Namespace.HOMEPAGE);
 
-        if(warn(totalPOIsA, totalPOIsB, Namespace.WEBSITE)){
+        if(warn(totalPOIsA, totalPOIsB, Namespace.HOMEPAGE)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
             map.put("websitesPercent", pair);
             return new StatisticResultPair("0","0");
@@ -648,10 +648,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair calculatePhonePercentage(){
+    public StatisticResultPair calculatePhonePercentage(Model a, Model b){
 
-        int phonesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.PHONE);
-        int phonesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.PHONE);
+        int phonesA = SparqlRepository.countProperty(a, Namespace.PHONE);
+        int phonesB = SparqlRepository.countProperty(b, Namespace.PHONE);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.PHONE)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -670,10 +670,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    public StatisticResultPair calculateStreetPercentage(){
+    public StatisticResultPair calculateStreetPercentage(Model a, Model b){
 
-        int streetsA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET);
-        int streetsB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET);
+        int streetsA = SparqlRepository.countProperty(a, Namespace.STREET);
+        int streetsB = SparqlRepository.countProperty(b, Namespace.STREET);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.STREET)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -692,10 +692,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }   
 
-    public StatisticResultPair calculateStreetNumberPercentage(){
+    public StatisticResultPair calculateStreetNumberPercentage(Model a, Model b){
 
-        int streetΝumbersA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.STREET_NUMBER);
-        int streetNumbersB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.STREET_NUMBER);
+        int streetΝumbersA = SparqlRepository.countProperty(a, Namespace.STREET_NUMBER);
+        int streetNumbersB = SparqlRepository.countProperty(b, Namespace.STREET_NUMBER);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.STREET_NUMBER)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -708,16 +708,16 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString());
 
-        pair.setLabel("Percentage of street Numbers in each dataset");
+        pair.setLabel("Percentage of street numbers in each dataset");
 
         map.put("streetNumbersPercent", pair);
         return pair;
     } 
 
-    public StatisticResultPair calculateLocalityPercentage(){
+    public StatisticResultPair calculateLocalityPercentage(Model a, Model b){
 
-        int localitiesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.LOCALITY);
-        int localitiesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.LOCALITY);
+        int localitiesA = SparqlRepository.countProperty(a, Namespace.LOCALITY);
+        int localitiesB = SparqlRepository.countProperty(b, Namespace.LOCALITY);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.LOCALITY)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -736,9 +736,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    public StatisticResultPair calculateDatePercentage(){
-        int datesA = SparqlRepository.countProperty(LeftDataset.getLeftDataset().getModel(), Namespace.DATE);
-        int datesB = SparqlRepository.countProperty(RightDataset.getRightDataset().getModel(), Namespace.DATE);
+    public StatisticResultPair calculateDatePercentage(Model a, Model b){
+        int datesA = SparqlRepository.countProperty(a, Namespace.DATE);
+        int datesB = SparqlRepository.countProperty(b, Namespace.DATE);
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.DATE)){
             StatisticResultPair pair = new StatisticResultPair("0","0");
@@ -835,21 +835,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedVsTotal", linkedVsUnlinkedPOIs);
         map.put("linkedTriples", linkedTotalTriples);
 
-        StatisticResultPair pair1 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.NAME);
-        StatisticResultPair pair2 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.PHONE);
-        StatisticResultPair pair3 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.STREET);
-        StatisticResultPair pair4 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.STREET_NUMBER);
-        StatisticResultPair pair5 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.WEBSITE);
-        StatisticResultPair pair6 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.EMAIL);
+        StatisticResultPair pair1 = computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.NAME, Namespace.NAME_VALUE);
+        StatisticResultPair pair2 = computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.PHONE, Namespace.CONTACT_VALUE);
+        StatisticResultPair pair3 = computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET);
+        StatisticResultPair pair4 = computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET_NUMBER);
+        StatisticResultPair pair5 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.HOMEPAGE);
+        StatisticResultPair pair6 = computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.EMAIL, Namespace.CONTACT_VALUE);
         StatisticResultPair pair7 = computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.DATE);
-
-        pair1.setLabel("Linked Non Empty Names");
-        pair2.setLabel("Linked Non Empty Phones");
-        pair3.setLabel("Linked Non Empty Streets");
-        pair4.setLabel("Linked Non Empty Street Numbers");
-        pair5.setLabel("Linked Non Empty Websites");
-        pair6.setLabel("Linked Non Empty Emails");
-        pair7.setLabel("Linked Non Empty Dates");
 
         map.put("linkedNonEmptyNames", pair1);
         map.put("linkedNonEmptyPhones", pair2);
@@ -906,16 +898,64 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     }
 
+    public static StatisticResultPair computeNonEmptyLinkedPropertyChain(Model linkedA, Model linkedB, String property1, String property2){
+
+        Integer nonEmptyCountA = SparqlRepository.countLinkedWithPropertyA(linkedA, property1, property2);
+        Integer nonEmptyCountB = SparqlRepository.countLinkedWithPropertyB(linkedB, property1, property2);
+
+        StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString());
+        
+        switch(property1){
+            case Namespace.NAME:
+                pair.setLabel("Linked Non Empty Names");
+                break;
+            case Namespace.PHONE:
+                pair.setLabel("Linked Non Empty Phones");
+                break;    
+            case Namespace.ADDRESS:
+                if(property2.equals(Namespace.STREET)){
+                    pair.setLabel("Linked Non Empty Streets");
+                } else if(property2.equals(Namespace.STREET_NUMBER)){
+                    pair.setLabel("Linked Non Empty Street Numbers");
+                } else {
+                    throw new ApplicationException("Wrong property parameters. " + Namespace.ADDRESS 
+                        + " parent does not have " + Namespace.STREET + " or " + Namespace.STREET_NUMBER + " child.");
+                }
+                break; 
+            case Namespace.HOMEPAGE:
+                pair.setLabel("Linked Non Empty Websites");
+                break; 
+            case Namespace.EMAIL:
+                pair.setLabel("Linked Non Empty Emails");
+                break; 
+            case Namespace.DATE:
+                pair.setLabel("Linked Non Empty Dates");
+                break;
+            default:
+                throw new ApplicationException("Property not supported for stats. " + property1);
+        }
+        
+        return pair;
+    }
+
     public static StatisticResultPair computeNonEmptyLinkedProperty(Model linkedA, Model linkedB, String property){
 
         Integer nonEmptyCountA = SparqlRepository.countLinkedWithPropertyA(linkedA, property);
         Integer nonEmptyCountB = SparqlRepository.countLinkedWithPropertyB(linkedB, property);
 
         StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString());
-
+        
+        switch(property){
+            case Namespace.HOMEPAGE:
+                pair.setLabel("Linked Non Empty Websites");
+                break;
+            default:
+                throw new ApplicationException("Property not supported for stats. " + property);
+        }
+        
         return pair;
     }
-
+    
     public StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
 
         Integer emptyA = totalPOIsA - nonEmptyA;
