@@ -424,6 +424,20 @@ public class RDFStatisticsCollectorTest {
         expResult.setLabel("Empty Dates");
         assertEquals(expResult, result);
     }
+    
+    /**
+     * Test of countDistinctProperties method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountDistinctProperties() {
+        LOG.info("countDistinctProperties");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countDistinctProperties(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("12", "12");
+        expResult.setLabel("Distinct Properties");
+        assertEquals(expResult, result);
+    }
 
 //
 //    /**
@@ -456,24 +470,6 @@ public class RDFStatisticsCollectorTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-//
-//    /**
-//     * Test of countDistinctProperties method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountDistinctProperties() {
-//        System.out.println("countDistinctProperties");
-//        
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = collector.countDistinctProperties();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-
-//
-
 //
 //    /**
 //     * Test of countTotalNonEmptyProperties method, of class RDFStatisticsCollector.
