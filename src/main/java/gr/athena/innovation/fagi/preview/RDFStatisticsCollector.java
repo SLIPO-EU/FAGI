@@ -76,7 +76,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* Distinct properties */
 
-        countDistinctProperties();
+        countDistinctProperties(leftModel, rightModel);
 
         /* Percenteges */
 
@@ -195,10 +195,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair countDistinctProperties(){
+    public StatisticResultPair countDistinctProperties(Model a, Model b){
 
-        Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(LeftDataset.getLeftDataset().getModel());
-        Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(RightDataset.getRightDataset().getModel());
+        Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(a);
+        Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(b);
         StatisticResultPair pair = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString());
         pair.setLabel("Distinct Properties");
 
