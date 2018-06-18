@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
 
 /**
  *
@@ -28,7 +30,7 @@ public class RDFStatisticsCollectorTest {
     private final String links;
 
     public RDFStatisticsCollectorTest() {
-        
+
         datasetA = "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600> <http://slipo.eu/def#source> <http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/sourceInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://slipo.eu/def#sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/sourceInfo> <http://slipo.eu/def#sourceRef> \"Foo-A\" .\n"
@@ -37,6 +39,12 @@ public class RDFStatisticsCollectorTest {
                 + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/geom> <http://www.opengis.net/ont/geosparql#asWKT> \"<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(9.60 47.32)\"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .\n"
                 + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600> <http://slipo.eu/def#name> <http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/name> .\n"
                 + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/name> <http://slipo.eu/def#nameValue> \"Michail Foufoutos\" .\n"
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600> <http://slipo.eu/def#phone> <http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/phone> .\n"
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/phone> <http://slipo.eu/def#contactValue> \"0123456789\" ."
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600> <http://slipo.eu/def#email> <http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/email> .\n"
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/email> <http://slipo.eu/def#contactValue> \"email_example@mail.com\" .\n"
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/email> <http://slipo.eu/def#contactType> \"email\" .\n"
+                + "<http://slipo.eu/id/poi/db05380d-5286-372e-b2b8-387d7794c600/email> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://slipo.eu/def#contact> ."
                 + "<http://slipo.eu/id/poi/5b8bb367-f3a5-30c1-b33c-381ef1e2f045> <http://slipo.eu/def#source> <http://slipo.eu/id/poi/5b8bb367-f3a5-30c1-b33c-381ef1e2f045/sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/5b8bb367-f3a5-30c1-b33c-381ef1e2f045/sourceInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://slipo.eu/def#sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/5b8bb367-f3a5-30c1-b33c-381ef1e2f045/sourceInfo> <http://slipo.eu/def#sourceRef> \"Foo-A\" .\n"
@@ -57,6 +65,9 @@ public class RDFStatisticsCollectorTest {
                 + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/name> <http://slipo.eu/def#nameValue> \"Michail Foufoutos\" .\n"
                 + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/name> <http://slipo.eu/def#language> \"en\" .\n"
                 + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/name> <http://slipo.eu/def#nameType> \"official\" .\n"
+                + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0> <http://slipo.eu/def#address> <http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/address> ."
+                + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/address> <http://slipo.eu/def#street> \"Street Name\"@en ."
+                + "<http://slipo.eu/id/poi/d361a055-8672-306f-b620-81d31d1606e0/address> <http://slipo.eu/def#number> \"11\" ."
                 + "<http://slipo.eu/id/poi/fb2c3089-2102-3fe0-b882-7e2416536bea> <http://slipo.eu/def#source> <http://slipo.eu/id/poi/fb2c3089-2102-3fe0-b882-7e2416536bea/sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/fb2c3089-2102-3fe0-b882-7e2416536bea/sourceInfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://slipo.eu/def#sourceInfo> .\n"
                 + "<http://slipo.eu/id/poi/fb2c3089-2102-3fe0-b882-7e2416536bea/sourceInfo> <http://slipo.eu/def#sourceRef> \"Foo-B\" .\n"
@@ -76,7 +87,7 @@ public class RDFStatisticsCollectorTest {
 
     @BeforeClass
     public static void setUpClass() {
-
+        
     }
 
     @AfterClass
@@ -85,7 +96,7 @@ public class RDFStatisticsCollectorTest {
 
     @Before
     public void setUp() {
-        
+
         modelA = ModelFactory.createDefaultModel();
         modelA.read(new ByteArrayInputStream(datasetA.getBytes()), null, "N-TRIPLES");
 
@@ -107,9 +118,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCollect() {
 //        System.out.println("collect");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticsContainer expResult = null;
-//        StatisticsContainer result = instance.collect();
+//        StatisticsContainer result = collector.collect();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -121,10 +132,10 @@ public class RDFStatisticsCollectorTest {
     @Test
     public void testCountTriples() {
         LOG.info("countTriples");
-        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-        
-        StatisticResultPair result = instance.countTriples(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("17", "22");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countTriples(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("23", "25");
         expResult.setLabel("Total triples");
         assertEquals(expResult, result);
     } 
@@ -135,11 +146,12 @@ public class RDFStatisticsCollectorTest {
     @Test
     public void testCountTotalEntities() {
         LOG.info("countTotalEntities");
-        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+        
         StatisticResultPair expResult = new StatisticResultPair("2", "2");
         expResult.setLabel("Total POIs");
         
-        StatisticResultPair result = instance.countTotalEntities(modelA, modelB);
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countTotalEntities(modelA, modelB);
         
         assertEquals(expResult, result);
 
@@ -151,10 +163,9 @@ public class RDFStatisticsCollectorTest {
     @Test
     public void testCountLinkedVsTotalPOIs() {
         LOG.info("countLinkedVsTotalPOIs");
-
-        RDFStatisticsCollector instance = new RDFStatisticsCollector();
         
-        StatisticResultPair result = instance.countLinkedVsTotalPOIs(linksModel, 2, 2);
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countLinkedVsTotalPOIs(linksModel, 2, 2);
         
         StatisticResultPair expResult = new StatisticResultPair("2", "4");
         expResult.setLabel("Linked vs Total POIS");
@@ -169,14 +180,251 @@ public class RDFStatisticsCollectorTest {
     @Test
     public void testCountNonEmptyNames() {
         LOG.info("countNonEmptyNames");
-        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-        
-        StatisticResultPair result = instance.countNonEmptyNames(modelA, modelB);
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyNames(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("2", "2");
         expResult.setLabel("Non empty Names");
         assertEquals(expResult, result);
     }    
+
+    /**
+     * Test of countNonEmptyPhones method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyPhones() {
+        LOG.info("countNonEmptyPhones");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyPhones(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("1", "0");
+        expResult.setLabel("Non empty Phones");
+        assertEquals(expResult, result);
+    }
     
+    /**
+     * Test of countNonEmptyStreets method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyStreets() {
+        LOG.info("countNonEmptyStreets");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyStreets(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("0", "1");
+        expResult.setLabel("Non empty Streets");
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of countNonEmptyStreetNumbers method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyStreetNumbers() {
+        LOG.info("countNonEmptyStreetNumbers");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyStreetNumbers(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("0", "1");
+        expResult.setLabel("Non empty Street Numbers");
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of countNonEmptyWebsites method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyWebsites() {
+        LOG.info("countNonEmptyWebsites");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyWebsites(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Non empty Websites");
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of countNonEmptyEmails method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyEmails() {
+        LOG.info("countNonEmptyEmails");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyEmails(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("1", "0");
+        expResult.setLabel("Non empty Emails");
+        assertEquals(expResult, result);
+    }    
+    /**
+     * Test of countNonEmptyDates method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountNonEmptyDates() {
+        LOG.info("countNonEmptyDates");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.countNonEmptyDates(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Non empty Dates");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyNames method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyNames() {
+        LOG.info("countEmptyNames");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Names");
+        
+        collector.getMap().put("nonEmptyNames", stat);
+        
+        StatisticResultPair result = collector.countEmptyNames();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Names");
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of countEmptyPhones method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyPhones() {
+        LOG.info("countEmptyPhones");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Phones");
+        
+        collector.getMap().put("nonEmptyPhones", stat);
+        
+        StatisticResultPair result = collector.countEmptyPhones();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Phones");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyStreets method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyStreets() {
+        LOG.info("countEmptyStreets");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Streets");
+        
+        collector.getMap().put("nonEmptyStreets", stat);
+        
+        StatisticResultPair result = collector.countEmptyStreets();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Streets");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyStreetNumbers method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyStreetNumbers() {
+        LOG.info("countEmptyStreetNumbers");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Street Numbers");
+        
+        collector.getMap().put("nonEmptyStreetNumbers", stat);
+        
+        StatisticResultPair result = collector.countEmptyStreetNumbers();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Street Numbers");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyWebsites method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyWebsites() {
+        LOG.info("countEmptyWebsites");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Websites");
+        
+        collector.getMap().put("nonEmptyWebsites", stat);
+        
+        StatisticResultPair result = collector.countEmptyWebsites();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Websites");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyEmails method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyEmails() {
+        LOG.info("countEmptyEmails");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Emails");
+        
+        collector.getMap().put("nonEmptyEmails", stat);
+        
+        StatisticResultPair result = collector.countEmptyEmails();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Emails");
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of countEmptyDates method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCountEmptyDates() {
+        LOG.info("countEmptyDates");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("2", "2");
+        stat.setLabel("Non empty Dates");
+        
+        collector.getMap().put("nonEmptyDates", stat);
+        
+        StatisticResultPair result = collector.countEmptyDates();
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Empty Dates");
+        assertEquals(expResult, result);
+    }
+
 //
 //    /**
 //     * Test of countLinkedPOIs method, of class RDFStatisticsCollector.
@@ -185,9 +433,9 @@ public class RDFStatisticsCollectorTest {
 //    public void testCountLinkedPOIs() {
 //        System.out.println("countLinkedPOIs");
 //        Model links = null;
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countLinkedPOIs(links);
+//        StatisticResultPair result = collector.countLinkedPOIs(links);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -201,9 +449,9 @@ public class RDFStatisticsCollectorTest {
 //        System.out.println("countTotalLinkedTriples");
 //        Model linkedA = null;
 //        Model linkedB = null;
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countTotalLinkedTriples(linkedA, linkedB);
+//        StatisticResultPair result = collector.countTotalLinkedTriples(linkedA, linkedB);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -215,97 +463,17 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCountDistinctProperties() {
 //        System.out.println("countDistinctProperties");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countDistinctProperties();
+//        StatisticResultPair result = collector.countDistinctProperties();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
-//    /**
-//     * Test of countNonEmptyPhones method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyPhones() {
-//        System.out.println("countNonEmptyPhones");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyPhones();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+
 //
-//    /**
-//     * Test of countNonEmptyStreets method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyStreets() {
-//        System.out.println("countNonEmptyStreets");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyStreets();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countNonEmptyStreetNumbers method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyStreetNumbers() {
-//        System.out.println("countNonEmptyStreetNumbers");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyStreetNumbers();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countNonEmptyWebsites method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyWebsites() {
-//        System.out.println("countNonEmptyWebsites");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyWebsites();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countNonEmptyEmails method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyEmails() {
-//        System.out.println("countNonEmptyEmails");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyEmails();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countNonEmptyDates method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountNonEmptyDates() {
-//        System.out.println("countNonEmptyDates");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countNonEmptyDates();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+
 //
 //    /**
 //     * Test of countTotalNonEmptyProperties method, of class RDFStatisticsCollector.
@@ -313,107 +481,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCountTotalNonEmptyProperties() {
 //        System.out.println("countTotalNonEmptyProperties");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countTotalNonEmptyProperties();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyNames method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyNames() {
-//        System.out.println("countEmptyNames");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyNames();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyPhones method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyPhones() {
-//        System.out.println("countEmptyPhones");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyPhones();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyStreets method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyStreets() {
-//        System.out.println("countEmptyStreets");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyStreets();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyStreetNumbers method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyStreetNumbers() {
-//        System.out.println("countEmptyStreetNumbers");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyStreetNumbers();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyWebsites method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyWebsites() {
-//        System.out.println("countEmptyWebsites");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyWebsites();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyEmails method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyEmails() {
-//        System.out.println("countEmptyEmails");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyEmails();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of countEmptyDates method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testCountEmptyDates() {
-//        System.out.println("countEmptyDates");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countEmptyDates();
+//        StatisticResultPair result = collector.countTotalNonEmptyProperties();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -425,9 +495,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCountTotalEmptyProperties() {
 //        System.out.println("countTotalEmptyProperties");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.countTotalEmptyProperties();
+//        StatisticResultPair result = collector.countTotalEmptyProperties();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -439,9 +509,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculatePercentageOfPrimaryDateFormats() {
 //        System.out.println("calculatePercentageOfPrimaryDateFormats");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculatePercentageOfPrimaryDateFormats();
+//        StatisticResultPair result = collector.calculatePercentageOfPrimaryDateFormats();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -453,9 +523,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateNamePercentage() {
 //        System.out.println("calculateNamePercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateNamePercentage();
+//        StatisticResultPair result = collector.calculateNamePercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -467,9 +537,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateWebsitePercentage() {
 //        System.out.println("calculateWebsitePercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateWebsitePercentage();
+//        StatisticResultPair result = collector.calculateWebsitePercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -481,9 +551,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculatePhonePercentage() {
 //        System.out.println("calculatePhonePercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculatePhonePercentage();
+//        StatisticResultPair result = collector.calculatePhonePercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -495,9 +565,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateStreetPercentage() {
 //        System.out.println("calculateStreetPercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateStreetPercentage();
+//        StatisticResultPair result = collector.calculateStreetPercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -509,9 +579,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateStreetNumberPercentage() {
 //        System.out.println("calculateStreetNumberPercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateStreetNumberPercentage();
+//        StatisticResultPair result = collector.calculateStreetNumberPercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -523,9 +593,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateLocalityPercentage() {
 //        System.out.println("calculateLocalityPercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateLocalityPercentage();
+//        StatisticResultPair result = collector.calculateLocalityPercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -537,9 +607,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateDatePercentage() {
 //        System.out.println("calculateDatePercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateDatePercentage();
+//        StatisticResultPair result = collector.calculateDatePercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -553,9 +623,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateTotalNonEmptyPropertiesPercentage() {
 //        System.out.println("calculateTotalNonEmptyPropertiesPercentage");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.calculateTotalNonEmptyPropertiesPercentage();
+//        StatisticResultPair result = collector.calculateTotalNonEmptyPropertiesPercentage();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -569,9 +639,9 @@ public class RDFStatisticsCollectorTest {
 //        System.out.println("countNonEmptyProperty");
 //        String property = "";
 //        EnumDataset dataset = null;
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        Integer expResult = null;
-//        Integer result = instance.countNonEmptyProperty(property, dataset);
+//        Integer result = collector.countNonEmptyProperty(property, dataset);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -586,9 +656,9 @@ public class RDFStatisticsCollectorTest {
 //        String property1 = "";
 //        String property2 = "";
 //        EnumDataset dataset = null;
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        Integer expResult = null;
-//        Integer result = instance.countNonEmptyPropertyChain(property1, property2, dataset);
+//        Integer result = collector.countNonEmptyPropertyChain(property1, property2, dataset);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -600,8 +670,8 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testComputeLinkStats() {
 //        System.out.println("computeLinkStats");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        instance.computeLinkStats();
+//        
+//        collector.computeLinkStats();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
@@ -630,9 +700,9 @@ public class RDFStatisticsCollectorTest {
 //        System.out.println("computeEmptyLinkedProperty");
 //        Integer nonEmptyA = null;
 //        Integer nonEmptyB = null;
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.computeEmptyLinkedProperty(nonEmptyA, nonEmptyB);
+//        StatisticResultPair result = collector.computeEmptyLinkedProperty(nonEmptyA, nonEmptyB);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -644,9 +714,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testComputeNonEmptyLinkedTotalProperties() {
 //        System.out.println("computeNonEmptyLinkedTotalProperties");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.computeNonEmptyLinkedTotalProperties();
+//        StatisticResultPair result = collector.computeNonEmptyLinkedTotalProperties();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -658,9 +728,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testComputeEmptyLinkedTotalProperties() {
 //        System.out.println("computeEmptyLinkedTotalProperties");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        StatisticResultPair expResult = null;
-//        StatisticResultPair result = instance.computeEmptyLinkedTotalProperties();
+//        StatisticResultPair result = collector.computeEmptyLinkedTotalProperties();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -672,8 +742,8 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateAveragePropertiesPerPOI() {
 //        System.out.println("calculateAveragePropertiesPerPOI");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        instance.calculateAveragePropertiesPerPOI();
+//        
+//        collector.calculateAveragePropertiesPerPOI();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
@@ -684,8 +754,8 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateAveragePropertiesOfLinkedPOIs() {
 //        System.out.println("calculateAveragePropertiesOfLinkedPOIs");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        instance.calculateAveragePropertiesOfLinkedPOIs();
+//        
+//        collector.calculateAveragePropertiesOfLinkedPOIs();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
@@ -696,8 +766,8 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testCalculateAverageEmptyPropertiesOfLinkedPOIs() {
 //        System.out.println("calculateAverageEmptyPropertiesOfLinkedPOIs");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
-//        instance.calculateAverageEmptyPropertiesOfLinkedPOIs();
+//        
+//        collector.calculateAverageEmptyPropertiesOfLinkedPOIs();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
@@ -708,9 +778,9 @@ public class RDFStatisticsCollectorTest {
 //    @Test
 //    public void testGetMap() {
 //        System.out.println("getMap");
-//        RDFStatisticsCollector instance = new RDFStatisticsCollector();
+//        
 //        Map<String, StatisticResultPair> expResult = null;
-//        Map<String, StatisticResultPair> result = instance.getMap();
+//        Map<String, StatisticResultPair> result = collector.getMap();
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");

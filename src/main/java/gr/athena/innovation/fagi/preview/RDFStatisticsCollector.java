@@ -36,7 +36,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     private int totalPOIsA;
     private int totalPOIsB;
 
-    StatisticsContainer container;
+    StatisticsContainer container = new StatisticsContainer();
 
     private final Map<String, StatisticResultPair> map = new HashMap<>();
 
@@ -45,12 +45,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* IMPORTANT: The order of calculation is sensitive for avoiding re-calculations */
 
-        container = new StatisticsContainer();
         container.setComplete(false);
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
-        
+
         /* POIs and triples count */
         countTotalEntities(leftModel, rightModel);
         countTriples(leftModel, rightModel);
@@ -104,7 +103,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         calculateAveragePropertiesPerPOI();
         calculateAveragePropertiesOfLinkedPOIs();
         calculateAverageEmptyPropertiesOfLinkedPOIs();
-        
+
         if(totalPOIsA == 0 || totalPOIsB == 0){
             container.setValid(false);
         } else {
@@ -330,7 +329,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         Integer nA;
         Integer nB;
-        
         try {
             
             nA = Integer.parseInt(map.get("nonEmptyNames").getA());
@@ -1101,5 +1099,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     public Map<String, StatisticResultPair> getMap() {
         return map;
+    }
+
+    public void setTotalPOIsA(int totalPOIsA) {
+        this.totalPOIsA = totalPOIsA;
+    }
+
+    public void setTotalPOIsB(int totalPOIsB) {
+        this.totalPOIsB = totalPOIsB;
     }
 }
