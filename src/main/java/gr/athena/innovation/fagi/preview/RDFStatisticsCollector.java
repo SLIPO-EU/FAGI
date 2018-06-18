@@ -80,7 +80,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* Percenteges */
 
-        calculatePercentageOfPrimaryDateFormats();
+        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
         calculateNamePercentage();
         calculateWebsitePercentage();
         calculatePhonePercentage();
@@ -552,10 +552,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    public StatisticResultPair calculatePercentageOfPrimaryDateFormats(){
+    public StatisticResultPair calculatePercentageOfPrimaryDateFormats(Model leftModel, Model rightModel){
 
-        Model leftModel = LeftDataset.getLeftDataset().getModel();
-        Model rightModel = RightDataset.getRightDataset().getModel();
         String date = Namespace.DATE;
 
         int totalDatesA = SparqlRepository.countProperty(leftModel, date);
@@ -564,7 +562,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         if(totalDatesA == 0 || totalDatesB ==0){
             StatisticResultPair pair = new StatisticResultPair("0", "0");
 
-            pair.setLabel("Percentage of primary date formats: 0 total Dates.");
+            pair.setLabel("Percentage of primary date formats");
             map.put("datesPercent", pair);
             return pair;
         }

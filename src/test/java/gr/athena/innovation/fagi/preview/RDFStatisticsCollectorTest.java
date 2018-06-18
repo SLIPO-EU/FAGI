@@ -439,6 +439,20 @@ public class RDFStatisticsCollectorTest {
         assertEquals(expResult, result);
     }
 
+    /**
+     * Test of calculatePercentageOfPrimaryDateFormats method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testCalculatePercentageOfPrimaryDateFormats() {
+        LOG.info("countDistinctProperties");
+
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticResultPair result = collector.calculatePercentageOfPrimaryDateFormats(modelA, modelB);
+        StatisticResultPair expResult = new StatisticResultPair("0", "0");
+        expResult.setLabel("Percentage of primary date formats");
+        assertEquals(expResult, result);
+    }
+    
 //
 //    /**
 //     * Test of countLinkedPOIs method, of class RDFStatisticsCollector.
