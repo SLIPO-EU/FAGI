@@ -49,6 +49,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
+        List<Link> links = LinksModel.getLinksModel().getLinks();
 
         /* POIs and triples count */
         countTotalEntities(leftModel, rightModel);
@@ -100,8 +101,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         calculateTotalNonEmptyPropertiesPercentage();
 
         /* Average statistics */
-        calculateAveragePropertiesPerPOI();
-        calculateAveragePropertiesOfLinkedPOIs();
+        calculateAveragePropertiesPerPOI(leftModel, rightModel);
+        calculateAveragePropertiesOfLinkedPOIs(leftModel, rightModel, links);
         calculateAverageEmptyPropertiesOfLinkedPOIs();
 
         if(totalPOIsA == 0 || totalPOIsB == 0){
@@ -779,8 +780,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             Double dA = Double.parseDouble(map.get("datesPercent").getA());
             Double dB = Double.parseDouble(map.get("datesPercent").getB());
 
-            totalPropPercentageA = (nA + pA + sA + snA + wA +lA + dA) / 7;
-            totalPropPercentageB = (nB + pB + sB + snB + wB +lB + dB) / 7;
+            totalPropPercentageA = roundHalfDown((nA + pA + sA + snA + wA +lA + dA) / 7);
+            totalPropPercentageB = roundHalfDown((nB + pB + sB + snB + wB +lB + dB) / 7);
 
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute total non empty percentages due to missing values. ", ex);
@@ -798,11 +799,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     } 
     
-    public Integer countNonEmptyProperty(String property, Model model){
+    private Integer countNonEmptyProperty(String property, Model model){
         return SparqlRepository.countProperty(model, property);
     }
 
-    public Integer countNonEmptyPropertyChain(String property1, String property2, EnumDataset dataset){
+    private Integer countNonEmptyPropertyChain(String property1, String property2, EnumDataset dataset){
         Integer count;
         switch (dataset){
             case LEFT:
@@ -965,15 +966,16 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = Integer.parseInt(linkedPOIs.getA()) - nonEmptyA;
         Integer emptyB = Integer.parseInt(linkedPOIs.getB()) - nonEmptyB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString());
+        
         return pair;
     }
     
     public StatisticResultPair computeNonEmptyLinkedTotalProperties(){
         Integer totalA;
         Integer totalB;
-                
+
         try{
-            
+
             Integer a1 = Integer.parseInt(map.get("linkedNonEmptyNames").getA());
             Integer a2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getA());
             Integer a3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getA());
@@ -992,12 +994,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
             totalA = a1 + a2 + a3 + a4 + a5 + a6 + a7;
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
-            
+
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute linked non empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
             pair.setLabel("Could not compute");
-            
+
             return pair;
         } 
 
@@ -1025,15 +1027,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             
             totalEmptyA = totalA - totalNonEmptyA;
             totalEmptyB = totalB - totalNonEmptyB;
-            
-           
+
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute linked empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0");
             pair.setLabel("Could not compute");
             
             return pair;
-        } 
+        }
 
         StatisticResultPair pair = new StatisticResultPair(totalEmptyA.toString(), totalEmptyB.toString());
         pair.setLabel("Linked Empty properties");
@@ -1041,15 +1042,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public void calculateAveragePropertiesPerPOI() {
+    public StatisticResultPair[] calculateAveragePropertiesPerPOI(Model leftModel, Model rightModel) {
 
+        StatisticResultPair[] results = new StatisticResultPair[2];
+        
         StatisticResultPair distinctProperties = map.get("distinctProperties");
 
         int distinctPropertiesA = Integer.parseInt(distinctProperties.getA());
         int distinctPropertiesB = Integer.parseInt(distinctProperties.getB());
-
-        Model leftModel = LeftDataset.getLeftDataset().getModel();
-        Model rightModel = RightDataset.getRightDataset().getModel();
 
         Double averagePropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA)[0];
         Double averagePropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB)[0];
@@ -1059,24 +1059,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair averageProperties 
                 = new StatisticResultPair(averagePropertiesA.toString(), averagePropertiesB.toString());
-
-        averageProperties.setLabel("Average number of properties per POI");
-        map.put("averageProperties", averageProperties);
-        
         StatisticResultPair averageEmptyProperties 
                 = new StatisticResultPair(averageEmptyPropertiesA.toString(), averageEmptyPropertiesB.toString());
-
-        averageProperties.setLabel("Average number of empty properties per POI");
-        map.put("averageEmptyProperties", averageEmptyProperties);        
-
+        
+        averageProperties.setLabel("Average number of properties per POI");
+        averageEmptyProperties.setLabel("Average number of empty properties per POI");
+        map.put("averageProperties", averageProperties);
+        map.put("averageEmptyProperties", averageEmptyProperties);
+        
+        results[0] = averageProperties;
+        results[1] = averageEmptyProperties;
+        
+        return results;
     }
 
-    public void calculateAveragePropertiesOfLinkedPOIs() {
-
-        Model left = LeftDataset.getLeftDataset().getModel();
-        Model right = RightDataset.getRightDataset().getModel();
-
-        List<Link> links = LinksModel.getLinksModel().getLinks();
+    public StatisticResultPair calculateAveragePropertiesOfLinkedPOIs(Model leftModel, Model rightModel, List<Link> links) {
 
         int sumA = 0;
         int sumB = 0;
@@ -1086,8 +1083,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             String nodeA = link.getNodeA();
             String nodeB = link.getNodeB();
 
-            int propertiesA = SparqlRepository.countDistinctPropertiesOfResource(left, nodeA);
-            int propertiesB = SparqlRepository.countDistinctPropertiesOfResource(right, nodeB);
+            int propertiesA = SparqlRepository.countDistinctPropertiesOfResource(leftModel, nodeA);
+            int propertiesB = SparqlRepository.countDistinctPropertiesOfResource(rightModel, nodeB);
 
             sumA = sumA + propertiesA;
             sumB = sumB + propertiesB;
@@ -1101,10 +1098,12 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                 = new StatisticResultPair(averageLinkedPropertiesA.toString(), averageLinkedPropertiesB.toString());
         
         averageLinkedProperties.setLabel("Average number of properties of linked POI");
-        map.put("averageLinkedProperties", averageLinkedProperties);        
+        map.put("averageLinkedProperties", averageLinkedProperties);
+        
+        return averageLinkedProperties;
     }
 
-    public void calculateAverageEmptyPropertiesOfLinkedPOIs() {
+    public StatisticResultPair calculateAverageEmptyPropertiesOfLinkedPOIs() {
         
         StatisticResultPair nonEmptyProperties = map.get("nonEmptyProperties");
         
@@ -1117,7 +1116,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair averageLinkedProperties = new StatisticResultPair(avgA.toString(), avgB.toString());
         
         averageLinkedProperties.setLabel("Average number of empty properties of linked POIs");
-        map.put("averageLinkedEmptyProperties", averageLinkedProperties);            
+        map.put("averageLinkedEmptyProperties", averageLinkedProperties);
+        
+        return averageLinkedProperties;
         
     }
     
