@@ -961,8 +961,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     
     public StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
 
-        Integer emptyA = totalPOIsA - nonEmptyA;
-        Integer emptyB = totalPOIsB - nonEmptyB;
+        StatisticResultPair linkedPOIs = map.get("linkedPOIs");
+        Integer emptyA = Integer.parseInt(linkedPOIs.getA()) - nonEmptyA;
+        Integer emptyB = Integer.parseInt(linkedPOIs.getB()) - nonEmptyB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString());
         return pair;
     }
