@@ -633,15 +633,22 @@ public class RDFStatisticsCollectorTest {
         expResult4.setLabel("Linked Non Empty Street Numbers");
         expResult5.setLabel("Linked Non Empty Websites");
         expResult6.setLabel("Linked Non Empty Emails");
-        expResult7.setLabel("Linked Non Empty Dates");          
+        expResult7.setLabel("Linked Non Empty Dates");
 
-        StatisticResultPair result1 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.NAME, Namespace.NAME_VALUE);
-        StatisticResultPair result2 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.PHONE, Namespace.CONTACT_VALUE);
-        StatisticResultPair result3 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET);
-        StatisticResultPair result4 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET_NUMBER);
-        StatisticResultPair result5 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.HOMEPAGE);
-        StatisticResultPair result6 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(linkedA, linkedB, Namespace.EMAIL, Namespace.CONTACT_VALUE);
-        //StatisticResultPair result7 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(linkedA, linkedB, Namespace.DATE, null);        
+        StatisticResultPair result1 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
+                linkedA, linkedB, Namespace.NAME, Namespace.NAME_VALUE);
+        StatisticResultPair result2 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
+                linkedA, linkedB, Namespace.PHONE, Namespace.CONTACT_VALUE);
+        StatisticResultPair result3 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
+                linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET);
+        StatisticResultPair result4 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
+                linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET_NUMBER);
+        StatisticResultPair result5 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(
+                linkedA, linkedB, Namespace.HOMEPAGE);
+        StatisticResultPair result6 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
+                linkedA, linkedB, Namespace.EMAIL, Namespace.CONTACT_VALUE);
+        StatisticResultPair result7 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(
+                linkedA, linkedB, Namespace.DATE);        
 
         assertEquals(expResult1, result1);
         assertEquals(expResult2, result2);
@@ -649,10 +656,48 @@ public class RDFStatisticsCollectorTest {
         assertEquals(expResult4, result4);
         assertEquals(expResult5, result5);
         assertEquals(expResult6, result6);
-        //assertEquals(expResult7, result7);
+        assertEquals(expResult7, result7);
 
     }
-    
+    /**
+     * Test of computeEmptyLinkedProperty method, of class RDFStatisticsCollector.
+     */
+    @Test
+    public void testComputeEmptyLinkedProperty() {
+        LOG.info("computeEmptyLinkedProperty");
+
+        StatisticResultPair stat1 = new StatisticResultPair("1", "1");
+        StatisticResultPair stat2 = new StatisticResultPair("1", "0");
+        StatisticResultPair stat3 = new StatisticResultPair("0", "1");
+        StatisticResultPair stat4 = new StatisticResultPair("0", "1");
+        StatisticResultPair stat5 = new StatisticResultPair("0", "1");
+        StatisticResultPair stat6 = new StatisticResultPair("1", "0");
+        StatisticResultPair stat7 = new StatisticResultPair("0", "0");
+        
+        stat1.setLabel("Linked Non Empty Names");
+        stat2.setLabel("Linked Non Empty Phones");
+        stat3.setLabel("Linked Non Empty Streets");
+        stat4.setLabel("Linked Non Empty Street Numbers");
+        stat5.setLabel("Linked Non Empty Websites");
+        stat6.setLabel("Linked Non Empty Emails");
+        stat7.setLabel("Linked Non Empty Dates");        
+
+        
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        collector.setTotalPOIsA(2);
+        collector.setTotalPOIsB(2);
+        
+        StatisticResultPair stat = new StatisticResultPair("0", "0");
+        stat.setLabel("Empty Names");
+        
+        collector.getMap().put("emptyNames", stat);
+        
+        StatisticResultPair result = collector.computeEmptyLinkedProperty(Integer.parseInt(stat1.getA()), Integer.parseInt(stat1.getB()));
+        result.setLabel("Linked Empty Names");
+        StatisticResultPair expResult = new StatisticResultPair("1", "1");
+        expResult.setLabel("Linked Empty Names");
+        assertEquals(expResult, result);
+    }    
 
 //
 //    /**
@@ -749,21 +794,6 @@ public class RDFStatisticsCollectorTest {
 //    }
 //
 //
-//    /**
-//     * Test of computeEmptyLinkedProperty method, of class RDFStatisticsCollector.
-//     */
-//    @Test
-//    public void testComputeEmptyLinkedProperty() {
-//        System.out.println("computeEmptyLinkedProperty");
-//        Integer nonEmptyA = null;
-//        Integer nonEmptyB = null;
-//        
-//        StatisticResultPair expResult = null;
-//        StatisticResultPair result = collector.computeEmptyLinkedProperty(nonEmptyA, nonEmptyB);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
 //
 //    /**
 //     * Test of computeNonEmptyLinkedTotalProperties method, of class RDFStatisticsCollector.

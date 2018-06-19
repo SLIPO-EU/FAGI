@@ -949,6 +949,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             case Namespace.HOMEPAGE:
                 pair.setLabel("Linked Non Empty Websites");
                 break;
+            case Namespace.DATE:
+                pair.setLabel("Linked Non Empty Dates");
+                break;                
             default:
                 throw new ApplicationException("Property not supported for stats. " + property);
         }
