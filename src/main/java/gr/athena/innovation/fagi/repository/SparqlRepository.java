@@ -175,7 +175,6 @@ public class SparqlRepository {
     public static Literal getObjectOfProperty(String subject, String property1, String property2, Model model) {
 
         String queryString = SparqlConstructor.selectObjectFromChain(subject, property1, property2);
-        LOG.warn("query: " + queryString);
 
         String var = "o2";
         Query query = null;
