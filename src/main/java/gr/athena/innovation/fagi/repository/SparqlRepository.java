@@ -172,11 +172,37 @@ public class SparqlRepository {
         return rdfObjectValue;
     }
 
-    public static Literal getObjectOfProperty(Resource r, Property p, Model model) {
+    public static Literal getObjectOfProperty(String subject, String property1, String property2, Model model) {
 
-        Statement statement = model.getProperty(r, p);
+        String queryString = SparqlConstructor.selectObjectFromChain(subject, property1, property2);
+        LOG.warn("query: " + queryString);
 
-        return statement.getLiteral();
+        String var = "o2";
+        Query query = null;
+        try {
+            query = QueryFactory.create(queryString);
+        } catch (org.apache.jena.query.QueryParseException ex){
+            LOG.warn("Query parse exception with query:\n" + queryString);
+        }
+        
+        if(query == null){
+            LOG.warn("null query");
+            return null;
+        }
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode result = soln.get(var);
+                if (result.isLiteral()) {
+                    return result.asLiteral();
+                }
+            }
+        }
+        return null;
     }
 
     public static Literal getObjectOfProperty(String resource, String property, Model model) {

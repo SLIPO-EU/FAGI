@@ -161,6 +161,22 @@ public class SparqlConstructor {
         return query;
     }
     
+    public static String selectObject(String subject, String predicate){
+        String query = "SELECT ?o2 " 
+                        + "WHERE {"
+                        + "<" + subject + "> <" + predicate + "> ?o1 . "
+                        + "}";
+        return query;
+    }    
+
+    public static String selectObjectFromChain(String subject, String predicate1, String predicate2){
+        String query = "SELECT ?o2 " 
+                        + "WHERE {"
+                        + "<" + subject + "> " + predicate1 + " ?o1 . ?o1 " + predicate2 + " ?o2 . "
+                        + "}";
+        return query;
+    }
+    
     public static String countPOIs(String countVar){
         String query = "SELECT (COUNT(DISTINCT ?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +

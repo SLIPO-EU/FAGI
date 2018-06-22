@@ -301,6 +301,7 @@ public class SchemaDefinition {
 "										  <xs:simpleType>\n" +
 "											<xs:restriction base=\"xs:string\">\n" +
 "											  <xs:enumeration value=\"keep-left\"/>\n" +
+"                                             <xs:enumeration value=\"keep-left-mark-ambiguous\"/>\n" +            
 "											  <xs:enumeration value=\"keep-right\"/>\n" +
 "											  <xs:enumeration value=\"concatenate\"/>\n" +
 "											  <xs:enumeration value=\"concatenate-geometry\"/>\n" +
@@ -323,6 +324,7 @@ public class SchemaDefinition {
 "							<xs:simpleType>\n" +
 "							  <xs:restriction base=\"xs:string\">\n" +
 "								  <xs:enumeration value=\"keep-left\"/>\n" +
+"                                 <xs:enumeration value=\"keep-left-mark-ambiguous\"/>\n" +
 "								  <xs:enumeration value=\"keep-right\"/>\n" +
 "								  <xs:enumeration value=\"concatenate\"/>\n" +
 "								  <xs:enumeration value=\"concatenate-geometry\"/>\n" +            

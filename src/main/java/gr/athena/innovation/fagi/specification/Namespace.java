@@ -35,15 +35,15 @@ public class Namespace {
     
     public static final String TYPE = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
     //public static final String POI = "<http://slipo.eu/def#POI>";
-    
+
     public static final String LON = "<http://www.w3.org/2003/01/geo/wgs84_pos#lon>";
     public static final String LAT = "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>";
-    
+
     public static final String NAME = "<http://slipo.eu/def#name>";
     public static final String NAME_VALUE = "<http://slipo.eu/def#nameValue>";
     public static final String NAME_TYPE = "<http://slipo.eu/def#nameType>";
     public static final String OFFICIAL_LITERAL = "official";
-    
+
     public static final String SOURCE = "<http://slipo.eu/def#source>";
     public static final String LOCALITY = "<http://slipo.eu/def#locality>";
     public static final String ADDRESS = "<http://slipo.eu/def#address>";
@@ -55,6 +55,8 @@ public class Namespace {
     public static final String CONTACT_VALUE = "<http://slipo.eu/def#contactValue>";
 
     public static final String LINKED_AMBIGUOUSLY = "http://slipo.eu/def#linked-ambiguously-with";
+    public static final String HAS_AMBIGUOUS_PROPERTY = "http://slipo.eu/def#has-ambiguous-property";
+    public static final String HAS_AMBIGUOUS_SUB_PROPERTY = "http://slipo.eu/def#has-ambiguous-sub-property";
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;
@@ -74,5 +76,5 @@ public class Namespace {
     public void setRightLinksNamespace(String rightLinksNamespace) {
         this.rightLinksNamespace = rightLinksNamespace;
     }
-    
+
 }

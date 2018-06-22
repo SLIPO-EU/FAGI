@@ -219,13 +219,13 @@ public class LinkedPair {
             }
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
-            //Fuse with the rule defaults and break.
+            //Fuse with the rule defaults and continue to next rule.
             if (rule.getActionRuleSet() == null) {
                 LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
                     fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
                 }
-                break;
+                continue;
             }
 
             List<ActionRule> actionRules = rule.getActionRuleSet().getActionRuleList();
@@ -449,6 +449,33 @@ public class LinkedPair {
 
                 break;
             }
+//            case KEEP_LEFT_MARK: {
+//                if (isRejectedByPreviousRule(fusedModel)) {
+//                    break;
+//                }
+//
+//                Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+//
+//                //TODO: check when model does not contain literalA or B
+//                if (node != null) {
+//                    fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));
+//                }
+//
+//                if(node == null){
+//                    LOG.error("Node is blank. Cannot resolve URI. Action: {} literals: {} {}", action, literalA, literalB);
+//                    throw new ApplicationException("Node is blank. Cannot resolve URI. Action: " + action + 
+//                            ". literalA: " + literalA + " literalB: " + literalB);
+//                }
+//
+//                Statement statement = getAmbiguousPropertyStatement(node.getURI(), property);
+//                fusedModel.add(statement);
+//
+//                fusedEntityData = fusedEntity.getEntityData();
+//                fusedEntityData.setModel(fusedModel);
+//                fusedEntity.setEntityData(fusedEntityData);
+//
+//                break;
+//            }
             case KEEP_RIGHT: {
 
                 if (isRejectedByPreviousRule(fusedModel)) {
@@ -868,6 +895,28 @@ public class LinkedPair {
         Resource resource2 = ResourceFactory.createResource(uri2);
 
         Statement statement = ResourceFactory.createStatement(resource1, ambiguousLink, resource2);
+
+        return statement;
+    }
+    
+    private Statement getAmbiguousPropertyStatement(String uri, Property property) {
+
+        Property ambiguousProperty = ResourceFactory.createProperty(Namespace.HAS_AMBIGUOUS_PROPERTY);
+
+        Resource resource = ResourceFactory.createResource(uri);
+
+        Statement statement = ResourceFactory.createStatement(resource, ambiguousProperty, property);
+
+        return statement;
+    }
+
+    private Statement getAmbiguousSubPropertyStatement(String uri, Property subProperty) {
+
+        Property ambiguousSubProperty = ResourceFactory.createProperty(Namespace.HAS_AMBIGUOUS_SUB_PROPERTY);
+
+        Resource resource = ResourceFactory.createResource(uri);
+
+        Statement statement = ResourceFactory.createStatement(resource, ambiguousSubProperty, subProperty);
 
         return statement;
     }
