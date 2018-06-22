@@ -303,6 +303,7 @@ public class SchemaDefinition {
 "											  <xs:enumeration value=\"keep-left\"/>\n" +
 "                                             <xs:enumeration value=\"keep-left-mark-ambiguous\"/>\n" +            
 "											  <xs:enumeration value=\"keep-right\"/>\n" +
+"                                             <xs:enumeration value=\"keep-right-mark-ambiguous\"/>\n" +             
 "											  <xs:enumeration value=\"concatenate\"/>\n" +
 "											  <xs:enumeration value=\"concatenate-geometry\"/>\n" +
 "											  <xs:enumeration value=\"keep-longest\"/>\n" +
@@ -326,6 +327,7 @@ public class SchemaDefinition {
 "								  <xs:enumeration value=\"keep-left\"/>\n" +
 "                                 <xs:enumeration value=\"keep-left-mark-ambiguous\"/>\n" +
 "								  <xs:enumeration value=\"keep-right\"/>\n" +
+"                                 <xs:enumeration value=\"keep-right-mark-ambiguous\"/>\n" +            
 "								  <xs:enumeration value=\"concatenate\"/>\n" +
 "								  <xs:enumeration value=\"concatenate-geometry\"/>\n" +            
 "								  <xs:enumeration value=\"keep-longest\"/>\n" +

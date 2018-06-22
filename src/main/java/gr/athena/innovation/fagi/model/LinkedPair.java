@@ -29,6 +29,7 @@ import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -188,8 +189,10 @@ public class LinkedPair {
             EnumFusionAction defaultFusionAction = rule.getDefaultFusionAction();
 
             //TODO: change #getRDFPropertyFromString to check for propertyB when ontology is different from source datasets
+            Property rdfValueParentPropertyA = getRDFPropertyFromString(rule.getParentPropertyA());
+            Property rdfValueParentPropertyB = getRDFPropertyFromString(rule.getParentPropertyB());
             Property rdfValuePropertyA = getRDFPropertyFromString(rule.getPropertyA());
-            Property rdfValuePropertyB = getRDFPropertyFromString(rule.getPropertyB());
+            Property rdfValuePropertyB = getRDFPropertyFromString(rule.getPropertyA());
             String fusionProperty;
 
             //the property here is assumed to be one node above the literal value in order  to align with the ontology.
@@ -198,19 +201,32 @@ public class LinkedPair {
             String literalA;
             String literalB;
 
+            //child properties are always the properties that point to a literal.
+            CustomRDFProperty customPropertyA = new CustomRDFProperty();
+            CustomRDFProperty customPropertyB = new CustomRDFProperty();
+            
             if (rule.getParentPropertyA() == null) {
                 fusionProperty = rule.getPropertyA();
                 literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
-
+                customPropertyA.setSingleLevel(true);
+                customPropertyA.setChild(rdfValuePropertyA);
             } else {
                 fusionProperty = rule.getParentPropertyA();
                 literalA = getLiteralValueFromChain(rule.getParentPropertyA(), rule.getPropertyA(), leftEntityData.getModel());
+                customPropertyA.setSingleLevel(false);
+                customPropertyA.setParent(rdfValueParentPropertyA);
+                customPropertyA.setChild(rdfValuePropertyA);
             }
 
             if (rule.getParentPropertyB() == null) {
                 literalB = getLiteralValue(rule.getPropertyB(), rightEntityData.getModel());
+                customPropertyB.setSingleLevel(true);
+                customPropertyA.setChild(rdfValuePropertyB);
             } else {
                 literalB = getLiteralValueFromChain(rule.getParentPropertyB(), rule.getPropertyB(), rightEntityData.getModel());
+                customPropertyB.setSingleLevel(false);
+                customPropertyB.setParent(rdfValueParentPropertyB);
+                customPropertyB.setChild(rdfValuePropertyB);                
             }
 
             if (literalA == null && literalB == null) {
@@ -223,7 +239,7 @@ public class LinkedPair {
             if (rule.getActionRuleSet() == null) {
                 LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
-                    fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
+                    fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
                 }
                 continue;
             }
@@ -257,7 +273,7 @@ public class LinkedPair {
                     LOG.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
                     LOG.debug("Literals to be fused: " + literalA + " <--> " + literalB);
 
-                    fuseRuleAction(fusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
+                    fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
 
                     actionRuleToApply = true;
                     break;
@@ -268,7 +284,7 @@ public class LinkedPair {
             if (actionRuleToApply == false) {
                 LOG.debug("All conditions evaluated to false in fusion rule. Using default fusion action: "
                         + defaultFusionAction);
-                fuseRuleAction(defaultFusionAction, validationAction, rdfValuePropertyA, literalA, literalB);
+                fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
             }
         }
 
@@ -347,7 +363,7 @@ public class LinkedPair {
         }
     }
 
-    private void fuseRuleAction(EnumFusionAction action, EnumValidationAction validationAction, Property property,
+    private void fuseRuleAction(EnumFusionAction action, EnumValidationAction validationAction, CustomRDFProperty customProperty,
             String literalA, String literalB) throws WrongInputException {
 
         //TODO: Check Keep both. 
@@ -356,39 +372,40 @@ public class LinkedPair {
         //TODO bug: left and right node models contain resources without localnames when adding to ambiguous.
         EntityData fusedEntityData = fusedEntity.getEntityData();
 
-        Model fusedModel = fusedEntityData.getModel();
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
-        if (!isValidLink(validationAction, fusedModel, ambiguousModel, fusedEntityData)) {
+        if (!isValidLink(validationAction, ambiguousModel, fusedEntityData)) {
+            //stop fusion, link is rejected
             return;
         }
 
-        fuse(action, fusedModel, property, literalA, literalB, fusedEntityData);
+        fuse(action, customProperty, literalA, literalB, fusedEntityData);
     }
 
     //link validation
-    private boolean isValidLink(EnumValidationAction validationAction, Model fusedModel, Model ambiguousModel,
+    private boolean isValidLink(EnumValidationAction validationAction, Model ambiguousModel,
             EntityData fusedEntityData) {
+
         switch (validationAction) {
             case ACCEPT:
                 //do nothing
                 break;
             case ACCEPT_MARK_AMBIGUOUS: {
 
-                if (isRejectedByPreviousRule(fusedModel)) {
+                if (isRejectedByPreviousRule(fusedEntityData.getModel())) {
                     break;
                 }
 
-                acceptMarkAmbiguous(ambiguousModel, fusedModel, fusedEntityData);
+                acceptMarkAmbiguous(ambiguousModel, fusedEntityData);
 
                 break;
             }
             case REJECT: {
-                reject(fusedModel, fusedEntityData);
+                reject(fusedEntityData);
                 return false; //stop link fusion
             }
             case REJECT_MARK_AMBIGUOUS: {
-                rejectMarkAmbiguous(fusedModel, ambiguousModel, fusedEntityData);
+                rejectMarkAmbiguous(ambiguousModel, fusedEntityData);
                 return false; //stop link fusion
             }
         }
@@ -396,15 +413,18 @@ public class LinkedPair {
         return true;
     }
 
-    private void fuse(EnumFusionAction action, Model fusedModel, Property property, String literalA, String literalB,
+    private void fuse(EnumFusionAction action, CustomRDFProperty customProperty, String literalA, String literalB,
             EntityData fusedEntityData) throws ApplicationException, WrongInputException {
+
+        Model fusedModel = fusedEntityData.getModel();
+
         switch (action) {
             case KEEP_LEFT: {
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                keepLeft(fusedModel, property, literalA, literalB);
+                keepLeft(fusedModel, customProperty.getChild(), literalA, literalB);
 
                 break;
             }
@@ -413,7 +433,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepLeftMarkAmbiguous(fusedModel, property, literalA, literalB, action);
+                keepLeftMarkAmbiguous(fusedModel, customProperty, literalA, literalB, action);
 
                 break;
             }
@@ -423,10 +443,19 @@ public class LinkedPair {
                     break;
                 }
 
-                keepRight(fusedModel, property, literalA, literalB, fusedEntityData);
+                keepRight(fusedModel, customProperty.getChild(), literalA, literalB, fusedEntityData);
 
                 break;
             }
+            case KEEP_RIGHT_MARK: {
+                if (isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                keepLeftMarkAmbiguous(fusedModel, customProperty, literalA, literalB, action);
+
+                break;
+            }            
             case KEEP_BOTH: {
 
                 EntityData leftEntityData = leftNode.getEntityData();
@@ -444,24 +473,24 @@ public class LinkedPair {
                 break;
             }
             case KEEP_LONGEST: {
-                checkPropertyType(property, action);
+                checkPropertyType(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                keepLongest(fusedModel, property, literalA, literalB);
+                keepLongest(fusedModel, customProperty.getChild(), literalA, literalB);
 
                 break;
             }
             case CONCATENATE: {
-                checkPropertyType(property, action);
+                checkPropertyType(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                concatenate(fusedModel, property, literalA, literalB);
+                concatenate(fusedModel, customProperty.getChild(), literalA, literalB);
 
                 break;
             }
@@ -471,62 +500,62 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMostRecent(fusedModel, property, literalA, literalB);
+                keepMostRecent(fusedModel, customProperty.getChild(), literalA, literalB);
 
                 break;
             }
             case KEEP_MORE_POINTS: {
-                checkWKTProperty(property, action);
+                checkWKTProperty(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                keepMorePoints(literalA, literalB, fusedModel, property);
+                keepMorePoints(literalA, literalB, fusedModel, customProperty.getChild());
 
                 break;
             }
             case KEEP_MORE_POINTS_AND_SHIFT: {
-                checkWKTProperty(property, action);
+                checkWKTProperty(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                keepMorePointsAndShift(literalA, literalB, fusedModel, property);
+                keepMorePointsAndShift(literalA, literalB, fusedModel, customProperty.getChild());
 
                 break;
             }
             case SHIFT_LEFT_GEOMETRY: {
-                checkWKTProperty(property, action);
+                checkWKTProperty(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                shiftLeftGeometry(literalA, literalB, fusedModel, property);
+                shiftLeftGeometry(literalA, literalB, fusedModel, customProperty.getChild());
 
                 break;
             }
             case SHIFT_RIGHT_GEOMETRY: {
-                checkWKTProperty(property, action);
+                checkWKTProperty(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                shiftRightGeometry(literalA, literalB, fusedModel, property);
+                shiftRightGeometry(literalA, literalB, fusedModel, customProperty.getChild());
 
                 break;
             }
             case CONCATENATE_GEOMETRY: {
-                checkWKTProperty(property, action);
+                checkWKTProperty(customProperty.getChild(), action);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
 
-                concatenateGeometry(literalA, literalB, fusedModel, property);
+                concatenateGeometry(literalA, literalB, fusedModel, customProperty.getChild());
 
                 break;
             }
@@ -712,25 +741,72 @@ public class LinkedPair {
         fusedEntity.setEntityData(fusedEntityData);
     }
 
-    private void keepLeftMarkAmbiguous(Model fusedModel, Property property, String literalA, String literalB, EnumFusionAction action) throws ApplicationException {
+    private void keepLeftMarkAmbiguous(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB,
+            EnumFusionAction action) throws ApplicationException {
+
         EntityData fusedEntityData;
-        Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
+        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getChild(), literalA, literalB);
         //TODO: check when model does not contain literalA or B
         if (node != null) {
-            fusedModel.add(node, property, ResourceFactory.createStringLiteral(literalA));
+            fusedModel.add(node, customProperty.getChild(), ResourceFactory.createStringLiteral(literalA));
         }
         if (node == null) {
             LOG.error("Node is blank. Cannot resolve URI. Action: {} literals: {} {}", action, literalA, literalB);
             throw new ApplicationException("Node is blank. Cannot resolve URI. Action: " + action
                     + ". literalA: " + literalA + " literalB: " + literalB);
         }
-        Statement statement = getAmbiguousPropertyStatement(node.getURI(), property);
-        fusedModel.add(statement);
+        
+        Statement statement;
+        Statement parentStatement;
+        
+        if(customProperty.isSingleLevel()){
+            statement = getAmbiguousPropertyStatement(node.getURI(), customProperty.getChild());
+            fusedModel.add(statement);
+        } else {
+            parentStatement = getAmbiguousPropertyStatement(node.getURI(), customProperty.getParent());
+            statement = getAmbiguousSubPropertyStatement(node.getURI(), customProperty.getChild());
+            fusedModel.add(parentStatement);
+            fusedModel.add(statement);
+        }
+
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
     }
 
+    private void keepRightMarkAmbiguous(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB,
+            EnumFusionAction action) throws ApplicationException {
+
+        EntityData fusedEntityData;
+        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getChild(), literalA, literalB);
+        //TODO: check when model does not contain literalA or B
+        if (node != null) {
+            fusedModel.add(node, customProperty.getChild(), ResourceFactory.createStringLiteral(literalB));
+        }
+        if (node == null) {
+            LOG.error("Node is blank. Cannot resolve URI. Action: {} literals: {} {}", action, literalA, literalB);
+            throw new ApplicationException("Node is blank. Cannot resolve URI. Action: " + action
+                    + ". literalA: " + literalA + " literalB: " + literalB);
+        }
+        
+        Statement statement;
+        Statement parentStatement;
+        
+        if(customProperty.isSingleLevel()){
+            statement = getAmbiguousPropertyStatement(node.getURI(), customProperty.getChild());
+            fusedModel.add(statement);
+        } else {
+            parentStatement = getAmbiguousPropertyStatement(node.getURI(), customProperty.getParent());
+            statement = getAmbiguousSubPropertyStatement(node.getURI(), customProperty.getChild());
+            fusedModel.add(parentStatement);
+            fusedModel.add(statement);
+        }
+
+        fusedEntityData = fusedEntity.getEntityData();
+        fusedEntityData.setModel(fusedModel);
+        fusedEntity.setEntityData(fusedEntityData);
+    }
+    
     private void keepLeft(Model fusedModel, Property property, String literalA, String literalB) {
         EntityData fusedEntityData;
         Resource node = getResourceAndRemoveLiteral(fusedModel, property, literalA, literalB);
@@ -743,8 +819,10 @@ public class LinkedPair {
         fusedEntity.setEntityData(fusedEntityData);
     }
 
-    private void rejectMarkAmbiguous(Model fusedModel, Model ambiguousModel, EntityData fusedEntityData) {
+    private void rejectMarkAmbiguous(Model ambiguousModel, EntityData fusedEntityData) {
         LinksModel.getLinksModel().getRejected().add(link);
+
+        Model fusedModel = fusedEntityData.getModel();
 
         if (!fusedModel.isEmpty()) {
             fusedModel.removeAll();
@@ -772,10 +850,10 @@ public class LinkedPair {
         fusedEntity.setEntityData(fusedEntityData);
     }
 
-    private void reject(Model fusedModel, EntityData fusedEntityData) {
+    private void reject(EntityData fusedEntityData) {
         //removes link from the list and from the model also.
         LinksModel.getLinksModel().getRejected().add(link);
-
+        Model fusedModel = fusedEntityData.getModel();
         if (!fusedModel.isEmpty()) {
             fusedModel.removeAll();
         }
@@ -784,8 +862,10 @@ public class LinkedPair {
         fusedEntity.setEntityData(fusedEntityData);
     }
 
-    private void acceptMarkAmbiguous(Model ambiguousModel, Model fusedModel, EntityData fusedEntityData) {
+    private void acceptMarkAmbiguous(Model ambiguousModel, EntityData fusedEntityData) {
         Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
+
+        Model fusedModel = fusedEntityData.getModel();
 
         ambiguousModel.add(leftNode.getEntityData().getModel());
         ambiguousModel.add(rightNode.getEntityData().getModel());
@@ -849,20 +929,12 @@ public class LinkedPair {
 
     private Property getRDFPropertyFromString(String property) {
 
-        if (property == null) {
+        if (StringUtils.isBlank(property)) {
             return null;
         }
-        //TODO: remove aliases of properties
-        Property propertyRDF;
-        if (property.equalsIgnoreCase("label")) {
-            propertyRDF = ResourceFactory.createProperty(Namespace.LABEL);
-        } else if (property.equalsIgnoreCase("date")) {
-            propertyRDF = ResourceFactory.createProperty(Namespace.DATE_OSM_MODIFIED);
-        } else if (property.equalsIgnoreCase("wkt")) {
-            propertyRDF = ResourceFactory.createProperty(Namespace.WKT);
-        } else {
-            propertyRDF = ResourceFactory.createProperty(property);
-        }
+
+        Property propertyRDF = ResourceFactory.createProperty(property);
+
         return propertyRDF;
     }
 

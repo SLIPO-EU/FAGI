@@ -160,6 +160,7 @@
 										  <xs:simpleType>
 											<xs:restriction base="xs:string">
 											  <xs:enumeration value="keep-left"/>
+											  <xs:enumeration value="keep-left-mark-ambiguous"/>											  
 											  <xs:enumeration value="keep-right"/>
 											  <xs:enumeration value="concatenate"/>
 											  <xs:enumeration value="concatenate-geometry"/>
@@ -182,6 +183,7 @@
 							<xs:simpleType>
 							  <xs:restriction base="xs:string">
 								  <xs:enumeration value="keep-left"/>
+								  <xs:enumeration value="keep-left-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-right"/>
 								  <xs:enumeration value="concatenate"/>
 								  <xs:enumeration value="concatenate-geometry"/>								  

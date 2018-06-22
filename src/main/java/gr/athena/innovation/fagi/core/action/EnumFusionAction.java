@@ -27,47 +27,51 @@ public enum EnumFusionAction {
     /**
      * Keeps the model of the entity from the left source dataset and marks the property being fused as ambiguous.
      */
-    KEEP_LEFT_MARK(1),    
+    KEEP_LEFT_MARK(2),    
     /**
      * Keeps the model of the entity from the right source dataset.
      */
-    KEEP_RIGHT(2),
+    KEEP_RIGHT(3),
+    /**
+     * Keeps the model of the entity from the RIGHT source dataset and marks the property being fused as ambiguous.
+     */
+    KEEP_RIGHT_MARK(4),      
     /**
      * Keeps both models of the entity from left and right source datasets.
      */
-    KEEP_BOTH(3),
+    KEEP_BOTH(5),
     /**
      * Keeps the model of the entity with the longest value.
      */
-    KEEP_LONGEST(4),
+    KEEP_LONGEST(6),
     /**
      * Concatenates the two literals and keeps them in the same property.
      */
-    CONCATENATE(5),
+    CONCATENATE(7),
     /**
      * Keeps the most recent model, based on the dataset dates provided in the specification.
      */
-    KEEP_MOST_RECENT(6),
+    KEEP_MOST_RECENT(8),
     /**
      * Keeps the geometry containing more points than the other.
      */
-    KEEP_MORE_POINTS(7),
+    KEEP_MORE_POINTS(9),
     /**
      * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
      */
-    KEEP_MORE_POINTS_AND_SHIFT(8),
+    KEEP_MORE_POINTS_AND_SHIFT(10),
     /**
      * Shifts the geometry of the left source entity to the centroid of the right.
      */
-    SHIFT_LEFT_GEOMETRY(9),
+    SHIFT_LEFT_GEOMETRY(11),
     /**
      * Shifts the geometry of the right source entity to the centroid of the left.
      */
-    SHIFT_RIGHT_GEOMETRY(10),
+    SHIFT_RIGHT_GEOMETRY(12),
     /**
      * Produces a geometry collection from the given geometries.
      */
-    CONCATENATE_GEOMETRY(11);
+    CONCATENATE_GEOMETRY(13);
 
     private final int value;
 
@@ -153,6 +157,8 @@ public enum EnumFusionAction {
                 return "keep-left-mark-ambiguous";             
             case KEEP_RIGHT:
                 return "keep-right";
+            case KEEP_RIGHT_MARK:
+                return "keep-right-mark-ambiguous";                  
             case KEEP_BOTH:
                 return "keep-both";
             case KEEP_LONGEST:
