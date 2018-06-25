@@ -162,14 +162,23 @@
 											  <xs:enumeration value="keep-left"/>
 											  <xs:enumeration value="keep-left-mark-ambiguous"/>											  
 											  <xs:enumeration value="keep-right"/>
+											  <xs:enumeration value="keep-right-mark-ambiguous"/>
 											  <xs:enumeration value="concatenate"/>
+											  <xs:enumeration value="concatenate-mark-ambiguous"/>
 											  <xs:enumeration value="concatenate-geometry"/>
+											  <xs:enumeration value="concatenate-geometry-mark-ambiguous"/>
 											  <xs:enumeration value="keep-longest"/>
+											  <xs:enumeration value="keep-longest-mark-ambiguous"/>
 											  <xs:enumeration value="keep-both"/>
+											  <xs:enumeration value="keep-both-mark-ambiguous"/>
 											  <xs:enumeration value="keep-more-points"/>
+											  <xs:enumeration value="keep-more-points-mark-ambiguous"/>
 											  <xs:enumeration value="keep-more-points-and-shift"/>
+											  <xs:enumeration value="keep-more-points-and-shift-mark-ambiguous"/>
 											  <xs:enumeration value="shift-left-geometry"/>
+											  <xs:enumeration value="shift-left-geometry-mark-ambiguous"/>
 											  <xs:enumeration value="shift-right-geometry"/>
+											  <xs:enumeration value="shift-right-geometry-mark-ambiguous"/>
 											</xs:restriction>
 										  </xs:simpleType>
 									  </xs:element>                          
@@ -185,14 +194,23 @@
 								  <xs:enumeration value="keep-left"/>
 								  <xs:enumeration value="keep-left-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-right"/>
+								  <xs:enumeration value="keep-right-mark-ambiguous"/>								  
 								  <xs:enumeration value="concatenate"/>
-								  <xs:enumeration value="concatenate-geometry"/>								  
+								  <xs:enumeration value="concatenate-mark-ambiguous"/>								  
+								  <xs:enumeration value="concatenate-geometry"/>
+								  <xs:enumeration value="concatenate-geometry-mark-ambiguous"/>								  							  
 								  <xs:enumeration value="keep-longest"/>
+								  <xs:enumeration value="keep-longest-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-both"/>
+								  <xs:enumeration value="keep-both-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-more-points"/>
+								  <xs:enumeration value="keep-more-points-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-more-points-and-shift"/>
+								  <xs:enumeration value="keep-more-points-and-shift-mark-ambiguous"/>								  
 								  <xs:enumeration value="shift-left-geometry"/>
+								  <xs:enumeration value="shift-left-geometry-mark-ambiguous"/>								  
 								  <xs:enumeration value="shift-right-geometry"/>
+								  <xs:enumeration value="shift-right-geometry-mark-ambiguous"/>								  
 							  </xs:restriction>
 							</xs:simpleType>
 						  </xs:element>     
