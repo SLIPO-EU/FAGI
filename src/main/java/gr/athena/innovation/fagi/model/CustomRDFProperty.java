@@ -9,7 +9,7 @@ import org.apache.jena.rdf.model.Property;
 public class CustomRDFProperty {
     private boolean singleLevel;
     private Property parent;
-    private Property child;
+    private Property valueProperty;
 
     public boolean isSingleLevel() {
         return singleLevel;
@@ -27,11 +27,11 @@ public class CustomRDFProperty {
         this.parent = parent;
     }
 
-    public Property getChild() {
-        return child;
+    public Property getValueProperty() {
+        return valueProperty;
     }
 
-    public void setChild(Property child) {
-        this.child = child;
+    public void setValueProperty(Property valueProperty) {
+        this.valueProperty = valueProperty;
     }
 }
