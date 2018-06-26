@@ -3,7 +3,7 @@ package gr.athena.innovation.fagi.preview;
 import gr.athena.innovation.fagi.core.normalizer.SimpleLiteralNormalizer;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.EnumDataset;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -33,11 +33,11 @@ public class FileFrequencyCounter implements FrequencyCounter {
 
     private Locale locale;
     private List<String> properties;
-    private final FusionSpecification fusionSpecification;
+    private final Configuration fusionSpecification;
     private final int frequentTopK;
 
     public FileFrequencyCounter(int frequentTopK) {
-        this.fusionSpecification = FusionSpecification.getInstance();
+        this.fusionSpecification = Configuration.getInstance();
         this.frequentTopK = frequentTopK;
     }
 

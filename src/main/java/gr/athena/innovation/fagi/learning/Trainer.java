@@ -7,7 +7,7 @@ import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,9 +21,9 @@ import java.util.Set;
  */
 public class Trainer {
 
-    private final FusionSpecification fusionSpecification;
+    private final Configuration fusionSpecification;
     
-    public Trainer(FusionSpecification fusionSpecification){
+    public Trainer(Configuration fusionSpecification){
         this.fusionSpecification = fusionSpecification;
     }
     

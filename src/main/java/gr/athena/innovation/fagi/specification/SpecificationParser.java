@@ -34,10 +34,10 @@ public class SpecificationParser {
      * @return the fusion specification object.
      * @throws WrongInputException Indicates that something is wrong with the input.
      */
-    public FusionSpecification parse(String fusionSpecificationPath) throws WrongInputException {
+    public Configuration parse(String fusionSpecificationPath) throws WrongInputException {
 
         LOG.info("Parsing Fusion Specification: " + fusionSpecificationPath);
-        FusionSpecification fusionSpecification = FusionSpecification.getInstance();
+        Configuration fusionSpecification = Configuration.getInstance();
 
         try {
 

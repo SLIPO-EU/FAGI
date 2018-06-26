@@ -13,7 +13,7 @@ import java.util.List;
  * 
  */
 
-public class RuleCatalog{
+public class RuleSpecification{
 
 	private final List<Rule> rules = new ArrayList<>();
     private final List<Rule> validationRules = new ArrayList<>();

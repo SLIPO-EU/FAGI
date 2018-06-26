@@ -14,7 +14,7 @@ import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,11 +38,11 @@ import org.apache.logging.log4j.Logger;
 public class RDFInputSimilarityViewer {
 
     private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
-    private final FusionSpecification fusionSpecification;
+    private final Configuration fusionSpecification;
 
     public RDFInputSimilarityViewer() {
 
-        this.fusionSpecification = FusionSpecification.getInstance();
+        this.fusionSpecification = Configuration.getInstance();
     }
 
     public void printRDFSimilarityResults(List<String> rdfProperties) throws ParseException, IOException {

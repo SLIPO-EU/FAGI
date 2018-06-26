@@ -16,13 +16,13 @@ import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.Condition;
 import gr.athena.innovation.fagi.rule.model.Rule;
-import gr.athena.innovation.fagi.rule.RuleCatalog;
+import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
 import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import java.text.Normalizer;
@@ -165,11 +165,10 @@ public class LinkedPair {
                 validation = defaultAction;
             }
         }
-
         return validation;
     }
 
-    public void fusePair(RuleCatalog ruleCatalog, Map<String, IFunction> functionMap,
+    public void fusePair(RuleSpecification ruleCatalog, Map<String, IFunction> functionMap,
             EnumValidationAction validationAction) throws WrongInputException {
 
         //TODO: optimization: resolve validation action here 
@@ -730,7 +729,7 @@ public class LinkedPair {
     private void keepMostRecent(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) 
             throws ApplicationException {
         
-        EnumDataset mostRecent = FusionSpecification.getInstance().getMostRecentDataset();
+        EnumDataset mostRecent = Configuration.getInstance().getMostRecentDataset();
         Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
@@ -1141,7 +1140,7 @@ public class LinkedPair {
     }
 
     private void resolveModeURIs(Entity entity1, Entity entity2) {
-        EnumOutputMode mode = FusionSpecification.getInstance().getOutputMode();
+        EnumOutputMode mode = Configuration.getInstance().getOutputMode();
         switch (mode) {
             case AA_MODE:
             case AB_MODE:
@@ -1158,7 +1157,7 @@ public class LinkedPair {
     }
 
     private EnumDataset resolveRejectedEntityModel() {
-        EnumOutputMode mode = FusionSpecification.getInstance().getOutputMode();
+        EnumOutputMode mode = Configuration.getInstance().getOutputMode();
         switch (mode) {
             case AA_MODE:
             case AB_MODE:

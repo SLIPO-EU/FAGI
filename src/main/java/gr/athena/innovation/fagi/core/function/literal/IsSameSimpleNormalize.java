@@ -5,7 +5,7 @@ import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 
@@ -34,7 +34,7 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeParameter
         double thres = Double.parseDouble(threshold);
         
         
-        Locale locale = FusionSpecification.getInstance().getLocale();
+        Locale locale = Configuration.getInstance().getLocale();
         
         if (literalA.equals(literalB)) {
             return true;
@@ -45,7 +45,7 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeParameter
         NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA, literalB, locale);
         NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB, literalA, locale);
         
-        String simName = FusionSpecification.getInstance().getSimilarity();
+        String simName = Configuration.getInstance().getSimilarity();
         
         double result = WeightedSimilarity.computeBSimilarity(normA, normB, simName);
         

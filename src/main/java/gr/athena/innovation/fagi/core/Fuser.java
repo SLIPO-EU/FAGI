@@ -5,9 +5,9 @@ import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
-import gr.athena.innovation.fagi.rule.RuleCatalog;
+import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.model.Entity;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
@@ -64,7 +64,7 @@ public class Fuser implements IFuser{
      * @param functionMap The map containing the available functions.
      */
     @Override
-    public List<LinkedPair> fuseAll(FusionSpecification fusionSpec, RuleCatalog ruleCatalog, 
+    public List<LinkedPair> fuseAll(Configuration fusionSpec, RuleSpecification ruleCatalog, 
             Map<String, IFunction> functionMap) throws WrongInputException{
 
         List<LinkedPair> fusedList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class Fuser implements IFuser{
      * @param defaultDatasetAction the default dataset action enumeration.
      * @throws FileNotFoundException Thrown when file was not found.
      */
-    public void combineFusedAndWrite(FusionSpecification fusionSpecification, 
+    public void combineFusedAndWrite(Configuration fusionSpecification, 
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException, IOException{
 

@@ -20,9 +20,9 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticsContainer;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsExporter;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
-import gr.athena.innovation.fagi.rule.RuleCatalog;
+import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.rule.RuleProcessor;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.SpecificationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
@@ -96,7 +96,7 @@ public class FagiInstance {
 
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
-        FusionSpecification fusionSpec = specificationParser.parse(specXml);
+        Configuration fusionSpec = specificationParser.parse(specXml);
         
         if (!validator.isValidRulesWithXSD(fusionSpec.getRulesPath())) {
             LOG.info(SpecificationConstants.HELP);
@@ -118,7 +118,7 @@ public class FagiInstance {
         LOG.info("XML files seem syntactically valid.");
         
         RuleProcessor ruleProcessor = new RuleProcessor();
-        RuleCatalog ruleCatalog = ruleProcessor.parseRules(fusionSpec.getRulesPath());
+        RuleSpecification ruleCatalog = ruleProcessor.parseRules(fusionSpec.getRulesPath());
         ruleCatalog.setFunctionRegistry(functionRegistry);
 
         long stopTimeInput = System.currentTimeMillis();

@@ -4,8 +4,8 @@ import com.vividsolutions.jts.io.ParseException;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.LinkedPair;
-import gr.athena.innovation.fagi.rule.RuleCatalog;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.rule.RuleSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public interface IFuser {
      * @throws ParseException Thrown by a <code>WKTReader</code> when a parsing problem occurs.
      * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates input error.
      */    
-    public List<LinkedPair> fuseAll(FusionSpecification config, RuleCatalog ruleCatalog, 
+    public List<LinkedPair> fuseAll(Configuration config, RuleSpecification ruleCatalog, 
             Map<String, IFunction> functionMap) throws ParseException, WrongInputException;
     
 }

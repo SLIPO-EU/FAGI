@@ -7,7 +7,7 @@ import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeParameter
             return true;
         }
 
-        Locale locale = FusionSpecification.getInstance().getLocale();
+        Locale locale = Configuration.getInstance().getLocale();
 
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
@@ -60,7 +60,7 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeParameter
 
         WeightedPairLiteral weightedPair = advancedNormalizer.getWeightedPair(normA, normB, locale);
 
-        String simName = FusionSpecification.getInstance().getSimilarity();
+        String simName = Configuration.getInstance().getSimilarity();
 
         double result = WeightedSimilarity.computeDSimilarity(weightedPair, simName);
 

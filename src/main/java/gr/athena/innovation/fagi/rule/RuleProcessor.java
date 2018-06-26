@@ -56,9 +56,9 @@ public class RuleProcessor {
      * @throws IOException signals that an I/O exception of some sort has occurred.
      * @throws gr.athena.innovation.fagi.exception.WrongInputException something is wrong with the provided input.
      */
-    public RuleCatalog parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException {
+    public RuleSpecification parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException {
         
-        RuleCatalog ruleCatalog = new RuleCatalog();
+        RuleSpecification ruleCatalog = new RuleSpecification();
 
         LOG.info("Parsing rules: " + path);
 

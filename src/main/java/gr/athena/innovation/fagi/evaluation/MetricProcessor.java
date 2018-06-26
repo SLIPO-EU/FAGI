@@ -14,7 +14,7 @@ import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -45,7 +45,7 @@ public class MetricProcessor {
 
     private static final Logger LOG = LogManager.getLogger(MetricProcessor.class);
     private static final String SEP = ",";
-    private final FusionSpecification fusionSpecification;
+    private final Configuration fusionSpecification;
     private static final String ACCEPT = "ACCEPT";
     private static final String REJECT = "REJECT";
     private int totalRows = 0;
@@ -94,7 +94,7 @@ public class MetricProcessor {
     
     private Threshold optimalThreshold = new Threshold();
     
-    public MetricProcessor(FusionSpecification fusionSpecification) {
+    public MetricProcessor(Configuration fusionSpecification) {
 
         this.fusionSpecification = fusionSpecification;
         

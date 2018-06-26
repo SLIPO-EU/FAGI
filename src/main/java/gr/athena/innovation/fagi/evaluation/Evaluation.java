@@ -1,7 +1,7 @@
 package gr.athena.innovation.fagi.evaluation;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
-import gr.athena.innovation.fagi.specification.FusionSpecification;
+import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class Evaluation {
     
-    public void run(FusionSpecification fusionSpec, String csvPath){
+    public void run(Configuration fusionSpec, String csvPath){
 
             //on version change, all weights update (along with notes)
             String version = "v2.2a";

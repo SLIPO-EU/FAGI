@@ -13,11 +13,11 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author nkarag
  */
-public class FusionSpecification {
+public class Configuration {
     
-    private static final Logger LOG = LogManager.getLogger(FusionSpecification.class);
+    private static final Logger LOG = LogManager.getLogger(Configuration.class);
     
-    private static FusionSpecification fusionSpecification;
+    private static Configuration fusionSpecification;
     
     private String idA;
     private String endpointA;
@@ -53,13 +53,13 @@ public class FusionSpecification {
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;    
 
-    private FusionSpecification() {
+    private Configuration() {
     }
 
-    public static FusionSpecification getInstance() throws ApplicationException {
+    public static Configuration getInstance() throws ApplicationException {
         //lazy init
         if (fusionSpecification == null) {
-            fusionSpecification = new FusionSpecification();
+            fusionSpecification = new Configuration();
         }
 
         return fusionSpecification;
