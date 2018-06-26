@@ -33,11 +33,11 @@ public class FileFrequencyCounter implements FrequencyCounter {
 
     private Locale locale;
     private List<String> properties;
-    private final Configuration fusionSpecification;
+    private final Configuration configuration;
     private final int frequentTopK;
 
     public FileFrequencyCounter(int frequentTopK) {
-        this.fusionSpecification = Configuration.getInstance();
+        this.configuration = Configuration.getInstance();
         this.frequentTopK = frequentTopK;
     }
 
@@ -89,7 +89,7 @@ public class FileFrequencyCounter implements FrequencyCounter {
                     
             }
             
-            String outputFilename = fusionSpecification.getOutputDir() + "frequencies/" 
+            String outputFilename = configuration.getOutputDir() + "frequencies/" 
                     + filenamePrefix + filename + filenameSuffix;
             File outputFile = new File(outputFilename);
 

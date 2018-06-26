@@ -28,20 +28,20 @@ public class SpecificationParser {
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SpecificationParser.class);
 
     /**
-     * Parses the specification XML and produces a FusionSpecification object.
+     * Parses the specification XML and produces a configuration object.
      * 
-     * @param fusionSpecificationPath the fusion specification file path.
-     * @return the fusion specification object.
+     * @param configurationPath the configuration file path.
+     * @return the configuration object.
      * @throws WrongInputException Indicates that something is wrong with the input.
      */
-    public Configuration parse(String fusionSpecificationPath) throws WrongInputException {
+    public Configuration parse(String configurationPath) throws WrongInputException {
 
-        LOG.info("Parsing Fusion Specification: " + fusionSpecificationPath);
-        Configuration fusionSpecification = Configuration.getInstance();
+        LOG.info("Parsing configuration: " + configurationPath);
+        Configuration configuration = Configuration.getInstance();
 
         try {
 
-            File fXmlFile = new File(fusionSpecificationPath);
+            File fXmlFile = new File(configurationPath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(fXmlFile);
@@ -50,7 +50,7 @@ public class SpecificationParser {
 
             NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.INPUT_FORMAT);
             String inputFormat = inputNodeList.item(0).getTextContent();
-            fusionSpecification.setInputRDFFormat(inputFormat);
+            configuration.setInputRDFFormat(inputFormat);
 
             NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.OUTPUT_FORMAT);
             String outputFormatString = outputNodeList.item(0).getTextContent();
@@ -74,7 +74,7 @@ public class SpecificationParser {
                     outputFormat = "NT";
             }            
 
-            fusionSpecification.setOutputRDFFormat(outputFormat);
+            configuration.setOutputRDFFormat(outputFormat);
 
             NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LOCALE);
             
@@ -113,7 +113,7 @@ public class SpecificationParser {
                     locale = Locale.ENGLISH;
             }
 
-            fusionSpecification.setLocale(locale);
+            configuration.setLocale(locale);
 
             NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.SIMILARITY);
             String similarityText = "";
@@ -150,11 +150,11 @@ public class SpecificationParser {
                     similarity = SpecificationConstants.Similarity.JARO_WINKLER;
             }
 
-            fusionSpecification.setSimilarity(similarity);
+            configuration.setSimilarity(similarity);
 
             NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.RULES);
             String rules = rulesNodeList.item(0).getTextContent();
-            fusionSpecification.setRulesPath(rules);
+            configuration.setRulesPath(rules);
             
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
@@ -164,26 +164,26 @@ public class SpecificationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathDatasetA(n.getTextContent());
+                        configuration.setPathDatasetA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
-                        fusionSpecification.setIdA(n.getTextContent());
+                        configuration.setIdA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }
-                        fusionSpecification.setEndpointA(n.getTextContent());
+                        configuration.setEndpointA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
-                        fusionSpecification.setCategoriesA(n.getTextContent());
+                        configuration.setCategoriesA(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
                         String dateString = n.getTextContent();
                         if(StringUtils.isBlank(dateString)){
-                            fusionSpecification.setDateB(null);
+                            configuration.setDateB(null);
                         } else {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
                             simpleDateFormat.setLenient(false);
                             try {
                                 Date dateA = simpleDateFormat.parse(dateString);
-                                fusionSpecification.setDateA(dateA);
+                                configuration.setDateA(dateA);
                             } catch (ParseException ex) {
                                 LOG.error(ex);
                                 throw new WrongInputException("Date in \"left\" dataset does not have the expected format. "
@@ -205,26 +205,26 @@ public class SpecificationParser {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathDatasetB(n.getTextContent());
+                        configuration.setPathDatasetB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
-                        fusionSpecification.setIdB(n.getTextContent());
+                        configuration.setIdB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }
-                        fusionSpecification.setEndpointB(n.getTextContent());
+                        configuration.setEndpointB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
-                        fusionSpecification.setCategoriesB(n.getTextContent());
+                        configuration.setCategoriesB(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
                         String dateString = n.getTextContent();
                         if(StringUtils.isBlank(dateString)){
-                            fusionSpecification.setDateB(null);
+                            configuration.setDateB(null);
                         } else {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
                             simpleDateFormat.setLenient(false);
                             try {
                                 Date dateB = simpleDateFormat.parse(dateString);
-                                fusionSpecification.setDateB(dateB);
+                                configuration.setDateB(dateB);
                             } catch (ParseException ex) {
                                 LOG.error(ex);
                                 throw new WrongInputException("Date in \"right\" dataset does not have the expected format. "
@@ -246,14 +246,14 @@ public class SpecificationParser {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
-                        fusionSpecification.setPathLinks(n.getTextContent());
+                        configuration.setPathLinks(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
-                        fusionSpecification.setIdLinks(n.getTextContent());
+                        configuration.setIdLinks(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }                        
-                        fusionSpecification.setEndpointLinks(n.getTextContent());
+                        configuration.setEndpointLinks(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
@@ -268,34 +268,34 @@ public class SpecificationParser {
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.OUTPUT_DIR)) {
-                        fusionSpecification.setOutputDir(n.getTextContent());
+                        configuration.setOutputDir(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FUSED)) {
-                        fusionSpecification.setFused(n.getTextContent());
+                        configuration.setFused(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.REMAINING)) {
-                        fusionSpecification.setRemaining(n.getTextContent());
+                        configuration.setRemaining(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.AMBIGUOUS)) {
-                        fusionSpecification.setAmbiguousDatasetFilepath(n.getTextContent());
+                        configuration.setAmbiguousDatasetFilepath(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.STATISTICS)) {
-                        fusionSpecification.setStatsFilepath(n.getTextContent());
+                        configuration.setStatsFilepath(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
-                        fusionSpecification.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
+                        configuration.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
-                        fusionSpecification.setIdOutput(n.getTextContent());
+                        configuration.setIdOutput(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }                        
-                        fusionSpecification.setEndpointOutput(n.getTextContent());
+                        configuration.setEndpointOutput(n.getTextContent());
                     }
                 }
                 n.getNextSibling();
             }
 
         } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
-            LOG.fatal("Exception occured while parsing the fusion specification: "
-                    + fusionSpecificationPath + "\n" + e);
+            LOG.fatal("Exception occured while parsing the configuration: "
+                    + configurationPath + "\n" + e);
         }
 
-        return fusionSpecification;
+        return configuration;
     }
 }

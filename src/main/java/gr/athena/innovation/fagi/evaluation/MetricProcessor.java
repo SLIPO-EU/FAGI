@@ -45,7 +45,7 @@ public class MetricProcessor {
 
     private static final Logger LOG = LogManager.getLogger(MetricProcessor.class);
     private static final String SEP = ",";
-    private final Configuration fusionSpecification;
+    private final Configuration configuration;
     private static final String ACCEPT = "ACCEPT";
     private static final String REJECT = "REJECT";
     private int totalRows = 0;
@@ -94,9 +94,9 @@ public class MetricProcessor {
     
     private Threshold optimalThreshold = new Threshold();
     
-    public MetricProcessor(Configuration fusionSpecification) {
+    public MetricProcessor(Configuration configuration) {
 
-        this.fusionSpecification = fusionSpecification;
+        this.configuration = configuration;
         
         aLevenPrecisionMap.put(ACCEPT, new ArrayList<>());
         aLevenPrecisionMap.put(REJECT, new ArrayList<>());
@@ -291,7 +291,7 @@ public class MetricProcessor {
                 
         String line;
         String cvsSplitBy = "\\^";
-        Locale locale = fusionSpecification.getLocale();
+        Locale locale = configuration.getLocale();
 
         int l = 0;
         BufferedReader br = new BufferedReader(new FileReader(csvPath));

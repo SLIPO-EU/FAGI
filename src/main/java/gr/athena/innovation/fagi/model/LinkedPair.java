@@ -168,18 +168,18 @@ public class LinkedPair {
         return validation;
     }
 
-    public void fusePair(RuleSpecification ruleCatalog, Map<String, IFunction> functionMap,
+    public void fusePair(RuleSpecification ruleSpec, Map<String, IFunction> functionMap,
             EnumValidationAction validationAction) throws WrongInputException {
 
         //TODO: optimization: resolve validation action here 
-        EnumDatasetAction defaultDatasetAction = ruleCatalog.getDefaultDatasetAction();
+        EnumDatasetAction defaultDatasetAction = ruleSpec.getDefaultDatasetAction();
 
         EntityData leftEntityData = leftNode.getEntityData();
         EntityData rightEntityData = rightNode.getEntityData();
 
         fuseDefaultDatasetAction(defaultDatasetAction);
 
-        List<Rule> rules = ruleCatalog.getRules();
+        List<Rule> rules = ruleSpec.getRules();
 
         int count = 0;
         for (Rule rule : rules) {

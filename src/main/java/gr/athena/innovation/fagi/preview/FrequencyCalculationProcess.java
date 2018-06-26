@@ -16,32 +16,32 @@ public class FrequencyCalculationProcess {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FrequencyCalculationProcess.class);
 
-    public void run(Configuration fusionSpec, List<String> rdfProperties) {
+    public void run(Configuration configuration, List<String> rdfProperties) {
 
         //word frequencies using the RDF properties from file
         int topK = 0; //topK zero and negative values return the complete list
 
         //Frequent terms
         FileFrequencyCounter termFrequency = new FileFrequencyCounter(topK);
-        termFrequency.setLocale(fusionSpec.getLocale());
+        termFrequency.setLocale(configuration.getLocale());
 
         termFrequency.setProperties(rdfProperties);
 
-        termFrequency.export(fusionSpec.getPathDatasetA(), EnumDataset.LEFT);
+        termFrequency.export(configuration.getPathDatasetA(), EnumDataset.LEFT);
         
-        termFrequency.export(fusionSpec.getPathDatasetB(), EnumDataset.RIGHT);
+        termFrequency.export(configuration.getPathDatasetB(), EnumDataset.RIGHT);
 
-        if (!StringUtils.isBlank(fusionSpec.getCategoriesA())) {
+        if (!StringUtils.isBlank(configuration.getCategoriesA())) {
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
-            frequencyExtractor.extract(topK, fusionSpec.getCategoriesA(), LeftDataset.getLeftDataset().getModel(),
-                    fusionSpec.getOutputDir(), fusionSpec.getLocale(), EnumDataset.LEFT);
+            frequencyExtractor.extract(topK, configuration.getCategoriesA(), LeftDataset.getLeftDataset().getModel(),
+                    configuration.getOutputDir(), configuration.getLocale(), EnumDataset.LEFT);
         }
 
-        if (!StringUtils.isBlank(fusionSpec.getCategoriesB())) {
+        if (!StringUtils.isBlank(configuration.getCategoriesB())) {
 
             FrequencyExtractor frequencyExtractor = new FrequencyExtractor();
-            frequencyExtractor.extract(topK, fusionSpec.getCategoriesB(), RightDataset.getRightDataset().getModel(),
-                    fusionSpec.getOutputDir(), fusionSpec.getLocale(), EnumDataset.RIGHT);
+            frequencyExtractor.extract(topK, configuration.getCategoriesB(), RightDataset.getRightDataset().getModel(),
+                    configuration.getOutputDir(), configuration.getLocale(), EnumDataset.RIGHT);
         }
     }
 }

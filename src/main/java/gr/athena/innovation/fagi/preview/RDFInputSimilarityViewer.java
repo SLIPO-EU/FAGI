@@ -38,11 +38,11 @@ import org.apache.logging.log4j.Logger;
 public class RDFInputSimilarityViewer {
 
     private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
-    private final Configuration fusionSpecification;
+    private final Configuration configuration;
 
     public RDFInputSimilarityViewer() {
 
-        this.fusionSpecification = Configuration.getInstance();
+        this.configuration = Configuration.getInstance();
     }
 
     public void printRDFSimilarityResults(List<String> rdfProperties) throws ParseException, IOException {
@@ -61,7 +61,7 @@ public class RDFInputSimilarityViewer {
                 filename = "_" + index;
             }
 
-            propertyPath = fusionSpecification.getOutputDir() + "similarityMetrics/" + filename + ".txt";
+            propertyPath = configuration.getOutputDir() + "similarityMetrics/" + filename + ".txt";
 
             File file = new File(propertyPath);
             if (file.exists()) {
@@ -86,8 +86,8 @@ public class RDFInputSimilarityViewer {
         try (BufferedWriter output = new BufferedWriter(new FileWriter(propertyPath, true))) {
             for (Link link : links.getLinks()) {
 
-                Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpecification.getOptionalDepth());
-                Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpecification.getOptionalDepth());
+                Model modelA = constructEntityDataModel(link.getNodeA(), left, configuration.getOptionalDepth());
+                Model modelB = constructEntityDataModel(link.getNodeB(), right, configuration.getOptionalDepth());
 
                 String literalA = SparqlRepository.getObjectOfProperty(rdfProperty, modelA);
                 String literalB = SparqlRepository.getObjectOfProperty(rdfProperty, modelB);

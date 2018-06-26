@@ -35,18 +35,18 @@ import org.apache.logging.log4j.Logger;
 public class SimilarityCalculator {
 
     private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
-    private final Configuration fusionSpecification;
+    private final Configuration configuration;
 
-    public SimilarityCalculator(Configuration fusionSpecification) {
+    public SimilarityCalculator(Configuration configuration) {
 
-        this.fusionSpecification = fusionSpecification;
+        this.configuration = configuration;
     }
 
     public void calculateCSVPairSimilarities(String path, String outputPath, String propertName){
         String csvFile = path;
         String line;
         String cvsSplitBy = "\\^";
-        Locale locale = fusionSpecification.getLocale();
+        Locale locale = configuration.getLocale();
         
         BufferedWriter namesWriter = null;
         try {

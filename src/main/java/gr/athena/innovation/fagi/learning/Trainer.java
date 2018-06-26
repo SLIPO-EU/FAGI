@@ -21,10 +21,10 @@ import java.util.Set;
  */
 public class Trainer {
 
-    private final Configuration fusionSpecification;
+    private final Configuration configuration;
     
-    public Trainer(Configuration fusionSpecification){
-        this.fusionSpecification = fusionSpecification;
+    public Trainer(Configuration configuration){
+        this.configuration = configuration;
     }
     
     public void train() throws FileNotFoundException{
@@ -124,7 +124,7 @@ public class Trainer {
     private WeightedPairLiteral getWeightedPair(String a, String b) throws IOException{
         
         //override locale if needed
-        Locale locale = fusionSpecification.getLocale();
+        Locale locale = configuration.getLocale();
         
         //Load resources
         ResourceFileLoader resourceFileLoader = new ResourceFileLoader();

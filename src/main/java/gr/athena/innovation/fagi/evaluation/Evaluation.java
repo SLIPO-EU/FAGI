@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class Evaluation {
     
-    public void run(Configuration fusionSpec, String csvPath){
+    public void run(Configuration configuration, String csvPath){
 
             //on version change, all weights update (along with notes)
             String version = "v2.2a";
@@ -38,10 +38,10 @@ public class Evaluation {
                 resultsPath = resultsPath + "/";
             }
 
-            SimilarityCalculator similarityCalculator = new SimilarityCalculator(fusionSpec);
+            SimilarityCalculator similarityCalculator = new SimilarityCalculator(configuration);
             similarityCalculator.calculateCSVPairSimilarities(csvPath, resultsPath, nameSimilarities);
 
-            MetricProcessor metricProcessor = new MetricProcessor(fusionSpec);
+            MetricProcessor metricProcessor = new MetricProcessor(configuration);
             
             try {
                 

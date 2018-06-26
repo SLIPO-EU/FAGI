@@ -49,7 +49,7 @@ public class RuleProcessor {
      * The rules are parsed and modeled in memory as follows: Rule | ActionRule | Condition | Expression
      *
      * @param path of the rules XML file.
-     * @return The <code>RuleCatalog</code> object that holds the rules configuration.
+     * @return The <code>RuleSpecification</code> object that holds the rules configuration.
      * 
      * @throws ParserConfigurationException indicates a configuration error.
      * @throws SAXException encapsulates a general SAX error or warning.
@@ -58,7 +58,7 @@ public class RuleProcessor {
      */
     public RuleSpecification parseRules(String path) throws ParserConfigurationException, SAXException, IOException, WrongInputException {
         
-        RuleSpecification ruleCatalog = new RuleSpecification();
+        RuleSpecification ruleSpec = new RuleSpecification();
 
         LOG.info("Parsing rules: " + path);
 
@@ -75,7 +75,7 @@ public class RuleProcessor {
         if (defaultDatasetAction.getLength() == 1) {
             Node datasetActionNode = defaultDatasetAction.item(0);
             EnumDatasetAction datasetAction = EnumDatasetAction.fromString(datasetActionNode.getTextContent());
-            ruleCatalog.setDefaultDatasetAction(datasetAction);
+            ruleSpec.setDefaultDatasetAction(datasetAction);
             if (datasetAction.equals(EnumDatasetAction.UNDEFINED)) {
                 throw new WrongInputException("<" + SpecificationConstants.Rule.DEFAULT_DATASET_ACTION + "> tag not found in rules.xml file.");
             }
@@ -90,7 +90,7 @@ public class RuleProcessor {
             Node ruleNode = rules.item(temp);
             NodeList ruleNodeList = ruleNode.getChildNodes();
             Rule rule = createRule(ruleNodeList, false);
-            ruleCatalog.addItem(rule);
+            ruleSpec.addItem(rule);
 
         }
         
@@ -101,11 +101,11 @@ public class RuleProcessor {
             Node validationRulesNode = validationRules.item(temp);
             NodeList validationRuleNodeList = validationRulesNode.getChildNodes();
             Rule validationRule = createRule(validationRuleNodeList, true);
-            ruleCatalog.addValidationItem(validationRule);
+            ruleSpec.addValidationItem(validationRule);
 
         }
         
-        return ruleCatalog;
+        return ruleSpec;
     }
 
     /*

@@ -96,20 +96,20 @@ public class FagiInstance {
 
         //Parse specification and rules
         SpecificationParser specificationParser = new SpecificationParser();
-        Configuration fusionSpec = specificationParser.parse(specXml);
+        Configuration configuration = specificationParser.parse(specXml);
         
-        if (!validator.isValidRulesWithXSD(fusionSpec.getRulesPath())) {
+        if (!validator.isValidRulesWithXSD(configuration.getRulesPath())) {
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
         
-        if (!validator.isValidFunctions(fusionSpec.getRulesPath())) {
+        if (!validator.isValidFunctions(configuration.getRulesPath())) {
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
 
         //validate output filepath:
-        if(!validator.isValidOutputDirPath(fusionSpec.getOutputDir())){
+        if(!validator.isValidOutputDirPath(configuration.getOutputDir())){
             LOG.info("Please specify a file output in specification.");
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
@@ -118,8 +118,8 @@ public class FagiInstance {
         LOG.info("XML files seem syntactically valid.");
         
         RuleProcessor ruleProcessor = new RuleProcessor();
-        RuleSpecification ruleCatalog = ruleProcessor.parseRules(fusionSpec.getRulesPath());
-        ruleCatalog.setFunctionRegistry(functionRegistry);
+        RuleSpecification ruleSpec = ruleProcessor.parseRules(configuration.getRulesPath());
+        ruleSpec.setFunctionRegistry(functionRegistry);
 
         long stopTimeInput = System.currentTimeMillis();
 
@@ -127,9 +127,9 @@ public class FagiInstance {
         long startTimeReadFiles = System.currentTimeMillis();
 
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
-        genericRDFRepository.parseLeft(fusionSpec.getPathDatasetA());
-        genericRDFRepository.parseRight(fusionSpec.getPathDatasetB());
-        genericRDFRepository.parseLinks(fusionSpec.getPathLinks());
+        genericRDFRepository.parseLeft(configuration.getPathDatasetA());
+        genericRDFRepository.parseRight(configuration.getPathDatasetB());
+        genericRDFRepository.parseLinks(configuration.getPathLinks());
 
         AmbiguousDataset.getAmbiguousDataset().getModel();
         
@@ -143,14 +143,14 @@ public class FagiInstance {
         Map<String, String> codes = resourceFileLoader.getExitCodes();
 
         AbbreviationAndAcronymResolver.setKnownAbbreviationsAndAcronyms(knownAbbreviations);
-        AbbreviationAndAcronymResolver.setLocale(fusionSpec.getLocale());
+        AbbreviationAndAcronymResolver.setLocale(configuration.getLocale());
         TermResolver.setTerms(specialTerms);
         CallingCodeResolver.setCodes(codes);
 
         if(exportFrequencies){
             LOG.info("Exporting frequencies...");
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
-            freqProcess.run(fusionSpec, rdfProperties);
+            freqProcess.run(configuration, rdfProperties);
         }
 
         long startTimeComputeStatistics = System.currentTimeMillis(); 
@@ -167,7 +167,7 @@ public class FagiInstance {
                         + Namespace.SOURCE + " property that is being used to count the entities."); 
             }
 
-            exporter.exportStatistics(container.toJsonMap(), fusionSpec.getStatsFilepath());
+            exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
         }
         
         long stopTimeComputeStatistics = System.currentTimeMillis();
@@ -191,13 +191,13 @@ public class FagiInstance {
             LOG.info("Running evaluation...");
             Evaluation evaluation = new Evaluation();
             String csvPath = "";
-            evaluation.run(fusionSpec, csvPath);
+            evaluation.run(configuration, csvPath);
 
         }
 
         if(train){
             LOG.info("Training...");
-            Trainer trainer = new Trainer(fusionSpec);
+            Trainer trainer = new Trainer(configuration);
             trainer.train();
         }
 
@@ -210,7 +210,7 @@ public class FagiInstance {
             Fuser fuser = new Fuser();
             Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
 
-            List<LinkedPair> fusedEntities = fuser.fuseAll(fusionSpec, ruleCatalog, functionRegistryMap);
+            List<LinkedPair> fusedEntities = fuser.fuseAll(configuration, ruleSpec, functionRegistryMap);
 
             long stopTimeFusion = System.currentTimeMillis();
 
@@ -218,11 +218,11 @@ public class FagiInstance {
             long startTimeWrite = System.currentTimeMillis();
 
             LOG.info("Writing results...");
-            fuser.combineFusedAndWrite(fusionSpec, fusedEntities, ruleCatalog.getDefaultDatasetAction());
+            fuser.combineFusedAndWrite(configuration, fusedEntities, ruleSpec.getDefaultDatasetAction());
 
             long stopTimeWrite = System.currentTimeMillis();
 
-            LOG.info(fusionSpec.toString());
+            LOG.info(configuration.toString());
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
             LOG.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()

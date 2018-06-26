@@ -59,12 +59,12 @@ public class Fuser implements IFuser{
     /**
      * Fuses all links using the Rules defined in the XML file.
      * 
-     * @param fusionSpec The fusion specification object.
-     * @param ruleCatalog The rule catalog object.
+     * @param configuration The configuration object.
+     * @param ruleSpec The rule specification object.
      * @param functionMap The map containing the available functions.
      */
     @Override
-    public List<LinkedPair> fuseAll(Configuration fusionSpec, RuleSpecification ruleCatalog, 
+    public List<LinkedPair> fuseAll(Configuration configuration, RuleSpecification ruleSpec, 
             Map<String, IFunction> functionMap) throws WrongInputException{
 
         List<LinkedPair> fusedList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class Fuser implements IFuser{
         Model right = RightDataset.getRightDataset().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
-        EnumOutputMode mode = fusionSpec.getOutputMode();
+        EnumOutputMode mode = configuration.getOutputMode();
 
         for (Link link : links.getLinks()){
 
@@ -83,8 +83,8 @@ public class Fuser implements IFuser{
             linkedPair.setLink(link);
 
             //create the jena models for each node of the pair and remove them from the source models.
-            Model modelA = constructEntityDataModel(link.getNodeA(), left, fusionSpec.getOptionalDepth());
-            Model modelB = constructEntityDataModel(link.getNodeB(), right, fusionSpec.getOptionalDepth());
+            Model modelA = constructEntityDataModel(link.getNodeA(), left, configuration.getOptionalDepth());
+            Model modelB = constructEntityDataModel(link.getNodeB(), right, configuration.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
@@ -103,7 +103,7 @@ public class Fuser implements IFuser{
             linkedPair.setRightNode(entityB);
 
             /* VALIDATION */
-            EnumValidationAction validation = linkedPair.validateLink(ruleCatalog.getValidationRules(), functionMap);
+            EnumValidationAction validation = linkedPair.validateLink(ruleSpec.getValidationRules(), functionMap);
 
             Entity newFusedEntity = new Entity();
 
@@ -116,7 +116,7 @@ public class Fuser implements IFuser{
             linkedPair.setFusedEntity(newFusedEntity);
 
             /* FUSION */
-            linkedPair.fusePair(ruleCatalog, functionMap, validation);
+            linkedPair.fusePair(ruleSpec, functionMap, validation);
 
             fusedList.add(linkedPair);
 
@@ -133,25 +133,25 @@ public class Fuser implements IFuser{
      * Produces the output result by creating a new graph to the specified output 
      * or combines the fused entities with the source datasets based on the fusion mode.
      * 
-     * @param fusionSpecification The fusion specification object.
+     * @param configuration The configuration object.
      * @param fusedEntities The list with fused <code>LinkedPair</code> objects. 
      * @param defaultDatasetAction the default dataset action enumeration.
      * @throws FileNotFoundException Thrown when file was not found.
      */
-    public void combineFusedAndWrite(Configuration fusionSpecification, 
+    public void combineFusedAndWrite(Configuration configuration, 
             List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
                     throws FileNotFoundException, IOException{
 
-        String fused = fusionSpecification.getFused();
-        String remaining = fusionSpecification.getRemaining();
-        //String outputPathC = fusionSpecification.getFileC();
-        String ambiguous = fusionSpecification.getAmbiguousDatasetFilepath();
+        String fused = configuration.getFused();
+        String remaining = configuration.getRemaining();
+        //String outputPathC = configuration.getFileC();
+        String ambiguous = configuration.getAmbiguousDatasetFilepath();
 
         OutputStream fusedStream = new FileOutputStream(fused, false);
         OutputStream remainingStream = new FileOutputStream(remaining, false);
         OutputStream ambiguousStream = new FileOutputStream(ambiguous, false);
 
-        EnumOutputMode mode = fusionSpecification.getOutputMode();
+        EnumOutputMode mode = configuration.getOutputMode();
 
         switch(mode) {
             case AA_MODE:
@@ -167,7 +167,7 @@ public class Fuser implements IFuser{
                     leftModel.add(fusedDataModel);
                 }
 
-                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, configuration.getOutputRDFFormat());
 
                 addMessageToEmptyOutput(remaining);
 
@@ -185,7 +185,7 @@ public class Fuser implements IFuser{
                     rightModel.add(fusedModel);
                 }
 
-                rightModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                rightModel.write(fusedStream, configuration.getOutputRDFFormat());
 
                 addMessageToEmptyOutput(remaining);
 
@@ -203,7 +203,7 @@ public class Fuser implements IFuser{
                     newModel.add(fusedModel);
                 }
 
-                newModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                newModel.write(fusedStream, configuration.getOutputRDFFormat());
 
                 break; 
             }
@@ -222,7 +222,7 @@ public class Fuser implements IFuser{
 
                 }
 
-                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, configuration.getOutputRDFFormat());
                 
                 addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
                 
@@ -245,7 +245,7 @@ public class Fuser implements IFuser{
                     rightLocalNames.add(localName);
                 }
 
-                leftModel.write(remainingStream, fusionSpecification.getOutputRDFFormat());   
+                leftModel.write(remainingStream, configuration.getOutputRDFFormat());   
 
                 addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
                 
@@ -270,7 +270,7 @@ public class Fuser implements IFuser{
 
                 }
 
-                leftModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                leftModel.write(fusedStream, configuration.getOutputRDFFormat());
 
                 removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
 
@@ -293,7 +293,7 @@ public class Fuser implements IFuser{
                     
                 }
 
-                rightModel.write(fusedStream, fusionSpecification.getOutputRDFFormat());
+                rightModel.write(fusedStream, configuration.getOutputRDFFormat());
 
                 removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, remaining);
 
@@ -308,7 +308,7 @@ public class Fuser implements IFuser{
         if(ambiguousModel.isEmpty()){
             addMessageToEmptyOutput(ambiguous);
         } else {
-            ambiguousModel.write(ambiguousStream, fusionSpecification.getOutputRDFFormat());
+            ambiguousModel.write(ambiguousStream, configuration.getOutputRDFFormat());
         }
     }
     

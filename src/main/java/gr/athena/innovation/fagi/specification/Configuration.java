@@ -17,7 +17,7 @@ public class Configuration {
     
     private static final Logger LOG = LogManager.getLogger(Configuration.class);
     
-    private static Configuration fusionSpecification;
+    private static Configuration configuration;
     
     private String idA;
     private String endpointA;
@@ -58,11 +58,11 @@ public class Configuration {
 
     public static Configuration getInstance() throws ApplicationException {
         //lazy init
-        if (fusionSpecification == null) {
-            fusionSpecification = new Configuration();
+        if (configuration == null) {
+            configuration = new Configuration();
         }
 
-        return fusionSpecification;
+        return configuration;
     }
     
     public void setPathDatasetA(String pathDatasetA) throws WrongInputException {
@@ -367,7 +367,7 @@ public class Configuration {
   
     @Override
     public String toString() {
-        return "\nFusionSpecification{" + 
+        return "\nconfiguration{" + 
                     "\n rulesPath=" + rulesPath +                 
                     "\n idA=" + idA + 
                     //"\n endpointA=" + endpointA + 
