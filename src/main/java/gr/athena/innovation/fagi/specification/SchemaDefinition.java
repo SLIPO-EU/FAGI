@@ -6,7 +6,7 @@ package gr.athena.innovation.fagi.specification;
  * @author nkarag
  */
 public class SchemaDefinition {
-    public static final String SPEC_XSD = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+    public static final String CONFIG_XSD = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
 "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
 "<xs:element name=\"specification\">	\n" +
 "  <xs:complexType>\n" +

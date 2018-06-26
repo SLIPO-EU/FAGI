@@ -23,9 +23,9 @@ import org.xml.sax.SAXException;
  * 
  * @author nkarag
  */
-public class SpecificationParser {
+public class ConfigurationParser {
 
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SpecificationParser.class);
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(ConfigurationParser.class);
 
     /**
      * Parses the specification XML and produces a configuration object.

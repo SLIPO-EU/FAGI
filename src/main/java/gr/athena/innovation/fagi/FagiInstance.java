@@ -24,7 +24,7 @@ import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.rule.RuleProcessor;
 import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
-import gr.athena.innovation.fagi.specification.SpecificationParser;
+import gr.athena.innovation.fagi.specification.ConfigurationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import gr.athena.innovation.fagi.specification.Namespace;
@@ -47,7 +47,7 @@ import org.xml.sax.SAXException;
 public class FagiInstance {
 
     private static final Logger LOG = LogManager.getLogger(FagiInstance.class);
-    private final String specXml;
+    private final String config;
 
     private final boolean runEvaluation = false;
     private final boolean exportFrequencies = false;
@@ -59,10 +59,10 @@ public class FagiInstance {
     /**
      * FagiInstance Constructor. Expects absolute paths of specification XML and rules XML.
      * 
-     * @param specXml The path of the specification file.
+     * @param config The path of the specification file.
      */
-    public FagiInstance(String specXml) {
-        this.specXml = specXml;
+    public FagiInstance(String config) {
+        this.config = config;
     }
 
     /**
@@ -85,18 +85,18 @@ public class FagiInstance {
         functionRegistry.init();
         Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
 
-        InputValidator validator = new InputValidator(specXml, functionSet);
+        InputValidator validator = new InputValidator(config, functionSet);
 
         LOG.info("Validating input..");
         
-        if (!validator.isValidSpecWithXSD()) {
+        if (!validator.isValidConfigurationXSD()) {
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
         }
 
         //Parse specification and rules
-        SpecificationParser specificationParser = new SpecificationParser();
-        Configuration configuration = specificationParser.parse(specXml);
+        ConfigurationParser configurationParser = new ConfigurationParser();
+        Configuration configuration = configurationParser.parse(config);
         
         if (!validator.isValidRulesWithXSD(configuration.getRulesPath())) {
             LOG.info(SpecificationConstants.HELP);
@@ -218,7 +218,7 @@ public class FagiInstance {
             long startTimeWrite = System.currentTimeMillis();
 
             LOG.info("Writing results...");
-            fuser.combineFusedAndWrite(configuration, fusedEntities, ruleSpec.getDefaultDatasetAction());
+            fuser.combine(configuration, fusedEntities, ruleSpec.getDefaultDatasetAction());
 
             long stopTimeWrite = System.currentTimeMillis();
 

@@ -31,17 +31,14 @@ import org.xml.sax.SAXException;
 public class InputValidator {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(InputValidator.class);
-    
-    //private final String rulesXmlPath;
-    private final String specXmlPath;
+
+    private final String configurationPath;
     private final Set<String> functionSet;
     
     private final XmlValidator xmlValidator = new XmlValidator();
     
-    public InputValidator(String specificationPath, Set<String> functionSet){
-        
-        //this.rulesXmlPath = rulesXmlPath;
-        this.specXmlPath = specificationPath;
+    public InputValidator(String configurationPath, Set<String> functionSet){
+        this.configurationPath = configurationPath;
         this.functionSet = functionSet;
     }
     
@@ -53,13 +50,12 @@ public class InputValidator {
         public boolean validateAgainstXSD(String xmlPath, String xsd) throws FileNotFoundException {
 
             InputStream xml = new FileInputStream(xmlPath);
-
-            Source is = new StreamSource(new StringReader(xsd));
+            Source inputStream = new StreamSource(new StringReader(xsd));
 
             try {
 
                 SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                Schema schema = factory.newSchema(is);
+                Schema schema = factory.newSchema(inputStream);
                 Validator validator = schema.newValidator();
                 validator.validate(new StreamSource(xml));
 
@@ -76,10 +72,10 @@ public class InputValidator {
         }    
     }
 
-    public boolean isValidSpecWithXSD() {
+    public boolean isValidConfigurationXSD() {
         boolean isValid;
         try {
-            isValid = isValidSpecification();
+            isValid = isValidConfiguration();
             
         } catch (FileNotFoundException ex) {
             LOG.fatal("Input is not valid! " + ex);
@@ -106,8 +102,8 @@ public class InputValidator {
         return xmlValidator.validateAgainstXSD(rulesXmlPath, SchemaDefinition.RULE_XSD);
     }
     
-    private boolean isValidSpecification() throws FileNotFoundException{
-        return xmlValidator.validateAgainstXSD(specXmlPath, SchemaDefinition.SPEC_XSD);
+    private boolean isValidConfiguration() throws FileNotFoundException{
+        return xmlValidator.validateAgainstXSD(configurationPath, SchemaDefinition.CONFIG_XSD);
     }
     
     public boolean isValidFunctions(String rulesXmlPath) throws ParserConfigurationException, SAXException, IOException{

@@ -28,7 +28,7 @@ public class Fagi {
      */
     public static void main(String[] args) {
 
-        String specXml = null;
+        String config = null;
 
         String arg;
         String value;
@@ -45,7 +45,7 @@ public class Fagi {
             }
             value = args[i + 1];
             if (arg.equals("-spec")) {
-                specXml = value;
+                config = value;
                 break;
             }
             i++;
@@ -53,7 +53,7 @@ public class Fagi {
 
         try {
 
-            FagiInstance fagi = new FagiInstance(specXml);
+            FagiInstance fagi = new FagiInstance(config);
 
             fagi.run();
 
