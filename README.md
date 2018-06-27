@@ -257,3 +257,5 @@ A sample rules.xml file could look like this:
 | keep-right | Both | Keeps the value of the right source entity in the fused model.
 | keep-both | Both | Keeps both values of the source entities in the fused model.
 
+Full project documentation is available <a href="https://slipo-eu.github.io/FAGI/index.html" target="_blank">here</a>  and javadocs available <a href="https://slipo-eu.github.io/FAGI/apidocs/index.html" target="_blank">here</a>.
+
