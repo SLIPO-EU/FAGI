@@ -131,27 +131,27 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
             pair.setLabel("Could not compute");
-            map.put("totalPOIs", pair);
+            map.put(EnumStat.TOTAL_POIS.getKey(), pair);
             return pair;
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel("Total POIs");
+        pair.setLabel(EnumStat.TOTAL_POIS.toString());
 
-        map.put("totalPOIs", pair);
+        map.put(EnumStat.TOTAL_POIS.getKey(), pair);
 
         return pair;
     }
-    
+
     public StatisticResultPair countTriples(Model a, Model b){
 
         Long totalA = a.size();
         Long totalB = b.size();
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel("Total triples");
+        pair.setLabel(EnumStat.TOTAL_TRIPLES.toString());
 
-        map.put("totalTriples", pair);
+        map.put(EnumStat.TOTAL_TRIPLES.getKey(), pair);
         return pair;
     }
     

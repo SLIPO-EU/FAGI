@@ -107,12 +107,12 @@ public enum EnumDatasetAction {
     
     @Override
     public String toString() {
-      switch(this) {
-        case UNDEFINED: return "undefined";
-        case KEEP_LEFT: return "keep-left";
-        case KEEP_RIGHT: return "keep-right";
-        case KEEP_BOTH: return "keep-both";
-        default: throw new IllegalArgumentException();
-      }
+        switch(this) {
+            case UNDEFINED: return "undefined";
+            case KEEP_LEFT: return "keep-left";
+            case KEEP_RIGHT: return "keep-right";
+            case KEEP_BOTH: return "keep-both";
+            default: throw new IllegalArgumentException();
+        }
     }    
 }

@@ -149,7 +149,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTriples(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("23", "26", null);
-        expResult.setLabel("Total triples");
+        expResult.setLabel(EnumStat.TOTAL_TRIPLES.toString());
         assertEquals(expResult, result);
     } 
     
@@ -161,7 +161,7 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countTotalEntities");
         
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setLabel("Total POIs");
+        expResult.setLabel(EnumStat.TOTAL_POIS.toString());
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTotalEntities(modelA, modelB);

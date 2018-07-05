@@ -237,6 +237,78 @@ public class FagiInstance {
         }
     }
 
+    public String computeStatistics() throws WrongInputException, ParserConfigurationException, SAXException, IOException, ParseException{
+        
+        long startTimeInput = System.currentTimeMillis();
+        
+        //Validate input
+        FunctionRegistry functionRegistry = new FunctionRegistry();
+        functionRegistry.init();
+        Set<String> functionSet = functionRegistry.getFunctionMap().keySet();
+
+        InputValidator validator = new InputValidator(config, functionSet);
+
+        LOG.info("Validating input..");
+        
+        if (!validator.isValidConfigurationXSD()) {
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+
+        //Parse specification and rules
+        ConfigurationParser configurationParser = new ConfigurationParser();
+        Configuration configuration = configurationParser.parse(config);
+        
+        if (!validator.isValidRulesWithXSD(configuration.getRulesPath())) {
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+        
+        if (!validator.isValidFunctions(configuration.getRulesPath())) {
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+
+        //validate output filepath:
+        if(!validator.isValidOutputDirPath(configuration.getOutputDir())){
+            LOG.info("Please specify a file output in specification.");
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
+        }
+
+        LOG.info("XML files seem syntactically valid.");
+
+        System.out.println("system good");
+        LOG.info("loger good");
+        
+        long stopTimeInput = System.currentTimeMillis();
+
+        //Load datasets
+        long startTimeReadFiles = System.currentTimeMillis();
+
+        AbstractRepository genericRDFRepository = new GenericRDFRepository();
+        genericRDFRepository.parseLeft(configuration.getPathDatasetA());
+        genericRDFRepository.parseRight(configuration.getPathDatasetB());
+        genericRDFRepository.parseLinks(configuration.getPathLinks());
+        
+        //todo: enumMap for stats
+        
+        LOG.info("Calculating statistics...");
+
+        StatisticsCollector collector = new RDFStatisticsCollector();
+        StatisticsContainer container = collector.collect();
+
+        if(!container.isValid() && !container.isComplete()){
+            LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
+                    + Namespace.SOURCE + " property that is being used to count the entities."); 
+        }
+
+        LOG.info(container.toJsonMap());
+        
+        return container.toJsonMap();
+
+    }
+    
     public static String getFormattedTime(long millis) {
         String time = String.format("%02d min, %02d sec", 
             TimeUnit.MILLISECONDS.toMinutes(millis),
