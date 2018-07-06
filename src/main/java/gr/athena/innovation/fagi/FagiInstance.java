@@ -237,7 +237,8 @@ public class FagiInstance {
         }
     }
 
-    public String computeStatistics() throws WrongInputException, ParserConfigurationException, SAXException, IOException, ParseException{
+    public String computeStatistics(List<String> selected) 
+            throws WrongInputException, ParserConfigurationException, SAXException, IOException, ParseException{
         
         long startTimeInput = System.currentTimeMillis();
         
@@ -277,9 +278,6 @@ public class FagiInstance {
         }
 
         LOG.info("XML files seem syntactically valid.");
-
-        System.out.println("system good");
-        LOG.info("loger good");
         
         long stopTimeInput = System.currentTimeMillis();
 
@@ -290,13 +288,13 @@ public class FagiInstance {
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
         genericRDFRepository.parseLinks(configuration.getPathLinks());
-        
+
         //todo: enumMap for stats
-        
+
         LOG.info("Calculating statistics...");
 
         StatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticsContainer container = collector.collect();
+        StatisticsContainer container = collector.collect(selected);
 
         if(!container.isValid() && !container.isComplete()){
             LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
@@ -304,9 +302,8 @@ public class FagiInstance {
         }
 
         LOG.info(container.toJsonMap());
-        
-        return container.toJsonMap();
 
+        return container.toJsonMap();
     }
     
     public static String getFormattedTime(long millis) {

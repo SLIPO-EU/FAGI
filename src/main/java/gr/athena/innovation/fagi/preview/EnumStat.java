@@ -94,5 +94,32 @@ public enum EnumStat {
             case TOTAL_TRIPLES: return "Total number of triples in each input dataset.";
             default: throw new IllegalArgumentException();
         }
-    }  
+    }
+
+    public String getLegendTotal() {
+        switch(this) {
+            case UNDEFINED: return "undefined";
+            case TOTAL_POIS: return "Total POIs";
+            case TOTAL_TRIPLES: return "Total Triples";
+            default: throw new IllegalArgumentException();
+        }
+    } 
+    
+    public String getLegendA() {
+        switch(this) {
+            case UNDEFINED: return "undefined";
+            case TOTAL_POIS: return "Number of POIs in A.";
+            case TOTAL_TRIPLES: return "Number of triples in A.";
+            default: throw new IllegalArgumentException();
+        }
+    }
+    
+    public String getLegendB() {
+        switch(this) {
+            case UNDEFINED: return "undefined";
+            case TOTAL_POIS: return "Number of POIs in B.";
+            case TOTAL_TRIPLES: return "Number of triples in B.";
+            default: throw new IllegalArgumentException();
+        }
+    }      
 }

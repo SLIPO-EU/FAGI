@@ -12,24 +12,30 @@ import java.util.Objects;
 @JsonInclude(Include.NON_NULL)
 public class StatisticResultPair implements Serializable{
 
-    private final String a;
-    private final String b;
+    private EnumStatViewType type;
+    
+    private final String valueA;
+    private final String valueB;
+    private String valueTotal;
+    private String legendA;
+    private String legendB;
+    private String legendTotal;
     private final String both;
-    private String label;
+    private String title;
 
     public StatisticResultPair(String a, String b, String both) {
-        this.a = a;
-        this.b = b;
+        this.valueA = a;
+        this.valueB = b;
         this.both = both;
     }
     
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 11 * hash + Objects.hashCode(this.a);
-        hash = 11 * hash + Objects.hashCode(this.b);
+        hash = 11 * hash + Objects.hashCode(this.valueA);
+        hash = 11 * hash + Objects.hashCode(this.valueB);
         hash = 11 * hash + Objects.hashCode(this.both);
-        hash = 11 * hash + Objects.hashCode(this.label);
+        hash = 11 * hash + Objects.hashCode(this.title);
         return hash;
     }
 
@@ -45,16 +51,16 @@ public class StatisticResultPair implements Serializable{
             return false;
         }
         final StatisticResultPair other = (StatisticResultPair) obj;
-        if (!Objects.equals(this.a, other.a)) {
+        if (!Objects.equals(this.valueA, other.valueA)) {
             return false;
         }
-        if (!Objects.equals(this.b, other.b)) {
+        if (!Objects.equals(this.valueB, other.valueB)) {
             return false;
         }
         if (!Objects.equals(this.both, other.both)) {
             return false;
         }
-        if (!Objects.equals(this.label, other.label)) {
+        if (!Objects.equals(this.title, other.title)) {
             return false;
         }
         return true;
@@ -62,26 +68,66 @@ public class StatisticResultPair implements Serializable{
 
     @Override
     public String toString() {
-        return "StatisticResultPair{" + "a=" + a + ", b=" + b + ", both=" + both + ", label=" + label + '}';
+        return "StatisticResultPair{" + "a=" + valueA + ", b=" + valueB + ", both=" + both + ", label=" + title + '}';
     }
 
-    public String getA() {
-        return a;
+    public String getValueA() {
+        return valueA;
     }
 
-    public String getB() {
-        return b;
+    public String getValueB() {
+        return valueB;
     }
 
-    public String getLabel() {
-        return label;
+    public String getTitle() {
+        return title;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getBoth() {
         return both;
+    }
+
+    public EnumStatViewType getType() {
+        return type;
+    }
+
+    public void setType(EnumStatViewType type) {
+        this.type = type;
+    }
+
+    public String getLegendA() {
+        return legendA;
+    }
+
+    public void setLegendA(String legendA) {
+        this.legendA = legendA;
+    }
+
+    public String getLegendB() {
+        return legendB;
+    }
+
+    public void setLegendB(String legendB) {
+        this.legendB = legendB;
+    }
+
+    public String getLegendTotal() {
+        return legendTotal;
+    }
+
+    public void setLegendTotal(String legendTotal) {
+        this.legendTotal = legendTotal;
+    }
+
+    public String getValueTotal() {
+        return valueTotal;
+    }
+
+    public void setValueTotal(String valueTotal) {
+        this.valueTotal = valueTotal;
     }
 }

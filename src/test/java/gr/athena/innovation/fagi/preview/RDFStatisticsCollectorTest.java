@@ -149,7 +149,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTriples(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("23", "26", null);
-        expResult.setLabel(EnumStat.TOTAL_TRIPLES.toString());
+        expResult.setTitle(EnumStat.TOTAL_TRIPLES.toString());
         assertEquals(expResult, result);
     } 
     
@@ -161,7 +161,7 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countTotalEntities");
         
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setLabel(EnumStat.TOTAL_POIS.toString());
+        expResult.setTitle(EnumStat.TOTAL_POIS.toString());
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTotalEntities(modelA, modelB);
@@ -180,7 +180,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyNames(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setLabel("Non empty Names");
+        expResult.setTitle("Non empty Names");
         
         assertEquals(expResult, result);
     }    
@@ -195,7 +195,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyPhones(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("1", "0", null);
-        expResult.setLabel("Non empty Phones");
+        expResult.setTitle("Non empty Phones");
         
         assertEquals(expResult, result);
     }
@@ -210,7 +210,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyStreets(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setLabel("Non empty Streets");
+        expResult.setTitle("Non empty Streets");
         
         assertEquals(expResult, result);
     }
@@ -225,7 +225,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyStreetNumbers(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setLabel("Non empty Street Numbers");
+        expResult.setTitle("Non empty Street Numbers");
         
         assertEquals(expResult, result);
     }
@@ -240,7 +240,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyWebsites(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setLabel("Non empty Websites");
+        expResult.setTitle("Non empty Websites");
         
         assertEquals(expResult, result);
     }
@@ -255,7 +255,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyEmails(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("1", "0", null);
-        expResult.setLabel("Non empty Emails");
+        expResult.setTitle("Non empty Emails");
         
         assertEquals(expResult, result);
     }    
@@ -269,7 +269,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countNonEmptyDates(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setLabel("Non empty Dates");
+        expResult.setTitle("Non empty Dates");
         
         assertEquals(expResult, result);
     }
@@ -286,13 +286,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("2", "2", null);
-        stat.setLabel("Non empty Names");
+        stat.setTitle("Non empty Names");
         
         collector.getMap().put("nonEmptyNames", stat);
         
         StatisticResultPair result = collector.countEmptyNames();
         StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setLabel("Empty Names");
+        expResult.setTitle("Empty Names");
         
         assertEquals(expResult, result);
     }
@@ -309,13 +309,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("1", "0", null);
-        stat.setLabel("Non empty Phones");
+        stat.setTitle("Non empty Phones");
         
         collector.getMap().put("nonEmptyPhones", stat);
         
         StatisticResultPair result = collector.countEmptyPhones();
         StatisticResultPair expResult = new StatisticResultPair("1", "2", null);
-        expResult.setLabel("Empty Phones");
+        expResult.setTitle("Empty Phones");
         
         assertEquals(expResult, result);
     }
@@ -332,13 +332,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "1", null);
-        stat.setLabel("Non empty Streets");
+        stat.setTitle("Non empty Streets");
         
         collector.getMap().put("nonEmptyStreets", stat);
         
         StatisticResultPair result = collector.countEmptyStreets();
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setLabel("Empty Streets");
+        expResult.setTitle("Empty Streets");
         
         assertEquals(expResult, result);
     }
@@ -355,13 +355,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "1", null);
-        stat.setLabel("Non empty Street Numbers");
+        stat.setTitle("Non empty Street Numbers");
         
         collector.getMap().put("nonEmptyStreetNumbers", stat);
         
         StatisticResultPair result = collector.countEmptyStreetNumbers();
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setLabel("Empty Street Numbers");
+        expResult.setTitle("Empty Street Numbers");
         
         assertEquals(expResult, result);
     }
@@ -378,13 +378,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "1", null);
-        stat.setLabel("Non empty Websites");
+        stat.setTitle("Non empty Websites");
         
         collector.getMap().put("nonEmptyWebsites", stat);
         
         StatisticResultPair result = collector.countEmptyWebsites();
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setLabel("Empty Websites");
+        expResult.setTitle("Empty Websites");
         
         assertEquals(expResult, result);
     }
@@ -401,13 +401,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("1", "0", null);
-        stat.setLabel("Non empty Emails");
+        stat.setTitle("Non empty Emails");
         
         collector.getMap().put("nonEmptyEmails", stat);
         
         StatisticResultPair result = collector.countEmptyEmails();
         StatisticResultPair expResult = new StatisticResultPair("1", "2", null);
-        expResult.setLabel("Empty Emails");
+        expResult.setTitle("Empty Emails");
         
         assertEquals(expResult, result);
     }
@@ -424,13 +424,13 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "0", null);
-        stat.setLabel("Non empty Dates");
+        stat.setTitle("Non empty Dates");
         
         collector.getMap().put("nonEmptyDates", stat);
         
         StatisticResultPair result = collector.countEmptyDates();
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setLabel("Empty Dates");
+        expResult.setTitle("Empty Dates");
         
         assertEquals(expResult, result);
     }
@@ -445,7 +445,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countDistinctProperties(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("12", "13", null);
-        expResult.setLabel("Distinct Properties");
+        expResult.setTitle("Distinct Properties");
         
         assertEquals(expResult, result);
     }
@@ -460,7 +460,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.calculatePercentageOfPrimaryDateFormats(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setLabel("Percentage of primary date formats");
+        expResult.setTitle("Percentage of primary date formats");
         
         assertEquals(expResult, result);
     }
@@ -478,7 +478,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateNamePercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("100.0", "100.0", null);
-        expResult.setLabel("Percentage of names in each dataset");
+        expResult.setTitle("Percentage of names in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -496,7 +496,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateWebsitePercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setLabel("Percentage of websites in each dataset");
+        expResult.setTitle("Percentage of websites in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -514,7 +514,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculatePhonePercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("50.0", "0.0", null);
-        expResult.setLabel("Percentage of phones in each dataset");
+        expResult.setTitle("Percentage of phones in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -532,7 +532,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateStreetPercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setLabel("Percentage of streets in each dataset");
+        expResult.setTitle("Percentage of streets in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -550,7 +550,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateStreetNumberPercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setLabel("Percentage of street numbers in each dataset");
+        expResult.setTitle("Percentage of street numbers in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -568,7 +568,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateLocalityPercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0.0", "0.0", null);
-        expResult.setLabel("Percentage of locality in each dataset");
+        expResult.setTitle("Percentage of locality in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -586,7 +586,7 @@ public class RDFStatisticsCollectorTest {
         
         StatisticResultPair result = collector.calculateDatePercentage(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("0.0", "0.0", null);
-        expResult.setLabel("Percentage of dates in each dataset");
+        expResult.setTitle("Percentage of dates in each dataset");
         
         assertEquals(expResult, result);
     }
@@ -601,7 +601,7 @@ public class RDFStatisticsCollectorTest {
    
 
         StatisticResultPair expResult =  new StatisticResultPair("1", "1", null);
-        expResult.setLabel("Linked POIs");
+        expResult.setTitle("Linked POIs");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countLinkedPOIs(linksModel);
@@ -620,7 +620,7 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair result = collector.countLinkedVsTotalPOIs(linksModel, 2, 2);
         
         StatisticResultPair expResult = new StatisticResultPair("2", "4", null);
-        expResult.setLabel("Linked vs Total POIS");
+        expResult.setTitle("Linked vs Total POIS");
         
         assertEquals(expResult, result);
 
@@ -637,7 +637,7 @@ public class RDFStatisticsCollectorTest {
         Model linkedB = modelB.union(linksModel);     
         
         StatisticResultPair expResult = new StatisticResultPair("6", "5", null);
-        expResult.setLabel("Linked Triples");
+        expResult.setTitle("Linked Triples");
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTotalLinkedTriples(linkedA, linkedB);
@@ -663,13 +663,13 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair expResult6 = new StatisticResultPair("1", "0", null);
         StatisticResultPair expResult7 = new StatisticResultPair("0", "0", null);
         
-        expResult1.setLabel("Linked Non Empty Names");
-        expResult2.setLabel("Linked Non Empty Phones");
-        expResult3.setLabel("Linked Non Empty Streets");
-        expResult4.setLabel("Linked Non Empty Street Numbers");
-        expResult5.setLabel("Linked Non Empty Websites");
-        expResult6.setLabel("Linked Non Empty Emails");
-        expResult7.setLabel("Linked Non Empty Dates");
+        expResult1.setTitle("Linked Non Empty Names");
+        expResult2.setTitle("Linked Non Empty Phones");
+        expResult3.setTitle("Linked Non Empty Streets");
+        expResult4.setTitle("Linked Non Empty Street Numbers");
+        expResult5.setTitle("Linked Non Empty Websites");
+        expResult6.setTitle("Linked Non Empty Emails");
+        expResult7.setTitle("Linked Non Empty Dates");
 
         StatisticResultPair result1 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
                 linkedA, linkedB, Namespace.NAME, Namespace.NAME_VALUE);
@@ -712,14 +712,14 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair stat6 = new StatisticResultPair("1", "0", null);
         StatisticResultPair stat7 = new StatisticResultPair("0", "0", null);
 
-        linkedPOIs.setLabel("Linked POIs");
-        stat1.setLabel("Linked Empty Names");
-        stat2.setLabel("Linked Empty Phones");
-        stat3.setLabel("Linked Empty Streets");
-        stat4.setLabel("Linked Empty Street Numbers");
-        stat5.setLabel("Linked Empty Websites");
-        stat6.setLabel("Linked Empty Emails");
-        stat7.setLabel("Linked Empty Dates");        
+        linkedPOIs.setTitle("Linked POIs");
+        stat1.setTitle("Linked Empty Names");
+        stat2.setTitle("Linked Empty Phones");
+        stat3.setTitle("Linked Empty Streets");
+        stat4.setTitle("Linked Empty Street Numbers");
+        stat5.setTitle("Linked Empty Websites");
+        stat6.setTitle("Linked Empty Emails");
+        stat7.setTitle("Linked Empty Dates");        
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
 
@@ -732,21 +732,21 @@ public class RDFStatisticsCollectorTest {
         collector.getMap().put("linkedEmptyEmails", stat6);
         collector.getMap().put("linkedEmptyDates", stat7);
 
-        StatisticResultPair result1 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat1.getA()), Integer.parseInt(stat1.getB()));
-        StatisticResultPair result2 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat2.getA()), Integer.parseInt(stat2.getB()));
-        StatisticResultPair result3 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat3.getA()), Integer.parseInt(stat3.getB()));
-        StatisticResultPair result4 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat4.getA()), Integer.parseInt(stat4.getB()));
-        StatisticResultPair result5 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat5.getA()), Integer.parseInt(stat5.getB()));
-        StatisticResultPair result6 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat6.getA()), Integer.parseInt(stat6.getB()));
-        StatisticResultPair result7 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat7.getA()), Integer.parseInt(stat7.getB()));
+        StatisticResultPair result1 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat1.getValueA()), Integer.parseInt(stat1.getValueB()));
+        StatisticResultPair result2 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat2.getValueA()), Integer.parseInt(stat2.getValueB()));
+        StatisticResultPair result3 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat3.getValueA()), Integer.parseInt(stat3.getValueB()));
+        StatisticResultPair result4 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat4.getValueA()), Integer.parseInt(stat4.getValueB()));
+        StatisticResultPair result5 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat5.getValueA()), Integer.parseInt(stat5.getValueB()));
+        StatisticResultPair result6 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat6.getValueA()), Integer.parseInt(stat6.getValueB()));
+        StatisticResultPair result7 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat7.getValueA()), Integer.parseInt(stat7.getValueB()));
 
-        result1.setLabel("Linked Empty Names");
-        result2.setLabel("Linked Empty Phones");
-        result3.setLabel("Linked Empty Streets");
-        result4.setLabel("Linked Empty Street Numbers");
-        result5.setLabel("Linked Empty Websites");
-        result6.setLabel("Linked Empty Emails");
-        result7.setLabel("Linked Empty Dates");        
+        result1.setTitle("Linked Empty Names");
+        result2.setTitle("Linked Empty Phones");
+        result3.setTitle("Linked Empty Streets");
+        result4.setTitle("Linked Empty Street Numbers");
+        result5.setTitle("Linked Empty Websites");
+        result6.setTitle("Linked Empty Emails");
+        result7.setTitle("Linked Empty Dates");        
 
         StatisticResultPair expResult1 = new StatisticResultPair("0", "0", null);
         StatisticResultPair expResult2 = new StatisticResultPair("0", "1", null);
@@ -756,13 +756,13 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair expResult6 = new StatisticResultPair("0", "1", null);
         StatisticResultPair expResult7 = new StatisticResultPair("1", "1", null);
 
-        expResult1.setLabel("Linked Empty Names");
-        expResult2.setLabel("Linked Empty Phones");
-        expResult3.setLabel("Linked Empty Streets");
-        expResult4.setLabel("Linked Empty Street Numbers");
-        expResult5.setLabel("Linked Empty Websites");
-        expResult6.setLabel("Linked Empty Emails");
-        expResult7.setLabel("Linked Empty Dates");
+        expResult1.setTitle("Linked Empty Names");
+        expResult2.setTitle("Linked Empty Phones");
+        expResult3.setTitle("Linked Empty Streets");
+        expResult4.setTitle("Linked Empty Street Numbers");
+        expResult5.setTitle("Linked Empty Websites");
+        expResult6.setTitle("Linked Empty Emails");
+        expResult7.setTitle("Linked Empty Dates");
 
         assertEquals(expResult1, result1);
         assertEquals(expResult2, result2);
@@ -790,13 +790,13 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair stat6 = new StatisticResultPair("1", "0", null);
         StatisticResultPair stat7 = new StatisticResultPair("0", "0", null);
 
-        stat1.setLabel("Linked Empty Names");
-        stat2.setLabel("Linked Empty Phones");
-        stat3.setLabel("Linked Empty Streets");
-        stat4.setLabel("Linked Empty Street Numbers");
-        stat5.setLabel("Linked Empty Websites");
-        stat6.setLabel("Linked Empty Emails");
-        stat7.setLabel("Linked Empty Dates");
+        stat1.setTitle("Linked Empty Names");
+        stat2.setTitle("Linked Empty Phones");
+        stat3.setTitle("Linked Empty Streets");
+        stat4.setTitle("Linked Empty Street Numbers");
+        stat5.setTitle("Linked Empty Websites");
+        stat6.setTitle("Linked Empty Emails");
+        stat7.setTitle("Linked Empty Dates");
 
         collector.getMap().put("linkedNonEmptyNames", stat1);
         collector.getMap().put("linkedNonEmptyPhones", stat2);
@@ -808,7 +808,7 @@ public class RDFStatisticsCollectorTest {
 
         StatisticResultPair resultTotal = collector.computeNonEmptyLinkedTotalProperties();
         StatisticResultPair expResultTotal = new StatisticResultPair("3","4", null);
-        expResultTotal.setLabel("Linked Non Empty properties");
+        expResultTotal.setTitle("Linked Non Empty properties");
 
         assertEquals(expResultTotal, resultTotal);
 
@@ -823,16 +823,16 @@ public class RDFStatisticsCollectorTest {
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair stat1 = new StatisticResultPair("3","4", null);
-        stat1.setLabel("Linked Non Empty properties");
+        stat1.setTitle("Linked Non Empty properties");
         
         StatisticResultPair stat2 = new StatisticResultPair("6", "5", null);
-        stat2.setLabel("Linked Triples");
+        stat2.setTitle("Linked Triples");
         
         collector.getMap().put("linkedNonEmptyProperties", stat1);
         collector.getMap().put("linkedTriples", stat2);
         
         StatisticResultPair expResult = new StatisticResultPair("3", "1", null);
-        expResult.setLabel("Linked Empty properties");
+        expResult.setTitle("Linked Empty properties");
         
         StatisticResultPair result = collector.computeEmptyLinkedTotalProperties();
         
@@ -865,7 +865,7 @@ public class RDFStatisticsCollectorTest {
         collector.getMap().put("nonEmptyDates", stat7);
 
         StatisticResultPair expResult = new StatisticResultPair("4", "5", null);
-        expResult.setLabel("Non empty properties");
+        expResult.setTitle("Non empty properties");
         
         StatisticResultPair result = collector.countTotalNonEmptyProperties();
 
@@ -899,7 +899,7 @@ public class RDFStatisticsCollectorTest {
         collector.getMap().put("emptyDates", statB7);
 
         StatisticResultPair expResult = new StatisticResultPair("4", "5", null);
-        expResult.setLabel("Empty properties");
+        expResult.setTitle("Empty properties");
         
         StatisticResultPair result = collector.countTotalEmptyProperties();
 
@@ -932,7 +932,7 @@ public class RDFStatisticsCollectorTest {
         collector.getMap().put("datesPercent", stat7);
 
         StatisticResultPair expResult = new StatisticResultPair("21.42", "35.71", null);
-        expResult.setLabel("Percentage of total properties in each dataset");
+        expResult.setTitle("Percentage of total properties in each dataset");
         StatisticResultPair result = collector.calculateTotalNonEmptyPropertiesPercentage();
         
         assertEquals(expResult, result);
@@ -949,15 +949,15 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         
         StatisticResultPair stat1 = new StatisticResultPair("12", "13", null);
-        stat1.setLabel("Distinct Properties");
+        stat1.setTitle("Distinct Properties");
         
         collector.getMap().put("distinctProperties", stat1);
 
         StatisticResultPair expResult1 = new StatisticResultPair("4.0", "4.5", null);
-        expResult1.setLabel("Average number of properties per POI");
+        expResult1.setTitle("Average number of properties per POI");
         
         StatisticResultPair expResult2 = new StatisticResultPair("8.0", "8.5", null);
-        expResult2.setLabel("Average number of empty properties per POI");
+        expResult2.setTitle("Average number of empty properties per POI");
 
         StatisticResultPair[] result = collector.calculateAveragePropertiesPerPOI(modelA, modelB);
         
@@ -978,7 +978,7 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair expResult = new StatisticResultPair("2.5", "2.5", null);
-        expResult.setLabel("Average number of properties of linked POI");
+        expResult.setTitle("Average number of properties of linked POI");
         StatisticResultPair[] results = collector.calculateStatsPerLink(modelA, modelB, links);
         
         assertEquals(expResult, results[0]);
@@ -996,11 +996,11 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
 
         StatisticResultPair stat = new StatisticResultPair("4", "5", null);
-        stat.setLabel("Non empty properties");
+        stat.setTitle("Non empty properties");
         collector.getMap().put("nonEmptyProperties", stat);
 
         StatisticResultPair expResult = new StatisticResultPair("2.0", "2.5", null);
-        expResult.setLabel("Average number of empty properties of linked POIs");
+        expResult.setTitle("Average number of empty properties of linked POIs");
         StatisticResultPair result = collector.calculateAverageEmptyPropertiesOfLinkedPOIs();
 
         assertEquals(expResult, result);

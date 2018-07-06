@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.preview.statistics;
 
+import java.util.List;
+
 /**
  *
  * @author nkarag
@@ -7,5 +9,7 @@ package gr.athena.innovation.fagi.preview.statistics;
 public interface StatisticsCollector {
     
     public StatisticsContainer collect();
+    
+    public StatisticsContainer collect(List<String> selected);
     
 }

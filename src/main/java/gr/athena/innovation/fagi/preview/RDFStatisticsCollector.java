@@ -10,6 +10,7 @@ import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
+import gr.athena.innovation.fagi.preview.statistics.EnumStatViewType;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.Namespace;
@@ -59,54 +60,54 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         countTriples(leftModel, rightModel);
 
         /* Non empty properties */
-
-        countNonEmptyNames(leftModel, rightModel);
-        countNonEmptyPhones(leftModel, rightModel);
-        countNonEmptyStreets(leftModel, rightModel);
-        countNonEmptyStreetNumbers(leftModel, rightModel);
-        countNonEmptyWebsites(leftModel, rightModel);
-        countNonEmptyEmails(leftModel, rightModel);
-        countNonEmptyDates(leftModel, rightModel);
-
-        /* Empty properties */
-
-        countEmptyNames();
-        countEmptyPhones();
-        countEmptyStreets();
-        countEmptyStreetNumbers();
-        countEmptyWebsites();
-        countEmptyEmails();
-        countEmptyDates();
-
-        /* Distinct properties */
-
-        countDistinctProperties(leftModel, rightModel);
-
-        /* Percenteges */
-
-        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
-        calculateNamePercentage(leftModel, rightModel);
-        calculateWebsitePercentage(leftModel, rightModel);
-        calculatePhonePercentage(leftModel, rightModel);
-        calculateStreetPercentage(leftModel, rightModel);
-        calculateStreetNumberPercentage(leftModel, rightModel);
-        calculateLocalityPercentage(leftModel, rightModel);
-        calculateDatePercentage(leftModel, rightModel);
-
-        /* Statistics for linked POIs*/
-
-        computeLinkStats(totalPOIsA, totalPOIsB);
-
-        /* Aggregate statistics */
-
-        countTotalNonEmptyProperties();
-        countTotalEmptyProperties();
-        calculateTotalNonEmptyPropertiesPercentage();
-
-        /* Average statistics */
-        calculateAveragePropertiesPerPOI(leftModel, rightModel);
-        calculateStatsPerLink(leftModel, rightModel, links);
-        calculateAverageEmptyPropertiesOfLinkedPOIs();
+//
+//        countNonEmptyNames(leftModel, rightModel);
+//        countNonEmptyPhones(leftModel, rightModel);
+//        countNonEmptyStreets(leftModel, rightModel);
+//        countNonEmptyStreetNumbers(leftModel, rightModel);
+//        countNonEmptyWebsites(leftModel, rightModel);
+//        countNonEmptyEmails(leftModel, rightModel);
+//        countNonEmptyDates(leftModel, rightModel);
+//
+//        /* Empty properties */
+//
+//        countEmptyNames();
+//        countEmptyPhones();
+//        countEmptyStreets();
+//        countEmptyStreetNumbers();
+//        countEmptyWebsites();
+//        countEmptyEmails();
+//        countEmptyDates();
+//
+//        /* Distinct properties */
+//
+//        countDistinctProperties(leftModel, rightModel);
+//
+//        /* Percenteges */
+//
+//        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
+//        calculateNamePercentage(leftModel, rightModel);
+//        calculateWebsitePercentage(leftModel, rightModel);
+//        calculatePhonePercentage(leftModel, rightModel);
+//        calculateStreetPercentage(leftModel, rightModel);
+//        calculateStreetNumberPercentage(leftModel, rightModel);
+//        calculateLocalityPercentage(leftModel, rightModel);
+//        calculateDatePercentage(leftModel, rightModel);
+//
+//        /* Statistics for linked POIs*/
+//
+//        computeLinkStats(totalPOIsA, totalPOIsB);
+//
+//        /* Aggregate statistics */
+//
+//        countTotalNonEmptyProperties();
+//        countTotalEmptyProperties();
+//        calculateTotalNonEmptyPropertiesPercentage();
+//
+//        /* Average statistics */
+//        calculateAveragePropertiesPerPOI(leftModel, rightModel);
+//        calculateStatsPerLink(leftModel, rightModel, links);
+//        calculateAverageEmptyPropertiesOfLinkedPOIs();
 
         if(totalPOIsA == 0 || totalPOIsB == 0){
             container.setValid(false);
@@ -120,23 +121,56 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return container;
     }
 
+    @Override
+    public StatisticsContainer collect(List<String> selected){
+
+        /* IMPORTANT: The order of calculation is sensitive for avoiding re-calculations */
+
+        container.setComplete(false);
+
+        Model leftModel = LeftDataset.getLeftDataset().getModel();
+        Model rightModel = RightDataset.getRightDataset().getModel();
+        List<Link> links = LinksModel.getLinksModel().getLinks();
+
+        /* POIs and triples count */
+        countTotalEntities(leftModel, rightModel);
+        countTriples(leftModel, rightModel);
+
+        if(totalPOIsA == 0 || totalPOIsB == 0){
+            container.setValid(false);
+        } else {
+            container.setValid(true);
+        }
+
+        container.setMap(map);
+        container.setComplete(true && container.isValid());
+
+        return container;
+    }
+    
     public StatisticResultPair countTotalEntities(Model a, Model b){
 
         Integer totalA = SparqlRepository.countPOIs(a);
         Integer totalB = SparqlRepository.countPOIs(b);
+        Integer total = totalA + totalB;
 
         totalPOIsA = totalA;
         totalPOIsB = totalB;
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             map.put(EnumStat.TOTAL_POIS.getKey(), pair);
             return pair;
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel(EnumStat.TOTAL_POIS.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal(total.toString());
+        pair.setTitle(EnumStat.TOTAL_POIS.toString());
+        pair.setLegendTotal(EnumStat.TOTAL_POIS.getLegendTotal());
+        pair.setLegendA(EnumStat.TOTAL_POIS.getLegendA());
+        pair.setLegendB(EnumStat.TOTAL_POIS.getLegendB());
 
         map.put(EnumStat.TOTAL_POIS.getKey(), pair);
 
@@ -147,9 +181,15 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         Long totalA = a.size();
         Long totalB = b.size();
+        Long total = totalA + totalB;
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel(EnumStat.TOTAL_TRIPLES.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal(total.toString());
+        pair.setTitle(EnumStat.TOTAL_TRIPLES.toString());
+        pair.setLegendTotal(EnumStat.TOTAL_TRIPLES.getLegendTotal());
+        pair.setLegendA(EnumStat.TOTAL_TRIPLES.getLegendA());
+        pair.setLegendB(EnumStat.TOTAL_TRIPLES.getLegendB());        
 
         map.put(EnumStat.TOTAL_TRIPLES.getKey(), pair);
         return pair;
@@ -166,13 +206,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             map.put("linkedVsTotal", pair);
             return pair;
         }
 
         StatisticResultPair pair = new StatisticResultPair(linked.toString(), total.toString(), null);
-        pair.setLabel("Linked vs Total POIS");
+        pair.setTitle("Linked vs Total POIS");
 
         return pair;
     }
@@ -183,7 +223,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer linkedPOIsB = SparqlRepository.countDistinctObjects(links);
 
         StatisticResultPair pair = new StatisticResultPair(linkedPOIsA.toString(), linkedPOIsB.toString(), null);
-        pair.setLabel("Linked POIs");
+        pair.setTitle("Linked POIs");
 
         return pair;
     }
@@ -194,7 +234,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer linkedTriplesB = SparqlRepository.countLinkedTriplesB(linkedB);
 
         StatisticResultPair pair = new StatisticResultPair(linkedTriplesA.toString(), linkedTriplesB.toString(), null);
-        pair.setLabel("Linked Triples");
+        pair.setTitle("Linked Triples");
 
         return pair;
     }
@@ -204,7 +244,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(a);
         Integer distinctPropertiesB = SparqlRepository.countDistinctProperties(b);
         StatisticResultPair pair = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString(), null);
-        pair.setLabel("Distinct Properties");
+        pair.setTitle("Distinct Properties");
 
         map.put("distinctProperties", pair);
         return pair;
@@ -216,7 +256,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer namesB = countNonEmptyProperty(Namespace.NAME_VALUE, b);
 
         StatisticResultPair pair = new StatisticResultPair(namesA.toString(), namesB.toString(), null);
-        pair.setLabel("Non empty Names");
+        pair.setTitle("Non empty Names");
 
         map.put("nonEmptyNames", pair);
         return pair;
@@ -228,7 +268,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer phonesB = countNonEmptyProperty(Namespace.PHONE, b);
 
         StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString(), null);
-        pair.setLabel("Non empty Phones");
+        pair.setTitle("Non empty Phones");
 
         map.put("nonEmptyPhones", pair);
         return pair;
@@ -239,7 +279,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer streetsA = countNonEmptyProperty(Namespace.STREET, a);
         Integer streetsB = countNonEmptyProperty(Namespace.STREET, b);
         StatisticResultPair pair = new StatisticResultPair(streetsA.toString(), streetsB.toString(), null);
-        pair.setLabel("Non empty Streets");
+        pair.setTitle("Non empty Streets");
         
         map.put("nonEmptyStreets", pair);
         return pair;
@@ -250,7 +290,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer stNumbersA = countNonEmptyProperty(Namespace.STREET_NUMBER, a);
         Integer stNumbersB = countNonEmptyProperty(Namespace.STREET_NUMBER, b);
         StatisticResultPair pair = new StatisticResultPair(stNumbersA.toString(), stNumbersB.toString(), null);
-        pair.setLabel("Non empty Street Numbers");
+        pair.setTitle("Non empty Street Numbers");
         
         map.put("nonEmptyStreetNumbers", pair);
         return pair;
@@ -261,7 +301,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer websitesA = countNonEmptyProperty(Namespace.HOMEPAGE, a);
         Integer websitesB = countNonEmptyProperty(Namespace.HOMEPAGE, b);
         StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
-        pair.setLabel("Non empty Websites");
+        pair.setTitle("Non empty Websites");
         
         map.put("nonEmptyWebsites", pair);
         return pair;
@@ -272,7 +312,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer websitesA = countNonEmptyProperty(Namespace.EMAIL, a);
         Integer websitesB = countNonEmptyProperty(Namespace.EMAIL, b);
         StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
-        pair.setLabel("Non empty Emails");
+        pair.setTitle("Non empty Emails");
         
         map.put("nonEmptyEmails", pair);
         return pair;
@@ -282,7 +322,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer datesA = countNonEmptyProperty(Namespace.DATE, a);
         Integer datesB = countNonEmptyProperty(Namespace.DATE, b);
         StatisticResultPair pair = new StatisticResultPair(datesA.toString(), datesB.toString(), null);
-        pair.setLabel("Non empty Dates");
+        pair.setTitle("Non empty Dates");
         
         map.put("nonEmptyDates", pair);
         return pair;
@@ -295,21 +335,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         try {
 
-            Integer a1 = Integer.parseInt(map.get("nonEmptyNames").getA());
-            Integer a2 = Integer.parseInt(map.get("nonEmptyPhones").getA());
-            Integer a3 = Integer.parseInt(map.get("nonEmptyStreets").getA());
-            Integer a4 = Integer.parseInt(map.get("nonEmptyStreetNumbers").getA());
-            Integer a5 = Integer.parseInt(map.get("nonEmptyWebsites").getA());
-            Integer a6 = Integer.parseInt(map.get("nonEmptyEmails").getA());
-            Integer a7 = Integer.parseInt(map.get("nonEmptyDates").getA());
+            Integer a1 = Integer.parseInt(map.get("nonEmptyNames").getValueA());
+            Integer a2 = Integer.parseInt(map.get("nonEmptyPhones").getValueA());
+            Integer a3 = Integer.parseInt(map.get("nonEmptyStreets").getValueA());
+            Integer a4 = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueA());
+            Integer a5 = Integer.parseInt(map.get("nonEmptyWebsites").getValueA());
+            Integer a6 = Integer.parseInt(map.get("nonEmptyEmails").getValueA());
+            Integer a7 = Integer.parseInt(map.get("nonEmptyDates").getValueA());
 
-            Integer b1 = Integer.parseInt(map.get("nonEmptyNames").getB());
-            Integer b2 = Integer.parseInt(map.get("nonEmptyPhones").getB());
-            Integer b3 = Integer.parseInt(map.get("nonEmptyStreets").getB());
-            Integer b4 = Integer.parseInt(map.get("nonEmptyStreetNumbers").getB());
-            Integer b5 = Integer.parseInt(map.get("nonEmptyWebsites").getB());
-            Integer b6 = Integer.parseInt(map.get("nonEmptyEmails").getB());
-            Integer b7 = Integer.parseInt(map.get("nonEmptyDates").getB()); 
+            Integer b1 = Integer.parseInt(map.get("nonEmptyNames").getValueB());
+            Integer b2 = Integer.parseInt(map.get("nonEmptyPhones").getValueB());
+            Integer b3 = Integer.parseInt(map.get("nonEmptyStreets").getValueB());
+            Integer b4 = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueB());
+            Integer b5 = Integer.parseInt(map.get("nonEmptyWebsites").getValueB());
+            Integer b6 = Integer.parseInt(map.get("nonEmptyEmails").getValueB());
+            Integer b7 = Integer.parseInt(map.get("nonEmptyDates").getValueB()); 
 
             totalA = a1 + a2 + a3 + a4 + a5 + a6 + a7;
             totalB = b1 + b2 + b3 + b4 + b5 + b6 + b7;
@@ -317,13 +357,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute total non empty properties due to missing properties. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel("Non empty properties");
+        pair.setTitle("Non empty properties");
         
         map.put("nonEmptyProperties", pair);
         return pair;
@@ -335,13 +375,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer nB;
         try {
             
-            nA = Integer.parseInt(map.get("nonEmptyNames").getA());
-            nB = Integer.parseInt(map.get("nonEmptyNames").getB());
+            nA = Integer.parseInt(map.get("nonEmptyNames").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyNames").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty names due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         }
@@ -349,7 +389,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Names");
+        pair.setTitle("Empty Names");
 
         map.put("emptyNames", pair);
 
@@ -363,13 +403,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         try {
             
-            nA = Integer.parseInt(map.get("nonEmptyPhones").getA());
-            nB = Integer.parseInt(map.get("nonEmptyPhones").getB());
+            nA = Integer.parseInt(map.get("nonEmptyPhones").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyPhones").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty phones due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         }
@@ -377,7 +417,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Phones");
+        pair.setTitle("Empty Phones");
 
         map.put("emptyPhones", pair);
         return pair;
@@ -389,13 +429,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         try {
             
-            nA = Integer.parseInt(map.get("nonEmptyStreets").getA());
-            nB = Integer.parseInt(map.get("nonEmptyStreets").getB());
+            nA = Integer.parseInt(map.get("nonEmptyStreets").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyStreets").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty streets due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         }        
@@ -403,7 +443,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Streets");
+        pair.setTitle("Empty Streets");
         
         map.put("emptyStreets", pair);
         return pair;
@@ -415,13 +455,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         try {
             
-            nA = Integer.parseInt(map.get("nonEmptyStreetNumbers").getA());
-            nB = Integer.parseInt(map.get("nonEmptyStreetNumbers").getB());
+            nA = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty street numbers due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         } 
@@ -429,7 +469,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Street Numbers");
+        pair.setTitle("Empty Street Numbers");
         
         map.put("emptyStreetNumbers", pair);
         return pair;
@@ -441,13 +481,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         try {
             
-            nA = Integer.parseInt(map.get("nonEmptyWebsites").getA());
-            nB = Integer.parseInt(map.get("nonEmptyWebsites").getB());
+            nA = Integer.parseInt(map.get("nonEmptyWebsites").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyWebsites").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty websites due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         } 
@@ -455,7 +495,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Websites");
+        pair.setTitle("Empty Websites");
         
         map.put("emptyWebsites", pair);
         return pair;
@@ -468,13 +508,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         try{
             
-            nA = Integer.parseInt(map.get("nonEmptyEmails").getA());
-            nB = Integer.parseInt(map.get("nonEmptyEmails").getB());
+            nA = Integer.parseInt(map.get("nonEmptyEmails").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyEmails").getValueB());
             
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty emails due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         } 
@@ -483,7 +523,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Emails");
+        pair.setTitle("Empty Emails");
         
         map.put("emptyEmails", pair);
         return pair;
@@ -495,13 +535,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer nB;
         
         try{
-            nA = Integer.parseInt(map.get("nonEmptyDates").getA());
-            nB = Integer.parseInt(map.get("nonEmptyDates").getB());
+            nA = Integer.parseInt(map.get("nonEmptyDates").getValueA());
+            nB = Integer.parseInt(map.get("nonEmptyDates").getValueB());
 
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute empty dates due to missing property. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
 
             return pair;
         }
@@ -509,7 +549,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setLabel("Empty Dates");
+        pair.setTitle("Empty Dates");
 
         map.put("emptyDates", pair);
         return pair;
@@ -522,21 +562,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                 
         try{
             
-            Integer a1 = Integer.parseInt(map.get("emptyNames").getA());
-            Integer a2 = Integer.parseInt(map.get("emptyPhones").getA());
-            Integer a3 = Integer.parseInt(map.get("emptyStreets").getA());
-            Integer a4 = Integer.parseInt(map.get("emptyStreetNumbers").getA());
-            Integer a5 = Integer.parseInt(map.get("emptyWebsites").getA());
-            Integer a6 = Integer.parseInt(map.get("emptyEmails").getA());
-            Integer a7 = Integer.parseInt(map.get("emptyDates").getA());
+            Integer a1 = Integer.parseInt(map.get("emptyNames").getValueA());
+            Integer a2 = Integer.parseInt(map.get("emptyPhones").getValueA());
+            Integer a3 = Integer.parseInt(map.get("emptyStreets").getValueA());
+            Integer a4 = Integer.parseInt(map.get("emptyStreetNumbers").getValueA());
+            Integer a5 = Integer.parseInt(map.get("emptyWebsites").getValueA());
+            Integer a6 = Integer.parseInt(map.get("emptyEmails").getValueA());
+            Integer a7 = Integer.parseInt(map.get("emptyDates").getValueA());
 
-            Integer b1 = Integer.parseInt(map.get("emptyNames").getB());
-            Integer b2 = Integer.parseInt(map.get("emptyPhones").getB());
-            Integer b3 = Integer.parseInt(map.get("emptyStreets").getB());
-            Integer b4 = Integer.parseInt(map.get("emptyStreetNumbers").getB());
-            Integer b5 = Integer.parseInt(map.get("emptyWebsites").getB());
-            Integer b6 = Integer.parseInt(map.get("emptyEmails").getB());
-            Integer b7 = Integer.parseInt(map.get("emptyDates").getB());
+            Integer b1 = Integer.parseInt(map.get("emptyNames").getValueB());
+            Integer b2 = Integer.parseInt(map.get("emptyPhones").getValueB());
+            Integer b3 = Integer.parseInt(map.get("emptyStreets").getValueB());
+            Integer b4 = Integer.parseInt(map.get("emptyStreetNumbers").getValueB());
+            Integer b5 = Integer.parseInt(map.get("emptyWebsites").getValueB());
+            Integer b6 = Integer.parseInt(map.get("emptyEmails").getValueB());
+            Integer b7 = Integer.parseInt(map.get("emptyDates").getValueB());
             
             totalA = a1 + a2 + a3 + a4 + a5 + a6 + a7;
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
@@ -544,13 +584,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute total empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         } 
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel("Empty properties");
+        pair.setTitle("Empty properties");
 
         map.put("emptyProperties", pair);
         return pair;
@@ -566,7 +606,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         if(totalDatesA == 0 || totalDatesB ==0){
             StatisticResultPair pair = new StatisticResultPair("0", "0", null);
 
-            pair.setLabel("Percentage of primary date formats");
+            pair.setTitle("Percentage of primary date formats");
             map.put("datesPercent", pair);
             return pair;
         }
@@ -604,7 +644,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentA.toString(), percentB.toString(), null);
 
-        pair.setLabel("Percentage of primary date formats");
+        pair.setTitle("Percentage of primary date formats");
         map.put("primaryDateFormatsPercent", pair);
         return pair;
     }
@@ -624,7 +664,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Double percentageB = roundHalfDown((100 * namesB) / (double) totalPOIsB);
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
-        pair.setLabel("Percentage of names in each dataset");
+        pair.setTitle("Percentage of names in each dataset");
 
         map.put("namesPercent", pair);
         return pair;
@@ -646,7 +686,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
         
-        pair.setLabel("Percentage of websites in each dataset");
+        pair.setTitle("Percentage of websites in each dataset");
 
         map.put("websitesPercent", pair);
         return pair;
@@ -668,7 +708,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
         
-        pair.setLabel("Percentage of phones in each dataset");
+        pair.setTitle("Percentage of phones in each dataset");
 
         map.put("phonesPercent", pair);
         return pair;
@@ -690,7 +730,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
         
-        pair.setLabel("Percentage of streets in each dataset");
+        pair.setTitle("Percentage of streets in each dataset");
 
         map.put("streetsPercent", pair);
         return pair;
@@ -712,7 +752,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
 
-        pair.setLabel("Percentage of street numbers in each dataset");
+        pair.setTitle("Percentage of street numbers in each dataset");
 
         map.put("streetNumbersPercent", pair);
         return pair;
@@ -734,7 +774,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
 
-        pair.setLabel("Percentage of locality in each dataset");
+        pair.setTitle("Percentage of locality in each dataset");
 
         map.put("localityPercent", pair);
         return pair;
@@ -755,7 +795,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
 
-        pair.setLabel("Percentage of dates in each dataset");
+        pair.setTitle("Percentage of dates in each dataset");
 
         map.put("datesPercent", pair);
         return pair;
@@ -768,20 +808,20 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         try{
 
-            Double nA = Double.parseDouble(map.get("namesPercent").getA());
-            Double nB = Double.parseDouble(map.get("namesPercent").getB());
-            Double pA = Double.parseDouble(map.get("phonesPercent").getA());
-            Double pB = Double.parseDouble(map.get("phonesPercent").getB());
-            Double sA = Double.parseDouble(map.get("streetsPercent").getA());
-            Double sB = Double.parseDouble(map.get("streetsPercent").getB());
-            Double snA = Double.parseDouble(map.get("streetNumbersPercent").getA());
-            Double snB = Double.parseDouble(map.get("streetNumbersPercent").getB());
-            Double wA = Double.parseDouble(map.get("websitesPercent").getA());
-            Double wB = Double.parseDouble(map.get("websitesPercent").getB());
-            Double lA = Double.parseDouble(map.get("localityPercent").getA());
-            Double lB = Double.parseDouble(map.get("localityPercent").getB());
-            Double dA = Double.parseDouble(map.get("datesPercent").getA());
-            Double dB = Double.parseDouble(map.get("datesPercent").getB());
+            Double nA = Double.parseDouble(map.get("namesPercent").getValueA());
+            Double nB = Double.parseDouble(map.get("namesPercent").getValueB());
+            Double pA = Double.parseDouble(map.get("phonesPercent").getValueA());
+            Double pB = Double.parseDouble(map.get("phonesPercent").getValueB());
+            Double sA = Double.parseDouble(map.get("streetsPercent").getValueA());
+            Double sB = Double.parseDouble(map.get("streetsPercent").getValueB());
+            Double snA = Double.parseDouble(map.get("streetNumbersPercent").getValueA());
+            Double snB = Double.parseDouble(map.get("streetNumbersPercent").getValueB());
+            Double wA = Double.parseDouble(map.get("websitesPercent").getValueA());
+            Double wB = Double.parseDouble(map.get("websitesPercent").getValueB());
+            Double lA = Double.parseDouble(map.get("localityPercent").getValueA());
+            Double lB = Double.parseDouble(map.get("localityPercent").getValueB());
+            Double dA = Double.parseDouble(map.get("datesPercent").getValueA());
+            Double dB = Double.parseDouble(map.get("datesPercent").getValueB());
 
             totalPropPercentageA = roundHalfDown((nA + pA + sA + snA + wA +lA + dA) / 7);
             totalPropPercentageB = roundHalfDown((nB + pB + sB + snB + wB +lB + dB) / 7);
@@ -789,14 +829,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute total non empty percentages due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
 
             return pair;
         } 
 
         StatisticResultPair pair = new StatisticResultPair(totalPropPercentageA.toString(), totalPropPercentageB.toString(), null);
 
-        pair.setLabel("Percentage of total properties in each dataset");
+        pair.setTitle("Percentage of total properties in each dataset");
 
         map.put("totalPropertiesPercent", pair);
 
@@ -856,20 +896,20 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put("linkedNonEmptyEmails", pair6);
         map.put("linkedNonEmptyDates", pair7);
         
-        Integer namesA = Integer.parseInt(pair1.getA());
-        Integer namesB = Integer.parseInt(pair1.getB());
-        Integer phonesA = Integer.parseInt(pair2.getA());
-        Integer phonesB = Integer.parseInt(pair2.getB());
-        Integer streetsA = Integer.parseInt(pair3.getA());
-        Integer streetsB = Integer.parseInt(pair3.getB());
-        Integer streetNumbersA = Integer.parseInt(pair4.getA());
-        Integer streetNumbersB = Integer.parseInt(pair4.getB());
-        Integer websitesA = Integer.parseInt(pair5.getA());
-        Integer websitesB = Integer.parseInt(pair5.getB());
-        Integer emailsA = Integer.parseInt(pair6.getA());
-        Integer emailsB = Integer.parseInt(pair6.getB());
-        Integer datesA = Integer.parseInt(pair7.getA());
-        Integer datesB = Integer.parseInt(pair7.getB());
+        Integer namesA = Integer.parseInt(pair1.getValueA());
+        Integer namesB = Integer.parseInt(pair1.getValueB());
+        Integer phonesA = Integer.parseInt(pair2.getValueA());
+        Integer phonesB = Integer.parseInt(pair2.getValueB());
+        Integer streetsA = Integer.parseInt(pair3.getValueA());
+        Integer streetsB = Integer.parseInt(pair3.getValueB());
+        Integer streetNumbersA = Integer.parseInt(pair4.getValueA());
+        Integer streetNumbersB = Integer.parseInt(pair4.getValueB());
+        Integer websitesA = Integer.parseInt(pair5.getValueA());
+        Integer websitesB = Integer.parseInt(pair5.getValueB());
+        Integer emailsA = Integer.parseInt(pair6.getValueA());
+        Integer emailsB = Integer.parseInt(pair6.getValueB());
+        Integer datesA = Integer.parseInt(pair7.getValueA());
+        Integer datesB = Integer.parseInt(pair7.getValueB());
         
         StatisticResultPair linkedEmptyNames = computeEmptyLinkedProperty(namesA, namesB);
         StatisticResultPair linkedEmptyPhones = computeEmptyLinkedProperty(phonesA, phonesB);
@@ -879,13 +919,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair linkedEmptyEmails = computeEmptyLinkedProperty(emailsA, emailsB);
         StatisticResultPair linkedEmptyDates = computeEmptyLinkedProperty(datesA, datesB);
 
-        linkedEmptyNames.setLabel("Linked Empty Names");
-        linkedEmptyPhones.setLabel("Linked Empty Phones");
-        linkedEmptyStreets.setLabel("Linked Empty Streets");
-        linkedEmptyStreetNumbers.setLabel("Linked Empty Street Numbers");
-        linkedEmptyWebsites.setLabel("Linked Empty Websites");
-        linkedEmptyEmails.setLabel("Linked Empty Emails");
-        linkedEmptyDates.setLabel("Linked Empty Dates");
+        linkedEmptyNames.setTitle("Linked Empty Names");
+        linkedEmptyPhones.setTitle("Linked Empty Phones");
+        linkedEmptyStreets.setTitle("Linked Empty Streets");
+        linkedEmptyStreetNumbers.setTitle("Linked Empty Street Numbers");
+        linkedEmptyWebsites.setTitle("Linked Empty Websites");
+        linkedEmptyEmails.setTitle("Linked Empty Emails");
+        linkedEmptyDates.setTitle("Linked Empty Dates");
         
         map.put("linkedEmptyNames", linkedEmptyNames);
         map.put("linkedEmptyPhones", linkedEmptyPhones);
@@ -912,29 +952,29 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         switch(property1){
             case Namespace.NAME:
-                pair.setLabel("Linked Non Empty Names");
+                pair.setTitle("Linked Non Empty Names");
                 break;
             case Namespace.PHONE:
-                pair.setLabel("Linked Non Empty Phones");
+                pair.setTitle("Linked Non Empty Phones");
                 break;    
             case Namespace.ADDRESS:
                 if(property2.equals(Namespace.STREET)){
-                    pair.setLabel("Linked Non Empty Streets");
+                    pair.setTitle("Linked Non Empty Streets");
                 } else if(property2.equals(Namespace.STREET_NUMBER)){
-                    pair.setLabel("Linked Non Empty Street Numbers");
+                    pair.setTitle("Linked Non Empty Street Numbers");
                 } else {
                     throw new ApplicationException("Wrong property parameters. " + Namespace.ADDRESS 
                         + " parent does not have " + Namespace.STREET + " or " + Namespace.STREET_NUMBER + " child.");
                 }
                 break; 
             case Namespace.HOMEPAGE:
-                pair.setLabel("Linked Non Empty Websites");
+                pair.setTitle("Linked Non Empty Websites");
                 break; 
             case Namespace.EMAIL:
-                pair.setLabel("Linked Non Empty Emails");
+                pair.setTitle("Linked Non Empty Emails");
                 break; 
             case Namespace.DATE:
-                pair.setLabel("Linked Non Empty Dates");
+                pair.setTitle("Linked Non Empty Dates");
                 break;
             default:
                 throw new ApplicationException("Property not supported for stats. " + property1);
@@ -952,10 +992,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         switch(property){
             case Namespace.HOMEPAGE:
-                pair.setLabel("Linked Non Empty Websites");
+                pair.setTitle("Linked Non Empty Websites");
                 break;
             case Namespace.DATE:
-                pair.setLabel("Linked Non Empty Dates");
+                pair.setTitle("Linked Non Empty Dates");
                 break;                
             default:
                 throw new ApplicationException("Property not supported for stats. " + property);
@@ -967,8 +1007,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     public StatisticResultPair computeEmptyLinkedProperty(Integer nonEmptyA, Integer nonEmptyB){
 
         StatisticResultPair linkedPOIs = map.get("linkedPOIs");
-        Integer emptyA = Integer.parseInt(linkedPOIs.getA()) - nonEmptyA;
-        Integer emptyB = Integer.parseInt(linkedPOIs.getB()) - nonEmptyB;
+        Integer emptyA = Integer.parseInt(linkedPOIs.getValueA()) - nonEmptyA;
+        Integer emptyB = Integer.parseInt(linkedPOIs.getValueB()) - nonEmptyB;
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
         
         return pair;
@@ -980,21 +1020,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         try{
 
-            Integer a1 = Integer.parseInt(map.get("linkedNonEmptyNames").getA());
-            Integer a2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getA());
-            Integer a3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getA());
-            Integer a4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getA());
-            Integer a5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getA());
-            Integer a6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getA());
-            Integer a7 = Integer.parseInt(map.get("linkedNonEmptyDates").getA());
+            Integer a1 = Integer.parseInt(map.get("linkedNonEmptyNames").getValueA());
+            Integer a2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getValueA());
+            Integer a3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getValueA());
+            Integer a4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getValueA());
+            Integer a5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getValueA());
+            Integer a6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getValueA());
+            Integer a7 = Integer.parseInt(map.get("linkedNonEmptyDates").getValueA());
 
-            Integer b1 = Integer.parseInt(map.get("linkedNonEmptyNames").getB());
-            Integer b2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getB());
-            Integer b3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getB());
-            Integer b4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getB());
-            Integer b5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getB());
-            Integer b6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getB());
-            Integer b7 = Integer.parseInt(map.get("linkedNonEmptyDates").getB());
+            Integer b1 = Integer.parseInt(map.get("linkedNonEmptyNames").getValueB());
+            Integer b2 = Integer.parseInt(map.get("linkedNonEmptyPhones").getValueB());
+            Integer b3 = Integer.parseInt(map.get("linkedNonEmptyStreets").getValueB());
+            Integer b4 = Integer.parseInt(map.get("linkedNonEmptyStreetNumbers").getValueB());
+            Integer b5 = Integer.parseInt(map.get("linkedNonEmptyWebsites").getValueB());
+            Integer b6 = Integer.parseInt(map.get("linkedNonEmptyEmails").getValueB());
+            Integer b7 = Integer.parseInt(map.get("linkedNonEmptyDates").getValueB());
 
             totalA = a1 + a2 + a3 + a4 + a5 + a6 + a7;
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
@@ -1002,13 +1042,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute linked non empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
 
             return pair;
         } 
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
-        pair.setLabel("Linked Non Empty properties");
+        pair.setTitle("Linked Non Empty properties");
 
         return pair;
     }
@@ -1023,11 +1063,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         try{
             
-            totalNonEmptyA = Integer.parseInt(map.get("linkedNonEmptyProperties").getA());
-            totalNonEmptyB = Integer.parseInt(map.get("linkedNonEmptyProperties").getB());
+            totalNonEmptyA = Integer.parseInt(map.get("linkedNonEmptyProperties").getValueA());
+            totalNonEmptyB = Integer.parseInt(map.get("linkedNonEmptyProperties").getValueB());
             
-            totalA = Integer.parseInt(map.get("linkedTriples").getA());
-            totalB = Integer.parseInt(map.get("linkedTriples").getB());
+            totalA = Integer.parseInt(map.get("linkedTriples").getValueA());
+            totalB = Integer.parseInt(map.get("linkedTriples").getValueB());
             
             totalEmptyA = totalA - totalNonEmptyA;
             totalEmptyB = totalB - totalNonEmptyB;
@@ -1035,13 +1075,13 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         } catch(NumberFormatException ex){
             LOG.warn("Could not compute linked empty properties due to missing values. ", ex);
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setLabel("Could not compute");
+            pair.setTitle("Could not compute");
             
             return pair;
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalEmptyA.toString(), totalEmptyB.toString(), null);
-        pair.setLabel("Linked Empty properties");
+        pair.setTitle("Linked Empty properties");
 
         return pair;
     }
@@ -1052,8 +1092,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair distinctProperties = map.get("distinctProperties");
 
-        int distinctPropertiesA = Integer.parseInt(distinctProperties.getA());
-        int distinctPropertiesB = Integer.parseInt(distinctProperties.getB());
+        int distinctPropertiesA = Integer.parseInt(distinctProperties.getValueA());
+        int distinctPropertiesB = Integer.parseInt(distinctProperties.getValueB());
 
         Double averagePropertiesA = SparqlRepository.averagePropertiesPerPOI(leftModel, distinctPropertiesA)[0];
         Double averagePropertiesB = SparqlRepository.averagePropertiesPerPOI(rightModel, distinctPropertiesB)[0];
@@ -1066,8 +1106,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair averageEmptyProperties 
                 = new StatisticResultPair(averageEmptyPropertiesA.toString(), averageEmptyPropertiesB.toString(), null);
         
-        averageProperties.setLabel("Average number of properties per POI");
-        averageEmptyProperties.setLabel("Average number of empty properties per POI");
+        averageProperties.setTitle("Average number of properties per POI");
+        averageEmptyProperties.setTitle("Average number of empty properties per POI");
         map.put("averageProperties", averageProperties);
         map.put("averageEmptyProperties", averageEmptyProperties);
         
@@ -1161,11 +1201,11 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         StatisticResultPair fullyMatchingStreetNumbers 
                 = new StatisticResultPair(null, null, fullMatchStreetNumbers.toString());
         
-        averageLinkedProperties.setLabel("Average number of properties of linked POI");
-        longerNames.setLabel("Number of POI name properties that are longer than the names of the corresponding (linked) POIs of the two datasets.");
-        longerPhones.setLabel("Number of POI phone properties that are longer than the phones of the corresponding (linked) POIs of the two datasets.");
-        fullyMatchingStreets.setLabel("Number of fully matching address streets between linked POIs in the two datasets.");
-        fullyMatchingStreetNumbers.setLabel("Number of fully matching street numbers between linked POIs in the two datasets.");
+        averageLinkedProperties.setTitle("Average number of properties of linked POI");
+        longerNames.setTitle("Number of POI name properties that are longer than the names of the corresponding (linked) POIs of the two datasets.");
+        longerPhones.setTitle("Number of POI phone properties that are longer than the phones of the corresponding (linked) POIs of the two datasets.");
+        fullyMatchingStreets.setTitle("Number of fully matching address streets between linked POIs in the two datasets.");
+        fullyMatchingStreetNumbers.setTitle("Number of fully matching street numbers between linked POIs in the two datasets.");
         
         map.put("averageLinkedProperties", averageLinkedProperties);
         map.put("longerNames", longerNames);
@@ -1193,15 +1233,15 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair nonEmptyProperties = map.get("nonEmptyProperties");
         
-        int a = Integer.parseInt(nonEmptyProperties.getA());
-        int b = Integer.parseInt(nonEmptyProperties.getB());
+        int a = Integer.parseInt(nonEmptyProperties.getValueA());
+        int b = Integer.parseInt(nonEmptyProperties.getValueB());
         
         Double avgA = a /(double)totalPOIsA;
         Double avgB = b /(double)totalPOIsB;
         
         StatisticResultPair averageLinkedProperties = new StatisticResultPair(avgA.toString(), avgB.toString(), null);
         
-        averageLinkedProperties.setLabel("Average number of empty properties of linked POIs");
+        averageLinkedProperties.setTitle("Average number of empty properties of linked POIs");
         map.put("averageLinkedEmptyProperties", averageLinkedProperties);
         
         return averageLinkedProperties;
