@@ -13,7 +13,7 @@ import java.util.Objects;
 public class StatisticResultPair implements Serializable{
 
     private EnumStatViewType type;
-    
+
     private final String valueA;
     private final String valueB;
     private String valueTotal;
@@ -23,12 +23,15 @@ public class StatisticResultPair implements Serializable{
     private final String both;
     private String title;
 
+    //todo: add chart group
+    private String group;
+
     public StatisticResultPair(String a, String b, String both) {
         this.valueA = a;
         this.valueB = b;
         this.both = both;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 3;

@@ -61,8 +61,8 @@ public class StatisticsContainer {
 
                 String originalJson = objectMapper.writeValueAsString(map);
 
-                JsonNode tree = objectMapper.readTree(originalJson);
-                formattedJson = objectMapper.writeValueAsString(tree);
+                JsonNode jsonNode = objectMapper.readTree(originalJson);
+                formattedJson = objectMapper.writeValueAsString(jsonNode);
 
             } catch (IOException ex) {
                 LOG.error(ex);

@@ -165,7 +165,7 @@ public class RDFStatisticsCollectorTest {
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countTotalEntities(modelA, modelB);
-        
+
         assertEquals(expResult, result);
 
     }
@@ -178,9 +178,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyNames");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyNames(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_NAMES, Namespace.NAME_VALUE);
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setTitle("Non empty Names");
+        expResult.setTitle(EnumStat.NON_EMPTY_NAMES.toString());
         
         assertEquals(expResult, result);
     }    
@@ -193,9 +193,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyPhones");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyPhones(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE);
         StatisticResultPair expResult = new StatisticResultPair("1", "0", null);
-        expResult.setTitle("Non empty Phones");
+        expResult.setTitle(EnumStat.NON_EMPTY_PHONES.toString());
         
         assertEquals(expResult, result);
     }
@@ -208,9 +208,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyStreets");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyStreets(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_STREETS, Namespace.STREET);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setTitle("Non empty Streets");
+        expResult.setTitle(EnumStat.NON_EMPTY_STREETS.toString());
         
         assertEquals(expResult, result);
     }
@@ -223,9 +223,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyStreetNumbers");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyStreetNumbers(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setTitle("Non empty Street Numbers");
+        expResult.setTitle(EnumStat.NON_EMPTY_STREET_NUMBERS.toString());
         
         assertEquals(expResult, result);
     }
@@ -238,9 +238,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyWebsites");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyWebsites(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE);
         StatisticResultPair expResult = new StatisticResultPair("0", "1", null);
-        expResult.setTitle("Non empty Websites");
+        expResult.setTitle(EnumStat.NON_EMPTY_WEBSITES.toString());
         
         assertEquals(expResult, result);
     }
@@ -253,9 +253,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyEmails");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyEmails(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL);
         StatisticResultPair expResult = new StatisticResultPair("1", "0", null);
-        expResult.setTitle("Non empty Emails");
+        expResult.setTitle(EnumStat.NON_EMPTY_EMAILS.toString());
         
         assertEquals(expResult, result);
     }    
@@ -267,9 +267,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countNonEmptyDates");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countNonEmptyDates(modelA, modelB);
+        StatisticResultPair result = collector.countNonEmptyProperty(modelA, modelB, EnumStat.NON_EMPTY_DATES, Namespace.DATE);
         StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setTitle("Non empty Dates");
+        expResult.setTitle(EnumStat.NON_EMPTY_DATES.toString());
         
         assertEquals(expResult, result);
     }
@@ -290,9 +290,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyNames", stat);
         
-        StatisticResultPair result = collector.countEmptyNames();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_NAMES, Namespace.NAME);
         StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setTitle("Empty Names");
+        expResult.setTitle(EnumStat.NON_EMPTY_NAMES.toString());
         
         assertEquals(expResult, result);
     }
@@ -313,9 +313,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyPhones", stat);
         
-        StatisticResultPair result = collector.countEmptyPhones();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_PHONES, Namespace.PHONE);
         StatisticResultPair expResult = new StatisticResultPair("1", "2", null);
-        expResult.setTitle("Empty Phones");
+        expResult.setTitle(EnumStat.NON_EMPTY_PHONES.toString());
         
         assertEquals(expResult, result);
     }
@@ -336,9 +336,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyStreets", stat);
         
-        StatisticResultPair result = collector.countEmptyStreets();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_STREETS, Namespace.STREET);
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setTitle("Empty Streets");
+        expResult.setTitle(EnumStat.NON_EMPTY_STREETS.toString());
         
         assertEquals(expResult, result);
     }
@@ -359,9 +359,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyStreetNumbers", stat);
         
-        StatisticResultPair result = collector.countEmptyStreetNumbers();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER);
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setTitle("Empty Street Numbers");
+        expResult.setTitle(EnumStat.NON_EMPTY_STREET_NUMBERS.toString());
         
         assertEquals(expResult, result);
     }
@@ -382,9 +382,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyWebsites", stat);
         
-        StatisticResultPair result = collector.countEmptyWebsites();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_WEBSITES, Namespace.HOMEPAGE);
         StatisticResultPair expResult = new StatisticResultPair("2", "1", null);
-        expResult.setTitle("Empty Websites");
+        expResult.setTitle(EnumStat.NON_EMPTY_WEBSITES.toString());
         
         assertEquals(expResult, result);
     }
@@ -405,9 +405,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyEmails", stat);
         
-        StatisticResultPair result = collector.countEmptyEmails();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_EMAILS, Namespace.EMAIL);
         StatisticResultPair expResult = new StatisticResultPair("1", "2", null);
-        expResult.setTitle("Empty Emails");
+        expResult.setTitle(EnumStat.NON_EMPTY_EMAILS.toString());
         
         assertEquals(expResult, result);
     }
@@ -428,9 +428,9 @@ public class RDFStatisticsCollectorTest {
         
         collector.getMap().put("nonEmptyDates", stat);
         
-        StatisticResultPair result = collector.countEmptyDates();
+        StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_DATES, Namespace.DATE);
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
-        expResult.setTitle("Empty Dates");
+        expResult.setTitle(EnumStat.NON_EMPTY_DATES.toString());
         
         assertEquals(expResult, result);
     }
@@ -476,9 +476,9 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsA(2);
         collector.setTotalPOIsB(2);
         
-        StatisticResultPair result = collector.calculateNamePercentage(modelA, modelB);
+        StatisticResultPair result = collector.calculatePropertyPercentage(modelA, modelB, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE);
         StatisticResultPair expResult = new StatisticResultPair("100.0", "100.0", null);
-        expResult.setTitle("Percentage of names in each dataset");
+        expResult.setTitle(EnumStat.NAMES_PERCENT.toString());
         
         assertEquals(expResult, result);
     }

@@ -37,8 +37,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
 
-    private int totalPOIsA;
-    private int totalPOIsB;
+    private Integer totalPOIsA;
+    private Integer totalPOIsB;
 
     StatisticsContainer container = new StatisticsContainer();
 
@@ -56,58 +56,61 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         List<Link> links = LinksModel.getLinksModel().getLinks();
 
         /* POIs and triples count */
-        countTotalEntities(leftModel, rightModel);
-        countTriples(leftModel, rightModel);
+        
+        map.put(EnumStat.TOTAL_POIS.getKey(), countTotalEntities(leftModel, rightModel));
+        map.put(EnumStat.TOTAL_TRIPLES.getKey(), countTriples(leftModel, rightModel));
 
         /* Non empty properties */
-//
-//        countNonEmptyNames(leftModel, rightModel);
-//        countNonEmptyPhones(leftModel, rightModel);
-//        countNonEmptyStreets(leftModel, rightModel);
-//        countNonEmptyStreetNumbers(leftModel, rightModel);
-//        countNonEmptyWebsites(leftModel, rightModel);
-//        countNonEmptyEmails(leftModel, rightModel);
-//        countNonEmptyDates(leftModel, rightModel);
-//
-//        /* Empty properties */
-//
-//        countEmptyNames();
-//        countEmptyPhones();
-//        countEmptyStreets();
-//        countEmptyStreetNumbers();
-//        countEmptyWebsites();
-//        countEmptyEmails();
-//        countEmptyDates();
-//
-//        /* Distinct properties */
-//
-//        countDistinctProperties(leftModel, rightModel);
-//
-//        /* Percenteges */
-//
-//        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
-//        calculateNamePercentage(leftModel, rightModel);
-//        calculateWebsitePercentage(leftModel, rightModel);
-//        calculatePhonePercentage(leftModel, rightModel);
-//        calculateStreetPercentage(leftModel, rightModel);
-//        calculateStreetNumberPercentage(leftModel, rightModel);
-//        calculateLocalityPercentage(leftModel, rightModel);
-//        calculateDatePercentage(leftModel, rightModel);
-//
-//        /* Statistics for linked POIs*/
-//
-//        computeLinkStats(totalPOIsA, totalPOIsB);
-//
-//        /* Aggregate statistics */
-//
-//        countTotalNonEmptyProperties();
-//        countTotalEmptyProperties();
-//        calculateTotalNonEmptyPropertiesPercentage();
-//
-//        /* Average statistics */
-//        calculateAveragePropertiesPerPOI(leftModel, rightModel);
-//        calculateStatsPerLink(leftModel, rightModel, links);
-//        calculateAverageEmptyPropertiesOfLinkedPOIs();
+
+        map.put(EnumStat.NON_EMPTY_NAMES.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME_VALUE));
+        map.put(EnumStat.NON_EMPTY_PHONES.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
+        map.put(EnumStat.NON_EMPTY_STREETS.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+        map.put(EnumStat.NON_EMPTY_STREET_NUMBERS.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER));
+        map.put(EnumStat.NON_EMPTY_WEBSITES.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+        map.put(EnumStat.NON_EMPTY_EMAILS.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
+        map.put(EnumStat.NON_EMPTY_DATES.getKey(), countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
+
+        /* Empty properties */
+        
+        map.put(EnumStat.EMPTY_NAMES.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_NAMES, Namespace.NAME_VALUE));
+        map.put(EnumStat.EMPTY_PHONES.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_PHONES, Namespace.PHONE));
+        map.put(EnumStat.EMPTY_STREETS.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREETS, Namespace.STREET));
+        map.put(EnumStat.EMPTY_STREET_NUMBERS.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER));
+        map.put(EnumStat.EMPTY_WEBSITES.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_WEBSITES, Namespace.HOMEPAGE));
+        map.put(EnumStat.EMPTY_EMAILS.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_EMAILS, Namespace.EMAIL));
+        map.put(EnumStat.EMPTY_DATES.getKey(), countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_DATES, Namespace.DATE));
+
+        /* Distinct properties */
+
+        countDistinctProperties(leftModel, rightModel);
+
+        /* Percenteges */
+
+        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel);
+        calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE);
+        //TODO: replace with calculatePropertyPercentage
+        //calculatePropertyPercentage(leftModel, rightModel, EnumStat, Namespace.NAME_VALUE);
+        calculateWebsitePercentage(leftModel, rightModel);
+        calculatePhonePercentage(leftModel, rightModel);
+        calculateStreetPercentage(leftModel, rightModel);
+        calculateStreetNumberPercentage(leftModel, rightModel);
+        calculateLocalityPercentage(leftModel, rightModel);
+        calculateDatePercentage(leftModel, rightModel);
+
+        /* Statistics for linked POIs*/
+
+        computeLinkStats(totalPOIsA, totalPOIsB);
+
+        /* Aggregate statistics */
+
+        countTotalNonEmptyProperties();
+        countTotalEmptyProperties();
+        calculateTotalNonEmptyPropertiesPercentage();
+
+        /* Average statistics */
+        calculateAveragePropertiesPerPOI(leftModel, rightModel);
+        calculateStatsPerLink(leftModel, rightModel, links);
+        calculateAverageEmptyPropertiesOfLinkedPOIs();
 
         if(totalPOIsA == 0 || totalPOIsB == 0){
             container.setValid(false);
@@ -124,30 +127,92 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     @Override
     public StatisticsContainer collect(List<String> selected){
 
-        /* IMPORTANT: The order of calculation is sensitive for avoiding re-calculations */
-
         container.setComplete(false);
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
         List<Link> links = LinksModel.getLinksModel().getLinks();
-
-        /* POIs and triples count */
-        countTotalEntities(leftModel, rightModel);
-        countTriples(leftModel, rightModel);
-
-        if(totalPOIsA == 0 || totalPOIsB == 0){
-            container.setValid(false);
-        } else {
-            container.setValid(true);
+        
+        Map<String, EnumStat> statMap = EnumStat.getMap();
+        for(String statKey : selected){
+            EnumStat stat = statMap.get(statKey);
+            switch(stat){
+                case TOTAL_POIS:
+                    map.put(EnumStat.TOTAL_POIS.getKey(), countTotalEntities(leftModel, rightModel));
+                    break;
+                case TOTAL_TRIPLES:
+                    map.put(EnumStat.TOTAL_TRIPLES.getKey(), countTriples(leftModel, rightModel));
+                    break;
+                case NON_EMPTY_NAMES:
+                    map.put(EnumStat.NON_EMPTY_NAMES.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME_VALUE));
+                    break;
+                case NON_EMPTY_PHONES:
+                    map.put(EnumStat.NON_EMPTY_PHONES.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
+                    break;   
+                case NON_EMPTY_STREETS:
+                    map.put(EnumStat.NON_EMPTY_STREETS.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+                    break;
+                case NON_EMPTY_STREET_NUMBERS:
+                    map.put(EnumStat.NON_EMPTY_STREET_NUMBERS.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER));
+                    break;
+                case NON_EMPTY_WEBSITES:
+                    map.put(EnumStat.NON_EMPTY_WEBSITES.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                    break; 
+                case NON_EMPTY_EMAILS:
+                    map.put(EnumStat.NON_EMPTY_EMAILS.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
+                    break; 
+                case NON_EMPTY_DATES:
+                    map.put(EnumStat.NON_EMPTY_DATES.getKey(), 
+                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
+                    break;    
+                case EMPTY_NAMES:
+                    map.put(EnumStat.EMPTY_NAMES.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME));
+                    break;
+                case EMPTY_PHONES:
+                    map.put(EnumStat.EMPTY_PHONES.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
+                    break;
+                case EMPTY_STREETS:
+                    map.put(EnumStat.EMPTY_STREETS.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+                    break;
+                case EMPTY_STREET_NUMBERS:
+                    map.put(EnumStat.EMPTY_STREET_NUMBERS.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER));
+                    break;
+                case EMPTY_WEBSITES:
+                    map.put(EnumStat.EMPTY_WEBSITES.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                    break;
+                case EMPTY_EMAILS:
+                    map.put(EnumStat.EMPTY_EMAILS.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
+                    break;
+                case EMPTY_DATES:
+                    map.put(EnumStat.EMPTY_DATES.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
+                    break;
+                case NAMES_PERCENT:
+                    map.put(EnumStat.NAMES_PERCENT.getKey(), 
+                            countEmptyProperty(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE));
+                    break;                    
+            }
         }
 
         container.setMap(map);
-        container.setComplete(true && container.isValid());
+        container.setValid(true);
+        container.setComplete(true);
 
         return container;
     }
-    
+
     public StatisticResultPair countTotalEntities(Model a, Model b){
 
         Integer totalA = SparqlRepository.countPOIs(a);
@@ -160,7 +225,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
             pair.setTitle("Could not compute");
-            map.put(EnumStat.TOTAL_POIS.getKey(), pair);
             return pair;
         }
 
@@ -171,8 +235,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         pair.setLegendTotal(EnumStat.TOTAL_POIS.getLegendTotal());
         pair.setLegendA(EnumStat.TOTAL_POIS.getLegendA());
         pair.setLegendB(EnumStat.TOTAL_POIS.getLegendB());
-
-        map.put(EnumStat.TOTAL_POIS.getKey(), pair);
 
         return pair;
     }
@@ -191,7 +253,6 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         pair.setLegendA(EnumStat.TOTAL_TRIPLES.getLegendA());
         pair.setLegendB(EnumStat.TOTAL_TRIPLES.getLegendB());        
 
-        map.put(EnumStat.TOTAL_TRIPLES.getKey(), pair);
         return pair;
     }
     
@@ -250,81 +311,68 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair countNonEmptyNames(Model a, Model b){
+    public StatisticResultPair countNonEmptyProperty(Model a, Model b, EnumStat stat, String property){
 
-        Integer namesA = countNonEmptyProperty(Namespace.NAME_VALUE, a);
-        Integer namesB = countNonEmptyProperty(Namespace.NAME_VALUE, b);
+        Integer propertyA = countNonEmptyProperty(property, a);
+        Integer propertyB = countNonEmptyProperty(property, b);
+        Integer total = propertyA + propertyB;
 
-        StatisticResultPair pair = new StatisticResultPair(namesA.toString(), namesB.toString(), null);
-        pair.setTitle("Non empty Names");
+        StatisticResultPair pair = new StatisticResultPair(propertyA.toString(), propertyB.toString(), null);
 
-        map.put("nonEmptyNames", pair);
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal(total.toString());
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
+
         return pair;
     }
 
-    public StatisticResultPair countNonEmptyPhones(Model a, Model b){
-
-        Integer phonesA = countNonEmptyProperty(Namespace.PHONE, a);
-        Integer phonesB = countNonEmptyProperty(Namespace.PHONE, b);
-
-        StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString(), null);
-        pair.setTitle("Non empty Phones");
-
-        map.put("nonEmptyPhones", pair);
-        return pair;
-    }
-
-    public StatisticResultPair countNonEmptyStreets(Model a, Model b){
-
-        Integer streetsA = countNonEmptyProperty(Namespace.STREET, a);
-        Integer streetsB = countNonEmptyProperty(Namespace.STREET, b);
-        StatisticResultPair pair = new StatisticResultPair(streetsA.toString(), streetsB.toString(), null);
-        pair.setTitle("Non empty Streets");
+    public StatisticResultPair countEmptyProperty(Model a, Model b, EnumStat stat, String property){
         
-        map.put("nonEmptyStreets", pair);
-        return pair;
-    } 
-    
-    public StatisticResultPair countNonEmptyStreetNumbers(Model a, Model b){
-
-        Integer stNumbersA = countNonEmptyProperty(Namespace.STREET_NUMBER, a);
-        Integer stNumbersB = countNonEmptyProperty(Namespace.STREET_NUMBER, b);
-        StatisticResultPair pair = new StatisticResultPair(stNumbersA.toString(), stNumbersB.toString(), null);
-        pair.setTitle("Non empty Street Numbers");
+        Integer nA;
+        Integer nB;
+        Integer total;
         
-        map.put("nonEmptyStreetNumbers", pair);
-        return pair;
-    } 
+        if(map.get(stat.getKey()) != null){
+            try {
 
-    public StatisticResultPair countNonEmptyWebsites(Model a, Model b){
+                nA = Integer.parseInt(map.get(stat.getKey()).getValueA());
+                nB = Integer.parseInt(map.get(stat.getKey()).getValueB());
+                total = nA + nB;
 
-        Integer websitesA = countNonEmptyProperty(Namespace.HOMEPAGE, a);
-        Integer websitesB = countNonEmptyProperty(Namespace.HOMEPAGE, b);
-        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
-        pair.setTitle("Non empty Websites");
+            } catch(NumberFormatException ex){
+                LOG.warn("Could not compute empty names. ", ex);
+                StatisticResultPair pair = new StatisticResultPair("0","0", null);
+                pair.setTitle("Could not compute");
+
+                return pair;
+            }
+        } else {
+            StatisticResultPair nonEmptyProperty = countNonEmptyProperty(a, b, stat, property);
+            nA = Integer.parseInt(nonEmptyProperty.getValueA());
+            nB = Integer.parseInt(nonEmptyProperty.getValueB());
+            total = nA + nB;
+        }
         
-        map.put("nonEmptyWebsites", pair);
-        return pair;
-    }     
-
-    public StatisticResultPair countNonEmptyEmails(Model a, Model b){
-
-        Integer websitesA = countNonEmptyProperty(Namespace.EMAIL, a);
-        Integer websitesB = countNonEmptyProperty(Namespace.EMAIL, b);
-        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
-        pair.setTitle("Non empty Emails");
+        if(totalPOIsA == null || totalPOIsB == null){
+            StatisticResultPair totalEntities = countTotalEntities(a, b);
+            totalPOIsA = Integer.parseInt(totalEntities.getValueA());
+            totalPOIsB = Integer.parseInt(totalEntities.getValueB());
+        }
         
-        map.put("nonEmptyEmails", pair);
-        return pair;
-    }  
-    
-    public StatisticResultPair countNonEmptyDates(Model a, Model b){
-        Integer datesA = countNonEmptyProperty(Namespace.DATE, a);
-        Integer datesB = countNonEmptyProperty(Namespace.DATE, b);
-        StatisticResultPair pair = new StatisticResultPair(datesA.toString(), datesB.toString(), null);
-        pair.setTitle("Non empty Dates");
+        Integer emptyA = totalPOIsA - nA;
+        Integer emptyB = totalPOIsB - nB;
         
-        map.put("nonEmptyDates", pair);
+        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal(total.toString());
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
+
         return pair;
     }
     
@@ -367,194 +415,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         map.put("nonEmptyProperties", pair);
         return pair;
-    }    
-
-    public StatisticResultPair countEmptyNames(){
-
-        Integer nA;
-        Integer nB;
-        try {
-            
-            nA = Integer.parseInt(map.get("nonEmptyNames").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyNames").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty names due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        }
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Names");
-
-        map.put("emptyNames", pair);
-
-        return pair;
     }
 
-    public StatisticResultPair countEmptyPhones(){
-
-        Integer nA;
-        Integer nB;
-        
-        try {
-            
-            nA = Integer.parseInt(map.get("nonEmptyPhones").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyPhones").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty phones due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        }
-        
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Phones");
-
-        map.put("emptyPhones", pair);
-        return pair;
-    }
-    
-    public StatisticResultPair countEmptyStreets(){
-        Integer nA;
-        Integer nB;
-        
-        try {
-            
-            nA = Integer.parseInt(map.get("nonEmptyStreets").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyStreets").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty streets due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        }        
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Streets");
-        
-        map.put("emptyStreets", pair);
-        return pair;
-    } 
-    
-    public StatisticResultPair countEmptyStreetNumbers(){
-        Integer nA;
-        Integer nB;
-        
-        try {
-            
-            nA = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyStreetNumbers").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty street numbers due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        } 
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Street Numbers");
-        
-        map.put("emptyStreetNumbers", pair);
-        return pair;
-    } 
-
-    public StatisticResultPair countEmptyWebsites(){
-        Integer nA;
-        Integer nB;
-        
-        try {
-            
-            nA = Integer.parseInt(map.get("nonEmptyWebsites").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyWebsites").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty websites due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        } 
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Websites");
-        
-        map.put("emptyWebsites", pair);
-        return pair;
-    }     
-
-    public StatisticResultPair countEmptyEmails(){
-        
-        Integer nA;
-        Integer nB;
-        
-        try{
-            
-            nA = Integer.parseInt(map.get("nonEmptyEmails").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyEmails").getValueB());
-            
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty emails due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
-        } 
-
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Emails");
-        
-        map.put("emptyEmails", pair);
-        return pair;
-    }  
-
-    public StatisticResultPair countEmptyDates(){
-
-        Integer nA;
-        Integer nB;
-        
-        try{
-            nA = Integer.parseInt(map.get("nonEmptyDates").getValueA());
-            nB = Integer.parseInt(map.get("nonEmptyDates").getValueB());
-
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute empty dates due to missing property. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-
-            return pair;
-        }
-
-        Integer emptyA = totalPOIsA - nA;
-        Integer emptyB = totalPOIsB - nB;
-        StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
-        pair.setTitle("Empty Dates");
-
-        map.put("emptyDates", pair);
-        return pair;
-    }
-    
     public StatisticResultPair countTotalEmptyProperties(){
 
         Integer totalA;
@@ -649,26 +511,56 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
 
-    public StatisticResultPair calculateNamePercentage(Model a, Model b){
+    public StatisticResultPair calculatePropertyPercentage(Model a, Model b, EnumStat stat, String property){
 
-        int namesA = SparqlRepository.countProperty(a, Namespace.NAME);
-        int namesB = SparqlRepository.countProperty(b, Namespace.NAME);
+        int propertyA = SparqlRepository.countProperty(a, property);
+        int propertyB = SparqlRepository.countProperty(b, property);
         
         if(warn(totalPOIsA, totalPOIsB, Namespace.NAME)){
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            map.put("namesPercent", pair);
             return pair;
         }
 
-        Double percentageA = roundHalfDown((100 * namesA) / (double) totalPOIsA);
-        Double percentageB = roundHalfDown((100 * namesB) / (double) totalPOIsB);
+        if(totalPOIsA == null || totalPOIsB == null){
+            StatisticResultPair totalPois = countTotalEntities(a, b);
+            totalPOIsA = Integer.parseInt(totalPois.getValueA());
+            totalPOIsB = Integer.parseInt(totalPois.getValueB());
+        }
+        
+        Double percentageA = roundHalfDown((100 * propertyA) / (double) totalPOIsA);
+        Double percentageB = roundHalfDown((100 * propertyB) / (double) totalPOIsB);
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
-        pair.setTitle("Percentage of names in each dataset");
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal("100");
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());        
 
-        map.put("namesPercent", pair);
         return pair;
     }
+    
+//    public StatisticResultPair calculateNamePercentage(Model a, Model b){
+//
+//        int namesA = SparqlRepository.countProperty(a, Namespace.NAME);
+//        int namesB = SparqlRepository.countProperty(b, Namespace.NAME);
+//        
+//        if(warn(totalPOIsA, totalPOIsB, Namespace.NAME)){
+//            StatisticResultPair pair = new StatisticResultPair("0","0", null);
+//            map.put("namesPercent", pair);
+//            return pair;
+//        }
+//
+//        Double percentageA = roundHalfDown((100 * namesA) / (double) totalPOIsA);
+//        Double percentageB = roundHalfDown((100 * namesB) / (double) totalPOIsB);
+//
+//        StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
+//        pair.setTitle("Percentage of names in each dataset");
+//
+//        map.put("namesPercent", pair);
+//        return pair;
+//    }
 
     public StatisticResultPair calculateWebsitePercentage(Model a, Model b){
 
