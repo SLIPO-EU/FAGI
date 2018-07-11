@@ -445,7 +445,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countDistinctProperties(modelA, modelB);
         StatisticResultPair expResult = new StatisticResultPair("12", "13", null);
-        expResult.setTitle("Distinct Properties");
+        expResult.setTitle(EnumStat.DISTINCT_PROPERTIES.toString());
         
         assertEquals(expResult, result);
     }
@@ -482,114 +482,6 @@ public class RDFStatisticsCollectorTest {
         
         assertEquals(expResult, result);
     }
-
-    /**
-     * Test of calculateWebsitePercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculateWebsitePercentage() {
-        LOG.info("calculateWebsitePercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculateWebsitePercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setTitle("Percentage of websites in each dataset");
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of calculatePhonePercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculatePhonePercentage() {
-        LOG.info("calculatePhonePercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculatePhonePercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("50.0", "0.0", null);
-        expResult.setTitle("Percentage of phones in each dataset");
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of calculateStreetPercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculateStreetPercentage() {
-        LOG.info("calculateStreetPercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculateStreetPercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setTitle("Percentage of streets in each dataset");
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of calculateStreetNumberPercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculateStreetNumberPercentage() {
-        LOG.info("calculateStreetNumberPercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculateStreetNumberPercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0.0", "50.0", null);
-        expResult.setTitle("Percentage of street numbers in each dataset");
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of calculateLocalityPercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculateLocalityPercentage() {
-        LOG.info("calculateLocalityPercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculateLocalityPercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0.0", "0.0", null);
-        expResult.setTitle("Percentage of locality in each dataset");
-        
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of calculateDatePercentage method, of class RDFStatisticsCollector.
-     */
-    @Test
-    public void testCalculateDatePercentage() {
-        LOG.info("calculateDatesPercentage");
-
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair result = collector.calculateDatePercentage(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0.0", "0.0", null);
-        expResult.setTitle("Percentage of dates in each dataset");
-        
-        assertEquals(expResult, result);
-    }
     
     /**
      * Test of countLinkedPOIs method, of class RDFStatisticsCollector.
@@ -598,10 +490,8 @@ public class RDFStatisticsCollectorTest {
     public void testCountLinkedPOIs() {
         LOG.info("countLinkedPOIs");
 
-   
-
         StatisticResultPair expResult =  new StatisticResultPair("1", "1", null);
-        expResult.setTitle("Linked POIs");
+        expResult.setTitle(EnumStat.LINKED_POIS.toString());
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         StatisticResultPair result = collector.countLinkedPOIs(linksModel);
@@ -617,10 +507,10 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countLinkedVsTotalPOIs");
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countLinkedVsTotalPOIs(linksModel, 2, 2);
+        StatisticResultPair result = collector.countLinkedVsTotalPOIs(modelA, modelB, linksModel);
         
         StatisticResultPair expResult = new StatisticResultPair("2", "4", null);
-        expResult.setTitle("Linked vs Total POIS");
+        expResult.setTitle(EnumStat.LINKED_VS_TOTAL.toString());
         
         assertEquals(expResult, result);
 
@@ -631,16 +521,13 @@ public class RDFStatisticsCollectorTest {
      */
     @Test
     public void testCountTotalLinkedTriples() {
-        LOG.info("countTotalLinkedTriples");
-        
-        Model linkedA = modelA.union(linksModel);
-        Model linkedB = modelB.union(linksModel);     
+        LOG.info("countTotalLinkedTriples");  
         
         StatisticResultPair expResult = new StatisticResultPair("6", "5", null);
-        expResult.setTitle("Linked Triples");
+        expResult.setTitle(EnumStat.LINKED_TRIPLES.toString());
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.countTotalLinkedTriples(linkedA, linkedB);
+        StatisticResultPair result = collector.countLinkedTriples(modelA, modelB, linksModel);
         
         assertEquals(expResult, result);
     }
@@ -723,7 +610,7 @@ public class RDFStatisticsCollectorTest {
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
 
-        collector.getMap().put("linkedPOIs", linkedPOIs);
+        collector.getMap().put("linkedPois", linkedPOIs);
         collector.getMap().put("linkedEmptyNames", stat1);
         collector.getMap().put("linkedEmptyPhones", stat2);
         collector.getMap().put("linkedEmptyStreets", stat3);
@@ -949,7 +836,7 @@ public class RDFStatisticsCollectorTest {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         
         StatisticResultPair stat1 = new StatisticResultPair("12", "13", null);
-        stat1.setTitle("Distinct Properties");
+        stat1.setTitle(EnumStat.DISTINCT_PROPERTIES.toString());
         
         collector.getMap().put("distinctProperties", stat1);
 

@@ -99,9 +99,74 @@ public enum EnumStat {
     EMPTY_DATES("emptyDates"),
     
     /**
+     * Number of distinct properties in each input dataset.
+     */    
+    DISTINCT_PROPERTIES("distinctProperties"),
+    
+    /**
+     * Percentage of dates that follow the primary format as described in the spec.
+     */    
+    PRIMARY_DATE_FORMATS_PERCENT("primaryDatesFormatPercent"),
+    
+    /**
      * Percentage of name property in each input dataset.
      */    
-    NAMES_PERCENT("namesPercent");  
+    NAMES_PERCENT("namesPercent"),  
+    
+    /**
+     * Percentage of web-site property in each input dataset.
+     */    
+    WEBSITE_PERCENT("websitesPercent"),
+    
+    /**
+     * Percentage of e-mail property in each input dataset.
+     */    
+    EMAIL_PERCENT("emailsPercent"),      
+
+    /**
+     * Percentage of phone property in each input dataset.
+     */    
+    PHONES_PERCENT("namesPercent"),  
+
+    /**
+     * Percentage of street property in each input dataset.
+     */    
+    STREETS_PERCENT("streetsPercent"),  
+
+    /**
+     * Percentage of street number property in each input dataset.
+     */    
+    STREET_NUMBERS_PERCENT("streetNumbersPercent"),  
+
+    /**
+     * Percentage of locality property in each input dataset.
+     */    
+    LOCALITY_PERCENT("localityPercent"),
+
+    /**
+     * Percentage of dates property in each input dataset.
+     */    
+    DATES_PERCENT("datesPercent"),
+
+    /**
+     * Number of linked POIs in each input dataset.
+     */    
+    LINKED_POIS("linkedPois"),
+
+    /**
+     * Number of linked vs total POIS in the datasets.
+     */
+    LINKED_VS_TOTAL("linkedVsTotal"),
+
+    /**
+     * Number of linked triples from input datasets.
+     */
+    LINKED_TRIPLES("linkedTriples"),
+
+    /**
+     * Number of non empty names of linked entities.
+     */
+    LINKED_NON_EMPTY_NAMES("linkedNonEmptyNames");
 
 	private final String value;
 
@@ -189,7 +254,20 @@ public enum EnumStat {
             case EMPTY_WEBSITES: return "Total number of POIs that have the website property in each input dataset.";
             case EMPTY_EMAILS: return "Total number of POIs that have the email property in each input dataset.";
             case EMPTY_DATES: return "Total number of POIs that have the date property in each input dataset.";
+            case DISTINCT_PROPERTIES: return "Number of distinct properties in each input dataset.";
+            case PRIMARY_DATE_FORMATS_PERCENT: return "Percentage of primary date formats in each input dataset.";
             case NAMES_PERCENT: return "Percentage of name property in each input dataset.";
+            case WEBSITE_PERCENT: return "Percentage of website property in each input dataset.";
+            case EMAIL_PERCENT: return "Percentage of email property in each input dataset.";
+            case PHONES_PERCENT: return "Percentage of phone property in each input dataset.";
+            case STREETS_PERCENT: return "Percentage of street property in each input dataset.";
+            case STREET_NUMBERS_PERCENT: return "Percentage of street number property in each input dataset.";
+            case LOCALITY_PERCENT: return "Percentage of locality property in each input dataset.";
+            case DATES_PERCENT: return "Percentage of locality property in each input dataset.";
+            case LINKED_POIS: return "Number of linked POIs in each input dataset.";
+            case LINKED_VS_TOTAL: return "Number of linked vs total POIs in the datasets.";
+            case LINKED_TRIPLES: return "Number of linked triples from each dataset.";
+            case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in each input dataset.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -197,8 +275,8 @@ public enum EnumStat {
     public String getLegendTotal() {
         switch(this) {
             case UNDEFINED: return "undefined";
-            case TOTAL_POIS: return "Total POIs";
-            case TOTAL_TRIPLES: return "Total Triples";
+            case TOTAL_POIS: return "Total POIs.";
+            case TOTAL_TRIPLES: return "Total Triples.";
             case NON_EMPTY_NAMES: return "Total number of name properties.";
             case NON_EMPTY_PHONES: return "Total number of phone properties.";
             case NON_EMPTY_STREETS: return "Total number of address street property.";
@@ -213,7 +291,20 @@ public enum EnumStat {
             case EMPTY_WEBSITES: return "Total number of empty website property.";
             case EMPTY_EMAILS: return "Total number of empty email property.";
             case EMPTY_DATES: return "Total number of empty date property.";
-            case NAMES_PERCENT: return "Percentage of names";
+            case DISTINCT_PROPERTIES: return "Distinct Properties.";
+            case PRIMARY_DATE_FORMATS_PERCENT: return "Primary date formats.";
+            case NAMES_PERCENT: return "Percentage of names.";
+            case WEBSITE_PERCENT: return "Percentage of websites.";
+            case EMAIL_PERCENT: return "Percentage of e-mails.";
+            case PHONES_PERCENT: return "Percentage of phones.";
+            case STREETS_PERCENT: return "Percentage of streets.";
+            case STREET_NUMBERS_PERCENT: return "Percentage of street numbers.";
+            case LOCALITY_PERCENT: return "Percentage of locality.";
+            case DATES_PERCENT: return "Percentage of dates.";
+            case LINKED_POIS: return "Linked POIs.";
+            case LINKED_VS_TOTAL: return "Linked vs total POIs.";
+            case LINKED_TRIPLES: return "Linked Triples.";
+            case LINKED_NON_EMPTY_NAMES: return "Linked non empty names.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -237,7 +328,20 @@ public enum EnumStat {
             case EMPTY_WEBSITES: return "Total number of POIs that don' t have the website property in dataset A.";
             case EMPTY_EMAILS: return "Total number of POIs that don' t have the email property in dataset A.";
             case EMPTY_DATES: return "Total number of POIs that don' t have the date property in dataset A.";
+            case DISTINCT_PROPERTIES: return "Number of distinct properties in dataset A.";
+            case PRIMARY_DATE_FORMATS_PERCENT: return "Percentage of primary date formats in dataset A.";
             case NAMES_PERCENT: return "Percentage of name property in dataset A.";
+            case WEBSITE_PERCENT: return "Percentage of website property in dataset A.";
+            case EMAIL_PERCENT: return "Percentage of e-mail property in dataset A.";
+            case PHONES_PERCENT: return "Percentage of phone property in dataset A.";
+            case STREETS_PERCENT: return "Percentage of streets property in dataset A.";
+            case STREET_NUMBERS_PERCENT: return "Percentage of street number property in dataset A.";
+            case LOCALITY_PERCENT: return "Percentage of locality property in dataset A.";
+            case DATES_PERCENT: return "Percentage of date property in dataset A.";
+            case LINKED_POIS: return "Linked POIs from dataset A.";
+            case LINKED_VS_TOTAL: return "Linked POIs.";
+            case LINKED_TRIPLES: return "Linked triples from A.";
+            case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in dataset A.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -261,7 +365,20 @@ public enum EnumStat {
             case EMPTY_WEBSITES: return "Total number of POIs that don' t have the website property in dataset B.";
             case EMPTY_EMAILS: return "Total number of POIs that don' t have the email property in dataset B.";
             case EMPTY_DATES: return "Total number of POIs that don' t have the date property in dataset B.";
+            case DISTINCT_PROPERTIES: return "Number of distinct properties in dataset B.";
+            case PRIMARY_DATE_FORMATS_PERCENT: return "Percentage of primary date formats in dataset B.";
             case NAMES_PERCENT: return "Percentage of name property in dataset B.";
+            case WEBSITE_PERCENT: return "Percentage of website property in dataset B.";
+            case EMAIL_PERCENT: return "Percentage of e-mail property in dataset B.";
+            case PHONES_PERCENT: return "Percentage of phone property in dataset B.";
+            case STREETS_PERCENT: return "Percentage of street property in dataset B.";
+            case STREET_NUMBERS_PERCENT: return "Percentage of street number property in dataset B.";
+            case LOCALITY_PERCENT: return "Percentage of locality property in dataset B.";
+            case DATES_PERCENT: return "Percentage of dates property in dataset B.";
+            case LINKED_POIS: return "Linked POIs from dataset B.";
+            case LINKED_VS_TOTAL: return "Total POIs.";
+            case LINKED_TRIPLES: return "Linked triples from B.";
+            case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in dataset B.";
             default: throw new IllegalArgumentException();
         }
     }      
