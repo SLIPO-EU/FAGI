@@ -378,7 +378,7 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "1", null);
-        stat.setTitle("Non empty Websites");
+        stat.setTitle(EnumStat.NON_EMPTY_WEBSITES.toString());
         
         collector.getMap().put("nonEmptyWebsites", stat);
         
@@ -401,9 +401,9 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("1", "0", null);
-        stat.setTitle("Non empty Emails");
+        stat.setTitle(EnumStat.NON_EMPTY_EMAILS.toString());
         
-        collector.getMap().put("nonEmptyEmails", stat);
+        collector.getMap().put(EnumStat.NON_EMPTY_EMAILS.getKey(), stat);
         
         StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_EMAILS, Namespace.EMAIL);
         StatisticResultPair expResult = new StatisticResultPair("1", "2", null);
@@ -424,9 +424,9 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("0", "0", null);
-        stat.setTitle("Non empty Dates");
+        stat.setTitle(EnumStat.NON_EMPTY_DATES.toString());
         
-        collector.getMap().put("nonEmptyDates", stat);
+        collector.getMap().put(EnumStat.NON_EMPTY_DATES.getKey(), stat);
         
         StatisticResultPair result = collector.countEmptyProperty(modelA, modelB, EnumStat.EMPTY_DATES, Namespace.DATE);
         StatisticResultPair expResult = new StatisticResultPair("2", "2", null);
@@ -538,9 +538,6 @@ public class RDFStatisticsCollectorTest {
     @Test
     public void testComputeNonEmptyLinkedProperty() {
         LOG.info("computeNonEmptyLinkedProperty");
-        
-        Model linkedA = modelA.union(linksModel);
-        Model linkedB = modelB.union(linksModel); 
 
         StatisticResultPair expResult1 = new StatisticResultPair("1", "1", null);
         StatisticResultPair expResult2 = new StatisticResultPair("1", "0", null);
@@ -550,28 +547,30 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair expResult6 = new StatisticResultPair("1", "0", null);
         StatisticResultPair expResult7 = new StatisticResultPair("0", "0", null);
         
-        expResult1.setTitle("Linked Non Empty Names");
-        expResult2.setTitle("Linked Non Empty Phones");
-        expResult3.setTitle("Linked Non Empty Streets");
-        expResult4.setTitle("Linked Non Empty Street Numbers");
-        expResult5.setTitle("Linked Non Empty Websites");
-        expResult6.setTitle("Linked Non Empty Emails");
-        expResult7.setTitle("Linked Non Empty Dates");
+        expResult1.setTitle(EnumStat.LINKED_NON_EMPTY_NAMES.toString());
+        expResult2.setTitle(EnumStat.LINKED_NON_EMPTY_PHONES.toString());
+        expResult3.setTitle(EnumStat.LINKED_NON_EMPTY_STREETS.toString());
+        expResult4.setTitle(EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS.toString());
+        expResult5.setTitle(EnumStat.LINKED_NON_EMPTY_WEBSITES.toString());
+        expResult6.setTitle(EnumStat.LINKED_NON_EMPTY_EMAILS.toString());
+        expResult7.setTitle(EnumStat.LINKED_NON_EMPTY_DATES.toString());
 
         StatisticResultPair result1 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
-                linkedA, linkedB, Namespace.NAME, Namespace.NAME_VALUE);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE);
+        result1.setTitle(EnumStat.LINKED_NON_EMPTY_NAMES.toString());
+        
         StatisticResultPair result2 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
-                linkedA, linkedB, Namespace.PHONE, Namespace.CONTACT_VALUE);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE);
         StatisticResultPair result3 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
-                linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_STREETS, Namespace.ADDRESS, Namespace.STREET);
         StatisticResultPair result4 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
-                linkedA, linkedB, Namespace.ADDRESS, Namespace.STREET_NUMBER);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER);
         StatisticResultPair result5 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(
-                linkedA, linkedB, Namespace.HOMEPAGE);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_WEBSITES, Namespace.HOMEPAGE);
         StatisticResultPair result6 = RDFStatisticsCollector.computeNonEmptyLinkedPropertyChain(
-                linkedA, linkedB, Namespace.EMAIL, Namespace.CONTACT_VALUE);
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE);
         StatisticResultPair result7 = RDFStatisticsCollector.computeNonEmptyLinkedProperty(
-                linkedA, linkedB, Namespace.DATE);        
+                modelA, modelB, linksModel, EnumStat.LINKED_NON_EMPTY_DATES, Namespace.DATE);        
 
         assertEquals(expResult1, result1);
         assertEquals(expResult2, result2);
@@ -588,52 +587,23 @@ public class RDFStatisticsCollectorTest {
      */
     @Test
     public void testComputeEmptyLinkedProperty() {
-        LOG.info("computeEmptyLinkedProperty");
-
-        StatisticResultPair linkedPOIs = new StatisticResultPair("1", "1", null);
-        StatisticResultPair stat1 = new StatisticResultPair("1", "1", null);
-        StatisticResultPair stat2 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair stat3 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat4 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat5 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat6 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair stat7 = new StatisticResultPair("0", "0", null);
-
-        linkedPOIs.setTitle("Linked POIs");
-        stat1.setTitle("Linked Empty Names");
-        stat2.setTitle("Linked Empty Phones");
-        stat3.setTitle("Linked Empty Streets");
-        stat4.setTitle("Linked Empty Street Numbers");
-        stat5.setTitle("Linked Empty Websites");
-        stat6.setTitle("Linked Empty Emails");
-        stat7.setTitle("Linked Empty Dates");        
-
+        LOG.info("computeEmptyLinkedProperty");     
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
 
-        collector.getMap().put("linkedPois", linkedPOIs);
-        collector.getMap().put("linkedEmptyNames", stat1);
-        collector.getMap().put("linkedEmptyPhones", stat2);
-        collector.getMap().put("linkedEmptyStreets", stat3);
-        collector.getMap().put("linkedEmptyStreetNumbers", stat4);
-        collector.getMap().put("linkedEmptyWebsites", stat5);
-        collector.getMap().put("linkedEmptyEmails", stat6);
-        collector.getMap().put("linkedEmptyDates", stat7);
-
-        StatisticResultPair result1 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat1.getValueA()), Integer.parseInt(stat1.getValueB()));
-        StatisticResultPair result2 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat2.getValueA()), Integer.parseInt(stat2.getValueB()));
-        StatisticResultPair result3 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat3.getValueA()), Integer.parseInt(stat3.getValueB()));
-        StatisticResultPair result4 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat4.getValueA()), Integer.parseInt(stat4.getValueB()));
-        StatisticResultPair result5 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat5.getValueA()), Integer.parseInt(stat5.getValueB()));
-        StatisticResultPair result6 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat6.getValueA()), Integer.parseInt(stat6.getValueB()));
-        StatisticResultPair result7 = collector.computeEmptyLinkedProperty(Integer.parseInt(stat7.getValueA()), Integer.parseInt(stat7.getValueB()));
-
-        result1.setTitle("Linked Empty Names");
-        result2.setTitle("Linked Empty Phones");
-        result3.setTitle("Linked Empty Streets");
-        result4.setTitle("Linked Empty Street Numbers");
-        result5.setTitle("Linked Empty Websites");
-        result6.setTitle("Linked Empty Emails");
-        result7.setTitle("Linked Empty Dates");        
+        StatisticResultPair result1 = collector.computeEmptyLinkedPropertyChain(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE);
+        StatisticResultPair result2 = collector.computeEmptyLinkedPropertyChain(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE);
+        StatisticResultPair result3 = collector.computeEmptyLinkedPropertyChain(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_STREETS, Namespace.ADDRESS, Namespace.STREET);
+        StatisticResultPair result4 = collector.computeEmptyLinkedPropertyChain(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER);
+        StatisticResultPair result5 = collector.computeEmptyLinkedProperty(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_WEBSITES, Namespace.HOMEPAGE);
+        StatisticResultPair result6 = collector.computeEmptyLinkedPropertyChain(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE);
+        StatisticResultPair result7 = collector.computeEmptyLinkedProperty(
+                modelA, modelB, linksModel, EnumStat.LINKED_EMPTY_DATES, Namespace.DATE);  
 
         StatisticResultPair expResult1 = new StatisticResultPair("0", "0", null);
         StatisticResultPair expResult2 = new StatisticResultPair("0", "1", null);
@@ -643,13 +613,13 @@ public class RDFStatisticsCollectorTest {
         StatisticResultPair expResult6 = new StatisticResultPair("0", "1", null);
         StatisticResultPair expResult7 = new StatisticResultPair("1", "1", null);
 
-        expResult1.setTitle("Linked Empty Names");
-        expResult2.setTitle("Linked Empty Phones");
-        expResult3.setTitle("Linked Empty Streets");
-        expResult4.setTitle("Linked Empty Street Numbers");
-        expResult5.setTitle("Linked Empty Websites");
-        expResult6.setTitle("Linked Empty Emails");
-        expResult7.setTitle("Linked Empty Dates");
+        expResult1.setTitle(EnumStat.LINKED_EMPTY_NAMES.toString());
+        expResult2.setTitle(EnumStat.LINKED_EMPTY_PHONES.toString());
+        expResult3.setTitle(EnumStat.LINKED_EMPTY_STREETS.toString());
+        expResult4.setTitle(EnumStat.LINKED_EMPTY_STREET_NUMBERS.toString());
+        expResult5.setTitle(EnumStat.LINKED_EMPTY_WEBSITES.toString());
+        expResult6.setTitle(EnumStat.LINKED_EMPTY_EMAILS.toString());
+        expResult7.setTitle(EnumStat.LINKED_EMPTY_DATES.toString());
 
         assertEquals(expResult1, result1);
         assertEquals(expResult2, result2);
@@ -734,27 +704,11 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countTotalNonEmptyProperties");
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        
-        StatisticResultPair stat1 = new StatisticResultPair("2", "2", null);
-        StatisticResultPair stat2 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair stat3 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat4 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat5 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair stat6 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair stat7 = new StatisticResultPair("0", "0", null);
-
-        collector.getMap().put("nonEmptyNames", stat1);
-        collector.getMap().put("nonEmptyPhones", stat2);
-        collector.getMap().put("nonEmptyStreets", stat3);
-        collector.getMap().put("nonEmptyStreetNumbers", stat4);
-        collector.getMap().put("nonEmptyWebsites", stat5);
-        collector.getMap().put("nonEmptyEmails", stat6);
-        collector.getMap().put("nonEmptyDates", stat7);
 
         StatisticResultPair expResult = new StatisticResultPair("4", "5", null);
-        expResult.setTitle("Non empty properties");
+        expResult.setTitle(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.toString());
         
-        StatisticResultPair result = collector.countTotalNonEmptyProperties();
+        StatisticResultPair result = collector.countTotalNonEmptyProperties(modelA, modelB);
 
         assertEquals(expResult, result);
 
@@ -768,27 +722,11 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countTotalEmptyProperties");
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        
-        StatisticResultPair statB1 = new StatisticResultPair("2", "2", null);
-        StatisticResultPair statB2 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair statB3 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair statB4 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair statB5 = new StatisticResultPair("0", "1", null);
-        StatisticResultPair statB6 = new StatisticResultPair("1", "0", null);
-        StatisticResultPair statB7 = new StatisticResultPair("0", "0", null);
 
-        collector.getMap().put("emptyNames", statB1);
-        collector.getMap().put("emptyPhones", statB2);
-        collector.getMap().put("emptyStreets", statB3);
-        collector.getMap().put("emptyStreetNumbers", statB4);
-        collector.getMap().put("emptyWebsites", statB5);
-        collector.getMap().put("emptyEmails", statB6);
-        collector.getMap().put("emptyDates", statB7);
-
-        StatisticResultPair expResult = new StatisticResultPair("4", "5", null);
-        expResult.setTitle("Empty properties");
+        StatisticResultPair expResult = new StatisticResultPair("10", "9", null);
+        expResult.setTitle(EnumStat.TOTAL_EMPTY_PROPERTIES.toString());
         
-        StatisticResultPair result = collector.countTotalEmptyProperties();
+        StatisticResultPair result = collector.countTotalEmptyProperties(modelA, modelB);
 
         assertEquals(expResult, result);
     }
@@ -802,25 +740,9 @@ public class RDFStatisticsCollectorTest {
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
 
-        StatisticResultPair stat1 = new StatisticResultPair("100.0", "100.0", null);
-        StatisticResultPair stat2 = new StatisticResultPair("0.0", "50.0", null);
-        StatisticResultPair stat3 = new StatisticResultPair("50.0", "0", null);
-        StatisticResultPair stat4 = new StatisticResultPair("0.0", "50.0", null);
-        StatisticResultPair stat5 = new StatisticResultPair("0.0", "50.0", null);
-        StatisticResultPair stat6 = new StatisticResultPair("0.0", "0.0", null);
-        StatisticResultPair stat7 = new StatisticResultPair("0.0", "0.0", null);
-
-        collector.getMap().put("namesPercent", stat1);
-        collector.getMap().put("phonesPercent", stat2);
-        collector.getMap().put("streetsPercent", stat3);
-        collector.getMap().put("streetNumbersPercent", stat4);
-        collector.getMap().put("websitesPercent", stat5);
-        collector.getMap().put("localityPercent", stat6);
-        collector.getMap().put("datesPercent", stat7);
-
-        StatisticResultPair expResult = new StatisticResultPair("21.42", "35.71", null);
-        expResult.setTitle("Percentage of total properties in each dataset");
-        StatisticResultPair result = collector.calculateTotalNonEmptyPropertiesPercentage();
+        StatisticResultPair expResult = new StatisticResultPair("25.0", "31.25", null);
+        expResult.setTitle(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.toString());
+        StatisticResultPair result = collector.calculateTotalNonEmptyPropertiesPercentage(modelA, modelB);
         
         assertEquals(expResult, result);
 

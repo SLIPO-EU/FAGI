@@ -166,7 +166,92 @@ public enum EnumStat {
     /**
      * Number of non empty names of linked entities.
      */
-    LINKED_NON_EMPTY_NAMES("linkedNonEmptyNames");
+    LINKED_NON_EMPTY_NAMES("linkedNonEmptyNames"),
+
+    /**
+     * Number of non empty phones of linked entities.
+     */
+    LINKED_NON_EMPTY_PHONES("linkedNonEmptyPhones"),
+
+    /**
+     * Number of non empty streets of linked entities.
+     */
+    LINKED_NON_EMPTY_STREETS("linkedNonEmptyStreets"),
+
+    /**
+     * Number of non empty street numbers of linked entities.
+     */
+    LINKED_NON_EMPTY_STREET_NUMBERS("linkedNonEmptyStreetNumbers"),
+
+    /**
+     * Number of non empty web-sites of linked entities.
+     */
+    LINKED_NON_EMPTY_WEBSITES("linkedNonEmptyWebsites"),
+
+    /**
+     * Number of non empty e-mails of linked entities.
+     */
+    LINKED_NON_EMPTY_EMAILS("linkedNonEmptyEmails"),
+
+    /**
+     * Number of non empty dates of linked entities.
+     */
+    LINKED_NON_EMPTY_DATES("linkedNonEmptyDates"),
+    
+    /**
+     * Number of empty names of linked entities.
+     */
+    LINKED_EMPTY_NAMES("linkedEmptyNames"),
+
+    /**
+     * Number of empty phones of linked entities.
+     */
+    LINKED_EMPTY_PHONES("linkedEmptyPhones"),
+
+    /**
+     * Number of empty streets of linked entities.
+     */
+    LINKED_EMPTY_STREETS("linkedEmptyStreets"),
+
+    /**
+     * Number of empty street numbers of linked entities.
+     */
+    LINKED_EMPTY_STREET_NUMBERS("linkedEmptyStreetNumbers"),
+
+    /**
+     * Number of empty web-sites of linked entities.
+     */
+    LINKED_EMPTY_WEBSITES("linkedEmptyWebsites"),
+
+    /**
+     * Number of empty e-mails of linked entities.
+     */
+    LINKED_EMPTY_EMAILS("linkedEmptyEmails"),
+
+    /**
+     * Number of empty dates of linked entities.
+     */
+    LINKED_EMPTY_DATES("linkedEmptyDates"),
+    
+    /**
+     * Total number of non empty properties.
+     */
+    TOTAL_NON_EMPTY_PROPERTIES("totalNonEmptyProperties"),
+    
+    /**
+     * Total number of empty properties.
+     */
+    TOTAL_EMPTY_PROPERTIES("totalEmptyProperties"),
+    
+    /**
+     * Percentage of total properties of each input dataset.
+     */
+    TOTAL_PROPERTIES_PERCENTAGE("totalPropertiesPercentage"),
+    
+    /**
+     * Average property per POI.
+     */
+    AVERAGE_PROPERTY_PER_POI("averagePropertyPerPoi");    
 
 	private final String value;
 
@@ -268,6 +353,23 @@ public enum EnumStat {
             case LINKED_VS_TOTAL: return "Number of linked vs total POIs in the datasets.";
             case LINKED_TRIPLES: return "Number of linked triples from each dataset.";
             case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in each input dataset.";
+            case LINKED_NON_EMPTY_PHONES: return "Number of linked POIs that have the phone property in each input dataset.";
+            case LINKED_NON_EMPTY_STREETS: return "Number of linked POIs that have the street property in each input dataset.";
+            case LINKED_NON_EMPTY_STREET_NUMBERS: return "Number of linked POIs that have the street number property in each input dataset.";
+            case LINKED_NON_EMPTY_WEBSITES: return "Number of linked POIs that have the website property in each input dataset.";
+            case LINKED_NON_EMPTY_EMAILS: return "Number of linked POIs that have the e-mail property in each input dataset.";
+            case LINKED_NON_EMPTY_DATES: return "Number of linked POIs that have the date property in each input dataset.";
+            case LINKED_EMPTY_NAMES: return "Number of linked POIs that don' t have the name property in each input dataset.";
+            case LINKED_EMPTY_PHONES: return "Number of linked POIs that don' t have the phone property in each input dataset.";
+            case LINKED_EMPTY_STREETS: return "Number of linked POIs that don' t have the street property in each input dataset.";
+            case LINKED_EMPTY_STREET_NUMBERS: return "Number of linked POIs that don' t have the street number property in each input dataset.";
+            case LINKED_EMPTY_WEBSITES: return "Number of linked POIs that don' t have the website property in each input dataset.";
+            case LINKED_EMPTY_EMAILS: return "Number of linked POIs that don' t have the e-mail property in each input dataset.";
+            case LINKED_EMPTY_DATES: return "Number of linked POIs that don' t have the date property in each input dataset.";
+            case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in each input dataset.";
+            case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in each input dataset.";
+            case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in each input dataset.";
+            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -305,6 +407,23 @@ public enum EnumStat {
             case LINKED_VS_TOTAL: return "Linked vs total POIs.";
             case LINKED_TRIPLES: return "Linked Triples.";
             case LINKED_NON_EMPTY_NAMES: return "Linked non empty names.";
+            case LINKED_NON_EMPTY_PHONES: return "Linked non empty phones.";
+            case LINKED_NON_EMPTY_STREETS: return "Linked non empty streets.";
+            case LINKED_NON_EMPTY_STREET_NUMBERS: return "Linked non empty street numbers.";
+            case LINKED_NON_EMPTY_WEBSITES: return "Linked non empty websites.";
+            case LINKED_NON_EMPTY_EMAILS: return "Linked non empty e-mails.";
+            case LINKED_NON_EMPTY_DATES: return "Linked non empty dates.";
+            case LINKED_EMPTY_NAMES: return "Linked empty names.";
+            case LINKED_EMPTY_PHONES: return "Linked empty phones.";
+            case LINKED_EMPTY_STREETS: return "Linked empty streets.";
+            case LINKED_EMPTY_STREET_NUMBERS: return "Linked empty street numbers.";
+            case LINKED_EMPTY_WEBSITES: return "Linked empty websites.";
+            case LINKED_EMPTY_EMAILS: return "Linked empty e-mails.";
+            case LINKED_EMPTY_DATES: return "Linked empty dates.";
+            case TOTAL_NON_EMPTY_PROPERTIES: return "Total non empty properties.";
+            case TOTAL_EMPTY_PROPERTIES: return "Total empty properties.";
+            case TOTAL_PROPERTIES_PERCENTAGE: return "Total properties percentage.";
+            case AVERAGE_PROPERTY_PER_POI: return "Average properties.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -342,6 +461,23 @@ public enum EnumStat {
             case LINKED_VS_TOTAL: return "Linked POIs.";
             case LINKED_TRIPLES: return "Linked triples from A.";
             case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in dataset A.";
+            case LINKED_NON_EMPTY_PHONES: return "Number of linked POIs that have the phone property in dataset A.";
+            case LINKED_NON_EMPTY_STREETS: return "Number of linked POIs that have the street property in dataset A.";
+            case LINKED_NON_EMPTY_STREET_NUMBERS: return "Number of linked POIs that have the street number property in dataset A.";
+            case LINKED_NON_EMPTY_WEBSITES: return "Number of linked POIs that have the website property in dataset A.";
+            case LINKED_NON_EMPTY_EMAILS: return "Number of linked POIs that have the e-mail property in dataset A.";
+            case LINKED_NON_EMPTY_DATES: return "Number of linked POIs that have the date property in dataset A.";
+            case LINKED_EMPTY_NAMES: return "Number of linked POIs that don' t have the name property in dataset A.";
+            case LINKED_EMPTY_PHONES: return "Number of linked POIs that don' t have the phone property in dataset A.";
+            case LINKED_EMPTY_STREETS: return "Number of linked POIs that don' t have the street property in dataset A.";
+            case LINKED_EMPTY_STREET_NUMBERS: return "Number of linked POIs that don' t have the street number property in dataset A.";
+            case LINKED_EMPTY_WEBSITES: return "Number of linked POIs that don' t have the website property in dataset A.";
+            case LINKED_EMPTY_EMAILS: return "Number of linked POIs that don' t have the e-mail property in dataset A.";
+            case LINKED_EMPTY_DATES: return "Number of linked POIs that don' t have the date property in dataset A.";
+            case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in dataset A.";
+            case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset A.";
+            case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset A.";
+            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset A.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -379,6 +515,23 @@ public enum EnumStat {
             case LINKED_VS_TOTAL: return "Total POIs.";
             case LINKED_TRIPLES: return "Linked triples from B.";
             case LINKED_NON_EMPTY_NAMES: return "Number of linked POIs that have the name property in dataset B.";
+            case LINKED_NON_EMPTY_PHONES: return "Number of linked POIs that have the phone property in dataset B.";
+            case LINKED_NON_EMPTY_STREETS: return "Number of linked POIs that have the street property in dataset B.";
+            case LINKED_NON_EMPTY_STREET_NUMBERS: return "Number of linked POIs that have the street number property in dataset B.";
+            case LINKED_NON_EMPTY_WEBSITES: return "Number of linked POIs that have the website property in dataset B.";
+            case LINKED_NON_EMPTY_EMAILS: return "Number of linked POIs that have the e-mail property in dataset B.";
+            case LINKED_NON_EMPTY_DATES: return "Number of linked POIs that have the date property in dataset B.";
+            case LINKED_EMPTY_NAMES: return "Number of linked POIs that don' t have the name property in dataset B.";
+            case LINKED_EMPTY_PHONES: return "Number of linked POIs that don' t have the phone property in dataset B.";
+            case LINKED_EMPTY_STREETS: return "Number of linked POIs that don' t have the street property in dataset B.";
+            case LINKED_EMPTY_STREET_NUMBERS: return "Number of linked POIs that don' t have the street number property in dataset B.";
+            case LINKED_EMPTY_WEBSITES: return "Number of linked POIs that don' t have the website property in dataset B.";
+            case LINKED_EMPTY_EMAILS: return "Number of linked POIs that don' t have the e-mail property in dataset B.";
+            case LINKED_EMPTY_DATES: return "Number of linked POIs that don' t have the date property in dataset B.";
+            case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in dataset B.";
+            case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset B.";
+            case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset B.";
+            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset B.";
             default: throw new IllegalArgumentException();
         }
     }      
