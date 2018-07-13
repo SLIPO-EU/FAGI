@@ -55,6 +55,8 @@ public class Fuser implements IFuser{
     private static final Logger LOG = LogManager.getLogger(Fuser.class);
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
+    private final Model tempModelA = ModelFactory.createDefaultModel();
+    private final Model tempModelB = ModelFactory.createDefaultModel();
 
     /**
      * Fuses all links using the Rules defined in the XML file.
@@ -80,8 +82,8 @@ public class Fuser implements IFuser{
         for (Link link : links.getLinks()){
 
             //create the jena models for each node of the pair and remove them from the source models.
-            Model modelA = constructEntityDataModel(link.getNodeA(), left, configuration.getOptionalDepth());
-            Model modelB = constructEntityDataModel(link.getNodeB(), right, configuration.getOptionalDepth());
+            Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, configuration.getOptionalDepth());
+            Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, configuration.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
@@ -102,34 +104,34 @@ public class Fuser implements IFuser{
 
     private LinkedPair fuseLink(Link link, Model modelA, Model modelB, RuleSpecification ruleSpec, 
             Map<String, IFunction> functionMap, EnumOutputMode mode) throws WrongInputException {
-        
+
         LinkedPair linkedPair = new LinkedPair();
         linkedPair.setLink(link);
-        
+
         String leftURI = link.getNodeA();
         String leftLocalName = link.getLocalNameA();
         String rightURI = link.getNodeB();
         String rightLocalName = link.getLocalNameB();
-        
+
         Entity entityA = constructEntity(modelA, leftURI, leftLocalName);
         Entity entityB = constructEntity(modelB, rightURI, rightLocalName);
         
         linkedPair.setLeftNode(entityA);
         linkedPair.setRightNode(entityB);
-        
+
         /* VALIDATION */
         EnumValidationAction validation = linkedPair.validateLink(ruleSpec.getValidationRules(), functionMap);
-        
+
         Entity newFusedEntity = new Entity();
-        
+
         String targetURI = resolveURI(mode, leftURI, rightURI);
         String targetLocalName = resolveLocalName(mode, leftLocalName, rightLocalName);
-        
+
         newFusedEntity.setResourceURI(targetURI);
         newFusedEntity.setLocalName(targetLocalName);
-        
+
         linkedPair.setFusedEntity(newFusedEntity);
-        
+
         /* FUSION */
         linkedPair.fusePair(ruleSpec, functionMap, validation);
 
@@ -295,7 +297,7 @@ public class Fuser implements IFuser{
 
     private void lMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) {
         LOG.info(EnumOutputMode.L_MODE + ": Output result will be written to " + fused);
-        
+
         Model newModel = ModelFactory.createDefaultModel();
         
         for(LinkedPair pair : fusedEntities){
@@ -303,7 +305,7 @@ public class Fuser implements IFuser{
             Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
             newModel.add(fusedModel);
         }
-        
+
         newModel.write(fusedStream, configuration.getOutputRDFFormat());
     }
 
@@ -353,7 +355,7 @@ public class Fuser implements IFuser{
     }
 
     //creates a jena rdf model for this node and removes the node from the source dataset
-    private Model constructEntityDataModel(String node, Model sourceModel, int depth){
+    private Model constructEntityDataModel(String node, Model sourceModel, Model temp, int depth){
 
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);
@@ -366,9 +368,23 @@ public class Fuser implements IFuser{
         //Also, strange concurrent modification exception when using jena statement iterator. Using list iterator instead.
         List<Statement> stList = jenaIterator.toList();
         Iterator<Statement> stIterator = stList.iterator();
+        
+        if(stList.isEmpty()){
+            //One entity links to multiple: the entity has been removed from the source model.
+            //Recover the entity from the temp model.
+            queryExecution = QueryExecutionFactory.create(query, temp);
+            model = queryExecution.execConstruct();
+            jenaIterator = model.listStatements();
+            stList = jenaIterator.toList();
+            stIterator = stList.iterator();
+        }
+
         while ( stIterator.hasNext() ) {
             Statement st = stIterator.next();
             sourceModel.remove(st);
+
+            //add statement to the temp model, in case the same entity links to multiple.
+            temp.add(st);
         }         
 
         return model;

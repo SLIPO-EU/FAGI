@@ -177,8 +177,8 @@ public class LinkedPair {
         EntityData leftEntityData = leftNode.getEntityData();
         EntityData rightEntityData = rightNode.getEntityData();
 
-        fuseDefaultDatasetAction(defaultDatasetAction);
-
+        fuseDefaultDatasetAction(defaultDatasetAction);       
+        
         List<Rule> rules = ruleSpec.getRules();
 
         int count = 0;
@@ -203,7 +203,7 @@ public class LinkedPair {
             //child properties are always the properties that point to a literal.
             CustomRDFProperty customPropertyA = new CustomRDFProperty();
             CustomRDFProperty customPropertyB = new CustomRDFProperty();
-            
+
             if (rule.getParentPropertyA() == null) {
                 fusionProperty = rule.getPropertyA();
                 literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
@@ -238,7 +238,10 @@ public class LinkedPair {
             if (rule.getActionRuleSet() == null) {
                 LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
-                    fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                    boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                    if(rejected){
+                        return;
+                    }
                 }
                 continue;
             }
@@ -272,8 +275,12 @@ public class LinkedPair {
                     LOG.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
                     LOG.debug("Literals to be fused: " + literalA + " <--> " + literalB);
 
-                    fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
+                    boolean rejected = fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
 
+                    if(rejected){
+                        return;
+                    }
+                    
                     actionRuleToApply = true;
                     break;
                 }
@@ -283,7 +290,11 @@ public class LinkedPair {
             if (actionRuleToApply == false) {
                 LOG.debug("All conditions evaluated to false in fusion rule. Using default fusion action: "
                         + defaultFusionAction);
-                fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                
+                if(rejected){
+                    return;
+                }                 
             }
         }
 
@@ -351,7 +362,14 @@ public class LinkedPair {
                 break;
             }
             case KEEP_BOTH: {
-                fusedModel.add(leftData.getModel().add(rightData.getModel()));
+
+                Model union = ModelFactory.createDefaultModel();
+
+                union.add(leftData.getModel());
+                union.add(rightData.getModel());
+
+                fusedModel = fusedData.getModel().add(union);
+
                 fusedData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedData);
 
@@ -362,8 +380,9 @@ public class LinkedPair {
         }
     }
 
-    private void fuseRuleAction(EnumFusionAction action, EnumValidationAction validationAction, CustomRDFProperty customProperty,
-            String literalA, String literalB) throws WrongInputException {
+    private boolean fuseRuleAction(EnumFusionAction action, 
+            EnumValidationAction validationAction, CustomRDFProperty customProperty, String literalA, String literalB) 
+            throws WrongInputException {
 
         //TODO: Check Keep both. 
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
@@ -375,10 +394,12 @@ public class LinkedPair {
 
         if (!isValidLink(validationAction, ambiguousModel, fusedEntityData)) {
             //stop fusion, link is rejected
-            return;
+            return true;
         }
 
         fuse(action, customProperty, literalA, literalB, fusedEntityData);
+        
+        return false;
     }
 
     //link validation
@@ -412,7 +433,7 @@ public class LinkedPair {
         return true;
     }
 
-    private void fuse(EnumFusionAction action, CustomRDFProperty customProperty, String literalA, String literalB,
+    private void fuse(EnumFusionAction action, CustomRDFProperty customProperty, String literalA, String literalB, 
             EntityData fusedEntityData) throws ApplicationException, WrongInputException {
 
         Model fusedModel = fusedEntityData.getModel();
@@ -457,12 +478,8 @@ public class LinkedPair {
             }            
             case KEEP_BOTH: {
 
-                //TODO bug with property localnames
-                EntityData leftEntityData = leftNode.getEntityData();
-                EntityData rightEntityData = rightNode.getEntityData();
-
-                fusedModel = fusedEntityData.getModel().union(leftEntityData.getModel()).union(rightEntityData.getModel());
-
+                fusedModel = keepBoth(fusedEntityData);
+                
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
                 }
@@ -474,10 +491,7 @@ public class LinkedPair {
             }
             case KEEP_BOTH_MARK: {
 
-                EntityData leftEntityData = leftNode.getEntityData();
-                EntityData rightEntityData = rightNode.getEntityData();
-
-                fusedModel = fusedEntityData.getModel().add(leftEntityData.getModel()).add(rightEntityData.getModel());
+                fusedModel = keepBoth(fusedEntityData);
 
                 if (isRejectedByPreviousRule(fusedModel)) {
                     break;
@@ -670,17 +684,43 @@ public class LinkedPair {
             }            
         }
     }
+
+    private Model keepBoth(EntityData fusedEntityData) {
+        Model fusedModel;
+        EntityData leftEntityData = leftNode.getEntityData();
+        EntityData rightEntityData = rightNode.getEntityData();
+
+        Model union = ModelFactory.createDefaultModel();
+        union.add(leftEntityData.getModel());
+        union.add(rightEntityData.getModel());
+        
+        fusedModel = fusedEntityData.getModel().add(union);
+
+        return fusedModel;
+    }
     
     private void keepLeft(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
-        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        //TODO: check when model does not contain literalA or B
+        Resource node;
+        if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+            node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+        } else {
+            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+        }
+
         if (node != null) {
-            fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+            //fallback
+            if(literalA == null && literalB != null){
+                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+            } else if(literalA != null){
+                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+            } else {
+                //todo: discuss annotating property as blank
+                return;
+            }
         }
         
         if (node == null) {
-            LOG.error("Node is blank. Cannot resolve URI. Literals: {} {}", literalA, literalB);
             throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
         }
         
@@ -693,14 +733,27 @@ public class LinkedPair {
     }
     
     private void keepRight(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
-        
-        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
 
-        if (node != null) {
-            fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+        Resource node;
+        if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+            node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+        } else {
+            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         }
+        
+        if (node != null) {
+            //fallback
+            if(literalB == null && literalA != null){
+                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+            } else if(literalB != null){
+                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+            } else {
+                //todo: discuss annotating property as blank
+                return;
+            }
+        }
+        
         if (node == null) {
-            LOG.error("Node is blank. Cannot resolve URI. Literals: {} {}", literalA, literalB);
             throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
         }        
         
@@ -1174,14 +1227,13 @@ public class LinkedPair {
     }
 
     private void renameResourceURIs(Entity entity1, Entity entity2) {
-        Model rightEntityModel = entity1.getEntityData().getModel();
+
+        Model newModel = ModelFactory.createDefaultModel();
+        Model model = entity1.getEntityData().getModel();
 
         String entity2ResourceUri = entity2.getResourceURI();
 
-        Resource resource1 = rightEntityModel.getResource(entity1.getResourceURI());
-        ResourceUtils.renameResource(resource1, entity2ResourceUri);
-
-        List<Statement> list = rightEntityModel.listStatements().toList();
+        List<Statement> list = model.listStatements().toList();
         Iterator<Statement> statementIterator = list.iterator();
 
         while (statementIterator.hasNext()) {
@@ -1189,13 +1241,55 @@ public class LinkedPair {
             Resource subject = statement.getSubject();
             Property predicate = statement.getPredicate();
             RDFNode object = statement.getObject();
-            ResourceUtils.renameResource(subject, entity2ResourceUri);
-            if (predicate.isURIResource()) {
-                ResourceUtils.renameResource(predicate, entity2ResourceUri);
+            
+            String localName = subject.getLocalName();
+            Resource newSubject;
+            Property newPredicate;
+            RDFNode newObject;
+            
+            Statement newStatement;
+
+            if(localName.indexOf('-') > 0){
+                //subject as is.
+                newSubject = ResourceUtils.renameResource(subject, entity2ResourceUri);
+                Resource newPredicate2 = ResourceUtils.renameResource(predicate, entity2ResourceUri);
+
+                newPredicate = ResourceFactory.createProperty(newPredicate2.toString());
+                
+                if(object.isResource() && object.asResource().getLocalName().indexOf('-') > 0){
+                    newObject = ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
+                    newStatement = ResourceFactory.createStatement(newSubject, newPredicate, newObject);
+                } else if(object.isLiteral()){
+                    Literal lit = object.asLiteral();
+                    newStatement = ResourceFactory.createStatement(newSubject, newPredicate, lit);
+                } else {
+                    newStatement = ResourceFactory.createStatement(newSubject, newPredicate, object);
+                }
+
+            } else {
+                //rename subject and append localname
+                Resource renamedSubject = ResourceUtils.renameResource(subject, entity2ResourceUri);
+                newSubject = ResourceFactory.createProperty(renamedSubject.getURI(), "/"+localName);
+                Resource renamedPredicate = ResourceUtils.renameResource(subject, entity2ResourceUri);
+                newPredicate = ResourceFactory.createProperty(renamedPredicate.getURI(), "/"+localName);
+                
+                if(object.isResource() && object.asResource().getLocalName().indexOf('-') > 0){
+                    Resource renamedObject = ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
+                    newObject = ResourceFactory.createProperty(renamedObject.getURI(), "/"+localName);
+                    newStatement = ResourceFactory.createStatement(newSubject, (Property) newPredicate, newObject);
+                } else if(object.isLiteral()){
+                    Literal lit = object.asLiteral();
+                    newStatement = ResourceFactory.createStatement(newSubject, newPredicate, lit);
+                } else {
+                    newStatement = ResourceFactory.createStatement(newSubject, newPredicate, object);
+                }
             }
-            if (object.isURIResource()) {
-                ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
-            }
+            
+            model.add(newStatement);
+            statementIterator.remove();
         }
+    
+        EntityData renamedData = new EntityData(newModel);
+        entity1.setEntityData(renamedData);
     }
 }

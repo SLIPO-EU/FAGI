@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.learning.Trainer;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
+import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.preview.FrequencyCalculationProcess;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
@@ -223,9 +224,11 @@ public class FagiInstance {
             long stopTimeWrite = System.currentTimeMillis();
 
             LOG.info(configuration.toString());
-
+            
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-            LOG.info("Interlinked: " + fusedEntities.size() + ", Fused: " + fuser.getFusedPairsCount()
+            LOG.info("Interlinked: " + fusedEntities.size() 
+                    + ", Fused: " + fuser.getFusedPairsCount() 
+                    + ", Rejected links: " + LinksModel.getLinksModel().getRejected().size() 
                     + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
             LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");

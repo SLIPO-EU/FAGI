@@ -14,11 +14,13 @@ public class Namespace {
     public static final String LGD = "<http://linkedgeodata.org/triplify/>";
     public static final String GEOSPARQL = "<http://www.opengis.net/ont/geosparql/>";
     public static final String GEOSPARQL_HAS_GEOMETRY = "http://www.opengis.net/ont/geosparql#hasGeometry";
+    
     public static final String WKT = "http://www.opengis.net/ont/geosparql#asWKT";
+    public static final String WKT_LOCALNAME = "asWKT";
     public static final String WKT_DATATYPE = "^^<http://www.opengis.net/ont/geosparql#wktLiteral>";
     public static final String WKT_DATATYPE_NAME = "http://www.opengis.net/ont/geosparql#wktLiteral";
-    
     public static final RDFDatatype WKT_RDF_DATATYPE = TypeMapper.getInstance().getSafeTypeByName(Namespace.WKT_DATATYPE_NAME);
+    
     public static final String CRS_4326 = "<http://www.opengis.net/def/crs/EPSG/0/4326>";
 
     public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";

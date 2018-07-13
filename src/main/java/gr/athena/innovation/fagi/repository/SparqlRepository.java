@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.util.List;

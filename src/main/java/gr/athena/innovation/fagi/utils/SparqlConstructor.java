@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.utils;
 
 import gr.athena.innovation.fagi.specification.Namespace;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utilities for constructing SPARQL queries
@@ -8,6 +9,8 @@ import gr.athena.innovation.fagi.specification.Namespace;
  * @author nkarag
  */
 public class SparqlConstructor {
+    
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SparqlConstructor.class);
     
     public static String selectNodeQueryWithDepth(String nodeURI, int depth){
         String query = null;
