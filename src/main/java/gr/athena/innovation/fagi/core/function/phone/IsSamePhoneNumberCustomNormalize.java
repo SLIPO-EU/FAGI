@@ -172,8 +172,9 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
         if(phoneNumber.getCountryCode() != null){
 
             String[] codes = StringUtils.substringsBetween(number, "(", ")");
-            phoneNumber.setAreaCode(codes[1]);
-            
+            if(codes != null){
+                phoneNumber.setAreaCode(codes[1]);
+            }
         } else {
             if(number.contains("/")){
                 String[] parts = number.split("/");

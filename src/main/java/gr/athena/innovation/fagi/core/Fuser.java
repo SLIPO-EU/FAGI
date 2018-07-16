@@ -15,7 +15,6 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
-import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,7 +25,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -115,7 +116,7 @@ public class Fuser implements IFuser{
 
         Entity entityA = constructEntity(modelA, leftURI, leftLocalName);
         Entity entityB = constructEntity(modelB, rightURI, rightLocalName);
-        
+
         linkedPair.setLeftNode(entityA);
         linkedPair.setRightNode(entityB);
 
@@ -205,7 +206,7 @@ public class Fuser implements IFuser{
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
         if(ambiguousModel.isEmpty()){
-            addMessageToEmptyOutput(ambiguous);
+            //addMessageToEmptyOutput(ambiguous);
         } else {
             ambiguousModel.write(ambiguousStream, configuration.getOutputRDFFormat());
         }
@@ -235,21 +236,19 @@ public class Fuser implements IFuser{
     private void aMode(String fused, String remaining, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.A_MODE + ": Output results will be written to " + fused
                 + " and " + remaining + ". Unlinked entities will be excluded from B.");
-        
+
         Model leftModel = LeftDataset.getLeftDataset().getModel();
-        
+
         Set<String> rightLocalNames = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
-            
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             leftModel.add(fusedDataModel);
             String localName = pair.getRightNode().getLocalName();
             rightLocalNames.add(localName);
-            
         }
-        
+
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
-        
+
         removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
     }
 
@@ -260,7 +259,6 @@ public class Fuser implements IFuser{
         
         Set<String> rightLocalNames = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
-            
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
             String localName = pair.getRightNode().getLocalName();
@@ -271,7 +269,8 @@ public class Fuser implements IFuser{
         
         addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
         
-        addMessageToEmptyOutput(remaining);
+        writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //addMessageToEmptyOutput(remaining);
     }
 
     private void abMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration, String remaining) throws IOException {
@@ -292,7 +291,8 @@ public class Fuser implements IFuser{
         
         addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
         
-        addMessageToEmptyOutput(remaining);
+        writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //addMessageToEmptyOutput(remaining);
     }
 
     private void lMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) {
@@ -322,7 +322,7 @@ public class Fuser implements IFuser{
         
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
         
-        addMessageToEmptyOutput(remaining);
+        writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
     private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
@@ -340,7 +340,7 @@ public class Fuser implements IFuser{
         
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
         
-        addMessageToEmptyOutput(remaining);
+        writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
     
     private Entity constructEntity(Model model, String resourceURI, String localName) {
@@ -513,10 +513,10 @@ public class Fuser implements IFuser{
 
         return res;
     }
-    
-    private void addMessageToEmptyOutput(String outputPath) throws IOException{
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, false))) {
-            bufferedWriter.append(SpecificationConstants.EMPTY_OUTPUT_MESSAGE);
-        }          
+
+    private void writeRemaining(String inputDatasetPath, String remainingPath) throws IOException{
+        Path inputPath = Paths.get(inputDatasetPath);
+        Path remaining = Paths.get(remainingPath);
+        Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);        
     }
 }

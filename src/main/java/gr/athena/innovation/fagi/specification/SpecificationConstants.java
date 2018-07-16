@@ -16,8 +16,6 @@ public class SpecificationConstants {
                                     + "-spec requires the spec.xml file path\n"
                                     + "-rules requires the rules.xml file path\n";
     
-    public static final String EMPTY_OUTPUT_MESSAGE = "#This output should be empty.";
-    
     public static class Spec {
 
         public static final String RULES_XML = "rules.xml";

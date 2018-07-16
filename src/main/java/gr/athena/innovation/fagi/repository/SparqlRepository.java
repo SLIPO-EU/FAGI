@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.preview.Frequency;
+import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.util.List;
 import org.apache.jena.query.Query;
@@ -36,7 +37,6 @@ public class SparqlRepository {
         if (objectList.size() == 1) {
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                //LOG.warn(object.asLiteral().getLexicalForm());
                 return object.asLiteral().getLexicalForm();
             } else {
                 LOG.fatal("Object is not a Literal! " + object.toString());
@@ -46,8 +46,6 @@ public class SparqlRepository {
             //Possible duplicate triple. Happens with synthetic data. Returns the first literal
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                //LOG.info("more than one object with property: " + p);
-                //LOG.warn(object.asLiteral().getLexicalForm());
                 return object.asLiteral().getLexicalForm();
             } else {
                 LOG.fatal("Object is not a Literal! " + object.toString());
@@ -69,13 +67,16 @@ public class SparqlRepository {
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
             ResultSet results = qexec.execSelect();
-
             for (; results.hasNext();) {
                 QuerySolution soln = results.nextSolution();
 
                 RDFNode c = soln.get(var);
                 if (c.isLiteral()) {
-                    result = c.asLiteral().getLexicalForm();
+                    if(c.asLiteral().getDatatypeURI().equals(Namespace.WKT_DATATYPE_NAME)){
+                        c.asLiteral().getLexicalForm();
+                    } else {
+                        result = c.asLiteral().toString();
+                    }
                 }
             }
         }
@@ -86,7 +87,6 @@ public class SparqlRepository {
 
         String var = "s";
         String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property, literal);
-
         Query query = null;
         try {
             query = QueryFactory.create(queryString);

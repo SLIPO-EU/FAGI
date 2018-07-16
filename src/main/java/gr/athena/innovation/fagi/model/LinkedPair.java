@@ -204,6 +204,9 @@ public class LinkedPair {
             CustomRDFProperty customPropertyA = new CustomRDFProperty();
             CustomRDFProperty customPropertyB = new CustomRDFProperty();
 
+            //TODO: getLiteralValue/getLiteralValueFrom chain can return multiple results, as the ontology allows same
+            //property chains for different values (e.g name - nameValue can refer also to 'int_name' resource).
+
             if (rule.getParentPropertyA() == null) {
                 fusionProperty = rule.getPropertyA();
                 literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
@@ -229,6 +232,7 @@ public class LinkedPair {
             }
 
             if (literalA == null && literalB == null) {
+                LOG.trace("both literals empty, skipping rule.");
                 count++;
                 continue;
             }
@@ -261,7 +265,6 @@ public class LinkedPair {
 
                 Condition condition = actionRule.getCondition();
 
-                //switch case for evaluation using external properties.
                 for (Map.Entry<String, ExternalProperty> externalPropertyEntry : rule.getExternalProperties().entrySet()) {
                     evaluateExternalProperty(externalPropertyEntry, leftEntityData, rightEntityData);
                 }
@@ -294,7 +297,7 @@ public class LinkedPair {
                 
                 if(rejected){
                     return;
-                }                 
+                }
             }
         }
 
@@ -340,8 +343,6 @@ public class LinkedPair {
         EntityData leftData = leftNode.getEntityData();
         EntityData rightData = rightNode.getEntityData();
 
-        //TODO: decide what happens with URIs based on fused dataset mode. 
-        //E.g keep-right will bring all right triple-chain URIs to A. 
         switch (datasetDefaultAction) {
             case KEEP_LEFT: {
 
@@ -385,10 +386,9 @@ public class LinkedPair {
             EnumValidationAction validationAction, CustomRDFProperty customProperty, String literalA, String literalB) 
             throws WrongInputException {
 
-        //TODO: Check Keep both. 
+        LOG.debug("fusing with action: " + action.toString());
         //TODO: Also, property coming from the caller is propertyA because it assumes same ontology
         //Maybe add propertyB and check them both if one does not exist in model.
-        //TODO bug: left and right node models contain resources without localnames when adding to ambiguous.
         EntityData fusedEntityData = fusedEntity.getEntityData();
 
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
@@ -968,6 +968,7 @@ public class LinkedPair {
         Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
 
         if (node == null) {
+            //property is missing. (default dataset action that is already applied 
             LOG.error("Node is blank. Cannot resolve URI. Literals: {} {}", literalA, literalB);
             throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
         }        
@@ -1089,7 +1090,6 @@ public class LinkedPair {
     }
 
     private String getLiteralValueFromChain(String property1, String property2, Model model) {
-
         if (property1 != null) {
             return SparqlRepository.getObjectOfPropertyChain(property1, property2, model);
         } else {
