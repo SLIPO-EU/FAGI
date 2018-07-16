@@ -345,7 +345,7 @@ public class LinkedPair {
         switch (datasetDefaultAction) {
             case KEEP_LEFT: {
 
-                resolveModeURIs(leftNode, rightNode);
+                resolveModeURIs();
                 fusedModel.add(leftData.getModel());
                 fusedData.setModel(fusedModel);
                 fusedEntity.setEntityData(fusedData);
@@ -354,7 +354,7 @@ public class LinkedPair {
             }
             case KEEP_RIGHT: {
 
-                resolveModeURIs(leftNode, rightNode);
+                resolveModeURIs();
                 fusedModel.add(rightData.getModel());
                 fusedData.setModel(rightData.getModel());
                 fusedEntity.setEntityData(fusedData);
@@ -363,6 +363,7 @@ public class LinkedPair {
             }
             case KEEP_BOTH: {
 
+                resolveModeURIs();
                 Model union = ModelFactory.createDefaultModel();
 
                 union.add(leftData.getModel());
@@ -1192,19 +1193,20 @@ public class LinkedPair {
         return statement;
     }
 
-    private void resolveModeURIs(Entity entity1, Entity entity2) {
+    private void resolveModeURIs() {
         EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+
         switch (mode) {
             case AA_MODE:
             case AB_MODE:
             case A_MODE:
             case L_MODE:
-                renameResourceURIs(entity2, entity1);
+                renameResourceURIs(rightNode, leftNode);
                 break;
             case BB_MODE:
             case BA_MODE:
             case B_MODE:
-                renameResourceURIs(entity1, entity2);
+                renameResourceURIs(leftNode, rightNode);
                 break;
         }
     }
@@ -1242,45 +1244,67 @@ public class LinkedPair {
             Property predicate = statement.getPredicate();
             RDFNode object = statement.getObject();
             
-            String localName = subject.getLocalName();
+            String subLocalName = subject.getLocalName();
+            String predLocalName = predicate.getLocalName();
+
             Resource newSubject;
             Property newPredicate;
             RDFNode newObject;
             
             Statement newStatement;
 
-            if(localName.indexOf('-') > 0){
+            if(subLocalName.indexOf('-') > 0){ //localName is uuid
                 //subject as is.
                 newSubject = ResourceUtils.renameResource(subject, entity2ResourceUri);
-                Resource newPredicate2 = ResourceUtils.renameResource(predicate, entity2ResourceUri);
-
-                newPredicate = ResourceFactory.createProperty(newPredicate2.toString());
                 
-                if(object.isResource() && object.asResource().getLocalName().indexOf('-') > 0){
-                    newObject = ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
+                Resource tempPredicate;
+                if(predLocalName.indexOf('-') > 0 ){
+                    tempPredicate = ResourceUtils.renameResource(predicate, entity2ResourceUri);
+                } else {
+                    tempPredicate = predicate;
+                }
+                
+                newPredicate = ResourceFactory.createProperty(tempPredicate.toString());
+
+                if(object.isResource() && object.asResource().getNameSpace().indexOf('-') > 0){
+                    
+                    Resource renamedObject = ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
+                    newObject = ResourceFactory.createProperty(renamedObject.getURI(), "/" + object.asResource().getLocalName());
                     newStatement = ResourceFactory.createStatement(newSubject, newPredicate, newObject);
+
                 } else if(object.isLiteral()){
                     Literal lit = object.asLiteral();
                     newStatement = ResourceFactory.createStatement(newSubject, newPredicate, lit);
                 } else {
+                    //object points to unrelated resource (e.g category): don' t rename this URI.
                     newStatement = ResourceFactory.createStatement(newSubject, newPredicate, object);
                 }
 
             } else {
-                //rename subject and append localname
+                //rename subject/predicate and append localname
                 Resource renamedSubject = ResourceUtils.renameResource(subject, entity2ResourceUri);
-                newSubject = ResourceFactory.createProperty(renamedSubject.getURI(), "/"+localName);
-                Resource renamedPredicate = ResourceUtils.renameResource(subject, entity2ResourceUri);
-                newPredicate = ResourceFactory.createProperty(renamedPredicate.getURI(), "/"+localName);
+                newSubject = ResourceFactory.createProperty(renamedSubject.getURI(), "/" + subLocalName);
                 
-                if(object.isResource() && object.asResource().getLocalName().indexOf('-') > 0){
+                Resource tempPredicate;
+                if(predLocalName.indexOf('-') > 0 ){
+                    tempPredicate = ResourceUtils.renameResource(predicate, entity2ResourceUri);
+                } else {
+                    tempPredicate = predicate;
+                }                
+
+                newPredicate = ResourceFactory.createProperty(tempPredicate.toString());
+
+                if(object.isResource() && object.asResource().getNameSpace().indexOf('-') > 0){
+
                     Resource renamedObject = ResourceUtils.renameResource(object.asResource(), entity2ResourceUri);
-                    newObject = ResourceFactory.createProperty(renamedObject.getURI(), "/"+localName);
+                    newObject = ResourceFactory.createProperty(renamedObject.getURI(), "/" + object.asResource().getLocalName());
                     newStatement = ResourceFactory.createStatement(newSubject, (Property) newPredicate, newObject);
+
                 } else if(object.isLiteral()){
                     Literal lit = object.asLiteral();
                     newStatement = ResourceFactory.createStatement(newSubject, newPredicate, lit);
                 } else {
+                    //object points to unrelated resource (e.g category): don' t rename this URI.
                     newStatement = ResourceFactory.createStatement(newSubject, newPredicate, object);
                 }
             }
