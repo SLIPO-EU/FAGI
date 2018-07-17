@@ -204,9 +204,6 @@ public class LinkedPair {
             CustomRDFProperty customPropertyA = new CustomRDFProperty();
             CustomRDFProperty customPropertyB = new CustomRDFProperty();
 
-            //TODO: getLiteralValue/getLiteralValueFrom chain can return multiple results, as the ontology allows same
-            //property chains for different values (e.g name - nameValue can refer also to 'int_name' resource).
-
             if (rule.getParentPropertyA() == null) {
                 fusionProperty = rule.getPropertyA();
                 literalA = getLiteralValue(rule.getPropertyA(), leftEntityData.getModel());
@@ -283,7 +280,7 @@ public class LinkedPair {
                     if(rejected){
                         return;
                     }
-                    
+
                     actionRuleToApply = true;
                     break;
                 }

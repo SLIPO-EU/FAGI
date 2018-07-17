@@ -42,7 +42,11 @@ public class Namespace {
     public static final String LAT = "<http://www.w3.org/2003/01/geo/wgs84_pos#lat>";
 
     public static final String NAME = "<http://slipo.eu/def#name>";
+    public static final String NAME2_NO_BRACKETS = "http://www.slipo.eu/ont/poi-model#name";
+    public static final String NAME_NO_BRACKETS = "http://slipo.eu/def#name";
     public static final String NAME_VALUE = "<http://slipo.eu/def#nameValue>";
+    public static final String NAME_VALUE2_NO_BRACKETS = "http://www.slipo.eu/ont/poi-model#nameValue";
+    public static final String NAME_VALUE_NO_BRACKETS = "http://slipo.eu/def#nameValue";
     public static final String NAME_TYPE = "<http://slipo.eu/def#nameType>";
     public static final String OFFICIAL_LITERAL = "official";
 
