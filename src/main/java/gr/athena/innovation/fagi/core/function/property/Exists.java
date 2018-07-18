@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core.function.property;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import java.io.ByteArrayInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -20,6 +21,11 @@ public class Exists implements IFunction, IFunctionTwoParameters{
 
     @Override
     public boolean evaluate(String modelText, String propertyString) {
+        
+        if(StringUtils.isBlank(propertyString)){
+            return false;
+        }
+        
         //TODO: create test
         Property property = ResourceFactory.createProperty(propertyString);
         final Model model = ModelFactory.createDefaultModel();

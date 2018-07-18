@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core.function.literal;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -23,6 +24,10 @@ public class IsSameNormalized implements IFunction, IFunctionTwoParameters{
      */
     @Override
     public boolean evaluate(String literalA, String literalB) {
+        
+        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+            return false;
+        }
         
         if(literalA.equals(literalB)){
             return true;

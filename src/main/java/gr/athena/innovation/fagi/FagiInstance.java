@@ -117,6 +117,7 @@ public class FagiInstance {
         }
         
         LOG.info("XML files seem syntactically valid.");
+        LOG.info("Rules: " + configuration.getRulesPath());
         
         RuleProcessor ruleProcessor = new RuleProcessor();
         RuleSpecification ruleSpec = ruleProcessor.parseRules(configuration.getRulesPath());

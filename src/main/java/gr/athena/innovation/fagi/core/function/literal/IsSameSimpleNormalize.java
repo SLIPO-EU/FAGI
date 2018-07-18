@@ -7,6 +7,7 @@ import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -32,10 +33,13 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeParameter
     public boolean evaluate(String literalA, String literalB, String threshold) {
 
         double thres = Double.parseDouble(threshold);
-        
-        
+
+        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+            return false;
+        }
+
         Locale locale = Configuration.getInstance().getLocale();
-        
+
         if (literalA.equals(literalB)) {
             return true;
         }

@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class for evaluating a text phone number.
@@ -20,6 +21,10 @@ public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParamete
      */
     @Override
     public boolean evaluate(String number){
+    
+        if(StringUtils.isBlank(number)){
+            return false;
+        }
         
         boolean parsable = true;
         
