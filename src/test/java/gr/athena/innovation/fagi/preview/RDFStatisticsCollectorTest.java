@@ -282,8 +282,8 @@ public class RDFStatisticsCollectorTest {
         LOG.info("countEmptyNames");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
+        //collector.setTotalPOIsA(2);
+        //collector.setTotalPOIsB(2);
         
         StatisticResultPair stat = new StatisticResultPair("2", "2", null);
         stat.setTitle("Non empty Names");
@@ -423,7 +423,7 @@ public class RDFStatisticsCollectorTest {
         collector.setTotalPOIsA(2);
         collector.setTotalPOIsB(2);
         
-        StatisticResultPair stat = new StatisticResultPair("0", "0", null);
+        StatisticResultPair stat = new StatisticResultPair(null, null, null);
         stat.setTitle(EnumStat.NON_EMPTY_DATES.toString());
         
         collector.getMap().put(EnumStat.NON_EMPTY_DATES.getKey(), stat);
@@ -458,9 +458,9 @@ public class RDFStatisticsCollectorTest {
         LOG.info("calculatePercentageOfPrimaryDateFormats");
 
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        StatisticResultPair result = collector.calculatePercentageOfPrimaryDateFormats(modelA, modelB);
-        StatisticResultPair expResult = new StatisticResultPair("0", "0", null);
-        expResult.setTitle("Percentage of primary date formats");
+        StatisticResultPair result = collector.calculatePercentageOfPrimaryDateFormats(modelA, modelB, EnumStat.PRIMARY_DATE_FORMATS_PERCENT);
+        StatisticResultPair expResult = new StatisticResultPair(null, null, null);
+        expResult.setTitle(EnumStat.UNDEFINED.toString());
         
         assertEquals(expResult, result);
     }
@@ -778,20 +778,20 @@ public class RDFStatisticsCollectorTest {
     /**
      * Test of calculateAveragePropertiesOfLinkedPOIs method, of class RDFStatisticsCollector.
      */
-    @Test
-    public void testCalculateAveragePropertiesOfLinkedPOIs() {
-        LOG.info("calculateAveragePropertiesOfLinkedPOIs");
-        
-        RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        collector.setTotalPOIsA(2);
-        collector.setTotalPOIsB(2);
-        
-        StatisticResultPair expResult = new StatisticResultPair("2.5", "2.5", null);
-        expResult.setTitle("Average number of properties of linked POI");
-        StatisticResultPair[] results = collector.calculateStatsPerLink(modelA, modelB, links);
-        
-        assertEquals(expResult, results[0]);
-    }
+//    @Test
+//    public void testCalculateAveragePropertiesOfLinkedPOIs() {
+//        LOG.info("calculateAveragePropertiesOfLinkedPOIs");
+//        
+//        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+//        collector.setTotalPOIsA(2);
+//        collector.setTotalPOIsB(2);
+//        
+//        StatisticResultPair expResult = new StatisticResultPair("2.5", "2.5", null);
+//        expResult.setTitle("Average number of properties of linked POI");
+//        StatisticResultPair[] results = collector.calculateStatsPerLink(modelA, modelB, links);
+//        
+//        assertEquals(expResult, results[0]);
+//    }
     
     /**
      * Test of calculateAverageEmptyPropertiesOfLinkedPOIs method, of class RDFStatisticsCollector.

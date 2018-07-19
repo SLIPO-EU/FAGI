@@ -37,8 +37,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
     private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
 
-    private Integer totalPOIsA;
-    private Integer totalPOIsB;
+    private Integer totalPOIsA = null;
+    private Integer totalPOIsB = null;
 
     StatisticsContainer container = new StatisticsContainer();
 
@@ -57,7 +57,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         List<Link> links = LinksModel.getLinksModel().getLinks();
 
         /* POIs and triples count */
-        
+
         map.put(EnumStat.TOTAL_POIS.getKey(), countTotalEntities(leftModel, rightModel));
         map.put(EnumStat.TOTAL_TRIPLES.getKey(), countTriples(leftModel, rightModel));
 
@@ -87,16 +87,25 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         /* Percentages */
 
-        map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(), calculatePercentageOfPrimaryDateFormats(leftModel, rightModel));
+        map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(), 
+                calculatePercentageOfPrimaryDateFormats(leftModel, rightModel, EnumStat.PRIMARY_DATE_FORMATS_PERCENT));
 
-        map.put(EnumStat.NAMES_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE));
-        map.put(EnumStat.PHONES_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.PHONES_PERCENT, Namespace.PHONE));
-        map.put(EnumStat.STREETS_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREETS_PERCENT, Namespace.STREET));
-        map.put(EnumStat.STREET_NUMBERS_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREET_NUMBERS_PERCENT, Namespace.STREET_NUMBER));
-        map.put(EnumStat.WEBSITE_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.WEBSITE_PERCENT, Namespace.HOMEPAGE));
-        map.put(EnumStat.EMAIL_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.EMAIL_PERCENT, Namespace.EMAIL));
-        map.put(EnumStat.LOCALITY_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.LOCALITY_PERCENT, Namespace.LOCALITY));
-        map.put(EnumStat.DATES_PERCENT.getKey(), calculatePropertyPercentage(leftModel, rightModel, EnumStat.DATES_PERCENT, Namespace.DATE));
+        map.put(EnumStat.NAMES_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE));
+        map.put(EnumStat.PHONES_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.PHONES_PERCENT, Namespace.PHONE));
+        map.put(EnumStat.STREETS_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREETS_PERCENT, Namespace.STREET));
+        map.put(EnumStat.STREET_NUMBERS_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREET_NUMBERS_PERCENT, Namespace.STREET_NUMBER));
+        map.put(EnumStat.WEBSITE_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.WEBSITE_PERCENT, Namespace.HOMEPAGE));
+        map.put(EnumStat.EMAIL_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.EMAIL_PERCENT, Namespace.EMAIL));
+        map.put(EnumStat.LOCALITY_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.LOCALITY_PERCENT, Namespace.LOCALITY));
+        map.put(EnumStat.DATES_PERCENT.getKey(), 
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.DATES_PERCENT, Namespace.DATE));
 
         /* Statistics for linked POIs*/
 
@@ -116,7 +125,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         map.put(EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS.getKey(), computeNonEmptyLinkedPropertyChain(
                 leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER));
 
-        map.put(EnumStat.LINKED_NON_EMPTY_WEBSITES.getKey(), computeNonEmptyLinkedProperty(leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+        map.put(EnumStat.LINKED_NON_EMPTY_WEBSITES.getKey(), 
+                computeNonEmptyLinkedProperty(leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
         
         map.put(EnumStat.LINKED_NON_EMPTY_EMAILS.getKey(), computeNonEmptyLinkedPropertyChain(
                 leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE));
@@ -158,7 +168,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         //calculateStatsPerLink(leftModel, rightModel, links);
         //calculateAverageEmptyPropertiesOfLinkedPOIs();
 
-        if(totalPOIsA == 0 || totalPOIsB == 0){
+        if(totalPOIsA == null || totalPOIsA == 0 || totalPOIsB == null || totalPOIsB == 0){
             container.setValid(false);
         } else {
             container.setValid(true);
@@ -250,7 +260,8 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                     map.put(EnumStat.DISTINCT_PROPERTIES.getKey(), countDistinctProperties(leftModel, rightModel));
                     break;
                 case PRIMARY_DATE_FORMATS_PERCENT:
-                    map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(), calculatePercentageOfPrimaryDateFormats(leftModel, rightModel));
+                    map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(), 
+                            calculatePercentageOfPrimaryDateFormats(leftModel, rightModel,EnumStat.PRIMARY_DATE_FORMATS_PERCENT));
                     break;  
                 case NAMES_PERCENT:
                     map.put(EnumStat.NAMES_PERCENT.getKey(), 
@@ -376,11 +387,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         totalPOIsA = totalA;
         totalPOIsB = totalB;
-
-        if(warn(totalPOIsA, totalPOIsB, Namespace.SOURCE)){
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            return pair;
+        
+        if(cannotCompute(totalPOIsA, totalPOIsB, Namespace.SOURCE, EnumStat.TOTAL_POIS)){
+            return getFailedStatistic();
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
@@ -417,11 +426,15 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Integer linkedB = SparqlRepository.countLinkedPOIsB(links);
 
         Integer linked = (linkedA + linkedB);
-
+        
         if(totalPOIsA == null || totalPOIsB == null){
             StatisticResultPair totalEntities = countTotalEntities(a, b);
             totalPOIsA = Integer.parseInt(totalEntities.getValueA());
             totalPOIsB = Integer.parseInt(totalEntities.getValueB());
+        }
+        
+        if(cannotCompute(totalPOIsA, totalPOIsB, Namespace.SOURCE, EnumStat.LINKED_VS_TOTAL)){
+            return getFailedStatistic();
         }
 
         Integer total = totalPOIsA + totalPOIsB;
@@ -517,9 +530,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
                 total = nA + nB;
 
             } catch(NumberFormatException ex){
-                LOG.warn("Could not compute empty names. ", ex);
+                LOG.info("Could not compute empty names. ", ex);
                 StatisticResultPair pair = new StatisticResultPair("0","0", null);
-                pair.setTitle("Could not compute");
+                pair.setTitle(EnumStat.UNDEFINED.toString());
 
                 return pair;
             }
@@ -536,6 +549,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalPOIsB = Integer.parseInt(totalEntities.getValueB());
         }
         
+        if(cannotCompute(totalPOIsA, totalPOIsB, property, stat)){
+            return getFailedStatistic();
+        }
+
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
         
@@ -694,11 +711,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
             
         } catch(NumberFormatException ex){
-            LOG.warn("Could not compute total empty properties due to missing values. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-            
-            return pair;
+            return getFailedStatistic();
         } 
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
@@ -711,19 +724,15 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return pair;
     }
     
-    public StatisticResultPair calculatePercentageOfPrimaryDateFormats(Model leftModel, Model rightModel){
+    public StatisticResultPair calculatePercentageOfPrimaryDateFormats(Model leftModel, Model rightModel, EnumStat stat){
 
         String date = Namespace.DATE;
 
         int totalDatesA = SparqlRepository.countProperty(leftModel, date);
         int totalDatesB = SparqlRepository.countProperty(rightModel, date);
         
-        if(totalDatesA == 0 || totalDatesB ==0){
-            StatisticResultPair pair = new StatisticResultPair("0", "0", null);
-
-            pair.setTitle("Percentage of primary date formats");
-            map.put("datesPercent", pair);
-            return pair;
+        if(cannotCompute(totalDatesA, totalDatesB, Namespace.DATE, stat)){
+            return getFailedStatistic();
         }
 
         IsDatePrimaryFormat isDatePrimaryFormat = new IsDatePrimaryFormat();
@@ -758,9 +767,14 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         Double percentB = roundHalfDown(primaryFormatCounter / (double) totalDatesB);
 
         StatisticResultPair pair = new StatisticResultPair(percentA.toString(), percentB.toString(), null);
-
-        pair.setTitle("Percentage of primary date formats");
-        map.put("primaryDateFormatsPercent", pair);
+        pair.setType(EnumStatViewType.BAR);
+        pair.setValueTotal("100");
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());  
+        
+        pair.setTitle(stat.toString());
         return pair;
     }
 
@@ -775,6 +789,10 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalPOIsB = Integer.parseInt(totalPois.getValueB());
         }
         
+        if(cannotCompute(totalPOIsA, totalPOIsB, Namespace.SOURCE, stat)){
+            return getFailedStatistic();
+        }
+
         Double percentageA = roundHalfDown((100 * propertyA) / (double) totalPOIsA);
         Double percentageB = roundHalfDown((100 * propertyB) / (double) totalPOIsB);
 
@@ -858,12 +876,9 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalPropPercentageA = roundHalfDown((nA + pA + sA + snA + wA + eA + lA + dA) / 8);
             totalPropPercentageB = roundHalfDown((nB + pB + sB + snB + wB + eB + lB + dB) / 8);
 
-        } catch(NumberFormatException ex){
-            LOG.warn("Could not compute total non empty percentages due to missing values. ", ex);
-            StatisticResultPair pair = new StatisticResultPair("0","0", null);
-            pair.setTitle("Could not compute");
-
-            return pair;
+        } catch(NullPointerException ex){//parse double throws NullPointerException, not NumberFormatException
+            LOG.warn("Could not compute total non empty percentages due to missing values. ");
+            return getFailedStatistic();
         } 
 
         StatisticResultPair pair = new StatisticResultPair(totalPropPercentageA.toString(), totalPropPercentageB.toString(), null);
@@ -1027,7 +1042,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             totalB = b1 + b2 + b3 + b4+ b5 + b6 + b7;
 
         } catch(NumberFormatException ex){
-            LOG.warn("Could not compute linked non empty properties due to missing values. ", ex);
+            LOG.warn("Could not compute linked non empty properties due to missing values. ");
             StatisticResultPair pair = new StatisticResultPair("0","0", null);
             pair.setTitle("Could not compute");
 
@@ -1104,110 +1119,116 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         return results;
     }
 
-    public StatisticResultPair[] calculateStatsPerLink(Model leftModel, Model rightModel, List<Link> links) {
-
-        int sumA = 0;
-        int sumB = 0;
-
-        Integer countLongerNamesA = 0;
-        Integer countLongerNamesB = 0;
-        
-        Integer countLongerPhonesA = 0;
-        Integer countLongerPhonesB = 0;    
-        
-        Integer fullMatchStreets = 0;
-        Integer fullMatchStreetNumbers = 0;
-
-        //Integer fullMatchStreetsB =0;
-
-        //using the same loop for several statistics to improve performance
-        for(Link link : links){
-
-            //average properties
-            sumA = getAverageProperties(leftModel, sumA, link.getNodeA());
-            sumB = getAverageProperties(leftModel, sumA, link.getNodeB());
-            
-            //longer name values
-            EnumEntity longerNameEntity = countLongerProperty(link, Namespace.NAME, Namespace.NAME_VALUE, leftModel, rightModel);
-            switch(longerNameEntity){
-                case LEFT:
-                    countLongerNamesA++;
-                    break;
-                case RIGHT:
-                    countLongerNamesB++;
-                    break;
-                case UNDEFINED:
-                    //donnot count
-                    break;                    
-            }
-
-            //longer phone values
-            EnumEntity longerPhoneEntity = countLongerProperty(link, Namespace.PHONE, Namespace.CONTACT_VALUE, leftModel, rightModel);
-            switch(longerPhoneEntity){
-                case LEFT:
-                    countLongerPhonesA++;
-                    break;
-                case RIGHT:
-                    countLongerPhonesB++;
-                    break;
-                case UNDEFINED:
-                    //donnot count
-                    break;                     
-            }
-            
-            //fully matching address street values
-            boolean fullMatchStreet = countFullMatch(link, Namespace.ADDRESS, Namespace.STREET, leftModel, rightModel);
-            if(fullMatchStreet){
-                fullMatchStreets++;
-            }
-            
-            //fully matching street number values
-            boolean fullMatchStreetNumber = countFullMatch(link, Namespace.ADDRESS, Namespace.STREET, leftModel, rightModel);
-            if(fullMatchStreetNumber){
-                fullMatchStreetNumbers++;
-            }
-        }
-        
-        Double averageLinkedPropertiesA = sumA / (double)totalPOIsA;
-        Double averageLinkedPropertiesB = sumB / (double)totalPOIsB;
-        
-        StatisticResultPair[] results = new StatisticResultPair[5];
-        
-        StatisticResultPair averageLinkedProperties 
-                = new StatisticResultPair(averageLinkedPropertiesA.toString(), averageLinkedPropertiesB.toString(), null);
-
-        StatisticResultPair longerNames 
-                = new StatisticResultPair(countLongerNamesA.toString(), countLongerNamesB.toString(), null);
-
-        StatisticResultPair longerPhones 
-                = new StatisticResultPair(countLongerPhonesA.toString(), countLongerPhonesB.toString(), null);
-
-        StatisticResultPair fullyMatchingStreets 
-                = new StatisticResultPair(null, null, fullMatchStreets.toString());
-
-        StatisticResultPair fullyMatchingStreetNumbers 
-                = new StatisticResultPair(null, null, fullMatchStreetNumbers.toString());
-        
-        averageLinkedProperties.setTitle("Average number of properties of linked POI");
-        longerNames.setTitle("Number of POI name properties that are longer than the names of the corresponding (linked) POIs of the two datasets.");
-        longerPhones.setTitle("Number of POI phone properties that are longer than the phones of the corresponding (linked) POIs of the two datasets.");
-        fullyMatchingStreets.setTitle("Number of fully matching address streets between linked POIs in the two datasets.");
-        fullyMatchingStreetNumbers.setTitle("Number of fully matching street numbers between linked POIs in the two datasets.");
-        
-        map.put("averageLinkedProperties", averageLinkedProperties);
-        map.put("longerNames", longerNames);
-        map.put("longerPhones", longerPhones);
-        map.put("fullyMatchingStreets", fullyMatchingStreets);
-        map.put("fullyMatchingStreetNumbers", fullyMatchingStreetNumbers);
-
-        results[0] = averageLinkedProperties;
-        results[1] = longerNames;
-        results[2] = longerPhones;
-        results[3] = fullyMatchingStreets;
-        results[4] = fullyMatchingStreetNumbers;
-
-        return results;
-    }
+//    public StatisticResultPair[] calculateStatsPerLink(Model leftModel, Model rightModel, List<Link> links) {
+//
+//        if(cannotCompute(totalPOIsA, totalPOIsB, Namespace.SOURCE, EnumStat.)){
+//            StatisticResultPair[] results = new StatisticResultPair[1];
+//            results[0] = getFailedStatistic();
+//            return results;
+//        }
+//        
+//        int sumA = 0;
+//        int sumB = 0;
+//
+//        Integer countLongerNamesA = 0;
+//        Integer countLongerNamesB = 0;
+//        
+//        Integer countLongerPhonesA = 0;
+//        Integer countLongerPhonesB = 0;    
+//        
+//        Integer fullMatchStreets = 0;
+//        Integer fullMatchStreetNumbers = 0;
+//
+//        //Integer fullMatchStreetsB =0;
+//
+//        //using the same loop for several statistics to improve performance
+//        for(Link link : links){
+//
+//            //average properties
+//            sumA = getAverageProperties(leftModel, sumA, link.getNodeA());
+//            sumB = getAverageProperties(leftModel, sumA, link.getNodeB());
+//            
+//            //longer name values
+//            EnumEntity longerNameEntity = countLongerProperty(link, Namespace.NAME, Namespace.NAME_VALUE, leftModel, rightModel);
+//            switch(longerNameEntity){
+//                case LEFT:
+//                    countLongerNamesA++;
+//                    break;
+//                case RIGHT:
+//                    countLongerNamesB++;
+//                    break;
+//                case UNDEFINED:
+//                    //donnot count
+//                    break;                    
+//            }
+//
+//            //longer phone values
+//            EnumEntity longerPhoneEntity = countLongerProperty(link, Namespace.PHONE, Namespace.CONTACT_VALUE, leftModel, rightModel);
+//            switch(longerPhoneEntity){
+//                case LEFT:
+//                    countLongerPhonesA++;
+//                    break;
+//                case RIGHT:
+//                    countLongerPhonesB++;
+//                    break;
+//                case UNDEFINED:
+//                    //donnot count
+//                    break;                     
+//            }
+//            
+//            //fully matching address street values
+//            boolean fullMatchStreet = countFullMatch(link, Namespace.ADDRESS, Namespace.STREET, leftModel, rightModel);
+//            if(fullMatchStreet){
+//                fullMatchStreets++;
+//            }
+//            
+//            //fully matching street number values
+//            boolean fullMatchStreetNumber = countFullMatch(link, Namespace.ADDRESS, Namespace.STREET, leftModel, rightModel);
+//            if(fullMatchStreetNumber){
+//                fullMatchStreetNumbers++;
+//            }
+//        }
+//        
+//        Double averageLinkedPropertiesA = sumA / (double)totalPOIsA;
+//        Double averageLinkedPropertiesB = sumB / (double)totalPOIsB;
+//        
+//        StatisticResultPair[] results = new StatisticResultPair[5];
+//        
+//        StatisticResultPair averageLinkedProperties 
+//                = new StatisticResultPair(averageLinkedPropertiesA.toString(), averageLinkedPropertiesB.toString(), null);
+//
+//        StatisticResultPair longerNames 
+//                = new StatisticResultPair(countLongerNamesA.toString(), countLongerNamesB.toString(), null);
+//
+//        StatisticResultPair longerPhones 
+//                = new StatisticResultPair(countLongerPhonesA.toString(), countLongerPhonesB.toString(), null);
+//
+//        StatisticResultPair fullyMatchingStreets 
+//                = new StatisticResultPair(null, null, fullMatchStreets.toString());
+//
+//        StatisticResultPair fullyMatchingStreetNumbers 
+//                = new StatisticResultPair(null, null, fullMatchStreetNumbers.toString());
+//        
+//        averageLinkedProperties.setTitle("Average number of properties of linked POI");
+//        longerNames.setTitle("Number of POI name properties that are longer than the names of the corresponding (linked) POIs of the two datasets.");
+//        longerPhones.setTitle("Number of POI phone properties that are longer than the phones of the corresponding (linked) POIs of the two datasets.");
+//        fullyMatchingStreets.setTitle("Number of fully matching address streets between linked POIs in the two datasets.");
+//        fullyMatchingStreetNumbers.setTitle("Number of fully matching street numbers between linked POIs in the two datasets.");
+//        
+//        map.put("averageLinkedProperties", averageLinkedProperties);
+//        map.put("longerNames", longerNames);
+//        map.put("longerPhones", longerPhones);
+//        map.put("fullyMatchingStreets", fullyMatchingStreets);
+//        map.put("fullyMatchingStreetNumbers", fullyMatchingStreetNumbers);
+//
+//        results[0] = averageLinkedProperties;
+//        results[1] = longerNames;
+//        results[2] = longerPhones;
+//        results[3] = fullyMatchingStreets;
+//        results[4] = fullyMatchingStreetNumbers;
+//
+//        return results;
+//    }
 
     private int getAverageProperties(Model leftModel, int sum, String node) {
         int properties = SparqlRepository.countDistinctPropertiesOfResource(leftModel, node);
@@ -1217,22 +1238,27 @@ public class RDFStatisticsCollector implements StatisticsCollector{
     }
 
     public StatisticResultPair calculateAverageEmptyPropertiesOfLinkedPOIs() {
-        
+
+        if(cannotCompute(totalPOIsA, totalPOIsB, Namespace.SOURCE, EnumStat.AVERAGE_EMPTY_PROPERTY_PER_POI)){
+            return getFailedStatistic();
+        }
+
         StatisticResultPair nonEmptyProperties = map.get("nonEmptyProperties");
         
-        int a = Integer.parseInt(nonEmptyProperties.getValueA());
-        int b = Integer.parseInt(nonEmptyProperties.getValueB());
-        
-        Double avgA = a /(double)totalPOIsA;
-        Double avgB = b /(double)totalPOIsB;
-        
-        StatisticResultPair averageLinkedProperties = new StatisticResultPair(avgA.toString(), avgB.toString(), null);
-        
-        averageLinkedProperties.setTitle("Average number of empty properties of linked POIs");
-        map.put("averageLinkedEmptyProperties", averageLinkedProperties);
-        
-        return averageLinkedProperties;
-        
+        try {
+            int a = Integer.parseInt(nonEmptyProperties.getValueA());
+            int b = Integer.parseInt(nonEmptyProperties.getValueB());
+            
+            Double avgA = a /(double)totalPOIsA;
+            Double avgB = b /(double)totalPOIsB;
+
+            StatisticResultPair averageLinkedProperties = new StatisticResultPair(avgA.toString(), avgB.toString(), null);
+            averageLinkedProperties.setTitle("Average number of empty properties of linked POIs");
+            
+            return averageLinkedProperties;
+        } catch (NumberFormatException ex){
+            return getFailedStatistic();
+        }
     }
     
     private double roundHalfDown(Double d){
@@ -1266,6 +1292,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
             return EnumEntity.RIGHT;
         }
         
+        //both are not null
         String propertyValueA = literalA.getString();
         String propertyValueB = literalB.getString();
         
@@ -1293,6 +1320,21 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         return nameA.equals(nameB);
 
+    }
+
+    private boolean cannotCompute(Integer totalA, Integer totalB, String property, EnumStat stat){
+        
+        if(totalA == null || totalB == null || totalA.equals(0) || totalB.equals(0)){
+            LOG.warn("Cannot compute \" " + stat.toString() + " \"" + property + " property missing.");
+            return true;
+        }
+        return false;
+    }
+    
+    private StatisticResultPair getFailedStatistic(){
+        StatisticResultPair pair = new StatisticResultPair(null, null, null);
+        pair.setTitle(EnumStat.UNDEFINED.toString());
+        return pair;
     }
 
     public Map<String, StatisticResultPair> getMap() {

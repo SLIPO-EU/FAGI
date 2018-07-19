@@ -249,9 +249,14 @@ public enum EnumStat {
     TOTAL_PROPERTIES_PERCENTAGE("totalPropertiesPercentage"),
     
     /**
-     * Average property per POI.
+     * Average properties per POI.
      */
-    AVERAGE_PROPERTY_PER_POI("averagePropertyPerPoi");    
+    AVERAGE_PROPERTY_PER_POI("averagePropertiesPerPoi"),
+    
+    /**
+     * Average empty properties per POI.
+     */
+    AVERAGE_EMPTY_PROPERTY_PER_POI("averageEmptyPropertiesPerPoi");  
 
 	private final String value;
 
@@ -322,7 +327,7 @@ public enum EnumStat {
     @Override
     public String toString() {
         switch(this) {
-            case UNDEFINED: return "undefined";
+            case UNDEFINED: return "Could not compute.";
             case TOTAL_POIS: return "Number of POI entities in each input dataset.";
             case TOTAL_TRIPLES: return "Total number of triples in each input dataset.";
             case NON_EMPTY_NAMES: return "Total number of POIs that have the name property in each input dataset.";
@@ -370,6 +375,7 @@ public enum EnumStat {
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in each input dataset.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in each input dataset.";
             case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI.";
+            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average empty properties per POI.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -424,6 +430,7 @@ public enum EnumStat {
             case TOTAL_EMPTY_PROPERTIES: return "Total empty properties.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Total properties percentage.";
             case AVERAGE_PROPERTY_PER_POI: return "Average properties.";
+            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -478,6 +485,7 @@ public enum EnumStat {
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset A.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset A.";
             case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset A.";
+            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties per POI in dataset A.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -532,6 +540,7 @@ public enum EnumStat {
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset B.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset B.";
             case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset B.";
+            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties per POI in dataset B.";
             default: throw new IllegalArgumentException();
         }
     }      

@@ -752,8 +752,13 @@ public class LinkedPair {
         }
         
         if (node == null) {
+            //possible geometry without datatype. Try recovering node by as any other literal.
+            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+        }      
+        
+        if(node == null){
             throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
-        }        
+        }
         
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
