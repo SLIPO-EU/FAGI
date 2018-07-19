@@ -84,7 +84,6 @@ public class AbbreviationResolverTest {
         String literal = "this literal contains an acronym at the end: A.B.B.R.";
         AbbreviationAndAcronymResolver resolver = AbbreviationAndAcronymResolver.getInstance();
         boolean expResult = true;
-        LOG.debug("#10 " + literal);
         boolean result = resolver.containsAbbreviationOrAcronym(literal);
         assertEquals(expResult, result);
     }

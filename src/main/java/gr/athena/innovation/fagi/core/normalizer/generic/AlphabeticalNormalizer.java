@@ -40,7 +40,7 @@ public class AlphabeticalNormalizer implements INormalizer{
             }
 
             String normalizedLiteral = sb.toString().trim();
-            LOG.trace("normalizedLiteral:" + normalizedLiteral);
+            //LOG.trace("normalizedLiteral:" + normalizedLiteral);
             
             return normalizedLiteral;
         }

@@ -23,8 +23,7 @@ public class StatisticResultPair implements Serializable{
     private final String both;
     private String title;
 
-    //todo: add chart group
-    private String group;
+    private EnumStatGroup group;
 
     public StatisticResultPair(String a, String b, String both) {
         this.valueA = a;
@@ -74,6 +73,14 @@ public class StatisticResultPair implements Serializable{
         return "StatisticResultPair{" + "a=" + valueA + ", b=" + valueB + ", both=" + both + ", label=" + title + '}';
     }
 
+    public EnumStatGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(EnumStatGroup group) {
+        this.group = group;
+    }
+    
     public String getValueA() {
         return valueA;
     }

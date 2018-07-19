@@ -2,10 +2,6 @@ package gr.athena.innovation.fagi.core.normalizer.generic;
 
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.logging.log4j.LogManager;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -17,25 +13,6 @@ public class AlphabeticalNormalizerTest {
     
     private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(AlphabeticalNormalizerTest.class);
-    
-    public AlphabeticalNormalizerTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     /**
      * Test of normalize method, of class AlphabeticalNormalizer.

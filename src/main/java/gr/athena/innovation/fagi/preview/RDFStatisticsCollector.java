@@ -10,6 +10,7 @@ import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
+import gr.athena.innovation.fagi.preview.statistics.EnumStatGroup;
 import gr.athena.innovation.fagi.preview.statistics.EnumStatViewType;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.EnumDataset;
@@ -394,6 +395,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.POI_BASED);
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.TOTAL_POIS.toString());
         pair.setLegendTotal(EnumStat.TOTAL_POIS.getLegendTotal());
@@ -411,6 +413,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.TRIPLE_BASED);
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.TOTAL_TRIPLES.toString());
         pair.setLegendTotal(EnumStat.TOTAL_TRIPLES.getLegendTotal());
@@ -441,6 +444,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(linked.toString(), total.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.POI_BASED);
         pair.setTitle(EnumStat.LINKED_VS_TOTAL.toString());
         pair.setLegendTotal(EnumStat.LINKED_VS_TOTAL.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_VS_TOTAL.getLegendA());
@@ -455,6 +459,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(linkedPOIsA.toString(), linkedPOIsB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.POI_BASED);
         pair.setTitle(EnumStat.LINKED_POIS.toString());
         pair.setLegendTotal(EnumStat.LINKED_POIS.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_POIS.getLegendA());
@@ -473,6 +478,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(linkedTriplesA.toString(), linkedTriplesB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.TRIPLE_BASED);
         pair.setTitle(EnumStat.LINKED_TRIPLES.toString());
         pair.setLegendTotal(EnumStat.LINKED_TRIPLES.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_TRIPLES.getLegendA());
@@ -489,6 +495,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         
         StatisticResultPair pair = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.PROPERTY);
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.DISTINCT_PROPERTIES.toString());
         pair.setLegendTotal(EnumStat.DISTINCT_PROPERTIES.getLegendTotal());
@@ -798,6 +805,7 @@ public class RDFStatisticsCollector implements StatisticsCollector{
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(EnumStatGroup.PERCENT);
         pair.setValueTotal("100");
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1244,39 +1252,25 @@ public class RDFStatisticsCollector implements StatisticsCollector{
         }
 
         StatisticResultPair nonEmptyProperties = map.get("nonEmptyProperties");
-        
+
         try {
             int a = Integer.parseInt(nonEmptyProperties.getValueA());
             int b = Integer.parseInt(nonEmptyProperties.getValueB());
-            
+
             Double avgA = a /(double)totalPOIsA;
             Double avgB = b /(double)totalPOIsB;
 
             StatisticResultPair averageLinkedProperties = new StatisticResultPair(avgA.toString(), avgB.toString(), null);
             averageLinkedProperties.setTitle("Average number of empty properties of linked POIs");
-            
+
             return averageLinkedProperties;
         } catch (NumberFormatException ex){
             return getFailedStatistic();
         }
     }
-    
+
     private double roundHalfDown(Double d){
         return new BigDecimal(d).setScale(SpecificationConstants.Similarity.ROUND_DECIMALS_2, RoundingMode.DOWN).doubleValue();        
-    }
-
-    private boolean warn(int entitiesA, int entitiesB, String propertyName) {
-        if(entitiesA == 0 && entitiesB == 0){
-            LOG.warn("Could not count POIs in datasets. Check " + propertyName + " property.");
-            return true;            
-        } else if (entitiesA == 0) {
-            LOG.warn("Could not count POIs in dataset A. Check " + propertyName + " property.");
-            return true;
-        } else if (entitiesB == 0) {
-            LOG.warn("Could not count POIs in dataset B. Check " + propertyName + " property.");
-            return true;
-        }
-        return false;
     }
 
     private EnumEntity countLongerProperty(Link link, String prop1, String prop2, Model modelA, Model modelB) {

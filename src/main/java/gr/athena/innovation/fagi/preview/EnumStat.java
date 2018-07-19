@@ -126,7 +126,7 @@ public enum EnumStat {
     /**
      * Percentage of phone property in each input dataset.
      */    
-    PHONES_PERCENT("namesPercent"),  
+    PHONES_PERCENT("phonesPercent"),  
 
     /**
      * Percentage of street property in each input dataset.

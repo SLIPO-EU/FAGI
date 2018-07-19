@@ -95,7 +95,7 @@ public class BasicGenericNormalizerTest {
         String literal3b = "literal with the full text of the abbreviation Aaa Bbb Bb rrr.";
         String expResult3 = "aaa abbreviation bb bbb containing rrr sentence";
         String result3 = normalizer.normalize(literal3a, literal3b);
-        LOG.warn(result3);
+        //LOG.trace(result3);
         assertEquals(expResult3, result3);
         
     }

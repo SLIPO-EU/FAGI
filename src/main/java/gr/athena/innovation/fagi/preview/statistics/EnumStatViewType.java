@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Enumeration for default dataset actions.
+ * Enumeration for a statistic chart view type.
  * 
  * @author nkarag
  */
@@ -21,14 +21,19 @@ public enum EnumStatViewType {
     UNDEFINED(0),
 
     /**
-     * This statistic is intended for barchart.
+     * This statistic is intended to be viewed as a barchart.
      */
     BAR(1),
 
     /**
-     * This statistic can be viewed for bar-chart.
+     * This statistic is intended to be viewed as a line-chart.
      */
-    LINE(2);
+    LINE(2),
+    
+    /**
+     * This statistic is intended to be viewed as a pie-chart.
+     */
+    PIE(3);
 
 	private final int value;
     
@@ -106,6 +111,7 @@ public enum EnumStatViewType {
             case UNDEFINED: return "undefined";
             case BAR: return "bar-chart";
             case LINE: return "line-chart";
+            case PIE: return "pie-chart";
             default: throw new IllegalArgumentException();
         }
     }    
