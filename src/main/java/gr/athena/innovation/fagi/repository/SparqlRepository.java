@@ -242,10 +242,35 @@ public class SparqlRepository {
         return count;
     }
 
-    //returns both non empty and empty properties as the first and the second elements of the double array respectively.
-    public static double[] averagePropertiesPerPOI(Model model, int distinctProperties) {
+    public static double averagePropertiesPerPOI(Model model, int distinctProperties) {
 
         int sum = 0;
+        int total = 0;
+
+        String var = "s";
+        String queryString = SparqlConstructor.selectAllPOIs(var);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                Resource c1 = soln.getResource(var);
+                int c2 = countDistinctPropertiesOfResource(model, c1.toString());
+                sum = sum + c2;
+                total++;
+            }
+        }
+
+        double res = sum/(double)total;
+
+        return res;
+    }
+
+    public static double averageEmptyPropertiesPerPOI(Model model, int distinctProperties) {
+
         int emptyProps = 0;
         int total = 0;
 
@@ -262,17 +287,14 @@ public class SparqlRepository {
                 Resource c1 = soln.getResource(var);
                 int c2 = countDistinctPropertiesOfResource(model, c1.toString());
                 emptyProps = emptyProps + (distinctProperties - c2);
-                sum = sum + c2;
                 total++;
             }
         }
 
-        double[] res = new double[2];
-        res[0] = sum/(double)total;
-        res[1] = emptyProps/(double)total;
+        double res = emptyProps/(double)total;
         return res;
     }
-
+    
     public static int countDistinctPropertiesOfResource(Model model, String resource) {
 
         int count = 0;

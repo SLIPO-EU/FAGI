@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public enum EnumStat {
 
-    /**
+     /**
      * Undefined value of the statistic.
      */
     UNDEFINED("undefined"),
@@ -249,14 +249,44 @@ public enum EnumStat {
     TOTAL_PROPERTIES_PERCENTAGE("totalPropertiesPercentage"),
     
     /**
-     * Average properties per POI.
+     * Average properties per POI in each dataset.
      */
-    AVERAGE_PROPERTY_PER_POI("averagePropertiesPerPoi"),
+    AVERAGE_PROPERTIES_PER_POI("averagePropertiesPerPoi"),
     
     /**
-     * Average empty properties per POI.
+     * Average empty properties per POI in each dataset.
      */
-    AVERAGE_EMPTY_PROPERTY_PER_POI("averageEmptyPropertiesPerPoi");  
+    AVERAGE_EMPTY_PROPERTIES_PER_POI("averageEmptyPropertiesPerPoi"),
+    
+    /**
+     * Average number of properties of linked entities.
+     */
+    LINKED_AVERAGE_PROPERTIES("averageLinkedProperties"),
+    
+    /**
+     * Average number of empty properties of linked entities.
+     */
+    LINKED_AVERAGE_EMPTY_PROPERTIES("averageLinkedEmptyProperties"),
+    
+    /**
+     * Number of POI name properties from dataset A that are longer than the names of the corresponding (linked) POIs from dataset B.
+     */
+    LONGER_NAMES("namesLonger"),
+    
+    /**
+     * Number of POI phone properties from dataset A that are longer than the phones of the corresponding (linked) POIs from dataset B.
+     */
+    LONGER_PHONES("phonesLonger"),
+    
+    /**
+     * Number of fully matching address streets between linked POIs in the two datasets.
+     */
+    FULL_MATCH_STREETS("fullMatchingStreets"),
+    
+    /**
+     * Number of fully matching address street numbers between linked POIs in the two datasets.
+     */
+    FULL_MATCH_STREET_NUMBERS("fullMatchingStreetNumbers");
 
 	private final String value;
 
@@ -327,7 +357,7 @@ public enum EnumStat {
     @Override
     public String toString() {
         switch(this) {
-            case UNDEFINED: return "Could not compute.";
+            case UNDEFINED: return "Could not compute";
             case TOTAL_POIS: return "Number of POI entities in each input dataset.";
             case TOTAL_TRIPLES: return "Total number of triples in each input dataset.";
             case NON_EMPTY_NAMES: return "Total number of POIs that have the name property in each input dataset.";
@@ -374,8 +404,14 @@ public enum EnumStat {
             case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in each input dataset.";
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in each input dataset.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in each input dataset.";
-            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI.";
-            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average empty properties per POI.";
+            case AVERAGE_PROPERTIES_PER_POI: return "Average properties per POI in each dataset.";
+            case AVERAGE_EMPTY_PROPERTIES_PER_POI: return "Average empty properties per POI in each dataset.";
+            case LINKED_AVERAGE_PROPERTIES: return "Average number of properties of linked POIs.";
+            case LINKED_AVERAGE_EMPTY_PROPERTIES: return "Average number of empty properties of linked POIs.";
+            case LONGER_NAMES: return "Number of name values from dataset A that are longer than the names of the corresponding POIs from dataset B.";
+            case LONGER_PHONES: return "Number of phone values from dataset A that are longer than the phones of the corresponding POIs from dataset B.";
+            case FULL_MATCH_STREETS: return "Number of fully matching address streets between linked POIs in the two datasets.";
+            case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers between linked POIs in the two datasets.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -429,8 +465,14 @@ public enum EnumStat {
             case TOTAL_NON_EMPTY_PROPERTIES: return "Total non empty properties.";
             case TOTAL_EMPTY_PROPERTIES: return "Total empty properties.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Total properties percentage.";
-            case AVERAGE_PROPERTY_PER_POI: return "Average properties.";
-            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties.";
+            case AVERAGE_PROPERTIES_PER_POI: return "Average properties per POI.";
+            case AVERAGE_EMPTY_PROPERTIES_PER_POI: return "Average empty properties per POI.";
+            case LINKED_AVERAGE_PROPERTIES: return "Average linked properties.";
+            case LINKED_AVERAGE_EMPTY_PROPERTIES: return "Average linked empty properties.";
+            case LONGER_NAMES: return "Longer name values.";
+            case LONGER_PHONES: return "Longer phone values.";
+            case FULL_MATCH_STREETS: return "Full matching streets.";
+            case FULL_MATCH_STREET_NUMBERS: return "Full matching street numbers.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -484,8 +526,14 @@ public enum EnumStat {
             case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in dataset A.";
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset A.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset A.";
-            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset A.";
-            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties per POI in dataset A.";
+            case AVERAGE_PROPERTIES_PER_POI: return "Average properties per POI in dataset A.";
+            case AVERAGE_EMPTY_PROPERTIES_PER_POI: return "Average properties per POI in dataset A.";
+            case LINKED_AVERAGE_PROPERTIES: return "Average linked properties in dataset A.";
+            case LINKED_AVERAGE_EMPTY_PROPERTIES: return "Average linked empty properties in dataset A.";
+            case LONGER_NAMES: return "Name values from dataset A that are longer than the corresponding values from dataset B.";
+            case LONGER_PHONES: return "Phone values from dataset A that are longer than the corresponding values from dataset B.";
+            case FULL_MATCH_STREETS: return "Number of fully matching address streets from Dataset A.";
+            case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers from Dataset A.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -539,8 +587,14 @@ public enum EnumStat {
             case TOTAL_NON_EMPTY_PROPERTIES: return "Total number of non empty properties in dataset B.";
             case TOTAL_EMPTY_PROPERTIES: return "Total number of empty properties in dataset B.";
             case TOTAL_PROPERTIES_PERCENTAGE: return "Percentage of total properties in dataset B.";
-            case AVERAGE_PROPERTY_PER_POI: return "Average properties per POI in dataset B.";
-            case AVERAGE_EMPTY_PROPERTY_PER_POI: return "Average properties per POI in dataset B.";
+            case AVERAGE_PROPERTIES_PER_POI: return "Average properties per POI in dataset B.";
+            case AVERAGE_EMPTY_PROPERTIES_PER_POI: return "Average properties per POI in dataset B.";
+            case LINKED_AVERAGE_PROPERTIES: return "Average linked properties in dataset B.";
+            case LINKED_AVERAGE_EMPTY_PROPERTIES: return "Average linked empty properties in dataset B.";
+            case LONGER_NAMES: return "Total name values of linked POIs.";
+            case LONGER_PHONES: return "Total phone values of linked POIs.";
+            case FULL_MATCH_STREETS: return "Number of fully matching address streets from Dataset B.";
+            case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers from Dataset B.";
             default: throw new IllegalArgumentException();
         }
     }      
