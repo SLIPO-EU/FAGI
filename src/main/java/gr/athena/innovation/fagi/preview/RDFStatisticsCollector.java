@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.preview.statistics.EnumStatGroup;
 import gr.athena.innovation.fagi.preview.statistics.EnumStatViewType;
+import gr.athena.innovation.fagi.preview.statistics.StatGroup;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -492,7 +493,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.POI_BASED);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.TOTAL_POIS.toString());
         pair.setLegendTotal(EnumStat.TOTAL_POIS.getLegendTotal());
@@ -510,7 +511,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.TRIPLE_BASED);
+        pair.setGroup(new StatGroup(EnumStatGroup.TRIPLE_BASED));
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.TOTAL_TRIPLES.toString());
         pair.setLegendTotal(EnumStat.TOTAL_TRIPLES.getLegendTotal());
@@ -541,7 +542,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(linked.toString(), total.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.POI_BASED);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setTitle(EnumStat.LINKED_VS_TOTAL.toString());
         pair.setLegendTotal(EnumStat.LINKED_VS_TOTAL.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_VS_TOTAL.getLegendA());
@@ -556,7 +557,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(linkedPOIsA.toString(), linkedPOIsB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.POI_BASED);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setTitle(EnumStat.LINKED_POIS.toString());
         pair.setLegendTotal(EnumStat.LINKED_POIS.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_POIS.getLegendA());
@@ -575,7 +576,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(linkedTriplesA.toString(), linkedTriplesB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.TRIPLE_BASED);
+        pair.setGroup(new StatGroup(EnumStatGroup.TRIPLE_BASED));
         pair.setTitle(EnumStat.LINKED_TRIPLES.toString());
         pair.setLegendTotal(EnumStat.LINKED_TRIPLES.getLegendTotal());
         pair.setLegendA(EnumStat.LINKED_TRIPLES.getLegendA());
@@ -594,7 +595,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 = new StatisticResultPair(distinctPropertiesA.toString(), distinctPropertiesB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.PROPERTY);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(EnumStat.DISTINCT_PROPERTIES.toString());
         pair.setLegendTotal(EnumStat.DISTINCT_PROPERTIES.getLegendTotal());
@@ -613,6 +614,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(propertyA.toString(), propertyB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -664,6 +666,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -746,11 +749,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
+        EnumStat stat = EnumStat.TOTAL_NON_EMPTY_PROPERTIES;
         pair.setType(EnumStatViewType.BAR);
-        pair.setTitle(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.toString());
-        pair.setLegendTotal(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.getLegendTotal());
-        pair.setLegendA(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.getLegendA());
-        pair.setLegendB(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.getLegendB());
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
 
         return pair;
     }
@@ -823,11 +828,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
 
         StatisticResultPair pair = new StatisticResultPair(totalA.toString(), totalB.toString(), null);
+        EnumStat stat = EnumStat.TOTAL_EMPTY_PROPERTIES;
         pair.setType(EnumStatViewType.BAR);
-        pair.setTitle(EnumStat.TOTAL_EMPTY_PROPERTIES.toString());
-        pair.setLegendTotal(EnumStat.TOTAL_EMPTY_PROPERTIES.getLegendTotal());
-        pair.setLegendA(EnumStat.TOTAL_EMPTY_PROPERTIES.getLegendA());
-        pair.setLegendB(EnumStat.TOTAL_EMPTY_PROPERTIES.getLegendB());
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
 
         return pair;
     }
@@ -876,13 +883,12 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(percentA.toString(), percentB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PERCENT));
         pair.setValueTotal("100");
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
         pair.setLegendA(stat.getLegendA());
         pair.setLegendB(stat.getLegendB());
-
-        pair.setTitle(stat.toString());
         return pair;
     }
 
@@ -906,7 +912,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         StatisticResultPair pair = new StatisticResultPair(percentageA.toString(), percentageB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(EnumStatGroup.PERCENT);
+        pair.setGroup(new StatGroup(EnumStatGroup.PERCENT));
         pair.setValueTotal("100");
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -992,12 +998,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair
                 = new StatisticResultPair(totalPropPercentageA.toString(), totalPropPercentageB.toString(), null);
 
+        EnumStat stat = EnumStat.TOTAL_PROPERTIES_PERCENTAGE;
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PERCENT));
         pair.setValueTotal("100");
-        pair.setTitle(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.toString());
-        pair.setLegendTotal(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.getLegendTotal());
-        pair.setLegendA(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.getLegendA());
-        pair.setLegendB(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.getLegendB());
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
 
         return pair;
     }
@@ -1019,6 +1027,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1041,6 +1050,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(nonEmptyCountA.toString(), nonEmptyCountB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1072,6 +1082,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1103,6 +1114,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1134,6 +1146,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
             EnumStat stat = EnumStat.AVERAGE_PROPERTIES_PER_POI;
             pair.setType(EnumStatViewType.BAR);
+            pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
             pair.setValueTotal(total.toString());
             pair.setTitle(stat.toString());
             pair.setLegendTotal(stat.getLegendTotal());
@@ -1171,6 +1184,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
             EnumStat stat = EnumStat.AVERAGE_EMPTY_PROPERTIES_PER_POI;
             pair.setType(EnumStatViewType.BAR);
+            pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
             pair.setValueTotal(total.toString());
             pair.setTitle(stat.toString());
             pair.setLegendTotal(stat.getLegendTotal());
@@ -1213,6 +1227,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         EnumStat stat = EnumStat.LINKED_AVERAGE_PROPERTIES;
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setValueTotal(total.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
@@ -1261,6 +1276,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
             EnumStat stat = EnumStat.LINKED_AVERAGE_EMPTY_PROPERTIES;
             pair.setType(EnumStatViewType.BAR);
+            pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
             pair.setValueTotal(total.toString());
             pair.setTitle(stat.toString());
             pair.setLegendTotal(stat.getLegendTotal());
@@ -1299,6 +1315,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 = new StatisticResultPair(countLongerValueA.toString(), countLongerValueB.toString(), null);
 
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.TRIPLE_BASED));
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
         pair.setLegendA(stat.getLegendA());
@@ -1323,6 +1340,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair
                 = new StatisticResultPair(null, null, fullMatchingValueCount.toString());
         pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.TRIPLE_BASED));
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
 
@@ -1386,10 +1404,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     private boolean cannotCompute(Integer totalA, Integer totalB) {
 
-        if (totalA == null || totalB == null || totalA.equals(0) || totalB.equals(0)) {
-            return true;
-        }
-        return false;
+        return totalA == null || totalB == null || totalA.equals(0) || totalB.equals(0);
     }
 
     private StatisticResultPair getFailedStatistic(EnumStat stat, String property) {
@@ -1403,6 +1418,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         StatisticResultPair pair = new StatisticResultPair(null, null, null);
         pair.setType(EnumStatViewType.UNDEFINED);
         pair.setTitle(EnumStat.UNDEFINED.toString() + " \"" + stat.toString() + "\"");
+        pair.setGroup(new StatGroup(EnumStatGroup.UNDEFINED));
         return pair;
     }
 

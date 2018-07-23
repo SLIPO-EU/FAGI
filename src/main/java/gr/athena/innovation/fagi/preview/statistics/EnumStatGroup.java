@@ -21,24 +21,24 @@ public enum EnumStatGroup {
     UNDEFINED(0),
 
     /**
-     * Group that refers to a percent statistic.
+     * Group that refers to a percent of property values.
      */
     PERCENT(1),
 
     /**
      * Group that refers to a property statistic.
      */
-    PROPERTY(2),
+    PROPERTY(3),
     
     /**
      * Triple based group.
      */
-    TRIPLE_BASED(3),
+    TRIPLE_BASED(4),
     
     /**
      * Poi based group.
      */
-    POI_BASED(4);
+    POI_BASED(5);
 
 	private final int value;
     
@@ -114,9 +114,11 @@ public enum EnumStatGroup {
     public String toString() {
         switch(this) {
             case UNDEFINED: return "undefined";
-            case PERCENT: return "percent";
+            case PERCENT: return "empty-percent";
             case PROPERTY: return "property";
+            case TRIPLE_BASED: return "triple-based";
+            case POI_BASED: return "poi-based";
             default: throw new IllegalArgumentException();
         }
-    }  
+    }
 }

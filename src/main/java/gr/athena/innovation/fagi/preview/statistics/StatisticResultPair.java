@@ -12,18 +12,18 @@ import java.util.Objects;
 @JsonInclude(Include.NON_NULL)
 public class StatisticResultPair implements Serializable{
 
-    private EnumStatViewType type;
-
+    
     private final String valueA;
     private final String valueB;
+    private final String both;
+    
+    private EnumStatViewType type;
+    private StatGroup group;
     private String valueTotal;
     private String legendA;
     private String legendB;
     private String legendTotal;
-    private final String both;
     private String title;
-
-    private EnumStatGroup group;
 
     public StatisticResultPair(String a, String b, String both) {
         this.valueA = a;
@@ -37,6 +37,7 @@ public class StatisticResultPair implements Serializable{
         hash = 11 * hash + Objects.hashCode(this.valueA);
         hash = 11 * hash + Objects.hashCode(this.valueB);
         hash = 11 * hash + Objects.hashCode(this.both);
+        hash = 11 * hash + Objects.hashCode(this.group);
         hash = 11 * hash + Objects.hashCode(this.title);
         return hash;
     }
@@ -65,22 +66,19 @@ public class StatisticResultPair implements Serializable{
         if (!Objects.equals(this.title, other.title)) {
             return false;
         }
+        if (!Objects.equals(this.group, other.group)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "StatisticResultPair{" + "a=" + valueA + ", b=" + valueB + ", both=" + both + ", label=" + title + '}';
+        return "StatisticResultPair{" + "valueA=" + valueA + ", valueB=" + valueB + ", both=" + both + ", type=" + type 
+                + ", group=" + group + ", valueTotal=" + valueTotal + ", legendA=" + legendA + ", legendB=" + legendB 
+                + ", legendTotal=" + legendTotal + ", title=" + title + '}';
     }
 
-    public EnumStatGroup getGroup() {
-        return group;
-    }
-
-    public void setGroup(EnumStatGroup group) {
-        this.group = group;
-    }
-    
     public String getValueA() {
         return valueA;
     }
@@ -139,5 +137,13 @@ public class StatisticResultPair implements Serializable{
 
     public void setValueTotal(String valueTotal) {
         this.valueTotal = valueTotal;
+    }
+
+    public StatGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(StatGroup group) {
+        this.group = group;
     }
 }
