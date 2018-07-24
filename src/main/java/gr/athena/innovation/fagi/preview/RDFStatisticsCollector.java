@@ -271,32 +271,32 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                     break;
                 case EMPTY_NAMES:
                     map.put(EnumStat.EMPTY_NAMES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_NAMES, Namespace.NAME));
                     break;
                 case EMPTY_PHONES:
                     map.put(EnumStat.EMPTY_PHONES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_PHONES, Namespace.PHONE));
                     break;
                 case EMPTY_STREETS:
                     map.put(EnumStat.EMPTY_STREETS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREETS, Namespace.STREET));
                     break;
                 case EMPTY_STREET_NUMBERS:
                     map.put(EnumStat.EMPTY_STREET_NUMBERS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS,
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREET_NUMBERS,
                                     Namespace.STREET_NUMBER));
                     break;
                 case EMPTY_WEBSITES:
                     map.put(EnumStat.EMPTY_WEBSITES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_WEBSITES, Namespace.HOMEPAGE));
                     break;
                 case EMPTY_EMAILS:
                     map.put(EnumStat.EMPTY_EMAILS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_EMAILS, Namespace.EMAIL));
                     break;
                 case EMPTY_DATES:
                     map.put(EnumStat.EMPTY_DATES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
+                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_DATES, Namespace.DATE));
                     break;
                 case DISTINCT_PROPERTIES:
                     map.put(EnumStat.DISTINCT_PROPERTIES.getKey(), countDistinctProperties(leftModel, rightModel));
