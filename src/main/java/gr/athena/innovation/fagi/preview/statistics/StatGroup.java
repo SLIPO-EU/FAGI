@@ -20,7 +20,7 @@ public class StatGroup {
                 break;
             case PERCENT: 
                 this.enumGroup = enumGroup;
-                this.title = "Percentages of property values.";
+                this.title = "Percentages of property values";
                 this.legendA = "Non empty fields A(%)";
                 this.legendB = "Non empty fields B(%)";
                 this.legendTotal = "Total(%)";
@@ -28,7 +28,7 @@ public class StatGroup {
                 break;
             case PROPERTY: 
                 this.enumGroup = enumGroup;
-                this.title = "Number of property values.";
+                this.title = "Number of property values";
                 this.legendA = "Properties of dataset A";
                 this.legendB = "Properties of dataset B";
                 this.legendTotal = "Total Properties";
@@ -36,7 +36,7 @@ public class StatGroup {
                 break;
             case TRIPLE_BASED: 
                 this.enumGroup = enumGroup;
-                this.title = "Number of Triples.";
+                this.title = "Number of Triples";
                 this.legendA = "Triples in A";
                 this.legendB = "Triples in B";
                 this.legendTotal = "Total Triples";
@@ -44,7 +44,7 @@ public class StatGroup {
                 break;
             case POI_BASED: 
                 this.enumGroup = enumGroup;
-                this.title = "Number of POIs.";
+                this.title = "Number of POIs";
                 this.legendA = "#POIs in A";
                 this.legendB = "#POIs in B";
                 this.legendTotal = "Total POIs";

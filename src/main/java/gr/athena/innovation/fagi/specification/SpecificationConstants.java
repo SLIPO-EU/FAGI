@@ -12,9 +12,8 @@ public class SpecificationConstants {
     
     public static final int CONNECTOR = ' ';
 
-    public static final String HELP = "Usage:\n java -jar fagi-1.0-SNAPSHOT.jar -spec <specFile> -rules <rulesFile>\n"
-                                    + "-spec requires the spec.xml file path\n"
-                                    + "-rules requires the rules.xml file path\n";
+    public static final String HELP = "Usage:\n java -jar fagi.jar -spec <configFile>\n"
+                                    + "-spec requires the spec.xml file path\n";
     
     public static class Spec {
 

@@ -156,22 +156,29 @@ public class SparqlConstructor {
         return query;
     }     
 
-    public static String selectObjectFromChainQuery(String predicate1, String predicate2){
+    public static String selectObjectFromChainQuery(String predicate1, String predicate2, boolean checkOfficial){
         String query;
+
         if(predicate1.equals(Namespace.NAME_NO_BRACKETS)){
-            query = "SELECT ?o2 " 
-                    + "WHERE {"
-                    + "?s <" + predicate1 + "> ?o1 . "
-                    + "?o1 <" + predicate2 + "> ?o2 . "
-                    + "?o1 " + Namespace.NAME_TYPE + " \"official\" ."
-                    + "}";   
+            if(checkOfficial){
+                query = "SELECT ?o2 " 
+                        + "WHERE {"
+                        + "?s <" + predicate1 + "> ?o1 . "
+                        + "?o1 <" + predicate2 + "> ?o2 . "
+                        + "?o1 " + Namespace.NAME_TYPE + " \"official\" ."
+                        + "}";
+            } else {
+                query = "SELECT ?o2 " 
+                        + "WHERE {"
+                        + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2"
+                        + "}";
+            }
         } else {
             query = "SELECT ?o2 " 
                     + "WHERE {"
                     + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2"
                     + "}";            
         }
-
         return query;
     }
     

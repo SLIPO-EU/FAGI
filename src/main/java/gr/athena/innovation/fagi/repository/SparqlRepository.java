@@ -57,11 +57,11 @@ public class SparqlRepository {
         return rdfObjectValue;
     }
 
-    public static String getObjectOfPropertyChain(String p1, String p2, Model model) {
+    public static String getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
 
         String var = "o2";
         String result = null;
-        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1,p2);
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2, checkOfficial);
 
         Query query = QueryFactory.create(queryString);
 

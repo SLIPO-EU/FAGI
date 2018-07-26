@@ -234,6 +234,7 @@ public class LinkedPair {
                 continue;
             }
 
+            LOG.trace("fusing: " + literalA + " " + literalB);
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and continue to next rule.
             if (rule.getActionRuleSet() == null) {
@@ -475,7 +476,7 @@ public class LinkedPair {
                 break;
             }            
             case KEEP_BOTH: {
-
+                //todo: maybe explicitly insert literals in order to handle empty values.
                 fusedModel = keepBoth(fusedEntityData);
                 
                 if (isRejectedByPreviousRule(fusedModel)) {
@@ -696,74 +697,46 @@ public class LinkedPair {
 
         return fusedModel;
     }
-    
+
     private void keepLeft(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
-        Resource node;
-        if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
-            node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        } else {
-            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        }
+        Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
-        if (node != null) {
-            //fallback
-            if(literalA == null && literalB != null){
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
-            } else if(literalA != null){
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+        if(literalA != null){
+            if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+                fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalA, geometryDatatype));
             } else {
-                //todo: discuss annotating property as blank
-                return;
+                fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
             }
         }
-        
-        if (node == null) {
-            throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
-        }
-        
+
         if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+            markAmbiguous(customProperty, resource, fusedModel);
         }
+
         EntityData fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
     }
-    
+
     private void keepRight(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
-        Resource node;
-        if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
-            node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        } else {
-            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        }
-        
-        if (node != null) {
-            //fallback
-            if(literalB == null && literalA != null){
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
-            } else if(literalB != null){
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+        Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
+
+        if(literalB != null){
+            if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+                RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+                fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalB, geometryDatatype));
             } else {
-                //todo: discuss annotating property as blank
-                return;
+                fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
             }
         }
-        
-        if (node == null) {
-            //possible geometry without datatype. Try recovering node by as any other literal.
-            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        }      
-        
-        if(node == null){
-            throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
-        }
-        
+
         if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+            markAmbiguous(customProperty, resource, fusedModel);
         }
-        
+
         EntityData fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
@@ -772,11 +745,18 @@ public class LinkedPair {
     private void concatenate(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
         Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+        if(node == null){
+            LOG.trace("null property value from default dataset action. Concatenation cannot be applied between literals {} - {}", literalA, literalB);
+            return;
+        }
+
         String concatenated = literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB;
         fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(concatenated));
+
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
         }
+
         EntityData fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
@@ -784,19 +764,30 @@ public class LinkedPair {
     
     private void keepMostRecent(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) 
             throws ApplicationException {
-        
+
         EnumDataset mostRecent = Configuration.getInstance().getMostRecentDataset();
-        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
-        }        
+        RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+        Resource node = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
+
+        if(node == null){
+            LOG.trace("null property value. Keep most recent will not be applied between literals {} - {}", literalA, literalB);
+            return;
+        }
         switch (mostRecent) {
             case LEFT: {
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+                if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+                    fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalA, geometryDatatype));
+                } else {
+                    fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+                }
                 break;
             }
             case RIGHT: {
-                fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+                if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+                    fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalB, geometryDatatype));
+                } else {
+                    fusedModel.add(node, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+                }
                 break;
             }
             case UNDEFINED:
@@ -804,7 +795,9 @@ public class LinkedPair {
                 //do not remove statement. Default dataset action should be kept in this case (no dates provided)
                 break;
         }
-
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
 
     private void keepMorePoints(String literalA, String literalB, Model fusedModel, CustomRDFProperty customProperty, boolean mark) {
@@ -814,10 +807,11 @@ public class LinkedPair {
         RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
         Resource node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
-        } 
-        
+        if(node == null){
+            LOG.trace("null property value. Keep more points will not be applied between literals {} - {}", literalA, literalB);
+            return;
+        }
+
         if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
 
             Literal geometryLiteral = ResourceFactory.createTypedLiteral(literalA, geometryDatatype);
@@ -838,19 +832,25 @@ public class LinkedPair {
 
             fusedEntity.setEntityData(fusedEntityData);
         }
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
 
     private void keepMorePointsAndShift(String literalA, String literalB, Model fusedModel, 
             CustomRDFProperty customProperty, boolean mark) {
+        
         EntityData fusedEntityData;
         Geometry leftGeometry = parseGeometry(literalA);
         Geometry rightGeometry = parseGeometry(literalB);
         RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
         
         Resource node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+
+        if(node == null){
+            LOG.trace("null property value. Keep more points and shift will not be applied between literals {} - {}", literalA, literalB);
+            return;
         }
         
         if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
@@ -882,6 +882,10 @@ public class LinkedPair {
             fusedEntityData.setModel(fusedModel);
             fusedEntity.setEntityData(fusedEntityData);
         }
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
 
     private void shiftLeftGeometry(String literalA, String literalB, Model fusedModel, CustomRDFProperty customProperty, boolean mark) {
@@ -893,17 +897,21 @@ public class LinkedPair {
         Geometry shiftedToRightGeometry = centroidTranslator.shift(leftGeometry);
         String wktFusedGeometry = getWKTLiteral(shiftedToRightGeometry);
         Resource node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+
+        if(node == null){
+            LOG.trace("null property value. Shift left geometry will not be applied between literals {} - {}", literalA, literalB);
+            return;
         }
-        
+
         String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
         Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
         fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
-        fusedEntity.setEntityData(fusedEntityData);
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
 
     private void shiftRightGeometry(String literalA, String literalB, Model fusedModel, CustomRDFProperty customProperty, boolean mark) {
@@ -915,39 +923,78 @@ public class LinkedPair {
         Geometry shiftedToLeftGeometry = centroidTranslator.shift(rightGeometry);
         String wktFusedGeometry = getWKTLiteral(shiftedToLeftGeometry);
         Resource node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+
+        if(node == null){
+            LOG.trace("null property value. Shift right geometry will not be applied between literals {} - {}", literalA, literalB);
+            return;
         }
-        
+
         String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
         Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
         fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
     
     private void concatenateGeometry(String literalA, String literalB, Model fusedModel, CustomRDFProperty customProperty, boolean mark) {
         EntityData fusedEntityData;
+        RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
         Geometry leftGeometry = parseGeometry(literalA);
         Geometry rightGeometry = parseGeometry(literalB);
         Geometry[] geometries = new Geometry[]{leftGeometry, rightGeometry};
         Geometry geometryCollection = new GeometryCollection(geometries, new GeometryFactory());
         String wktFusedGeometry = getWKTLiteral(geometryCollection);
         Resource node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-        
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+
+        if(node == null){
+            LOG.trace("null property value. Concatenate geometry will not be applied between literals {} - {}", literalA, literalB);
+            return;
         }
-        
-        RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+
         String wktLiteralCRS = Namespace.CRS_4326 + " " + wktFusedGeometry;
         Literal geometryLiteral = ResourceFactory.createTypedLiteral(wktLiteralCRS, geometryDatatype);
         fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
+    }
+
+    private void keepLongest(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
+
+        EntityData fusedEntityData;
+        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
+
+        if(node == null){
+            LOG.trace("null property value. Keep longest will not be applied between literals {} - {}", literalA, literalB);
+            return;
+        }
+
+        String sA = Normalizer.normalize(literalA, Normalizer.Form.NFC);
+        String sB = Normalizer.normalize(literalB, Normalizer.Form.NFC);
+        String longest;
+        if (sA.length() > sB.length()) {
+            longest = literalA;
+        } else {
+            longest = literalB;
+        }
+
+        fusedModel.add(node, customProperty.getParent(), ResourceFactory.createStringLiteral(longest));
+        fusedEntityData = fusedEntity.getEntityData();
+        fusedEntityData.setModel(fusedModel);
+        fusedEntity.setEntityData(fusedEntityData);
+
+        if(mark){
+            markAmbiguous(customProperty, node, fusedModel);
+        }
     }
 
     private void markAmbiguous(CustomRDFProperty customProperty, Resource node, Model fusedModel) {
@@ -965,32 +1012,22 @@ public class LinkedPair {
         }
     }
 
-    private void keepLongest(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
-        EntityData fusedEntityData;
-        Resource node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
-
-        if (node == null) {
-            //property is missing. (default dataset action that is already applied 
-            LOG.error("Node is blank. Cannot resolve URI. Literals: {} {}", literalA, literalB);
-            throw new ApplicationException("Node is blank. Cannot resolve URI. LiteralA: " + literalA + " literalB: " + literalB);
-        }        
+    private Resource getResourceAndRemoveFromModel(CustomRDFProperty customProperty, Model fusedModel, String literalA, 
+            String literalB) throws ApplicationException {
         
-        String sA = Normalizer.normalize(literalA, Normalizer.Form.NFC);
-        String sB = Normalizer.normalize(literalB, Normalizer.Form.NFC);
-        String longest;
-        if (sA.length() > sB.length()) {
-            longest = literalA;
+        Resource node;
+        if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
+            node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         } else {
-            longest = literalB;
+            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         }
         
-        if(mark){
-            markAmbiguous(customProperty, node, fusedModel);
+        if(node == null){
+            //possible geometry without datatype. Try recovering node as any other literal.
+            node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         }
-        fusedModel.add(node, customProperty.getParent(), ResourceFactory.createStringLiteral(longest));
-        fusedEntityData = fusedEntity.getEntityData();
-        fusedEntityData.setModel(fusedModel);
-        fusedEntity.setEntityData(fusedEntityData);
+
+        return node;
     }
 
     private void rejectMarkAmbiguous(Model ambiguousModel, EntityData fusedEntityData) {
@@ -1053,14 +1090,24 @@ public class LinkedPair {
     //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
     //The method returns the resource that the literalA or B was found in order to be used as subject and preserve the triple chain.
     private Resource getResourceAndRemoveLiteral(Model model, Property property, String literalA, String literalB) {
-        Resource node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
-        if (node == null) {
+        Resource node;
+        if(literalA == null){
             node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalB, model);
-            if (node != null) {
+            if(node != null){
+                model.removeAll(node, property, (RDFNode) null);
+            }
+        } else if(literalB == null){
+            node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
+            if(node != null){
                 model.removeAll(node, property, (RDFNode) null);
             }
         } else {
-            model.removeAll(node, property, (RDFNode) null);
+            //both literals not null, try to find subject:
+            node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalA, model);
+            if(node == null){
+                node = SparqlRepository.getSubjectWithLiteral(property.toString(), literalB, model);
+                model.removeAll(node, property, (RDFNode) null);
+            }
         }
         return node;
     }
@@ -1068,14 +1115,24 @@ public class LinkedPair {
     //removes the triple that contains literalA or literalB in order to be replaced by another literal based on the action.
     //The method returns the resource that the literalA or B was found in order to be used as subject and preserve the triple chain.
     private Resource getResourceAndRemoveGeometry(Model model, Property property, String literalA, String literalB) {
-        Resource node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalA, model);
-        if (node == null) {
+        Resource node;
+        if(literalA == null){
             node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalB, model);
-            if (node != null) {
+            if(node != null){
+                model.removeAll(node, property, (RDFNode) null);
+            }
+        } else if(literalB == null){
+            node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalA, model);
+            if(node != null){
                 model.removeAll(node, property, (RDFNode) null);
             }
         } else {
-            model.removeAll(node, property, (RDFNode) null);
+            //both literals not null, try to find subject:
+            node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalA, model);
+            if(node == null){
+                node = SparqlRepository.getSubjectWithGeometry(property.toString(), literalB, model);
+                model.removeAll(node, property, (RDFNode) null);
+            }
         }
         return node;
     }
@@ -1093,7 +1150,11 @@ public class LinkedPair {
 
     private String getLiteralValueFromChain(String property1, String property2, Model model) {
         if (property1 != null) {
-            return SparqlRepository.getObjectOfPropertyChain(property1, property2, model);
+            String literal = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, true);
+            if(literal == null){
+                literal = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, false);
+            }
+            return literal;
         } else {
             LOG.warn("Could not find literal with properties {}", property1, property2);
             return "";
@@ -1234,11 +1295,8 @@ public class LinkedPair {
 
         Model newModel = ModelFactory.createDefaultModel();
         Model model = entity1.getEntityData().getModel();
-
         String entity2ResourceUri = entity2.getResourceURI();
-
-        List<Statement> list = model.listStatements().toList();
-        Iterator<Statement> statementIterator = list.iterator();
+        Iterator<Statement> statementIterator = model.listStatements().toList().iterator();
 
         while (statementIterator.hasNext()) {
             Statement statement = statementIterator.next();
