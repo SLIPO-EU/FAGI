@@ -282,8 +282,6 @@ public class FagiInstance {
         }
 
         LOG.info("XML files seem syntactically valid.");
-        
-        long stopTimeInput = System.currentTimeMillis();
 
         //Load datasets
         long startTimeReadFiles = System.currentTimeMillis();
@@ -293,8 +291,8 @@ public class FagiInstance {
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
         genericRDFRepository.parseLinks(configuration.getPathLinks());
 
-        //todo: enumMap for stats
-
+        long stopTimeReadFiles = System.currentTimeMillis();
+        LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
         LOG.info("Calculating statistics...");
 
         StatisticsCollector collector = new RDFStatisticsCollector();

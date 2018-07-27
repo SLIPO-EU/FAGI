@@ -151,23 +151,6 @@ public class SpecificationConstants {
         public static final String SIMPLE_SPECIAL_CHARS = "[\\\"\\,\\.\\-\\_\\@]";
     }    
     
-    public static final String[] DATE_FORMATS = {
-                "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
-                "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                "yyyy-MM-dd'T'HH:mm:ss.SSSZ",   "yyyy-MM-dd HH:mm:ss", 
-                "MM/dd/yyyy HH:mm:ss",          "MM/dd/yyyy'T'HH:mm:ss.SSS'Z'", 
-                "MM/dd/yyyy'T'HH:mm:ss.SSSZ",   "MM/dd/yyyy'T'HH:mm:ss.SSS", 
-                "MM/dd/yyyy'T'HH:mm:ssZ",       "MM/dd/yyyy'T'HH:mm:ss", 
-                "yyyy:MM:dd HH:mm:ss",          "yyyy-MM-dd", 
-                "dd mm yyyy",                   "yyyy/MM/dd",
-                "dd-mm-yyyy",                   "dd-MM-yyyy",
-                "dd/mm/yyyy",                   "dd MM yyyy"};
-
-    public static final String[] PRIMARY_DATE_FORMATS = {
-                "yyyy-MM-dd",                   "yyyy/MM/dd",
-                "dd-mm-yyyy",                   "dd-MM-yyyy",
-                "dd/mm/yyyy",                   "dd/MM/yyyy"};
-    
     public static class Functions {
 
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
@@ -184,6 +167,11 @@ public class SpecificationConstants {
         public static final String IS_SAME_CUSTOM_NORMALIZE = "issamecustomnormalize";
         public static final String EXISTS = "exists";
         public static final String NOT_EXISTS = "notexists";
+        
+        public static final String IS_SAME_CENTROID = "issamecentroid";
+        public static final String IS_POINT_GEOMETRY = "ispointgeometry";
+        public static final String GEOMETRIES_INTERSECT = "geometriesintersect";
+        public static final String GEOMETRIES_CLOSER_THAN = "geometriescloserthan";
 
     }
 
@@ -196,4 +184,24 @@ public class SpecificationConstants {
         public static final String REMOVE_SPECIAL_CHARACTERS = "removespecialcharacters";
         public static final String BASIC_NORMALIZER = "basicgenericnormalizer";
     }
+
+    public static final String CRS_EPSG_4326 = "EPSG:4326";
+    public static final String CRS_EPSG_900913 = "EPSG:900913";
+    
+    public static final String[] DATE_FORMATS = {
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
+                "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZ",   "yyyy-MM-dd HH:mm:ss", 
+                "MM/dd/yyyy HH:mm:ss",          "MM/dd/yyyy'T'HH:mm:ss.SSS'Z'", 
+                "MM/dd/yyyy'T'HH:mm:ss.SSSZ",   "MM/dd/yyyy'T'HH:mm:ss.SSS", 
+                "MM/dd/yyyy'T'HH:mm:ssZ",       "MM/dd/yyyy'T'HH:mm:ss", 
+                "yyyy:MM:dd HH:mm:ss",          "yyyy-MM-dd", 
+                "dd mm yyyy",                   "yyyy/MM/dd",
+                "dd-mm-yyyy",                   "dd-MM-yyyy",
+                "dd/mm/yyyy",                   "dd MM yyyy"};
+
+    public static final String[] PRIMARY_DATE_FORMATS = {
+                "yyyy-MM-dd",                   "yyyy/MM/dd",
+                "dd-mm-yyyy",                   "dd-MM-yyyy",
+                "dd/mm/yyyy",                   "dd/MM/yyyy"};
 }

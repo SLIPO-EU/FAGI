@@ -991,7 +991,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             totalPropPercentageA = roundHalfDown((nA + pA + sA + snA + wA + eA + lA + dA) / 8);
             totalPropPercentageB = roundHalfDown((nB + pB + sB + snB + wB + eB + lB + dB) / 8);
 
-        } catch (NullPointerException ex) {//parse double throws NullPointerException, not NumberFormatException
+        } catch (NullPointerException | NumberFormatException e) {//parseDouble(null) throws NullPointerException, not NumberFormatException
             return getFailedStatistic(EnumStat.TOTAL_PROPERTIES_PERCENTAGE, "");
         }
 
