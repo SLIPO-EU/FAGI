@@ -19,6 +19,13 @@ import org.apache.jena.rdf.model.StmtIterator;
  */
 public class Exists implements IFunction, IFunctionTwoParameters{
 
+    /**
+     * This is the actual method that it is used to evaluate the existence of the property in the model.
+     * 
+     * @param modelText the RDF model as text input.
+     * @param propertyString the property string.
+     * @return true if the property exists in the model, false otherwise.
+     */
     @Override
     public boolean evaluate(String modelText, String propertyString) {
         
@@ -35,11 +42,24 @@ public class Exists implements IFunction, IFunctionTwoParameters{
 
     }
 
+    /**
+     * This is the actual method that it is used to evaluate the existence of the property in the model.
+     * 
+     * @param model
+     * @param propertyString
+     * @return
+     */
     public boolean evaluate(Model model, String propertyString) {
         Property property = ResourceFactory.createProperty(propertyString);
         return propertyExistsInModel(model, property);
     }
     
+    /**
+     *
+     * @param model
+     * @param property
+     * @return
+     */
     public static boolean propertyExistsInModel(Model model, Property property){
 
         for (StmtIterator i = model.listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author nkarag
  */
 public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParameter{
-    
+
     /**
      * Checks if the given number is represented as an integer. 
      * (Contains only numeric characters and no other symbols or spaces)

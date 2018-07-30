@@ -104,7 +104,7 @@ public class LinkedPair {
             LOG.trace("Validating with Rule: " + validationRule);
 
             //assign nulls. Validation rule does not use basic properties, only external properties. 
-            //These values will be ignored at condition evaluation. Consider a refactoring
+            //These values will be ignored at condition evaluation. Todo: Consider a refactoring
             String validationProperty = null;
             String literalA = null;
             String literalB = null;

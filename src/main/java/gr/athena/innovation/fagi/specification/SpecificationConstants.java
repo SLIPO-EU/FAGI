@@ -140,6 +140,8 @@ public class SpecificationConstants {
         public static final String ABBR_REGEX2 = "((?:[A-Z]\\.)+[A-Z]?|[a-zA-Z']+)";
         public static final String ABBR_REGEX3 = "\\b(?:[a-zA-Z]\\.){2,}";
         public static final String UPPER_CASE_2 = "^(.*?[A-Z]){2,}";
+        public static final String NUMERIC = "\\d+";
+        public static final String NON_NUMERIC = "[^0-9]";
         //public static final String NON_WORD_CHARACTERS_REGEX = "\\W";
         //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
         //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX_2 = "[^\\p{L}\\p{Nd}]+";
@@ -157,10 +159,13 @@ public class SpecificationConstants {
         public static final String IS_DATE_PRIMARY_FORMAT = "isdateprimaryformat";
         public static final String IS_VALID_DATE = "isvaliddate";
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
+        public static final String IS_LITERAL_NUMERIC = "isliteralnumeric";
+        public static final String LITERAL_CONTAINS = "literalcontains";
         public static final String IS_PHONE_NUMBER_PARSABLE = "isphonenumberparsable";
         public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
         public static final String IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE = "issamephonenumbercustomnormalize";
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
+        public static final String PHONE_HAS_MORE_DIGITS = "phonehasmoredigits";
         public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplex";
         //public static final String IS_SAME_NORMALIZED = "issamenormalized";
         public static final String IS_SAME_SIMPLE_NORMALIZE = "issamesimplenormalize";
@@ -172,6 +177,8 @@ public class SpecificationConstants {
         public static final String IS_POINT_GEOMETRY = "ispointgeometry";
         public static final String GEOMETRIES_INTERSECT = "geometriesintersect";
         public static final String GEOMETRIES_CLOSER_THAN = "geometriescloserthan";
+        public static final String IS_GEOMETRY_COVERED_BY = "isgeometrycoveredby";
+        public static final String GEOMETRIES_HAVE_SAME_AREA = "geometrieshavesamearea";
 
     }
 
@@ -186,7 +193,7 @@ public class SpecificationConstants {
     }
 
     public static final String CRS_EPSG_4326 = "EPSG:4326";
-    public static final String CRS_EPSG_900913 = "EPSG:900913";
+    public static final String CRS_EPSG_3857 = "EPSG:3857";
     
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",

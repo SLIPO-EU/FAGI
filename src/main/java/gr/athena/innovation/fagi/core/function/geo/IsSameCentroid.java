@@ -29,7 +29,7 @@ public class IsSameCentroid implements IFunction, IFunctionThreeParameters {
 
     /**
      * Checks if the geometries have the same centroid given a tolerance value in meters.
-     * Computes the orthodromic distance between two points by transforming the centroids using the 900913 CRS 
+     * Computes the orthodromic distance between two points by transforming the centroids using the 3857 CRS 
      * in order to calculate the distance in meters.
      *
      * @param wktA
@@ -73,7 +73,7 @@ public class IsSameCentroid implements IFunction, IFunctionThreeParameters {
         try {
 
             CoordinateReferenceSystem dataCRS = CRS.decode(SpecificationConstants.CRS_EPSG_4326);
-            CoordinateReferenceSystem worldCRS = CRS.decode(SpecificationConstants.CRS_EPSG_900913);
+            CoordinateReferenceSystem worldCRS = CRS.decode(SpecificationConstants.CRS_EPSG_3857);
 
             boolean lenient = true; // allow for some error due to different datums
             MathTransform transform = CRS.findMathTransform(dataCRS, worldCRS, lenient);

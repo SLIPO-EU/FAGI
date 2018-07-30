@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
@@ -229,59 +230,18 @@ public class Condition {
             String fusionProperty, String valueA, String valueB, Map<String, ExternalProperty> externalProperties) 
                 throws WrongInputException {
 
+        //todo: add implemented functions
         switch (function.getName()) {
             case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT: {
+                
                 IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
-                String parameter = function.getParameters()[0];
 
-                //todo add case for parameters a1,a2 etc. add a param to this method with List<ExternalProps>
-                //and iterate it to find id (change externalProps to Map maybe.
-                switch (parameter) {
-                    case SpecificationConstants.Rule.A:
-                        return isDateKnownFormat.evaluate(valueA);
-                    case SpecificationConstants.Rule.B:
-                        return isDateKnownFormat.evaluate(valueB);
-                    default:
-
-                        ExternalProperty property = externalProperties.get(parameter);
-
-                        if (property == null) {
-                            throw new WrongInputException(parameter + " is wrong. "
-                                    + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
-                                    + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                        }
-
-                        if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                            return isDateKnownFormat.evaluate(property.getValueA());
-                        } else {
-                            return isDateKnownFormat.evaluate(property.getValueB());
-                        }
-
-                }
+                return evaluateFunction(function, valueA, valueB, externalProperties, isDateKnownFormat);
             }
             case SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT: {
                 IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
-                String parameter = function.getParameters()[0];
-                switch (parameter) {
-                    case SpecificationConstants.Rule.A:
-                        return isDatePrimaryFormat.evaluate(valueA);
-                    case SpecificationConstants.Rule.B:
-                        return isDatePrimaryFormat.evaluate(valueB);
-                    default:
-                        ExternalProperty property = externalProperties.get(parameter);
-
-                        if (property == null) {
-                            throw new WrongInputException(parameter + " is wrong. "
-                                    + SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT
-                                    + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                        }
-
-                        if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                            return isDatePrimaryFormat.evaluate(property.getValueA());
-                        } else {
-                            return isDatePrimaryFormat.evaluate(property.getValueB());
-                        }
-                }
+                
+                return evaluateFunction(function, valueA, valueB, externalProperties, isDatePrimaryFormat);
             }
             case SpecificationConstants.Functions.IS_VALID_DATE: {
                 IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
@@ -310,61 +270,16 @@ public class Condition {
                 }
             }
             case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION: {
-                if (function.getParameters().length == 1) {
-                    IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
-                    String parameter = function.getParameters()[0];
-                    switch (parameter) {
-                        case SpecificationConstants.Rule.A:
-                            return isLiteralAbbreviation.evaluate(valueA);
-                        case SpecificationConstants.Rule.B:
-                            return isLiteralAbbreviation.evaluate(valueB);
-                        default:
-                            ExternalProperty property = externalProperties.get(parameter);
-
-                            if (property == null) {
-
-                                throw new WrongInputException(parameter + " is wrong. "
-                                        + SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT
-                                        + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                            }
-
-                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                                return isLiteralAbbreviation.evaluate(property.getValueA());
-                            } else {
-                                return isLiteralAbbreviation.evaluate(property.getValueB());
-                            }
-                    }
-                } else {
-                    throw new WrongInputException(SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION + " requires one parameter!");
-                }
+                
+                IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
+                return evaluateFunction(function, valueA, valueB, externalProperties, isLiteralAbbreviation);
+                 
             }
             case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE: {
-                if (function.getParameters().length == 1) {
-                    IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
-                    String parameter = function.getParameters()[0];
-                    switch (parameter) {
-                        case SpecificationConstants.Rule.A:
-                            return isPhoneNumberParsable.evaluate(valueA);
-                        case SpecificationConstants.Rule.B:
-                            return isPhoneNumberParsable.evaluate(valueB);
-                        default:
-                            ExternalProperty property = externalProperties.get(parameter);
 
-                            if (property == null) {
-                                throw new WrongInputException(parameter + " is wrong. "
-                                        + SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE
-                                        + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                            }
+                IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
+                return evaluateFunction(function, valueA, valueB, externalProperties, isPhoneNumberParsable);
 
-                            if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                                return isPhoneNumberParsable.evaluate(property.getValueA());
-                            } else {
-                                return isPhoneNumberParsable.evaluate(property.getValueB());
-                            }
-                    }
-                } else {
-                    throw new WrongInputException(SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE + " requires one parameter!");
-                }
             }
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER: {
                 IsSamePhoneNumber isSamePhoneNumber = (IsSamePhoneNumber) functionMap.get(function.getName());
@@ -437,7 +352,6 @@ public class Condition {
                                 property.getValueB(), exitCodeDigits);
                     }
                 }
-
             }
             case SpecificationConstants.Functions.IS_SAME_SIMPLE_NORMALIZE: {
 
@@ -461,11 +375,9 @@ public class Condition {
                     }
 
                     if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                        return isSameSimpleNormalize.evaluate(property.getValueA(),
-                                property.getValueB(), threshold);
+                        return isSameSimpleNormalize.evaluate(property.getValueA(), property.getValueB(), threshold);
                     } else {
-                        return isSameSimpleNormalize.evaluate(property.getValueB(),
-                                property.getValueB(), threshold);
+                        return isSameSimpleNormalize.evaluate(property.getValueB(), property.getValueB(), threshold);
                     }
                 }
             }
@@ -564,6 +476,34 @@ public class Condition {
         }
     }
 
+    private boolean evaluateFunction(Function function, String valueA, String valueB, 
+            Map<String, ExternalProperty> externalProperties, IFunctionSingleParameter singleParamFunction) throws WrongInputException {
+
+        if (function.getParameters().length != 1) {
+            throw new WrongInputException("Number of parameters in function is wrong.");
+        }
+
+        String parameter = function.getParameters()[0];
+        switch (parameter) {
+            case SpecificationConstants.Rule.A:
+                return singleParamFunction.evaluate(valueA);
+            case SpecificationConstants.Rule.B:
+                return singleParamFunction.evaluate(valueB);
+            default:
+                ExternalProperty property = externalProperties.get(parameter);
+
+                if (property == null) {
+                    throw new WrongInputException("Number of parameters in function is wrong.");
+                }
+
+                if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                    return singleParamFunction.evaluate(property.getValueA());
+                } else {
+                    return singleParamFunction.evaluate(property.getValueB());
+                }
+        }
+    }
+
     public boolean isSingleFunction() {
         return singleFunction;
     }
@@ -572,16 +512,8 @@ public class Condition {
         this.singleFunction = singleFunction;
     }
 
-    public String getFunction() {
-        return function;
-    }
-
     public void setFunction(String function) {
         this.function = function;
-    }
-
-    public Expression getExpression() {
-        return expression;
     }
 
     public void setExpression(Expression expression) {
@@ -595,10 +527,6 @@ public class Condition {
         } else {
             return "Condition{ expression=" + expression + "}";
         }
-    }
-
-    public Function getFunc() {
-        return func;
     }
 
     public void setFunc(Function func) {

@@ -18,7 +18,6 @@ public class IsSamePhoneNumberTest {
      */
     @Test
     public void testEvaluate() {
-        
         LOG.info("evaluate");
         
         IsSamePhoneNumber isSamePhoneNumber = new IsSamePhoneNumber();

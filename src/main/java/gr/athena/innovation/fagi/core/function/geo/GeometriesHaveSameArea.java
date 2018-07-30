@@ -1,10 +1,8 @@
 package gr.athena.innovation.fagi.core.function.geo;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.exception.ApplicationException;
@@ -19,37 +17,36 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 /**
- * Function class that checks if the given geometries are closer than the given distance.
+ * Function class that checks if the given geometries have the same area with a tolerance value provided.
  * 
  * @author nkarag
  */
-public class GeometriesCloserThan implements IFunction, IFunctionThreeParameters {
-
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(GeometriesCloserThan.class);
+public class GeometriesHaveSameArea  implements IFunction, IFunctionThreeParameters {
+    
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(GeometriesHaveSameArea.class);
 
     /**
-     * Checks if the minimum distance (in meters) of the geometries are closer than the provided distance value.
-     * The method transforms the geometries to 3857 CRS, computes the nearest points between them 
-     * and finally it calculates the orthodromic distance between the nearest points.
+     * Checks if the areas of the two geometries are the same given a tolerance value in square meters.
+     * The method transforms the geometries to 3857 CRS before calculating the areas.
      *
      * @param wktA
      * @param wktB
-     * @param distance the distance in meters.
-     * @return True if the geometries are closer than the distance, false otherwise.
+     * @param tolerance the tolerance in square meters.
+     * @return True if the geometries have the same area, false otherwise.
      */
     @Override
-    public boolean evaluate(String wktA, String wktB, String distance) {
+    public boolean evaluate(String wktA, String wktB, String tolerance) {
 
         WKTReader reader = new WKTReader();
         Geometry geometryA;
         Geometry geometryB;
-        double dis = 0;
+        double tlr = 0;
 
-        if (!StringUtils.isBlank(distance)) {
+        if (!StringUtils.isBlank(tolerance)) {
             try {
-                dis = Double.parseDouble(distance);
+                tlr = Double.parseDouble(tolerance);
             } catch (NumberFormatException ex) {
-                throw new ApplicationException("Tolerance provided is not a double number: " + distance);
+                throw new ApplicationException("Tolerance provided is not a double number: " + tolerance);
             }
         }
 
@@ -73,19 +70,18 @@ public class GeometriesCloserThan implements IFunction, IFunctionThreeParameters
             CoordinateReferenceSystem worldCRS = CRS.decode(SpecificationConstants.CRS_EPSG_3857);
 
             boolean lenient = true; // allow for some error due to different datums
-            
-            //tranforming with jts found faster compared to geotools geodetic calcutaror.
+
             MathTransform transform = CRS.findMathTransform(dataCRS, worldCRS, lenient);
             Geometry targetGeometryA = JTS.transform(geometryA, transform);
             Geometry targetGeometryB = JTS.transform(geometryB, transform);
 
-            Coordinate[] nearest = DistanceOp.nearestPoints(targetGeometryA, targetGeometryB);
+            double areaA = targetGeometryA.getArea();
+            double areaB = targetGeometryB.getArea();
 
-            double minimumDistance = JTS.orthodromicDistance(nearest[0], nearest[1], worldCRS);
+            double difference = Math.abs(areaA - areaB);
+            LOG.trace("Difference: " + difference);
             
-            LOG.trace("Minimum distance: " + minimumDistance);
-            
-            return minimumDistance <= dis;
+            return difference < tlr;
         } catch (FactoryException | TransformException ex) {
             LOG.warn("Fail to transform geometries. Evaluating to false.", ex);
             return false;
