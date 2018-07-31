@@ -158,6 +158,7 @@ public class SpecificationConstants {
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
         public static final String IS_DATE_PRIMARY_FORMAT = "isdateprimaryformat";
         public static final String IS_VALID_DATE = "isvaliddate";
+        public static final String DATES_ARE_SAME = "datesaresame";
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
         public static final String IS_LITERAL_NUMERIC = "isliteralnumeric";
         public static final String LITERAL_CONTAINS = "literalcontains";

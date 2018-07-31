@@ -16,9 +16,7 @@ import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
  * @author nkarag
  */
 public class IsNameValueOfficial implements IFunction, IFunctionTwoStringParameters{
-    
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsNameValueOfficial.class);
-    
+
     /**
      * Checks if the value of the name property is tagged as official.
      * 

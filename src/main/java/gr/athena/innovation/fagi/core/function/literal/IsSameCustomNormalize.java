@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
 import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.Configuration;
@@ -39,7 +40,17 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeStringPar
             return false;
         }
         
-        double thres = Double.parseDouble(threshold);
+        double thrs = 0;
+        if(!StringUtils.isBlank(threshold)){
+            try {
+                thrs = Double.parseDouble(threshold);
+                if(thrs < 0 || thrs > 1){
+                    throw new ApplicationException("Threshold out of range [0,1]: " + threshold);
+                }
+            } catch(NumberFormatException ex){
+                throw new ApplicationException("Cannot parse threshold as a double number: " + threshold);
+            }
+        }
 
         if (literalA.equals(literalB)) {
             return true;
@@ -64,7 +75,7 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeStringPar
 
         double result = WeightedSimilarity.computeDSimilarity(weightedPair, simName);
 
-        return result > thres;
+        return result > thrs;
     }
 
     @Override
