@@ -1,20 +1,32 @@
 package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
  * Class for evaluating if the first phone number has more digits than the other.
  * 
  * @author nkarag
  */
-public class PhoneHasMoreDigits implements IFunction, IFunctionTwoStringParameters  {
+public class PhoneHasMoreDigits implements IFunction, IFunctionTwoLiteralParameters  {
 
+    /**
+     * Checks if the first phone number has more digits than the second.
+     *
+     * @param literalA the literal of A.
+     * @param literalB the literal of B.
+     * @return true if the literals have the same language tag, false otherwise.
+     */
     @Override
-    public boolean evaluate(String literalA, String literalB) {
+    public boolean evaluate(Literal literalA, Literal literalB) {
 
-        int a = countDigits(literalA);
-        int b = countDigits(literalB);
+        if(literalA == null || literalB == null){
+            return false;
+        }
+        
+        int a = countDigits(literalA.getString());
+        int b = countDigits(literalB.getString());
 
         return a > b;
     }

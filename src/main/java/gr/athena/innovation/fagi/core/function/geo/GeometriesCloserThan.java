@@ -16,14 +16,15 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
  * Function class that checks if the given geometries are closer than the given distance.
  * 
  * @author nkarag
  */
-public class GeometriesCloserThan implements IFunction, IFunctionThreeStringParameters {
+public class GeometriesCloserThan implements IFunction, IFunctionThreeLiteralStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(GeometriesCloserThan.class);
 
@@ -32,13 +33,17 @@ public class GeometriesCloserThan implements IFunction, IFunctionThreeStringPara
      * The method transforms the geometries to 3857 CRS, computes the nearest points between them 
      * and finally it calculates the orthodromic distance between the nearest points.
      *
-     * @param wktA
-     * @param wktB
+     * @param wktA the WKT literal of A.
+     * @param wktB the WKT literal of B.
      * @param distance the distance in meters.
      * @return True if the geometries are closer than the distance, false otherwise.
      */
     @Override
-    public boolean evaluate(String wktA, String wktB, String distance) {
+    public boolean evaluate(Literal wktA, Literal wktB, String distance) {
+
+        if(wktA == null || wktB == null){
+            return false;
+        }
 
         WKTReader reader = new WKTReader();
         Geometry geometryA;
@@ -54,14 +59,14 @@ public class GeometriesCloserThan implements IFunction, IFunctionThreeStringPara
         }
 
         try {
-            geometryA = reader.read(wktA);
+            geometryA = reader.read(wktA.getLexicalForm());
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
-            geometryB = reader.read(wktB);
+            geometryB = reader.read(wktB.getLexicalForm());
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;

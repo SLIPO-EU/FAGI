@@ -162,7 +162,11 @@ public class RuleProcessor {
 
         if (actionRuleSet == null) {
             LOG.trace("# RULE without action rule set");
-            LOG.trace(rule.getDefaultFusionAction());
+            if(isValidation){
+                LOG.trace(rule.getDefaultValidationAction());
+            } else {
+                LOG.trace(rule.getDefaultFusionAction());
+            }
         }
 
         return rule;

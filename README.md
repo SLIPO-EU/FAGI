@@ -199,32 +199,65 @@ A sample rules.xml file could look like this:
 
 ### Available functions:
 
-* **isDateKnownFormat:** Checks if the given date String is written as a known format. The known formats are defined at the [specification](../master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java)
-* **isValidDate:** Evaluates the given date against the target format.
-* **isGeometryMoreComplex:** Checks if the first geometry has more points than the second.
+* **isDateKnownFormat:** Checks if the given date String is written as a known format. The known formats are defined at the [specification](../master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java). 
+* **isDatePrimaryFormat:** Checks if the given date String is written as a primary format as defined in the [specification](../master/src/main/java/gr/athena/innovation/fagi/specification/SpecificationConstants.java). 
+* **isValidDate:** Evaluates the given date against the target format. 
+* **datesAreSame:** Evaluates if the given dates are the same using a tolerance value in days. 
+* **isGeometryMoreComplex:** Checks if the first geometry has more points than the second. 
+* **geometriesCloserThan:** Checks if the minimum distance (in meters) of the geometries are closer than the provided distance value. The method transforms the geometries to 3857 CRS, computes the nearest points between them and then calculates the orthodromic distance between the nearest points. 
+* **geometriesHaveSameArea:** Checks if the areas of the two geometries are the same given a tolerance value in square meters. The method transforms the geometries to 3857 CRS before calculating the areas. 
+* **isSameCentroid:** Checks if the geometries have the same centroid given a tolerance value in meters. The method transforms the geometries to 3857 CRS before calculating the orthodromic distance.
+* **isPointGeometry:** Checks if the given geometry is a POINT geometry.
+* **geometriesIntersect:** Checks if the given geometries intersect.
+* **isGeometryCoveredBy:** Checks if the first geometry is covered by the second geometry. The definition of `coveredBy` can be found [here](https://en.wikipedia.org/wiki/DE-9IM).
 * **isLiteralAbbreviation:** Checks if the given literal is or contains an abbreviation of some form.
-* **isSameSimpleNormalize:** Checks if the two given literals are same. It normalizes the two literals with some basic steps and uses the provided similarity (default JaroWinkler) and returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
-* **isSameCustomNormalize:** Checks if the two given literals are same. It normalizes the two literals with some extra steps in addition to the simple normalization. Then, it uses the provided similarity (default JaroWinkler) and returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
+* **isSameNormalized:** Checks if the two given literals are same. It normalizes the two literals with some basic steps and uses the provided similarity (default JaroWinkler). No threshold provided.
+* **isSameSimpleNormalize:** This function is the same as the above but it uses a threshold as a tolerance value. Returns true if the result is above the provided threshold. Threshold should be between (0,1) using dot as decimal point.
+* **isSameCustomNormalize:** This function compares the two literals with the criteria as above and if the equality fails the function normalizes further the two literals with some extra steps in addition to the simple normalization. 
+* **isLiteralLonger:** Checks if the first literal is longer than the second. The method normalizes the two literals using the `NFC` normalization before comparing the lengths. 
+* **isLiteralNumeric:** Checks if the given literal is numeric (at least one digit or more).
+* **isNameValueOfficial:** Checks if the value of the name property is tagged as official. 
+* **literalContains:** Checks if the literal contains the given value.
+* **literalContainsTheOther:** Checks if the first literal contains the second. 
+* **literalHasLanguageAnnotation:** Checks if the Literal contains a language annotation (tag).
+* **literalsHaveSameLanguageAnnotation:** Checks if the two literals have the same language annotation (tag).
 * **isPhoneNumberParsable:** Checks if the given phone number is consisted of only numbers or contains special character and/or exit code.
 * **isSamePhoneNumber:** Checks if the given phone numbers are the same. Some phone-normalization steps are executed if the first evaluation fails.
 * **isSamePhoneNumberCustomNormalize:** Checks if the given phone numbers are the same. Some phone-normalization. If the equality fails, some custom steps for normalization are executed and the function rechecks for equality (e.g two numbers are considered same if one of them does not contain a country code but the line number is the same etc).
 * **isSamePhoneNumberUsingExitCode:** Same as above, except the exit code, which is checked separately using the input value.
+* **phoneHasMoreDigits:** Checks if the first phone number has more digits than the second. 
 * **exists:** Checks if the given property exists in the model of the entity.
 * **notExists:** The reverse function of exists. Returns true if the selected property is not found in the model.
 
 | Name        | Parameters     | Category  | Example
 | ------------- |:-------------:| :-----:|:-----:|
-| isDateKnownFormat      | a or b | Date | isDateKnownFormat(a)
-| isDatePrimaryFormat      | a or b | Date | isDatePrimaryFormat(a)
-| isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY)
-| isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b)
+| isDateKnownFormat      | a or b | Date | isDateKnownFormat(a) 
+| isDatePrimaryFormat      | a or b | Date | isDatePrimaryFormat(a) 
+| isValidDate      | a or b and format | Date | isValidDate(a, DD/MM/YYYY) 
+| datesAreSame      | a, formatA, b, formatB, tolerance | Date | datesAreSame(a,b,yyyy/MM/dd,yyyy/MM/dd,10) 
+| isGeometryMoreComplex | a or b |  Geometry | isGeometryMoreComplex(b) 
+| geometriesCloserThan | a, b, tolerance |  Geometry | geometriesCloserThan(a,b, 50) 
+| geometriesHaveSameArea | a, b, tolerance |  Geometry | geometriesHaveSameArea(a,b, 100) 
+| isSameCentroid | a, b, tolerance |  Geometry | isSameCentroid(a,b, 30) 
+| isPointGeometry | a or b |  Geometry | isPointGeometry(a) 
+| geometriesIntersect | a, b |  Geometry | geometriesIntersect(a, b) 
+| isGeometryCoveredBy | a, b |  Geometry | isGeometryCoveredBy(a, b) 
 | isLiteralAbbreviation | a or b | Literal | isLiteralAbbreviation(b) 
+| isSameNormalized | a, b | Literal | isSameNormalized(a,b) 
 | isSameSimpleNormalize | a, b and threshold| Literal | isSameSimpleNormalize(a,b, 0.7) 
 | isSameCustomNormalize | a, b and threshold| Literal | isSameCustomNormalize(a,b, 0.6) 
+| isLiteralLonger | a, b | Literal | isLiteralLonger(a,b) 
+| isLiteralNumeric | a or b | Literal | isLiteralNumeric(b) 
+| isNameValueOfficial | a or b | Literal | isNameValueOfficial(a) 
+| literalContains | a and value | Literal | literalContains(a, bar)
+| literalContainsTheOther | a, b | Literal | literalContainsTheOther(b, a)
+| literalHasLanguageAnnotation | a or b | Literal | literalHasLanguageAnnotation(a)
+| literalsHaveSameLanguageAnnotation | a, b | Literal | literalsHaveSameLanguageAnnotation(a, b) 
 | isPhoneNumberParsable | a or b | Phone | isPhoneNumberParsable(a) 
 | isSamePhoneNumber | a and b | Phone | isSamePhoneNumber(a,b)  
 | isSamePhoneNumberCustomNormalize | a and b | Phone | isSamePhoneNumberCustomNormalize(a,b)  
-| isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030)  
+| isSamePhoneNumberUsingExitCode | a,b and digits | Phone | isSamePhoneNumberUsingExitCode(a,b,0030) 
+| phoneHasMoreDigits | a,b | Phone | phoneHasMoreDigits(b,a)  
 | exists | a or b | Property | exists(a)  
 | notExists | a or b | Property | notExists(b)  
 

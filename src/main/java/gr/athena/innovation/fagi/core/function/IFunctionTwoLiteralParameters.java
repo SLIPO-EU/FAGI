@@ -1,18 +1,20 @@
 package gr.athena.innovation.fagi.core.function;
 
+import org.apache.jena.rdf.model.Literal;
+
 /**
  * Interface for a condition function that takes two string parameters as input.
  * 
  * @author nkarag
  */
-public interface IFunctionTwoStringParameters extends IFunction{
+public interface IFunctionTwoLiteralParameters extends IFunction{
     
     /**
      * Evaluates the two string parameter function.
-     * @param valueA the input value A.
-     * @param valueB the input value B.
+     * @param valueA the literal A.
+     * @param valueB the literal B.
      * @return the evaluation result.
      */    
-    public boolean evaluate(String valueA, String valueB);
+    public boolean evaluate(Literal valueA, Literal valueB);
     
 }

@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.rule.model;
 
+import org.apache.jena.rdf.model.Literal;
+
 /**
  * ExternalProperty represents an auxiliary (external) property of a rule to be used in a condition. The fusion action
  * does not affect the value of this property. The action always refers to the basic properties A and B.
@@ -10,8 +12,8 @@ public class ExternalProperty {
 
     private String parameter;
     private String property;
-    private String valueA;
-    private String valueB;
+    private Literal valueA;
+    private Literal valueB;
 
     @Override
     public String toString() {
@@ -36,19 +38,19 @@ public class ExternalProperty {
         this.property = property;
     }
 
-    public String getValueA() {
+    public Literal getValueA() {
         return valueA;
     }
 
-    public void setValueA(String valueA) {
+    public void setValueA(Literal valueA) {
         this.valueA = valueA;
     }
 
-    public String getValueB() {
+    public Literal getValueB() {
         return valueB;
     }
 
-    public void setValueB(String valueB) {
+    public void setValueB(Literal valueB) {
         this.valueB = valueB;
     }
 

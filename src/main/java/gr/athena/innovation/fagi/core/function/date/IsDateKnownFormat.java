@@ -6,26 +6,33 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 
 /**
  * Function class with evaluation method on date known formats.
  * 
  * @author nkarag
  */
-public class IsDateKnownFormat implements IFunction, IFunctionSingleStringParameter{
+public class IsDateKnownFormat implements IFunction, IFunctionOneParameter{
+    
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**
      * Checks if the given date String is written as a known format as defined in the specification.
      * See <code>SpecificationConstants.DATE_FORMATS</code> class.
      * 
-     * @param dateString The date string.
+     * @param date The date literal.
      * @return True if the date belongs to a known format as described in the specification, false otherwise.
      */
     @Override
-    public boolean evaluate(String dateString){
+    public boolean evaluate(Literal date){
 
+        if(date == null){
+            return false;
+        }
+        
+        String dateString = date.getString();
         boolean isKnown = false;
         if (!StringUtils.isBlank(dateString)) {
 

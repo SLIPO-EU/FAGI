@@ -1,20 +1,20 @@
 package gr.athena.innovation.fagi.core.function.property;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionModelStringTwoParameters;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters;
 
 /**
  * Checks if the provided property exists in the RDF model of a resource.
  * 
  * @author nkarag
  */
-public class Exists implements IFunction, IFunctionModelStringTwoParameters{
+public class Exists implements IFunction, IFunctionTwoModelStringParameters{
 
     /**
      * Evaluates the existence of the property in the model.

@@ -155,25 +155,38 @@ public class SpecificationConstants {
 
     public static class Functions {
 
+        /* Dates */
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
         public static final String IS_DATE_PRIMARY_FORMAT = "isdateprimaryformat";
         public static final String IS_VALID_DATE = "isvaliddate";
         public static final String DATES_ARE_SAME = "datesaresame";
+        
+        /* String literals */
         public static final String IS_LITERAL_ABBREVIATION = "isliteralabbreviation";
+        public static final String IS_SAME_NORMALIZED = "issamenormalized";
+        public static final String IS_SAME_SIMPLE_NORMALIZE = "issamesimplenormalize";
+        public static final String IS_SAME_CUSTOM_NORMALIZE = "issamecustomnormalize";
         public static final String IS_LITERAL_NUMERIC = "isliteralnumeric";
         public static final String LITERAL_CONTAINS = "literalcontains";
+        public static final String LITERAL_CONTAINS_THE_OTHER = "literalcontainstheother";
+        public static final String LITERAL_HAS_LANGUAGE_ANNOTATION = "literalhaslanguageannotation";
+        public static final String LITERALS_HAVE_SAME_LANG = "literalshavesamelanguageannotation";
+
+        
+        /* Phone number literals */
         public static final String IS_PHONE_NUMBER_PARSABLE = "isphonenumberparsable";
         public static final String IS_SAME_PHONE_NUMBER = "issamephonenumber";
         public static final String IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE = "issamephonenumbercustomnormalize";
         public static final String IS_SAME_PHONE_NUMBER_EXIT_CODE = "issamephonenumberusingexitcode";
         public static final String PHONE_HAS_MORE_DIGITS = "phonehasmoredigits";
-        public static final String IS_GEOMETRY_MORE_COMPLICATED = "isgeometrymorecomplex";
-        //public static final String IS_SAME_NORMALIZED = "issamenormalized";
-        public static final String IS_SAME_SIMPLE_NORMALIZE = "issamesimplenormalize";
-        public static final String IS_SAME_CUSTOM_NORMALIZE = "issamecustomnormalize";
+
+
+        /* Property */
         public static final String EXISTS = "exists";
         public static final String NOT_EXISTS = "notexists";
         
+        /* Geometry literals */
+        public static final String IS_GEOMETRY_MORE_COMPLEX = "isgeometrymorecomplex";
         public static final String IS_SAME_CENTROID = "issamecentroid";
         public static final String IS_POINT_GEOMETRY = "ispointgeometry";
         public static final String GEOMETRIES_INTERSECT = "geometriesintersect";

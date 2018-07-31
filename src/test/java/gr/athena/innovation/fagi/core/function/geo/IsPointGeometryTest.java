@@ -1,6 +1,8 @@
 package gr.athena.innovation.fagi.core.function.geo;
 
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -19,16 +21,20 @@ public class IsPointGeometryTest {
     @Test
     public void testEvaluate() {
         LOG.info("evaluate");
-        String wkt1 = "POINT(38.1 23.8)";
         IsPointGeometry instance = new IsPointGeometry();
         
+        String wkt1 = "POINT(38.1 23.8)";
+        Literal wktLiteral1 = ResourceFactory.createStringLiteral(wkt1);
+        
+        
         boolean expResult1 = true;
-        boolean result1 = instance.evaluate(wkt1);
+        boolean result1 = instance.evaluate(wktLiteral1);
         assertEquals(expResult1, result1);
         
         String wkt2 = "LINESTRING(38 23, 39 23, 40 23)";
+        Literal wktLiteral2 = ResourceFactory.createStringLiteral(wkt2);
         boolean expResult2 = false;
-        boolean result2 = instance.evaluate(wkt2);
+        boolean result2 = instance.evaluate(wktLiteral2);
         assertEquals(expResult2, result2);
     }
 

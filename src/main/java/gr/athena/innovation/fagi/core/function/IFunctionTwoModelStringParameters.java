@@ -3,11 +3,11 @@ package gr.athena.innovation.fagi.core.function;
 import org.apache.jena.rdf.model.Model;
 
 /**
- * Interface for a condition function that takes a model and a string parameter.
+ * Interface for a condition function that takes a model and a string as parameters.
  * 
  * @author nkarag
  */
-public interface IFunctionModelStringTwoParameters extends IFunction{
+public interface IFunctionTwoModelStringParameters extends IFunction{
     
     /**
      * Evaluates the model and string condition function.

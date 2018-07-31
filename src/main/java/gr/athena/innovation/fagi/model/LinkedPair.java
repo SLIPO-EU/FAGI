@@ -106,8 +106,8 @@ public class LinkedPair {
             //assign nulls. Validation rule does not use basic properties, only external properties. 
             //These values will be ignored at condition evaluation. Todo: Consider a refactoring
             String validationProperty = null;
-            String literalA = null;
-            String literalB = null;
+            Literal literalA = null;
+            Literal literalB = null;
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
@@ -197,8 +197,8 @@ public class LinkedPair {
             //the property here is assumed to be one node above the literal value in order  to align with the ontology.
             //For example the property is the p1 in the following linked triples.
             // s p1 o1 . o1 p2 o2 
-            String literalA;
-            String literalB;
+            Literal literalA;
+            Literal literalB;
 
             //child properties are always the properties that point to a literal.
             CustomRDFProperty customPropertyA = new CustomRDFProperty();
@@ -311,8 +311,8 @@ public class LinkedPair {
         //So, there are two cases here: (a) Property refers to literal. (b) the external property contains a chain
         //separated by a whitespace.
         String extPropertyText = externalPropertyEntry.getValue().getProperty();
-        String valueA;
-        String valueB;
+        Literal valueA;
+        Literal valueB;
 
         if (extPropertyText.contains(" ")) {
             String[] chains = extPropertyText.split(" ");
@@ -323,6 +323,9 @@ public class LinkedPair {
             valueB = getLiteralValue(externalPropertyEntry.getValue().getProperty(), rightEntityData.getModel());
         }
 
+        LOG.debug("valueA: " + valueA);
+        LOG.debug("valueB: " + valueB);
+        
         externalPropertyEntry.getValue().setValueA(valueA);
         externalPropertyEntry.getValue().setValueB(valueB);
     }
@@ -381,7 +384,7 @@ public class LinkedPair {
     }
 
     private boolean fuseRuleAction(EnumFusionAction action, 
-            EnumValidationAction validationAction, CustomRDFProperty customProperty, String literalA, String literalB) 
+            EnumValidationAction validationAction, CustomRDFProperty customProperty, Literal literalA, Literal literalB) 
             throws WrongInputException {
 
         LOG.debug("fusing with action: " + action.toString());
@@ -432,7 +435,7 @@ public class LinkedPair {
         return true;
     }
 
-    private void fuse(EnumFusionAction action, CustomRDFProperty customProperty, String literalA, String literalB, 
+    private void fuse(EnumFusionAction action, CustomRDFProperty customProperty, Literal literalA, Literal literalB, 
             EntityData fusedEntityData) throws ApplicationException, WrongInputException {
 
         Model fusedModel = fusedEntityData.getModel();
@@ -443,7 +446,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepLeft(fusedModel, customProperty, literalA, literalB, false);
+                keepLeft(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), false);
 
                 break;
             }
@@ -452,7 +455,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepLeft(fusedModel, customProperty, literalA, literalB, true);
+                keepLeft(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), true);
 
                 break;
             }
@@ -462,7 +465,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepRight(fusedModel, customProperty, literalA, literalB, false);
+                keepRight(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), false);
 
                 break;
             }
@@ -471,7 +474,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepRight(fusedModel, customProperty, literalA, literalB, true);
+                keepRight(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), true);
 
                 break;
             }            
@@ -496,8 +499,11 @@ public class LinkedPair {
                     break;
                 }
 
-                Resource nodeA = SparqlRepository.getSubjectWithLiteral(customProperty.getValueProperty().toString(), literalA, fusedModel);
-                Resource nodeB = SparqlRepository.getSubjectWithLiteral(customProperty.getValueProperty().toString(), literalB, fusedModel);
+                //todo:getValueProperty().toString() -> test property.toString
+                Resource nodeA = SparqlRepository.getSubjectWithLiteral(customProperty.getValueProperty().toString(), 
+                        literalA.getLexicalForm(), fusedModel);
+                Resource nodeB = SparqlRepository.getSubjectWithLiteral(customProperty.getValueProperty().toString(), 
+                        literalB.getLexicalForm(), fusedModel);
 
                 markAmbiguous(customProperty, nodeA, fusedModel);
                 markAmbiguous(customProperty, nodeB, fusedModel);
@@ -514,7 +520,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepLongest(fusedModel, customProperty, literalA, literalB, false);
+                keepLongest(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), false);
 
                 break;
             }
@@ -525,7 +531,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepLongest(fusedModel, customProperty, literalA, literalB, true);
+                keepLongest(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), true);
 
                 break;
             }            
@@ -536,7 +542,7 @@ public class LinkedPair {
                     break;
                 }
 
-                concatenate(fusedModel, customProperty, literalA, literalB, false);
+                concatenate(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), false);
 
                 break;
             }
@@ -547,7 +553,7 @@ public class LinkedPair {
                     break;
                 }
 
-                concatenate(fusedModel, customProperty, literalA, literalB, true);
+                concatenate(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), true);
 
                 break;
             }            
@@ -557,7 +563,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMostRecent(fusedModel, customProperty, literalA, literalB, false);
+                keepMostRecent(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), false);
 
                 break;
             }
@@ -567,7 +573,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMostRecent(fusedModel, customProperty, literalA, literalB, true);
+                keepMostRecent(fusedModel, customProperty, literalA.getLexicalForm(), literalB.getLexicalForm(), true);
 
                 break;
             }            
@@ -578,7 +584,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMorePoints(literalA, literalB, fusedModel, customProperty, false);
+                keepMorePoints(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -589,7 +595,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMorePoints(literalA, literalB, fusedModel, customProperty, true);
+                keepMorePoints(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, true);
 
                 break;
             }            
@@ -600,7 +606,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMorePointsAndShift(literalA, literalB, fusedModel, customProperty, false);
+                keepMorePointsAndShift(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -611,7 +617,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMorePointsAndShift(literalA, literalB, fusedModel, customProperty, true);
+                keepMorePointsAndShift(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, true);
 
                 break;
             }            
@@ -622,7 +628,7 @@ public class LinkedPair {
                     break;
                 }
 
-                shiftLeftGeometry(literalA, literalB, fusedModel, customProperty, false);
+                shiftLeftGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -633,7 +639,7 @@ public class LinkedPair {
                     break;
                 }
 
-                shiftLeftGeometry(literalA, literalB, fusedModel, customProperty, false);
+                shiftLeftGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -644,7 +650,7 @@ public class LinkedPair {
                     break;
                 }
 
-                shiftRightGeometry(literalA, literalB, fusedModel, customProperty, false);
+                shiftRightGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -655,7 +661,7 @@ public class LinkedPair {
                     break;
                 }
 
-                shiftRightGeometry(literalA, literalB, fusedModel, customProperty, true);
+                shiftRightGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, true);
 
                 break;
             }            
@@ -666,7 +672,7 @@ public class LinkedPair {
                     break;
                 }
 
-                concatenateGeometry(literalA, literalB, fusedModel, customProperty, false);
+                concatenateGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, false);
 
                 break;
             }
@@ -677,7 +683,7 @@ public class LinkedPair {
                     break;
                 }
 
-                concatenateGeometry(literalA, literalB, fusedModel, customProperty, true);
+                concatenateGeometry(literalA.getLexicalForm(), literalB.getLexicalForm(), fusedModel, customProperty, true);
 
                 break;
             }            
@@ -1137,27 +1143,27 @@ public class LinkedPair {
         return node;
     }
 
-    private String getLiteralValue(String property, Model model) {
+    private Literal getLiteralValue(String property, Model model) {
         Property propertyRDF = getRDFPropertyFromString(property);
 
         if (propertyRDF != null) {
             return SparqlRepository.getObjectOfProperty(propertyRDF, model);
         } else {
             LOG.warn("Could not find literal with property {}", property);
-            return "";
+            return ResourceFactory.createStringLiteral("");
         }
     }
 
-    private String getLiteralValueFromChain(String property1, String property2, Model model) {
+    private Literal getLiteralValueFromChain(String property1, String property2, Model model) {
         if (property1 != null) {
-            String literal = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, true);
+            Literal literal = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, true);
             if(literal == null){
                 literal = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, false);
             }
             return literal;
         } else {
             LOG.warn("Could not find literal with properties {}", property1, property2);
-            return "";
+            return ResourceFactory.createStringLiteral("");
         }
     }
 

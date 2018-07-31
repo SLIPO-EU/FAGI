@@ -3,13 +3,14 @@ package gr.athena.innovation.fagi.core.function.phone;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTwoStringParameters{
+public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTwoLiteralParameters{
     
     private static final org.apache.logging.log4j.Logger LOG 
             = LogManager.getLogger(IsSamePhoneNumberCustomNormalize.class);
@@ -17,26 +18,33 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
     /**
      * Checks if two telephone numbers are the same using a custom normalization method.
      * 
-     * @param phoneText1 The first phone number as text.
-     * @param phoneText2 The second phone number as text.
-     * @return True if the numbers are the same or extremely close and false otherwise.
+     * @param phoneLiteral1 The first phone number as literal.
+     * @param phoneLiteral2 The second phone number as literal.
+     * @return True if the numbers are the same or close (after normalization), false otherwise.
      */
     @Override
-    public boolean evaluate(String phoneText1, String phoneText2){
+    public boolean evaluate(Literal phoneLiteral1, Literal phoneLiteral2){
 
-        if(StringUtils.isBlank(phoneText1) || StringUtils.isBlank(phoneText2)){
+        if(phoneLiteral1 == null || phoneLiteral2 == null){
             return false;
         }
         
-        if(phoneText1.equals(phoneText2)){
+        String phoneString1 = phoneLiteral1.getString();
+        String phoneString2 = phoneLiteral2.getString();
+        
+        if(StringUtils.isBlank(phoneString1) || StringUtils.isBlank(phoneString2)){
+            return false;
+        }
+        
+        if(phoneString1.equals(phoneString2)){
             return true;
         }
 
-        PhoneNumber phone1 = createPhoneNumber(phoneText1);
-        PhoneNumber phone2 = createPhoneNumber(phoneText2);
+        PhoneNumber phone1 = createPhoneNumber(phoneString1);
+        PhoneNumber phone2 = createPhoneNumber(phoneString2);
 
-        String numerical1 = removeNonNumericCharacters(phoneText1);
-        String numerical2 = removeNonNumericCharacters(phoneText2);
+        String numerical1 = removeNonNumericCharacters(phoneString1);
+        String numerical2 = removeNonNumericCharacters(phoneString2);
 
         if(numerical1.equals(numerical2)){
             return true;
@@ -221,9 +229,7 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
     }
     
     private static String removeNonNumericCharacters(String phone){
-        
         String phoneNumerical = phone.replaceAll("[^0-9]", "");
-        
         return phoneNumerical;
     }    
 }

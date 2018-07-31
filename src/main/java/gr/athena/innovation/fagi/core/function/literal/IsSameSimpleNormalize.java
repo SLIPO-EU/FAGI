@@ -8,13 +8,14 @@ import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSameSimpleNormalize implements IFunction, IFunctionThreeStringParameters {
+public class IsSameSimpleNormalize implements IFunction, IFunctionThreeLiteralStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameSimpleNormalize.class);
 
@@ -30,11 +31,11 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeStringPar
      * @return true if the similarity of the literals is above the provided threshold.
      */
     @Override
-    public boolean evaluate(String literalA, String literalB, String threshold) {
+    public boolean evaluate(Literal literalA, Literal literalB, String threshold) {
 
         double thres = Double.parseDouble(threshold);
 
-        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+        if(StringUtils.isBlank(literalA.getLexicalForm()) || StringUtils.isBlank(literalB.getLexicalForm())){
             return false;
         }
 
@@ -46,8 +47,8 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeStringPar
 
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
-        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA, literalB, locale);
-        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB, literalA, locale);
+        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA.getLexicalForm(), literalB.getLexicalForm(), locale);
+        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB.getLexicalForm(), literalA.getLexicalForm(), locale);
         
         String simName = Configuration.getInstance().getSimilarity();
         

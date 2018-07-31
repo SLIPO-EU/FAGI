@@ -16,14 +16,15 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
  * Function class with evaluation on the centroid of the geometries.
  *
  * @author nkarag
  */
-public class IsSameCentroid implements IFunction, IFunctionThreeStringParameters {
+public class IsSameCentroid implements IFunction, IFunctionThreeLiteralStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameCentroid.class);
 
@@ -32,14 +33,18 @@ public class IsSameCentroid implements IFunction, IFunctionThreeStringParameters
      * Computes the orthodromic distance between two points by transforming the centroids using the 3857 CRS 
      * in order to calculate the distance in meters.
      *
-     * @param wktA
-     * @param wktB
+     * @param wktA the WKT literal of A.
+     * @param wktB the WKT literal of B.
      * @param tolerance the tolerance in meters.
      * @return True if the two centroids match given the tolerance, false otherwise.
      */
     @Override
-    public boolean evaluate(String wktA, String wktB, String tolerance) {
-
+    public boolean evaluate(Literal wktA, Literal wktB, String tolerance) {
+        
+        if(wktA == null || wktB == null){
+            return false;
+        }
+        
         WKTReader reader = new WKTReader();
         Geometry geometryA;
         Geometry geometryB;
@@ -54,14 +59,14 @@ public class IsSameCentroid implements IFunction, IFunctionThreeStringParameters
         }
 
         try {
-            geometryA = reader.read(wktA);
+            geometryA = reader.read(wktA.getLexicalForm());
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
-            geometryB = reader.read(wktB);
+            geometryB = reader.read(wktB.getLexicalForm());
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;

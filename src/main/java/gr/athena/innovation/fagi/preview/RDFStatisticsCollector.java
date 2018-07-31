@@ -857,8 +857,8 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         while (objectsA.hasNext()) {
             RDFNode node = objectsA.next();
             if (node.isLiteral()) {
-                String literalDate = node.asLiteral().getString();
-                if (isDatePrimaryFormat.evaluate(literalDate)) {
+                Literal dateLiteral = node.asLiteral();
+                if (isDatePrimaryFormat.evaluate(dateLiteral)) {
                     primaryFormatCounter++;
                 }
             }
@@ -872,7 +872,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         while (objectsB.hasNext()) {
             RDFNode node = objectsB.next();
             if (node.isLiteral()) {
-                String literalDate = node.asLiteral().getString();
+                Literal literalDate = node.asLiteral();
                 if (isDatePrimaryFormat.evaluate(literalDate)) {
                     primaryFormatCounter++;
                 }
@@ -1372,7 +1372,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             return EnumEntity.RIGHT;
         }
 
-        //both are not null
+        //both are not null, checked at higher level
         String propertyValueA = literalA.getString();
         String propertyValueB = literalB.getString();
 

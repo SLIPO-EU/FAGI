@@ -4,13 +4,14 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSameNormalized implements IFunction, IFunctionTwoStringParameters{
+public class IsSameNormalized implements IFunction, IFunctionTwoLiteralParameters{
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameNormalized.class);
     
@@ -23,20 +24,24 @@ public class IsSameNormalized implements IFunction, IFunctionTwoStringParameters
      * @return true if the literals are found same before or after normalization.
      */
     @Override
-    public boolean evaluate(String literalA, String literalB) {
-        
-        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+    public boolean evaluate(Literal literalA, Literal literalB) {
+
+        if(literalA == null || literalB == null){
             return false;
         }
-        
+
+        if(StringUtils.isBlank(literalA.getString()) || StringUtils.isBlank(literalB.getString())){
+            return false;
+        }
+
         if(literalA.equals(literalB)){
             return true;
         }
 
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
-        
-        String a = normalizer.normalize(literalA, literalB);
-        String b = normalizer.normalize(literalB, literalA);
+
+        String a = normalizer.normalize(literalA.getString(), literalB.getString());
+        String b = normalizer.normalize(literalB.getString(), literalA.getString());
         
         return a.equals(b);
     }

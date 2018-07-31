@@ -6,26 +6,35 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 
 /**
  *
  * @author nkarag
  */
-public class IsDatePrimaryFormat implements IFunction, IFunctionSingleStringParameter {
+public class IsDatePrimaryFormat implements IFunction, IFunctionOneParameter {
+    
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDatePrimaryFormat.class);
     
     /**
      * Checks if the given date String is written as a primary format as defined in the specification.
      * See <code> SpecificationConstants.PRIMARY_DATE_FORMATS</code> class.
      * 
-     * @param dateString The date string.
+     * @param date The date literal.
      * @return True if the date belongs to a primary format as described in the specification, false otherwise.
      */
     @Override
-    public boolean evaluate(String dateString){
+    public boolean evaluate(Literal date){
 
+        if(date == null){
+            return false;
+        }
+        
         boolean isKnown = false;
+        
+        String dateString = date.getString();
+
         if (!StringUtils.isBlank(dateString)) {
 
             for (String format : SpecificationConstants.PRIMARY_DATE_FORMATS) {

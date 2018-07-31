@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.core.normalizer.phone;
 
-import gr.athena.innovation.fagi.core.function.phone.IsPhoneNumberParsable;
 import org.apache.commons.lang3.StringUtils;
 import gr.athena.innovation.fagi.core.normalizer.INormalizer;
 
@@ -21,10 +20,8 @@ public class PhoneNumberNormalizer implements INormalizer{
      */
     public String normalize(String numberString, String exitCodeDigits) {
         String normalizedNumber;
-        
-        IsPhoneNumberParsable isPhoneNumberParsable = new IsPhoneNumberParsable();
-        
-        if(isPhoneNumberParsable.evaluate(numberString)){
+
+        if(isParsable(numberString)){
             return numberString;
             
         } else {
@@ -50,6 +47,26 @@ public class PhoneNumberNormalizer implements INormalizer{
         return numberNumerical;
     }
     
+    private boolean isParsable(String number){
+        if(number == null){
+            return false;
+        }
+        
+        if(StringUtils.isBlank(number)){
+            return false;
+        }
+        
+        boolean parsable = true;
+        
+        try {
+            Integer.parseInt(number);
+        }catch(NumberFormatException e){
+            //LOG.debug("Number is not parsable, but it is ok. \n");
+            parsable = false;
+        }
+        return parsable;
+    }
+
     @Override
     public String getName() {
         String className = this.getClass().getSimpleName().toLowerCase();

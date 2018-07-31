@@ -2,14 +2,15 @@ package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
 import org.apache.commons.lang3.StringUtils;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 
 /**
  * Class for evaluating a text phone number.
  * 
  * @author nkarag
  */
-public class IsPhoneNumberParsable implements IFunction, IFunctionSingleStringParameter{
+public class IsPhoneNumberParsable implements IFunction, IFunctionOneParameter{
 
     /**
      * Checks if the given number is represented as an integer. 
@@ -20,9 +21,13 @@ public class IsPhoneNumberParsable implements IFunction, IFunctionSingleStringPa
      * 
      */
     @Override
-    public boolean evaluate(String number){
+    public boolean evaluate(Literal number){
     
-        if(StringUtils.isBlank(number)){
+        if(number == null){
+            return false;
+        }
+        
+        if(StringUtils.isBlank(number.getLexicalForm())){
             return false;
         }
         
@@ -30,7 +35,7 @@ public class IsPhoneNumberParsable implements IFunction, IFunctionSingleStringPa
         
         try {
             
-            Integer.parseInt(number);
+            Integer.parseInt(number.getLexicalForm());
             
         }catch(NumberFormatException e){
             //LOG.debug("Number is not parsable, but it is ok. \n");

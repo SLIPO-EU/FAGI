@@ -20,7 +20,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
+import org.apache.jena.rdf.model.Literal;
+import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
+import gr.athena.innovation.fagi.core.function.geo.GeometriesIntersect;
+import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
 
 /**
  * Condition represents the result of an expression or a function that decides if a fusion action is going to be
@@ -37,7 +41,7 @@ public class Condition {
     private Function func;
     private Expression expression;
 
-    public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, String fusionProperty, String valueA, String valueB,
+    public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, String fusionProperty, Literal valueA, Literal valueB,
             Map<String, ExternalProperty> externalProperties) throws WrongInputException {
 
         if (isSingleFunction()) {
@@ -227,7 +231,7 @@ public class Condition {
     }
 
     private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, LinkedPair pair, 
-            String fusionProperty, String valueA, String valueB, Map<String, ExternalProperty> externalProperties) 
+            String fusionProperty, Literal valueA, Literal valueB, Map<String, ExternalProperty> externalProperties) 
                 throws WrongInputException {
 
         //todo: add implemented functions
@@ -236,12 +240,49 @@ public class Condition {
                 
                 IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
 
-                return evaluateFunction(function, valueA, valueB, externalProperties, isDateKnownFormat);
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDateKnownFormat);
             }
             case SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT: {
                 IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
                 
-                return evaluateFunction(function, valueA, valueB, externalProperties, isDatePrimaryFormat);
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDatePrimaryFormat);
+            }
+            case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION: {
+                
+                IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isLiteralAbbreviation);
+                 
+            }
+            case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE: {
+
+                IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isPhoneNumberParsable);
+
+            }
+            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER: {
+                
+                IsSamePhoneNumber isSamePhoneNumber = (IsSamePhoneNumber) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isSamePhoneNumber);
+
+            }
+            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE: {
+                IsSamePhoneNumberCustomNormalize isSamePhoneNumberCustomNormalize
+                        = (IsSamePhoneNumberCustomNormalize) functionMap.get(function.getName());
+                
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isSamePhoneNumberCustomNormalize);
+
+            }
+            case SpecificationConstants.Functions.IS_SAME_NORMALIZED: {
+                
+                IsSameNormalized isSameNormalized = (IsSameNormalized) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isSameNormalized);
+
+            }
+            case SpecificationConstants.Functions.GEOMETRIES_INTERSECT: {
+                
+                GeometriesIntersect geometriesIntersect = (GeometriesIntersect) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, geometriesIntersect);
+
             }
             case SpecificationConstants.Functions.IS_VALID_DATE: {
                 IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
@@ -267,59 +308,6 @@ public class Condition {
                         } else {
                             return isValidDate.evaluate(property.getValueB(), parameterB);
                         }
-                }
-            }
-            case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION: {
-                
-                IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
-                return evaluateFunction(function, valueA, valueB, externalProperties, isLiteralAbbreviation);
-                 
-            }
-            case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE: {
-
-                IsPhoneNumberParsable isPhoneNumberParsable = (IsPhoneNumberParsable) functionMap.get(function.getName());
-                return evaluateFunction(function, valueA, valueB, externalProperties, isPhoneNumberParsable);
-
-            }
-            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER: {
-                IsSamePhoneNumber isSamePhoneNumber = (IsSamePhoneNumber) functionMap.get(function.getName());
-
-                String parameter = function.getParameters()[0];
-
-                //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
-                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
-                    return isSamePhoneNumber.evaluate(valueA, valueB);
-                } else {
-                    ExternalProperty property = externalProperties.get(parameter);
-
-                    if (property == null) {
-                        throw new WrongInputException(parameter + " is wrong. "
-                                + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER
-                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                    }
-
-                    return isSamePhoneNumber.evaluate(property.getValueA(), property.getValueB());
-                }
-            }
-            case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE: {
-                IsSamePhoneNumberCustomNormalize isSamePhoneNumberCustomNormalize
-                        = (IsSamePhoneNumberCustomNormalize) functionMap.get(function.getName());
-
-                String parameter = function.getParameters()[0];
-
-                //skip actual parameters because isSamePhoneNumber refers always to the two literals a,b
-                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
-                    return isSamePhoneNumberCustomNormalize.evaluate(valueA, valueB);
-                } else {
-                    ExternalProperty property = externalProperties.get(parameter);
-
-                    if (property == null) {
-                        throw new WrongInputException(parameter + " is wrong. "
-                                + SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_CUSTOM_NORMALIZE
-                                + " requires one parameter a or b followed by the SAME external property id number.");
-                    }
-
-                    return isSamePhoneNumberCustomNormalize.evaluate(property.getValueA(), property.getValueB());
                 }
             }
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE: {
@@ -401,11 +389,9 @@ public class Condition {
                     }
 
                     if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                        return isSameCustomNormalize.evaluate(property.getValueA(),
-                                property.getValueB(), threshold);
+                        return isSameCustomNormalize.evaluate(property.getValueA(),property.getValueB(), threshold);
                     } else {
-                        return isSameCustomNormalize.evaluate(property.getValueB(),
-                                property.getValueB(), threshold);
+                        return isSameCustomNormalize.evaluate(property.getValueB(),property.getValueB(), threshold);
                     }
                 }
             }
@@ -431,9 +417,11 @@ public class Condition {
                             }
 
                             if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                                return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), property.getValueA());
+                                return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), 
+                                        property.getValueA().getLexicalForm());
                             } else {
-                                return exists.evaluate(pair.getRightNode().getEntityData().getModel(), property.getValueB());
+                                return exists.evaluate(pair.getRightNode().getEntityData().getModel(), 
+                                        property.getValueB().getLexicalForm());
                             }
                     }
                 } else {
@@ -462,9 +450,11 @@ public class Condition {
                             }
 
                             if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                                return notExists.evaluate(pair.getLeftNode().getEntityData().getModel(), property.getValueA());
+                                return notExists.evaluate(pair.getLeftNode().getEntityData().getModel(), 
+                                        property.getValueA().getLexicalForm());
                             } else {
-                                return notExists.evaluate(pair.getRightNode().getEntityData().getModel(), property.getValueB());
+                                return notExists.evaluate(pair.getRightNode().getEntityData().getModel(), 
+                                        property.getValueB().getLexicalForm());
                             }
                     }
                 } else {
@@ -476,8 +466,9 @@ public class Condition {
         }
     }
 
-    private boolean evaluateFunction(Function function, String valueA, String valueB, 
-            Map<String, ExternalProperty> externalProperties, IFunctionSingleStringParameter singleParamFunction) throws WrongInputException {
+    private boolean evaluateOneParameterFunction(Function function, Literal valueA, Literal valueB, 
+            Map<String, ExternalProperty> externalProperties, IFunctionOneParameter singleParamFunction) 
+            throws WrongInputException {
 
         if (function.getParameters().length != 1) {
             throw new WrongInputException("Number of parameters in function is wrong.");
@@ -493,7 +484,7 @@ public class Condition {
                 ExternalProperty property = externalProperties.get(parameter);
 
                 if (property == null) {
-                    throw new WrongInputException("Number of parameters in function is wrong.");
+                    throw new WrongInputException("Wrong parameter for external property: " + parameter);
                 }
 
                 if (parameter.startsWith(SpecificationConstants.Rule.A)) {
@@ -501,6 +492,29 @@ public class Condition {
                 } else {
                     return singleParamFunction.evaluate(property.getValueB());
                 }
+        }
+    }
+
+    private boolean evaluateTwoLiteralFunction(Function function, Literal valueA, Literal valueB, 
+            Map<String, ExternalProperty> externalProperties, IFunctionTwoLiteralParameters twoParameterFunction) 
+            throws WrongInputException {
+
+        if (function.getParameters().length != 2) {
+            throw new WrongInputException("Number of parameters in function is wrong.");
+        }
+
+        String parameter = function.getParameters()[0];
+        //skip actual parameters because twoParameterFunction refers always to the two literals a,b
+        if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+            return twoParameterFunction.evaluate(valueA, valueB);
+        } else {
+            ExternalProperty property = externalProperties.get(parameter);
+            
+            if (property == null) {
+                throw new WrongInputException("Wrong parameter for external property: " + parameter);
+            }
+
+            return twoParameterFunction.evaluate(property.getValueA(), property.getValueB());
         }
     }
 

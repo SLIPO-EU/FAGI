@@ -29,15 +29,15 @@ public class SparqlRepository {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SparqlRepository.class);
 
-    public static String getObjectOfProperty(Property p, Model model) {
-        String rdfObjectValue = null;
+    public static Literal getObjectOfProperty(Property p, Model model) {
+        Literal rdfObjectValue = null;
 
         List<RDFNode> objectList = model.listObjectsOfProperty(p).toList();
 
         if (objectList.size() == 1) {
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                return object.asLiteral().getLexicalForm();
+                return object.asLiteral();
             } else {
                 LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
@@ -46,7 +46,7 @@ public class SparqlRepository {
             //Possible duplicate triple. Happens with synthetic data. Returns the first literal
             RDFNode object = objectList.get(0);
             if (object.isLiteral()) {
-                return object.asLiteral().getLexicalForm();
+                return object.asLiteral();
             } else {
                 LOG.fatal("Object is not a Literal! " + object.toString());
                 return null;
@@ -57,10 +57,10 @@ public class SparqlRepository {
         return rdfObjectValue;
     }
 
-    public static String getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
+    public static Literal getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
 
         String var = "o2";
-        String result = null;
+        Literal result = null;
         String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2, checkOfficial);
 
         Query query = QueryFactory.create(queryString);
@@ -75,7 +75,7 @@ public class SparqlRepository {
                     if(c.asLiteral().getDatatypeURI().equals(Namespace.WKT_DATATYPE_NAME)){
                         c.asLiteral().getLexicalForm();
                     } else {
-                        result = c.asLiteral().toString();
+                        result = c.asLiteral();
                     }
                 }
             }

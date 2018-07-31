@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
 import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
@@ -11,13 +10,15 @@ import gr.athena.innovation.fagi.model.WeightedPairLiteral;
 import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSameCustomNormalize implements IFunction, IFunctionThreeStringParameters {
+public class IsSameCustomNormalize implements IFunction, IFunctionThreeLiteralStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameCustomNormalize.class);
 
@@ -27,16 +28,23 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeStringPar
      * normalized further using the AdvancedGenericNormalizer. If the final similarity is above the threshold the method
      * returns true.
      *
-     * @param literalA the literal A
-     * @param literalB the literal B
+     * @param literalA the literal A.
+     * @param literalB the literal B.
      * @param threshold the similarity threshold. The threshold is not localized and it accepts only dot as decimal.
      * point.
      * @return true if the similarity of the literals is above the provided threshold.
      */
     @Override
-    public boolean evaluate(String literalA, String literalB, String threshold) {
+    public boolean evaluate(Literal literalA, Literal literalB, String threshold) {
 
-        if(StringUtils.isBlank(literalA) || StringUtils.isBlank(literalB)){
+        if(literalA == null || literalB == null){
+            return false;
+        }
+
+        String literalStringA = literalA.getString();
+        String literalStringB = literalB.getString();
+
+        if(StringUtils.isBlank(literalStringA) || StringUtils.isBlank(literalStringB)){
             return false;
         }
         
@@ -60,8 +68,8 @@ public class IsSameCustomNormalize implements IFunction, IFunctionThreeStringPar
 
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
-        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA, literalB, locale);
-        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalB, literalA, locale);
+        NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalStringA, literalStringB, locale);
+        NormalizedLiteral normB = normalizer.getNormalizedLiteral(literalStringB, literalStringA, locale);
 
         if (normA.getNormalized().equals(normB.getNormalized())) {
             return true;
