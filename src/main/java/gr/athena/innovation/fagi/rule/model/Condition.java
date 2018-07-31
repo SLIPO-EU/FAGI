@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.rule.model;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.core.function.date.IsDateKnownFormat;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
@@ -21,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Condition represents the result of an expression or a function that decides if a fusion action is going to be
@@ -477,7 +477,7 @@ public class Condition {
     }
 
     private boolean evaluateFunction(Function function, String valueA, String valueB, 
-            Map<String, ExternalProperty> externalProperties, IFunctionSingleParameter singleParamFunction) throws WrongInputException {
+            Map<String, ExternalProperty> externalProperties, IFunctionSingleStringParameter singleParamFunction) throws WrongInputException {
 
         if (function.getParameters().length != 1) {
             throw new WrongInputException("Number of parameters in function is wrong.");

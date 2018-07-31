@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -15,13 +14,14 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
 
 /**
  * Function class that checks if the given geometries have the same area with a tolerance value provided.
  * 
  * @author nkarag
  */
-public class GeometriesHaveSameArea  implements IFunction, IFunctionThreeParameters {
+public class GeometriesHaveSameArea  implements IFunction, IFunctionThreeStringParameters {
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(GeometriesHaveSameArea.class);
 

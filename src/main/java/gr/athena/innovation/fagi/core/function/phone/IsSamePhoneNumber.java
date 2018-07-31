@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSamePhoneNumber implements IFunction, IFunctionTwoParameters{
+public class IsSamePhoneNumber implements IFunction, IFunctionTwoStringParameters{
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSamePhoneNumber.class);
     

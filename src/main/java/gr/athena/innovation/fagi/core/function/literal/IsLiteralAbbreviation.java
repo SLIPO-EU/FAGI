@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Literal fusion class. Contains methods for checking and transforming literal values.
  * 
  * @author nkarag
  */
-public class IsLiteralAbbreviation implements IFunction, IFunctionSingleParameter{
+public class IsLiteralAbbreviation implements IFunction, IFunctionSingleStringParameter{
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsLiteralAbbreviation.class);
     

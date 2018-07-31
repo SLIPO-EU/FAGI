@@ -1,19 +1,19 @@
 package gr.athena.innovation.fagi.core.function.date;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Function class with evaluation method on date known formats.
  * 
  * @author nkarag
  */
-public class IsDateKnownFormat implements IFunction, IFunctionSingleParameter{
+public class IsDateKnownFormat implements IFunction, IFunctionSingleStringParameter{
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDateKnownFormat.class);
     
     /**

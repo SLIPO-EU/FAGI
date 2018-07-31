@@ -4,14 +4,14 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsGeometryMoreComplex implements IFunction, IFunctionTwoParameters {
+public class IsGeometryMoreComplex implements IFunction, IFunctionTwoStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsGeometryMoreComplex.class);
 

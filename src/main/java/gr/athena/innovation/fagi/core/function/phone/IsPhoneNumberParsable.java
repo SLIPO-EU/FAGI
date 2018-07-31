@@ -1,15 +1,15 @@
 package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import org.apache.commons.lang3.StringUtils;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Class for evaluating a text phone number.
  * 
  * @author nkarag
  */
-public class IsPhoneNumberParsable implements IFunction, IFunctionSingleParameter{
+public class IsPhoneNumberParsable implements IFunction, IFunctionSingleStringParameter{
 
     /**
      * Checks if the given number is represented as an integer. 

@@ -1,14 +1,14 @@
 package gr.athena.innovation.fagi.core.function;
 
 /**
- * Interface for a condition function that takes a single parameter as input.
+ * Interface for a condition function that takes a single string parameter as input.
  * 
  * @author nkarag
  */
-public interface IFunctionSingleParameter extends IFunction{
+public interface IFunctionSingleStringParameter extends IFunction{
     
     /**
-     * Evaluates the single parameter function.
+     * Evaluates the single string parameter function.
      * @param value the input value.
      * @return the evaluation result.
      */

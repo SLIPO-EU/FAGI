@@ -4,15 +4,15 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Function class with evaluation method geometry type.
  * 
  * @author nkarag
  */
-public class IsPointGeometry implements IFunction, IFunctionSingleParameter {
+public class IsPointGeometry implements IFunction, IFunctionSingleStringParameter {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsPointGeometry.class);
 

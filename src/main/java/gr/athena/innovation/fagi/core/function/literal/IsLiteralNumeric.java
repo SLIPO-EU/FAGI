@@ -1,15 +1,15 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  * Class for evaluating if the given literal is numeric.
  * 
  * @author nkarag
  */
-public class IsLiteralNumeric implements IFunction, IFunctionSingleParameter {
+public class IsLiteralNumeric implements IFunction, IFunctionSingleStringParameter {
 
     /**
      * Checks if the given number is numeric (at least one digit or more).

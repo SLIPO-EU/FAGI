@@ -4,16 +4,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import org.apache.logging.log4j.LogManager;
 import org.geotools.referencing.GeodeticCalculator;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Function class that evaluates the <code>coveredBy</code> geometry relationship.
  * 
  * @author nkarag
  */
-public class IsGeometryCoveredBy  implements IFunction, IFunctionTwoParameters {
+public class IsGeometryCoveredBy  implements IFunction, IFunctionTwoStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(GeometriesIntersect.class);
 

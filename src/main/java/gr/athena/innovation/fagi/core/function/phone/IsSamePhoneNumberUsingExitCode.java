@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 import org.apache.commons.lang3.StringUtils;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
 
 /**
  * Class for evaluating phone numbers using country's exit code digits. 
  * 
  * @author nkarag
  */
-public class IsSamePhoneNumberUsingExitCode implements IFunction, IFunctionThreeParameters{
+public class IsSamePhoneNumberUsingExitCode implements IFunction, IFunctionThreeStringParameters{
     
     /**
      * Checks if two telephone numbers are the same using String.equals and if that fails the check is done upon the

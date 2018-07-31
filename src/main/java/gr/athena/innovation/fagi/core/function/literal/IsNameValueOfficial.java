@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.Namespace;
 import java.io.ByteArrayInputStream;
@@ -9,13 +8,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Checks if the value of the name property is tagged as official.
  * 
  * @author nkarag
  */
-public class IsNameValueOfficial implements IFunction, IFunctionTwoParameters{
+public class IsNameValueOfficial implements IFunction, IFunctionTwoStringParameters{
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsNameValueOfficial.class);
     

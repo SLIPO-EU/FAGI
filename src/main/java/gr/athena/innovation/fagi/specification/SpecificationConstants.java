@@ -146,13 +146,13 @@ public class SpecificationConstants {
         //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX = "[^(),a-zA-Z]";
         //public static final String NON_WORD_EXCEPT_PARENTHESIS_REGEX_2 = "[^\\p{L}\\p{Nd}]+";
         public static final String PUNCTUATION_EXCEPT_PARENTHESIS_REGEX = "[\\p{Punct}&&[^()]]";
-        
+
         //v0.2
         //removes - _ / @ 
         public static final String SPECIAL_CHARS = "[\\-\\_\\/\\@]";
         public static final String SIMPLE_SPECIAL_CHARS = "[\\\"\\,\\.\\-\\_\\@]";
     }    
-    
+
     public static class Functions {
 
         public static final String IS_DATE_KNOWN_FORMAT = "isdateknownformat";
@@ -183,7 +183,7 @@ public class SpecificationConstants {
     }
 
     public static class Normalize {
-        
+
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
         public static final String NORMALIZE_DATE_TO_FORMAT = "normalizedatetoformat";
         public static final String NORMALIZE_ALPHABETICALLY = "alphabeticalnormalizer";
@@ -194,7 +194,7 @@ public class SpecificationConstants {
 
     public static final String CRS_EPSG_4326 = "EPSG:4326";
     public static final String CRS_EPSG_3857 = "EPSG:3857";
-    
+
     public static final String[] DATE_FORMATS = {
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",     "yyyy-MM-dd'T'HH:mm:ssZ",
                 "yyyy-MM-dd'T'HH:mm:ss",        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",

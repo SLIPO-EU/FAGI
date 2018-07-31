@@ -1,18 +1,18 @@
 package gr.athena.innovation.fagi.core.function.date;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionSingleParameter;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionSingleStringParameter;
 
 /**
  *
  * @author nkarag
  */
-public class IsDatePrimaryFormat implements IFunction, IFunctionSingleParameter {
+public class IsDatePrimaryFormat implements IFunction, IFunctionSingleStringParameter {
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsDatePrimaryFormat.class);
     
     /**

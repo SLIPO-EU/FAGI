@@ -1,11 +1,11 @@
 package gr.athena.innovation.fagi.core.function;
 
 /**
- * Interface for a condition function that takes three parameters as input.
+ * Interface for a condition function that takes three string parameters as input.
  * 
  * @author nkarag
  */
-public interface IFunctionThreeParameters extends IFunction{
+public interface IFunctionThreeStringParameters extends IFunction{
     
     /**
      * Evaluates the three parameter function.

@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionThreeParameters;
 import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.core.similarity.WeightedSimilarity;
 import gr.athena.innovation.fagi.model.NormalizedLiteral;
@@ -9,12 +8,13 @@ import gr.athena.innovation.fagi.specification.Configuration;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionThreeStringParameters;
 
 /**
  *
  * @author nkarag
  */
-public class IsSameSimpleNormalize implements IFunction, IFunctionThreeParameters {
+public class IsSameSimpleNormalize implements IFunction, IFunctionThreeStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameSimpleNormalize.class);
 

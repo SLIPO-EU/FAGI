@@ -1,15 +1,15 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import java.text.Normalizer;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Literal fusion class. Tests if the first literal has longer value than the second.
  * 
  * @author nkarag
  */
-public class IsLiteralLonger implements IFunction, IFunctionTwoParameters {
+public class IsLiteralLonger implements IFunction, IFunctionTwoStringParameters {
 
     /**
      * Checks if the first literal is longer than the second. 

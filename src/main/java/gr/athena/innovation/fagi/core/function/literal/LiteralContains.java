@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.function.literal;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Class for evaluating if the literal contains a text parameter.
  * 
  * @author nkarag
  */
-public class LiteralContains implements IFunction, IFunctionTwoParameters {
+public class LiteralContains implements IFunction, IFunctionTwoStringParameters {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(LiteralContains.class);
 

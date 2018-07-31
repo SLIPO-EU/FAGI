@@ -1,16 +1,16 @@
 package gr.athena.innovation.fagi.core.function.date;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Class for evaluating valid date strings against a date format. 
  * 
  * @author nkarag
  */
-public class IsValidDate implements IFunction, IFunctionTwoParameters{
+public class IsValidDate implements IFunction, IFunctionTwoStringParameters{
     
     /**
      * Validates the date range of the given date string using the lenient property of date.

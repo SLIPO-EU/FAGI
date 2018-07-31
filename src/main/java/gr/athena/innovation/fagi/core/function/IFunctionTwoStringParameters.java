@@ -1,14 +1,14 @@
 package gr.athena.innovation.fagi.core.function;
 
 /**
- * Interface for a condition function that takes two parameters as input.
+ * Interface for a condition function that takes two string parameters as input.
  * 
  * @author nkarag
  */
-public interface IFunctionTwoParameters extends IFunction{
+public interface IFunctionTwoStringParameters extends IFunction{
     
     /**
-     * Evaluates the two parameter function.
+     * Evaluates the two string parameter function.
      * @param valueA the input value A.
      * @param valueB the input value B.
      * @return the evaluation result.

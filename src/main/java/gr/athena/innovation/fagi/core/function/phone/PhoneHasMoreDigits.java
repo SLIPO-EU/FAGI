@@ -1,14 +1,14 @@
 package gr.athena.innovation.fagi.core.function.phone;
 
 import gr.athena.innovation.fagi.core.function.IFunction;
-import gr.athena.innovation.fagi.core.function.IFunctionTwoParameters;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoStringParameters;
 
 /**
  * Class for evaluating if the first phone number has more digits than the other.
  * 
  * @author nkarag
  */
-public class PhoneHasMoreDigits implements IFunction, IFunctionTwoParameters  {
+public class PhoneHasMoreDigits implements IFunction, IFunctionTwoStringParameters  {
 
     @Override
     public boolean evaluate(String literalA, String literalB) {
