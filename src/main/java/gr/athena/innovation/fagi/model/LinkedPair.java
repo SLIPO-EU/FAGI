@@ -58,30 +58,58 @@ public class LinkedPair {
 
     EnumValidationAction validation = EnumValidationAction.UNDEFINED;
 
+    /**
+     *
+     * @return the Link.
+     */
     public Link getLink() {
         return link;
     }
 
+    /**
+     *
+     * @param link the link.
+     */
     public void setLink(Link link) {
         this.link = link;
     }
 
+    /**
+     *
+     * @return the node of the left dataset.
+     */
     public Entity getLeftNode() {
         return leftNode;
     }
 
+    /**
+     *
+     * @param leftNode the node of the left dataset.
+     */
     public void setLeftNode(Entity leftNode) {
         this.leftNode = leftNode;
     }
 
+    /**
+     *
+     * @return the node of the right dataset.
+     */
     public Entity getRightNode() {
         return rightNode;
     }
 
+    /**
+     *
+     * @param rightNode the node of the right dataset.
+     */
     public void setRightNode(Entity rightNode) {
         this.rightNode = rightNode;
     }
 
+    /**
+     *
+     * @return the fused entity if the pair is fused. Application exception is thrown otherwise.
+     */
     public Entity getFusedEntity() {
         if (fusedEntity == null) {
             LOG.fatal("Current pair is not fused: " + this);
@@ -90,10 +118,23 @@ public class LinkedPair {
         return fusedEntity;
     }
 
+    /**
+     *
+     * @param fusedEntity the fused entity.
+     */
     public void setFusedEntity(Entity fusedEntity) {
         this.fusedEntity = fusedEntity;
     }
 
+    /**
+     * Validates a link between two entities. The validation is based on the provided rules.
+     * 
+     * @param validationRules the validation rules list.
+     * @param functionMap the map containing the evaluation functions.
+     * @return the validation action enumeration value.
+     * 
+     * @throws WrongInputException error with the given input.
+     */
     public EnumValidationAction validateLink(List<Rule> validationRules, Map<String, IFunction> functionMap)
             throws WrongInputException {
 
@@ -168,6 +209,15 @@ public class LinkedPair {
         return validation;
     }
 
+    /**
+     * Fuse the pair.
+     * 
+     * @param ruleSpec the rule specification.
+     * @param functionMap the map containing the evaluation functions.
+     * @param validationAction the validation action.
+     * 
+     * @throws WrongInputException error with given input.
+     */
     public void fusePair(RuleSpecification ruleSpec, Map<String, IFunction> functionMap,
             EnumValidationAction validationAction) throws WrongInputException {
 
@@ -178,7 +228,7 @@ public class LinkedPair {
         EntityData rightEntityData = rightNode.getEntityData();
 
         fuseDefaultDatasetAction(defaultDatasetAction);       
-        
+
         List<Rule> rules = ruleSpec.getRules();
 
         int count = 0;
@@ -330,6 +380,13 @@ public class LinkedPair {
         externalPropertyEntry.getValue().setValueB(valueB);
     }
 
+    /**
+     * Fuse this pair with the default dataset action.
+     * 
+     * @param datasetDefaultAction the default dataset action.
+     * 
+     * @throws WrongInputException wrong input.
+     */
     public void fuseDefaultDatasetAction(EnumDatasetAction datasetDefaultAction) throws WrongInputException {
 
         //default dataset action should be performed before the rules apply. The fused model should be empty:
@@ -1020,14 +1077,14 @@ public class LinkedPair {
 
     private Resource getResourceAndRemoveFromModel(CustomRDFProperty customProperty, Model fusedModel, String literalA, 
             String literalB) throws ApplicationException {
-        
+
         Resource node;
         if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
             node = getResourceAndRemoveGeometry(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         } else {
             node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);
         }
-        
+
         if(node == null){
             //possible geometry without datatype. Try recovering node as any other literal.
             node = getResourceAndRemoveLiteral(fusedModel, customProperty.getValueProperty(), literalA, literalB);

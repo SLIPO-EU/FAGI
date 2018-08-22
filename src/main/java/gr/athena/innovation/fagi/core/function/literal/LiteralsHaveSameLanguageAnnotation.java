@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 
 /**
- *
+ * Class evaluating if the given literals have the same language annotation.
  * @author nkarag
  */
 public class LiteralsHaveSameLanguageAnnotation implements IFunction, IFunctionTwoLiteralParameters {

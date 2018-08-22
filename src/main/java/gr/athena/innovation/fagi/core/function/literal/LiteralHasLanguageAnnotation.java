@@ -6,7 +6,7 @@ import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * Class evaluating if a literal has language annotaion.
  * @author nkarag
  */
 public class LiteralHasLanguageAnnotation implements IFunction, IFunctionOneParameter{

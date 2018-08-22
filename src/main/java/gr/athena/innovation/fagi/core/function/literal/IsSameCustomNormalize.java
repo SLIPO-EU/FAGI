@@ -15,7 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
- *
+ * Class for evaluating similarity between two literals given a threshold.
+ * 
  * @author nkarag
  */
 public class IsSameCustomNormalize implements IFunction, IFunctionThreeLiteralStringParameters {

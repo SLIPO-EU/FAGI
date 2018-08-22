@@ -11,7 +11,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * Class representing term frequency.
+ * 
  * @author nkarag
  */
 public class Frequency {

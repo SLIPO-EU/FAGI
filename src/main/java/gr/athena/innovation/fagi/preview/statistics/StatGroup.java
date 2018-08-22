@@ -3,7 +3,8 @@ package gr.athena.innovation.fagi.preview.statistics;
 import java.util.Objects;
 
 /**
- *
+ * Class representing a group of statistics.
+ * 
  * @author nkarag
  */
 public class StatGroup {

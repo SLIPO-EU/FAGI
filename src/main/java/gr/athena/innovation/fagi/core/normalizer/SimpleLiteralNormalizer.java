@@ -69,6 +69,11 @@ public class SimpleLiteralNormalizer implements INormalizer {
         return result;
     }
     
+    /**
+     * Get the locale.
+     * 
+     * @return the locale.
+     */
     public Locale getLocale() {
         if(locale == null){
             return Locale.ENGLISH;
@@ -77,6 +82,11 @@ public class SimpleLiteralNormalizer implements INormalizer {
         }
     }
 
+    /**
+     * Set the locale.
+     * 
+     * @param locale the locale.
+     */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }

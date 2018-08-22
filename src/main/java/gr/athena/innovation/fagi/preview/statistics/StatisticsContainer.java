@@ -10,7 +10,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Container of the statistics.
+ * 
  * @author nkarag
  */
 public class StatisticsContainer {

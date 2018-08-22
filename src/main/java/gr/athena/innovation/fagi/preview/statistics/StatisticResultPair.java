@@ -6,7 +6,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
+ * Class describing a statistic. Serialization of the object ignores null values.
+ * 
  * @author nkarag
  */
 @JsonInclude(Include.NON_NULL)

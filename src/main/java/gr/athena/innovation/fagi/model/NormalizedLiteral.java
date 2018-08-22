@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.model;
 
 /**
- *
+ * Class container for a normalized literal.
+ * 
  * @author nkarag
  */
 public class NormalizedLiteral {

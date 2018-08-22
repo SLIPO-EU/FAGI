@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class container for calling codes.
  * @author nkarag
  */
 public class CallingCodeResolver {
@@ -17,6 +17,12 @@ public class CallingCodeResolver {
 
     private CallingCodeResolver(){}
 
+    /**
+     * Returns a new instance of CallingCodeResolver or an existing one.
+     * 
+     * @return the instance.
+     * @throws ApplicationException application exception.
+     */
     public static CallingCodeResolver getInstance() throws ApplicationException{
         //lazy init
         if(resolver == null){
@@ -29,10 +35,20 @@ public class CallingCodeResolver {
         return resolver;
     }
 
+    /**
+     * Set the value of codes.
+     * 
+     * @param codes the codes map.
+     */
     public static void setCodes(Map<String, String> codes) {
         CallingCodeResolver.codes = codes;
     }
 
+    /**
+     * Return the value of codes.
+     * 
+     * @return the codes map.
+     */
     public Map<String, String> getCodes(){
         return codes;
     }    

@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.repository;
 
-import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
@@ -22,7 +21,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class for querying RDF models.
+ * 
  * @author nkarag
  */
 public class SparqlRepository {

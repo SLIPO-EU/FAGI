@@ -4,15 +4,13 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
-import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class for computing the Jaro-Winkler Distance.
+ * 
  * @author nkarag
  */
 public final class JaroWinkler {
-    private static final org.apache.logging.log4j.Logger LOG = 
-            LogManager.getLogger(JaroWinkler.class);
 
     /**
      * Computes the Jaro Winkler Distance which indicates the similarity score between two strings.

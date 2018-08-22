@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 /**
  * Utility class for computing the available distances when using weighted literals.
  *
- *
  * @author nkarag
  */
 public class WeightedSimilarity {

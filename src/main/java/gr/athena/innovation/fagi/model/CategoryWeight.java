@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
+ * Class configuring category weights.
+ * 
  * @author nkarag
  */
 public class CategoryWeight {

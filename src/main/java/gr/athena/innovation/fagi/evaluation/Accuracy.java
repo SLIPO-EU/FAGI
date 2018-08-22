@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.evaluation;
 
 /**
- *
+ * Container class of accuracy values for each similarity metric.
+ * 
  * @author nkarag
  */
 public class Accuracy {

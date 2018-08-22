@@ -8,7 +8,8 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- *
+ * Class wrapping the RDF model of an entity.
+ * 
  * @author nkarag
  */
 public class EntityData {
@@ -16,7 +17,7 @@ public class EntityData {
     private Model model = ModelFactory.createDefaultModel();
     
     public EntityData() {
-        
+        //create entity data without initial RDF model.
     }
     
     public EntityData(Model model) {

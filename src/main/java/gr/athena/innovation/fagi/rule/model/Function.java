@@ -8,72 +8,73 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Class for modelling evaluation functions.
+ * 
  * @author nkarag
  */
-    public final class Function{
+public final class Function {
 
-        private static final Logger LOG = LogManager.getLogger(Function.class);
-        private String name;
-        private String[] parameters;
-        private int parameterCount;
+    private static final Logger LOG = LogManager.getLogger(Function.class);
+    private String name;
+    private String[] parameters;
+    private int parameterCount;
 
-        public Function(String functionString) throws WrongInputException{
+    public Function(String functionString) throws WrongInputException {
 
-            if(StringUtils.isBlank(functionString)){
-                throw new WrongInputException("Found empty function string in " + SpecificationConstants.Spec.RULES_XML);
-            }
+        if (StringUtils.isBlank(functionString)) {
+            throw new WrongInputException("Found empty function string in " + SpecificationConstants.Spec.RULES_XML);
+        }
 
-            if(functionString.contains("(") && functionString.contains(")")){
+        if (functionString.contains("(") && functionString.contains(")")) {
 
-                String[] parts = functionString.split("\\(");
-                setName(parts[0].toLowerCase());
-                String parenthesis = parts[1];
+            String[] parts = functionString.split("\\(");
+            setName(parts[0].toLowerCase());
+            String parenthesis = parts[1];
 
-                String[] commas = parenthesis.split("\\)");
+            String[] commas = parenthesis.split("\\)");
 
-                if(commas[0].contains(",")){
-                    String[] params = commas[0].split(",");
-                    setParameters(params);
-                } else {
-                    //single parameter:
-                    setParameters(commas);
-                }
-
-                LOG.trace("Function parameters: " + Arrays.toString(commas));
-
+            if (commas[0].contains(",")) {
+                String[] params = commas[0].split(",");
+                setParameters(params);
             } else {
-                LOG.fatal("Function " + functionString + " is malformed (Parenthesis missing). Check rules.xml file!");
-                throw new IllegalArgumentException();                
+                //single parameter:
+                setParameters(commas);
             }
-        }
 
-        public String getName() {
-            return name;
-        }
+            LOG.trace("Function parameters: " + Arrays.toString(commas));
 
-        public void setName(String name) {
-            this.name = name;
+        } else {
+            LOG.fatal("Function " + functionString + " is malformed (Parenthesis missing). Check rules.xml file!");
+            throw new IllegalArgumentException();
         }
-
-        public String[] getParameters() {
-            return parameters;
-        }
-
-        public void setParameters(String[] parameters) {
-            this.parameters = parameters;
-        }
-
-        public int getParameterCount() {
-            return parameterCount;
-        }
-
-        public void setParameterCount(int parameterCount) {
-            this.parameterCount = parameterCount;
-        }
-        
-        @Override
-        public String toString() {
-            return "Function{" + "name=" + name + ", parameters=" + Arrays.toString(parameters) + ", parameterCount=" + parameterCount + '}';
-        }        
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String[] getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String[] parameters) {
+        this.parameters = parameters;
+    }
+
+    public int getParameterCount() {
+        return parameterCount;
+    }
+
+    public void setParameterCount(int parameterCount) {
+        this.parameterCount = parameterCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Function{" + "name=" + name + ", parameters=" + Arrays.toString(parameters) + ", parameterCount=" + parameterCount + '}';
+    }
+}

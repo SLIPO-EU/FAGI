@@ -58,9 +58,9 @@ public class FagiInstance {
     private final boolean fuse = true;
 
     /**
-     * FagiInstance Constructor. Expects absolute paths of specification XML and rules XML.
+     * FagiInstance Constructor. Expects the absolute path of the configuration XML file.
      * 
-     * @param config The path of the specification file.
+     * @param config The path of the configuration file.
      */
     public FagiInstance(String config) {
         this.config = config;
@@ -163,7 +163,7 @@ public class FagiInstance {
             StatisticsCollector collector = new RDFStatisticsCollector();
             StatisticsContainer container = collector.collect();
             StatisticsExporter exporter = new StatisticsExporter();
-            
+
             if(!container.isValid() && !container.isComplete()){
                 LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
                         + Namespace.SOURCE + " property that is being used to count the entities."); 
@@ -171,9 +171,9 @@ public class FagiInstance {
 
             exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
         }
-        
+
         long stopTimeComputeStatistics = System.currentTimeMillis();
-        
+
         if(exportSimilaritiesPerLink){
             //similarity viewer for each pair and a,b,c normalization
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer();
@@ -194,7 +194,6 @@ public class FagiInstance {
             Evaluation evaluation = new Evaluation();
             String csvPath = "";
             evaluation.run(configuration, csvPath);
-
         }
 
         if(train){
@@ -241,10 +240,21 @@ public class FagiInstance {
         }
     }
 
+    /**
+     * Computes the selected statistics if the list. Returns a JSON string with the selected statistics.
+     * 
+     * @param selected the selected statistics as a list.
+     * @return a JSON string containing the statistics. 
+     * @throws WrongInputException wrong input exception.
+     * @throws ParserConfigurationException error parsing the configuration.
+     * @throws SAXException SAXException.
+     * @throws IOException I/O exception.
+     * @throws ParseException exception parsing the links file.
+     */
     public String computeStatistics(List<String> selected) 
             throws WrongInputException, ParserConfigurationException, SAXException, IOException, ParseException{
         LOG.info("calculating statistics...");
-        long startTimeInput = System.currentTimeMillis();
+        long startInit = System.currentTimeMillis();
         
         //Validate input
         FunctionRegistry functionRegistry = new FunctionRegistry();
@@ -283,6 +293,9 @@ public class FagiInstance {
 
         LOG.info("XML files seem syntactically valid.");
 
+        long stopInit = System.currentTimeMillis();
+        long initTime = stopInit - startInit;
+        LOG.info("Initialization time: " + initTime + "ms.");
         //Load datasets
         long startTimeReadFiles = System.currentTimeMillis();
 
@@ -292,11 +305,17 @@ public class FagiInstance {
         genericRDFRepository.parseLinks(configuration.getPathLinks());
 
         long stopTimeReadFiles = System.currentTimeMillis();
-        LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
+        long readTime = stopTimeReadFiles - startTimeReadFiles;
+        LOG.info("Datasets loaded in " + readTime + "ms.");
         LOG.info("Calculating statistics...");
 
+        long startCompute = System.currentTimeMillis();
+        
         StatisticsCollector collector = new RDFStatisticsCollector();
         StatisticsContainer container = collector.collect(selected);
+        
+        long stopCompute = System.currentTimeMillis();
+        long computeTime = stopCompute - startCompute;
 
         if(!container.isValid() && !container.isComplete()){
             LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
@@ -304,10 +323,17 @@ public class FagiInstance {
         }
 
         LOG.info(container.toJsonMap());
-
+        LOG.info("Statistics computed in " + computeTime + "ms.");
+        
         return container.toJsonMap();
     }
     
+    /**
+     * Produces formatted time from milliseconds.
+     * 
+     * @param millis the milliseconds.
+     * @return the formatted time string.
+     */
     public static String getFormattedTime(long millis) {
         String time = String.format("%02d min, %02d sec", 
             TimeUnit.MILLISECONDS.toMinutes(millis),

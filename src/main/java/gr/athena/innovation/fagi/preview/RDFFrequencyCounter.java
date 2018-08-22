@@ -15,13 +15,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Class for counting category frequencies from a mappings file (N-triples format).
+ * 
  * @author nkarag
  */
 public class RDFFrequencyCounter{
     
     private static final Logger LOG = LogManager.getLogger(RDFFrequencyCounter.class);
     
+    /**
+     * Returns the category map.
+     * 
+     * @param categoriesPath the categories file path.
+     * @return the category map.
+     */
     public Map<String, String> getCategoryMap(String categoriesPath){
         Map<String, String> categoryMap = new HashMap<>();
         
@@ -49,6 +56,13 @@ public class RDFFrequencyCounter{
         return categoryMap;
     }
     
+    /**
+     * Returns the frequency object.
+     * 
+     * @param category the target category.
+     * @param model the RDF model.
+     * @return the frequency.
+     */
     public Frequency exportCategoryFrequency(String category, Model model) {
 
         Frequency frequency = SparqlRepository.selectCategories(model, category);

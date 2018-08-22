@@ -5,7 +5,8 @@ import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- *
+ * Class providing methods for centroid translates (shifting).
+ * 
  * @author nkarag
  */
 public class CentroidShiftTranslator {

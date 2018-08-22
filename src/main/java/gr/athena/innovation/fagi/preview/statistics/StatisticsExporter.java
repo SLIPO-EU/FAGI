@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import org.apache.logging.log4j.LogManager;
 
 /**
+ * Class for exporting statistics to file.
  * 
  * @author nkarag
  */

@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
  * @author nkarag
  */
 public class Fuser implements IFuser{ 
-    
+
     private static final Logger LOG = LogManager.getLogger(Fuser.class);
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;

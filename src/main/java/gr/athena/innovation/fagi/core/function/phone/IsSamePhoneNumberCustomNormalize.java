@@ -7,13 +7,11 @@ import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
- *
+ * Class evaluating similarity between phone numbers using a normalization process.
+ * 
  * @author nkarag
  */
 public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTwoLiteralParameters{
-    
-    private static final org.apache.logging.log4j.Logger LOG 
-            = LogManager.getLogger(IsSamePhoneNumberCustomNormalize.class);
     
     /**
      * Checks if two telephone numbers are the same using a custom normalization method.

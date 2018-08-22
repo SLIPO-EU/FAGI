@@ -13,13 +13,24 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class for extracting category frequencies.
+ * 
  * @author nkarag
  */
 public class FrequencyExtractor {
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FrequencyExtractor.class);
 
+    /**
+     * Extracts category frequencies.
+     * 
+     * @param frequentTopK the top-k value.
+     * @param categoryMappingsNTPath the path containing the mappings in N-triples format.
+     * @param model the RDF model.
+     * @param outputDir the output directory.
+     * @param locale the locale.
+     * @param dataset the dataset enumeration value.
+     */
     public void extract(int frequentTopK, String categoryMappingsNTPath, Model model, 
             String outputDir, Locale locale, EnumDataset dataset){
 

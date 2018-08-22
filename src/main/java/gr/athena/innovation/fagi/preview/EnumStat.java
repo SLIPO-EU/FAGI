@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Enumeration for the available statistics.
+ * 
  * @author nkarag
  */
 public enum EnumStat {

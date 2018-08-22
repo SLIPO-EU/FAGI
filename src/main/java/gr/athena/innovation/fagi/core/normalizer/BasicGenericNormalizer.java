@@ -34,6 +34,14 @@ public class BasicGenericNormalizer implements INormalizer {
         return getNormalizedLiteral(literalA, literalB);
     }
     
+    /**
+     * Returns an object of a normalizedLiteral for literalA.
+     * 
+     * @param literalA the first literal.
+     * @param literalB the second literal. The literalB is used only for recovering possible abbreviations.
+     * @param locale the locale.
+     * @return the normalized literal based on literalA.
+     */
     public NormalizedLiteral getNormalizedLiteral(String literalA, String literalB, Locale locale) {
 
         String tempString;
@@ -152,6 +160,12 @@ public class BasicGenericNormalizer implements INormalizer {
         return normalizedLiteral;
     }
     
+    /**
+     * Text tokenizer on white spaces.
+     * 
+     * @param text the text to tokenize.
+     * @return the array of tokens.
+     */
     public static String[] tokenize(final CharSequence text) {
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
         final Pattern pattern = Pattern.compile("(\\w)+");
@@ -163,6 +177,11 @@ public class BasicGenericNormalizer implements INormalizer {
         return tokens.toArray(new String[0]);
     }
     
+    /**
+     * Get the locale.
+     * 
+     * @return the locale.
+     */
     public Locale getLocale() {
         if(locale == null){
             return Locale.ENGLISH;
@@ -171,6 +190,11 @@ public class BasicGenericNormalizer implements INormalizer {
         }
     }
 
+    /**
+     * Set the locale.
+     *
+     * @param locale the locale.
+     */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }

@@ -231,244 +231,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         Map<String, EnumStat> statMap = EnumStat.getMap();
         for (String statKey : selected) {
-            EnumStat stat = statMap.get(statKey);
-            switch (stat) {
-                case TOTAL_POIS:
-                    map.put(EnumStat.TOTAL_POIS.getKey(), countTotalEntities(leftModel, rightModel));
-                    break;
-                case TOTAL_TRIPLES:
-                    map.put(EnumStat.TOTAL_TRIPLES.getKey(), countTriples(leftModel, rightModel));
-                    break;
-                case NON_EMPTY_NAMES:
-                    map.put(EnumStat.NON_EMPTY_NAMES.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME));
-                    break;
-                case NON_EMPTY_PHONES:
-                    map.put(EnumStat.NON_EMPTY_PHONES.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
-                    break;
-                case NON_EMPTY_STREETS:
-                    map.put(EnumStat.NON_EMPTY_STREETS.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
-                    break;
-                case NON_EMPTY_STREET_NUMBERS:
-                    map.put(EnumStat.NON_EMPTY_STREET_NUMBERS.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS,
-                                    Namespace.STREET_NUMBER));
-                    break;
-                case NON_EMPTY_WEBSITES:
-                    map.put(EnumStat.NON_EMPTY_WEBSITES.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES,
-                                    Namespace.HOMEPAGE));
-                    break;
-                case NON_EMPTY_EMAILS:
-                    map.put(EnumStat.NON_EMPTY_EMAILS.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
-                    break;
-                case NON_EMPTY_DATES:
-                    map.put(EnumStat.NON_EMPTY_DATES.getKey(),
-                            countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
-                    break;
-                case EMPTY_NAMES:
-                    map.put(EnumStat.EMPTY_NAMES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_NAMES, Namespace.NAME));
-                    break;
-                case EMPTY_PHONES:
-                    map.put(EnumStat.EMPTY_PHONES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_PHONES, Namespace.PHONE));
-                    break;
-                case EMPTY_STREETS:
-                    map.put(EnumStat.EMPTY_STREETS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREETS, Namespace.STREET));
-                    break;
-                case EMPTY_STREET_NUMBERS:
-                    map.put(EnumStat.EMPTY_STREET_NUMBERS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREET_NUMBERS,
-                                    Namespace.STREET_NUMBER));
-                    break;
-                case EMPTY_WEBSITES:
-                    map.put(EnumStat.EMPTY_WEBSITES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_WEBSITES, Namespace.HOMEPAGE));
-                    break;
-                case EMPTY_EMAILS:
-                    map.put(EnumStat.EMPTY_EMAILS.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_EMAILS, Namespace.EMAIL));
-                    break;
-                case EMPTY_DATES:
-                    map.put(EnumStat.EMPTY_DATES.getKey(),
-                            countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_DATES, Namespace.DATE));
-                    break;
-                case DISTINCT_PROPERTIES:
-                    map.put(EnumStat.DISTINCT_PROPERTIES.getKey(), countDistinctProperties(leftModel, rightModel));
-                    break;
-                case PRIMARY_DATE_FORMATS_PERCENT:
-                    map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(),
-                            calculatePercentageOfPrimaryDateFormats(leftModel, rightModel,
-                                    EnumStat.PRIMARY_DATE_FORMATS_PERCENT));
-                    break;
-                case NAMES_PERCENT:
-                    map.put(EnumStat.NAMES_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT,
-                                    Namespace.NAME_VALUE));
-                    break;
-                case WEBSITE_PERCENT:
-                    map.put(EnumStat.WEBSITE_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.WEBSITE_PERCENT,
-                                    Namespace.HOMEPAGE));
-                    break;
-                case EMAIL_PERCENT:
-                    map.put(EnumStat.EMAIL_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.EMAIL_PERCENT,
-                                    Namespace.EMAIL));
-                    break;
-                case PHONES_PERCENT:
-                    map.put(EnumStat.PHONES_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.PHONES_PERCENT,
-                                    Namespace.PHONE));
-                    break;
-                case STREETS_PERCENT:
-                    map.put(EnumStat.STREETS_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREETS_PERCENT,
-                                    Namespace.STREET));
-                    break;
-                case STREET_NUMBERS_PERCENT:
-                    map.put(EnumStat.STREET_NUMBERS_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREET_NUMBERS_PERCENT,
-                                    Namespace.STREET_NUMBER));
-                    break;
-                case LOCALITY_PERCENT:
-                    map.put(EnumStat.LOCALITY_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.LOCALITY_PERCENT,
-                                    Namespace.LOCALITY));
-                    break;
-                case DATES_PERCENT:
-                    map.put(EnumStat.DATES_PERCENT.getKey(),
-                            calculatePropertyPercentage(leftModel, rightModel, EnumStat.DATES_PERCENT, Namespace.DATE));
-                    break;
-                case LINKED_POIS:
-                    map.put(EnumStat.LINKED_POIS.getKey(), countLinkedPOIs(linksModel));
-                    break;
-                case LINKED_VS_TOTAL:
-                    map.put(EnumStat.LINKED_VS_TOTAL.getKey(),
-                            countLinkedVsTotalPOIs(leftModel, rightModel, linksModel));
-                    break;
-                case LINKED_TRIPLES:
-                    map.put(EnumStat.LINKED_TRIPLES.getKey(), countLinkedTriples(leftModel, rightModel, linksModel));
-                    break;
-                case LINKED_NON_EMPTY_NAMES:
-                    map.put(EnumStat.LINKED_NON_EMPTY_NAMES.getKey(), computeNonEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_NAMES, Namespace.NAME,
-                            Namespace.NAME_VALUE));
-                    break;
-                case LINKED_NON_EMPTY_PHONES:
-                    map.put(EnumStat.LINKED_NON_EMPTY_PHONES.getKey(), computeNonEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_PHONES, Namespace.PHONE,
-                            Namespace.CONTACT_VALUE));
-                    break;
-                case LINKED_NON_EMPTY_STREETS:
-                    map.put(EnumStat.LINKED_NON_EMPTY_STREETS.getKey(), computeNonEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_STREETS, Namespace.ADDRESS,
-                            Namespace.STREET));
-                    break;
-                case LINKED_NON_EMPTY_STREET_NUMBERS:
-                    map.put(EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS.getKey(), computeNonEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS,
-                            Namespace.ADDRESS, Namespace.STREET_NUMBER));
-                    break;
-                case LINKED_NON_EMPTY_WEBSITES:
-                    map.put(EnumStat.LINKED_NON_EMPTY_WEBSITES.getKey(), computeNonEmptyLinkedProperty(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
-                    break;
-                case LINKED_NON_EMPTY_EMAILS:
-                    map.put(EnumStat.LINKED_NON_EMPTY_EMAILS.getKey(), computeNonEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_EMAILS, Namespace.EMAIL,
-                            Namespace.CONTACT_VALUE));
-                    break;
-                case LINKED_NON_EMPTY_DATES:
-                    map.put(EnumStat.LINKED_NON_EMPTY_DATES.getKey(), computeNonEmptyLinkedProperty(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_DATES, Namespace.DATE));
-                    break;
-                case LINKED_EMPTY_NAMES:
-                    map.put(EnumStat.LINKED_EMPTY_NAMES.getKey(), computeEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_NAMES, Namespace.NAME,
-                            Namespace.NAME_VALUE));
-                    break;
-                case LINKED_EMPTY_PHONES:
-                    map.put(EnumStat.LINKED_EMPTY_PHONES.getKey(), computeEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_PHONES, Namespace.PHONE,
-                            Namespace.CONTACT_VALUE));
-                    break;
-                case LINKED_EMPTY_STREETS:
-                    map.put(EnumStat.LINKED_EMPTY_STREETS.getKey(), computeEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_STREETS, Namespace.ADDRESS,
-                            Namespace.STREET));
-                    break;
-                case LINKED_EMPTY_STREET_NUMBERS:
-                    map.put(EnumStat.LINKED_EMPTY_STREET_NUMBERS.getKey(), computeEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_STREET_NUMBERS, Namespace.ADDRESS,
-                            Namespace.STREET_NUMBER));
-                    break;
-                case LINKED_EMPTY_WEBSITES:
-                    map.put(EnumStat.LINKED_EMPTY_WEBSITES.getKey(), computeEmptyLinkedProperty(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_WEBSITES, Namespace.HOMEPAGE));
-                    break;
-                case LINKED_EMPTY_EMAILS:
-                    map.put(EnumStat.LINKED_EMPTY_EMAILS.getKey(), computeEmptyLinkedPropertyChain(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_EMAILS, Namespace.EMAIL,
-                            Namespace.CONTACT_VALUE));
-                    break;
-                case LINKED_EMPTY_DATES:
-                    map.put(EnumStat.LINKED_EMPTY_DATES.getKey(), computeEmptyLinkedProperty(
-                            leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_DATES, Namespace.DATE));
-                    break;
-                case TOTAL_NON_EMPTY_PROPERTIES:
-                    map.put(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.getKey(),
-                            countTotalNonEmptyProperties(leftModel, rightModel));
-                    break;
-                case TOTAL_EMPTY_PROPERTIES:
-                    map.put(EnumStat.TOTAL_EMPTY_PROPERTIES.getKey(), countTotalEmptyProperties(leftModel, rightModel));
-                    break;
-                case TOTAL_PROPERTIES_PERCENTAGE:
-                    map.put(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.getKey(),
-                            calculateTotalNonEmptyPropertiesPercentage(leftModel, rightModel));
-                    break;
-                case AVERAGE_PROPERTIES_PER_POI:
-                    map.put(EnumStat.AVERAGE_PROPERTIES_PER_POI.getKey(),
-                            calculateAveragePropertiesPerPOI(leftModel, rightModel));
-                    break;
-                case AVERAGE_EMPTY_PROPERTIES_PER_POI:
-                    map.put(EnumStat.AVERAGE_EMPTY_PROPERTIES_PER_POI.getKey(),
-                            calculateAverageEmptyPropertiesPerPOI(leftModel, rightModel));
-                    break;
-                case LINKED_AVERAGE_PROPERTIES:
-                    map.put(EnumStat.LINKED_AVERAGE_PROPERTIES.getKey(),
-                            calculateAverageLinkedProperties(leftModel, rightModel, links));
-                    break;
-                case LINKED_AVERAGE_EMPTY_PROPERTIES:
-                    map.put(EnumStat.LINKED_AVERAGE_EMPTY_PROPERTIES.getKey(),
-                            calculateAverageEmptyLinkedProperties(leftModel, rightModel, links));
-                    break;
-                case LONGER_NAMES:
-                    map.put(EnumStat.LONGER_NAMES.getKey(),
-                            countLongerValue(leftModel, rightModel, links, EnumStat.LONGER_NAMES, Namespace.NAME,
-                                    Namespace.NAME_VALUE));
-                    break;
-                case LONGER_PHONES:
-                    map.put(EnumStat.LONGER_PHONES.getKey(),
-                            countLongerValue(leftModel, rightModel, links, EnumStat.LONGER_NAMES, Namespace.PHONE,
-                                    Namespace.CONTACT_VALUE));
-                    break;
-                case FULL_MATCH_STREETS:
-                    map.put(EnumStat.FULL_MATCH_STREETS.getKey(),
-                            countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREETS,
-                                    Namespace.ADDRESS, Namespace.STREET));
-                    break;
-                case FULL_MATCH_STREET_NUMBERS:
-                    map.put(EnumStat.FULL_MATCH_STREET_NUMBERS.getKey(),
-                            countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREET_NUMBERS,
-                                    Namespace.ADDRESS, Namespace.STREET_NUMBER));
-                    break;
-            }
+            computeStat(statMap, statKey, leftModel, rightModel, linksModel, links);
         }
 
         container.setMap(map);
@@ -476,6 +239,249 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         container.setComplete(true);
 
         return container;
+    }
+
+    private void computeStat(Map<String, EnumStat> statMap, String statKey, Model leftModel, Model rightModel, 
+            Model linksModel, List<Link> links) {
+
+        EnumStat stat = statMap.get(statKey);
+        switch (stat) {
+            case TOTAL_POIS:
+                map.put(EnumStat.TOTAL_POIS.getKey(), countTotalEntities(leftModel, rightModel));
+                break;
+            case TOTAL_TRIPLES:
+                map.put(EnumStat.TOTAL_TRIPLES.getKey(), countTriples(leftModel, rightModel));
+                break;
+            case NON_EMPTY_NAMES:
+                map.put(EnumStat.NON_EMPTY_NAMES.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_NAMES, Namespace.NAME));
+                break;
+            case NON_EMPTY_PHONES:
+                map.put(EnumStat.NON_EMPTY_PHONES.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
+                break;
+            case NON_EMPTY_STREETS:
+                map.put(EnumStat.NON_EMPTY_STREETS.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+                break;
+            case NON_EMPTY_STREET_NUMBERS:
+                map.put(EnumStat.NON_EMPTY_STREET_NUMBERS.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS,
+                                Namespace.STREET_NUMBER));
+                break;
+            case NON_EMPTY_WEBSITES:
+                map.put(EnumStat.NON_EMPTY_WEBSITES.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_WEBSITES,
+                                Namespace.HOMEPAGE));
+                break;
+            case NON_EMPTY_EMAILS:
+                map.put(EnumStat.NON_EMPTY_EMAILS.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
+                break;
+            case NON_EMPTY_DATES:
+                map.put(EnumStat.NON_EMPTY_DATES.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_DATES, Namespace.DATE));
+                break;
+            case EMPTY_NAMES:
+                map.put(EnumStat.EMPTY_NAMES.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_NAMES, Namespace.NAME));
+                break;
+            case EMPTY_PHONES:
+                map.put(EnumStat.EMPTY_PHONES.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_PHONES, Namespace.PHONE));
+                break;
+            case EMPTY_STREETS:
+                map.put(EnumStat.EMPTY_STREETS.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREETS, Namespace.STREET));
+                break;
+            case EMPTY_STREET_NUMBERS:
+                map.put(EnumStat.EMPTY_STREET_NUMBERS.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_STREET_NUMBERS,
+                                Namespace.STREET_NUMBER));
+                break;
+            case EMPTY_WEBSITES:
+                map.put(EnumStat.EMPTY_WEBSITES.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                break;
+            case EMPTY_EMAILS:
+                map.put(EnumStat.EMPTY_EMAILS.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_EMAILS, Namespace.EMAIL));
+                break;
+            case EMPTY_DATES:
+                map.put(EnumStat.EMPTY_DATES.getKey(),
+                        countEmptyProperty(leftModel, rightModel, EnumStat.EMPTY_DATES, Namespace.DATE));
+                break;
+            case DISTINCT_PROPERTIES:
+                map.put(EnumStat.DISTINCT_PROPERTIES.getKey(), countDistinctProperties(leftModel, rightModel));
+                break;
+            case PRIMARY_DATE_FORMATS_PERCENT:
+                map.put(EnumStat.PRIMARY_DATE_FORMATS_PERCENT.getKey(),
+                        calculatePercentageOfPrimaryDateFormats(leftModel, rightModel,
+                                EnumStat.PRIMARY_DATE_FORMATS_PERCENT));
+                break;
+            case NAMES_PERCENT:
+                map.put(EnumStat.NAMES_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT,
+                                Namespace.NAME_VALUE));
+                break;
+            case WEBSITE_PERCENT:
+                map.put(EnumStat.WEBSITE_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.WEBSITE_PERCENT,
+                                Namespace.HOMEPAGE));
+                break;
+            case EMAIL_PERCENT:
+                map.put(EnumStat.EMAIL_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.EMAIL_PERCENT,
+                                Namespace.EMAIL));
+                break;
+            case PHONES_PERCENT:
+                map.put(EnumStat.PHONES_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.PHONES_PERCENT,
+                                Namespace.PHONE));
+                break;
+            case STREETS_PERCENT:
+                map.put(EnumStat.STREETS_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREETS_PERCENT,
+                                Namespace.STREET));
+                break;
+            case STREET_NUMBERS_PERCENT:
+                map.put(EnumStat.STREET_NUMBERS_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.STREET_NUMBERS_PERCENT,
+                                Namespace.STREET_NUMBER));
+                break;
+            case LOCALITY_PERCENT:
+                map.put(EnumStat.LOCALITY_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.LOCALITY_PERCENT,
+                                Namespace.LOCALITY));
+                break;
+            case DATES_PERCENT:
+                map.put(EnumStat.DATES_PERCENT.getKey(),
+                        calculatePropertyPercentage(leftModel, rightModel, EnumStat.DATES_PERCENT, Namespace.DATE));
+                break;
+            case LINKED_POIS:
+                map.put(EnumStat.LINKED_POIS.getKey(), countLinkedPOIs(linksModel));
+                break;
+            case LINKED_VS_TOTAL:
+                map.put(EnumStat.LINKED_VS_TOTAL.getKey(),
+                        countLinkedVsTotalPOIs(leftModel, rightModel, linksModel));
+                break;
+            case LINKED_TRIPLES:
+                map.put(EnumStat.LINKED_TRIPLES.getKey(), countLinkedTriples(leftModel, rightModel, linksModel));
+                break;
+            case LINKED_NON_EMPTY_NAMES:
+                map.put(EnumStat.LINKED_NON_EMPTY_NAMES.getKey(), computeNonEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_NAMES, Namespace.NAME,
+                        Namespace.NAME_VALUE));
+                break;
+            case LINKED_NON_EMPTY_PHONES:
+                map.put(EnumStat.LINKED_NON_EMPTY_PHONES.getKey(), computeNonEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_PHONES, Namespace.PHONE,
+                        Namespace.CONTACT_VALUE));
+                break;
+            case LINKED_NON_EMPTY_STREETS:
+                map.put(EnumStat.LINKED_NON_EMPTY_STREETS.getKey(), computeNonEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_STREETS, Namespace.ADDRESS,
+                        Namespace.STREET));
+                break;
+            case LINKED_NON_EMPTY_STREET_NUMBERS:
+                map.put(EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS.getKey(), computeNonEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_STREET_NUMBERS,
+                        Namespace.ADDRESS, Namespace.STREET_NUMBER));
+                break;
+            case LINKED_NON_EMPTY_WEBSITES:
+                map.put(EnumStat.LINKED_NON_EMPTY_WEBSITES.getKey(), computeNonEmptyLinkedProperty(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                break;
+            case LINKED_NON_EMPTY_EMAILS:
+                map.put(EnumStat.LINKED_NON_EMPTY_EMAILS.getKey(), computeNonEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_EMAILS, Namespace.EMAIL,
+                        Namespace.CONTACT_VALUE));
+                break;
+            case LINKED_NON_EMPTY_DATES:
+                map.put(EnumStat.LINKED_NON_EMPTY_DATES.getKey(), computeNonEmptyLinkedProperty(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_NON_EMPTY_DATES, Namespace.DATE));
+                break;
+            case LINKED_EMPTY_NAMES:
+                map.put(EnumStat.LINKED_EMPTY_NAMES.getKey(), computeEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_NAMES, Namespace.NAME,
+                        Namespace.NAME_VALUE));
+                break;
+            case LINKED_EMPTY_PHONES:
+                map.put(EnumStat.LINKED_EMPTY_PHONES.getKey(), computeEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_PHONES, Namespace.PHONE,
+                        Namespace.CONTACT_VALUE));
+                break;
+            case LINKED_EMPTY_STREETS:
+                map.put(EnumStat.LINKED_EMPTY_STREETS.getKey(), computeEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_STREETS, Namespace.ADDRESS,
+                        Namespace.STREET));
+                break;
+            case LINKED_EMPTY_STREET_NUMBERS:
+                map.put(EnumStat.LINKED_EMPTY_STREET_NUMBERS.getKey(), computeEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_STREET_NUMBERS, Namespace.ADDRESS,
+                        Namespace.STREET_NUMBER));
+                break;
+            case LINKED_EMPTY_WEBSITES:
+                map.put(EnumStat.LINKED_EMPTY_WEBSITES.getKey(), computeEmptyLinkedProperty(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                break;
+            case LINKED_EMPTY_EMAILS:
+                map.put(EnumStat.LINKED_EMPTY_EMAILS.getKey(), computeEmptyLinkedPropertyChain(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_EMAILS, Namespace.EMAIL,
+                        Namespace.CONTACT_VALUE));
+                break;
+            case LINKED_EMPTY_DATES:
+                map.put(EnumStat.LINKED_EMPTY_DATES.getKey(), computeEmptyLinkedProperty(
+                        leftModel, rightModel, linksModel, EnumStat.LINKED_EMPTY_DATES, Namespace.DATE));
+                break;
+            case TOTAL_NON_EMPTY_PROPERTIES:
+                map.put(EnumStat.TOTAL_NON_EMPTY_PROPERTIES.getKey(),
+                        countTotalNonEmptyProperties(leftModel, rightModel));
+                break;
+            case TOTAL_EMPTY_PROPERTIES:
+                map.put(EnumStat.TOTAL_EMPTY_PROPERTIES.getKey(), countTotalEmptyProperties(leftModel, rightModel));
+                break;
+            case TOTAL_PROPERTIES_PERCENTAGE:
+                map.put(EnumStat.TOTAL_PROPERTIES_PERCENTAGE.getKey(),
+                        calculateTotalNonEmptyPropertiesPercentage(leftModel, rightModel));
+                break;
+            case AVERAGE_PROPERTIES_PER_POI:
+                map.put(EnumStat.AVERAGE_PROPERTIES_PER_POI.getKey(),
+                        calculateAveragePropertiesPerPOI(leftModel, rightModel));
+                break;
+            case AVERAGE_EMPTY_PROPERTIES_PER_POI:
+                map.put(EnumStat.AVERAGE_EMPTY_PROPERTIES_PER_POI.getKey(),
+                        calculateAverageEmptyPropertiesPerPOI(leftModel, rightModel));
+                break;
+            case LINKED_AVERAGE_PROPERTIES:
+                map.put(EnumStat.LINKED_AVERAGE_PROPERTIES.getKey(),
+                        calculateAverageLinkedProperties(leftModel, rightModel, links));
+                break;
+            case LINKED_AVERAGE_EMPTY_PROPERTIES:
+                map.put(EnumStat.LINKED_AVERAGE_EMPTY_PROPERTIES.getKey(),
+                        calculateAverageEmptyLinkedProperties(leftModel, rightModel, links));
+                break;
+            case LONGER_NAMES:
+                map.put(EnumStat.LONGER_NAMES.getKey(),
+                        countLongerValue(leftModel, rightModel, links, EnumStat.LONGER_NAMES, Namespace.NAME,
+                                Namespace.NAME_VALUE));
+                break;
+            case LONGER_PHONES:
+                map.put(EnumStat.LONGER_PHONES.getKey(),
+                        countLongerValue(leftModel, rightModel, links, EnumStat.LONGER_NAMES, Namespace.PHONE,
+                                Namespace.CONTACT_VALUE));
+                break;
+            case FULL_MATCH_STREETS:
+                map.put(EnumStat.FULL_MATCH_STREETS.getKey(),
+                        countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREETS,
+                                Namespace.ADDRESS, Namespace.STREET));
+                break;
+            case FULL_MATCH_STREET_NUMBERS:
+                map.put(EnumStat.FULL_MATCH_STREET_NUMBERS.getKey(),
+                        countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREET_NUMBERS,
+                                Namespace.ADDRESS, Namespace.STREET_NUMBER));
+                break;
+        }
     }
 
     public StatisticResultPair countTotalEntities(Model a, Model b) {

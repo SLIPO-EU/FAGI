@@ -9,7 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class for calculating frequencies.
+ * 
  * @author nkarag
  */
 public class FrequencyCalculationProcess {

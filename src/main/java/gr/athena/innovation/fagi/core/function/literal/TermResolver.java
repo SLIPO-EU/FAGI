@@ -5,7 +5,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class container for terms.
+ * 
  * @author nkarag
  */
 public class TermResolver {
@@ -17,6 +18,12 @@ public class TermResolver {
 
     private TermResolver(){}
 
+    /**
+     * Constructor of TermResolver, returns a new instance or an existing.
+     * 
+     * @return the TermResolver instance.
+     * @throws ApplicationException application exception.
+     */
     public static TermResolver getInstance() throws ApplicationException{
         //lazy init
         if(termResolver == null){
@@ -29,10 +36,19 @@ public class TermResolver {
         return termResolver;
     }
 
+    /**
+     * Set value for the specialTerms Set.
+     * @param specialTerms the special terms set.
+     */
     public static void setTerms(Set<String> specialTerms) {
         terms = specialTerms;
     }
 
+    /**
+     * Returns the set of terms.
+     * 
+     * @return the terms set.
+     */
     public Set<String> getTerms(){
         return terms;
     }

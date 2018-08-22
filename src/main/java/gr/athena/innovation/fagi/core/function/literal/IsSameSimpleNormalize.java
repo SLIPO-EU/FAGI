@@ -12,7 +12,8 @@ import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
 
 /**
- *
+ * Class evaluating similarity between two literals given a threshold. Uses the simple normalization process.
+ * 
  * @author nkarag
  */
 public class IsSameSimpleNormalize implements IFunction, IFunctionThreeLiteralStringParameters {

@@ -3,7 +3,8 @@ package gr.athena.innovation.fagi.core.similarity;
 import gr.athena.innovation.fagi.core.normalizer.generic.AlphabeticalNormalizer;
 
 /**
- *
+ * Class for computing a sorted version of Jaro-Winkler distance.
+ * 
  * @author nkarag
  */
 public class SortedJaroWinkler {

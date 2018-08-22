@@ -6,11 +6,18 @@ import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.IOException;
 
 /**
- *
+ * Class for configure and initiate evaluation process.
+ * 
  * @author nkarag
  */
 public class Evaluation {
     
+    /**
+     * Runs the evaluation process with training examples from a given csv path.
+     * 
+     * @param configuration the configuration.
+     * @param csvPath the csvPAth with training examples.
+     */
     public void run(Configuration configuration, String csvPath){
 
             //on version change, all weights update (along with notes)

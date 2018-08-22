@@ -14,7 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- *
+ * Repository class for parsing and reading RDF models. The generic description relies on file extension types.
+ * 
  * @author nkarag
  */
 public class GenericRDFRepository extends AbstractRepository{

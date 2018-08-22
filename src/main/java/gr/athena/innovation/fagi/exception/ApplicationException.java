@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.exception;
 
 /**
- *
+ * Application exception of FAGI. 
+ * 
  * @author nkarag
  */
 public class ApplicationException extends RuntimeException{

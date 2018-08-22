@@ -25,7 +25,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * Validates user input with sanity checks and XSD files.
+ * 
  * @author nkarag
  */
 public class InputValidator {

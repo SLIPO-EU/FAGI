@@ -13,7 +13,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Class providing methods for resolving abbreviations/acronyms.
+ * 
  * @author nkarag
  */
 public class AbbreviationAndAcronymResolver {
@@ -24,9 +25,12 @@ public class AbbreviationAndAcronymResolver {
     private static Map<String, String> abbreviationsAndAcronyms;
     private static Locale locale;
 
-    private AbbreviationAndAcronymResolver() {
-    }
-
+    /**
+     * Initializes a AbbreviationAndAcronymResolver instance or returns the already existing.
+     * 
+     * @return the AbbreviationAndAcronymResolver instance.
+     * @throws ApplicationException application exception.
+     */
     public static AbbreviationAndAcronymResolver getInstance() throws ApplicationException {
         //lazy init
         if (abbreviationAcronymResolver == null) {
@@ -39,6 +43,11 @@ public class AbbreviationAndAcronymResolver {
         return abbreviationAcronymResolver;
     }
 
+    /**
+     * Set the value of the abbreviations/acronyms map.
+     * 
+     * @param knownAbbreviationsAndAcronyms
+     */
     public static void setKnownAbbreviationsAndAcronyms(Map<String, String> knownAbbreviationsAndAcronyms) {
         abbreviationsAndAcronyms = knownAbbreviationsAndAcronyms;
     }
@@ -218,6 +227,13 @@ public class AbbreviationAndAcronymResolver {
         return null;
     }
 
+    /**
+     * Recovers an abbreviation given as a string word from the given text.
+     * 
+     * @param word the target word.
+     * @param text the text.
+     * @return the abbreviation or null if the process fails to find it.
+     */
     public String recoverAbbreviation(String word, String text) {
         String tempWord;
         char[] tempChars;
@@ -233,10 +249,8 @@ public class AbbreviationAndAcronymResolver {
         } else {
             tempWord = word.toLowerCase(locale);
             tempChars = tempWord.toLowerCase(locale).toCharArray();
-        }     
-        
-        //char[] 
-        
+        }
+
         String[] wordsB = tokenize(text);
 
         for (String bWord : wordsB) {
@@ -367,7 +381,7 @@ public class AbbreviationAndAcronymResolver {
 
         return vowelCount;
     }
-    
+
     private static boolean isVowel(Character c){
         String vowels = SpecificationConstants.Evaluation.LOWERCASE_VOWELS;
         return vowels.indexOf(c) >= 0;
@@ -378,13 +392,18 @@ public class AbbreviationAndAcronymResolver {
         if(text == null){
             return new String[]{};
         }
-        
+
         Validate.isTrue(StringUtils.isNotBlank(text), "Invalid text");
 
         String[] split = text.toString().split("\\s+");
         return split;
     }
 
+    /**
+     * Sets the locale.
+     * 
+     * @param loc the target locale.
+     */
     public static void setLocale(Locale loc) {
         locale = loc;
     }

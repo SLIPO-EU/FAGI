@@ -8,7 +8,8 @@ import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
- *
+ * Class evaluating similarity between two phone numbers as literals.
+ * 
  * @author nkarag
  */
 public class IsSamePhoneNumber implements IFunction, IFunctionTwoLiteralParameters{

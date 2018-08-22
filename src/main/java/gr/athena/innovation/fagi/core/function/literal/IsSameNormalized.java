@@ -8,13 +8,12 @@ import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 
 /**
- *
+ * Class evaluating similarity between two literals.
+ * 
  * @author nkarag
  */
 public class IsSameNormalized implements IFunction, IFunctionTwoLiteralParameters{
-    
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(IsSameNormalized.class);
-    
+
     /**
      * Compares the two literals and returns true if they are same. 
      * If the standard equals is not true, it normalizes the literals using th MultipleGenericNormalizer and re-checks.
