@@ -9,14 +9,14 @@ Then, go the root directory of the project (fagi) and run:
 `mvn clean install`
 
 ### Run Fagi-gis from command line
-Go to resources directory and change the spec.xml and rules.xml as described below.
+Go to resources directory and change the config.xml and rules.xml as described below.
 
 Then go to the target directory of the project and run:
 
-`java -jar fagi-1.0-SNAPSHOT.jar -spec /path/to/spec.xml`
+`java -jar fagi-1.0-SNAPSHOT.jar -spec /path/to/config.xml`
 
-### How to fill in the spec.xml file
-Inside the resources directory of the project there is a spec.template.xml file and a spec.xml as an example for convenience. The Specification holds general configuration for the fusion process and is filled with text values between an opening and a closing tag. 
+### How to fill in the config.xml file
+Inside the resources directory of the project there is a spec.template.xml file and a config.xml as an example for convenience. The Specification holds general configuration for the fusion process and is filled with text values between an opening and a closing tag. 
 The `inputFormat` refers to the RDF format of the input dataset and the `outputFormat` holds the value of the desired output format. The accepted RDF formats are the following:
 
 * N-Triples (NT)

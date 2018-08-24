@@ -48,11 +48,11 @@ public class ConfigurationParser {
 
             doc.getDocumentElement().normalize();
 
-            NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.INPUT_FORMAT);
+            NodeList inputNodeList = doc.getElementsByTagName(SpecificationConstants.Config.INPUT_FORMAT);
             String inputFormat = inputNodeList.item(0).getTextContent();
             configuration.setInputRDFFormat(inputFormat);
 
-            NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.OUTPUT_FORMAT);
+            NodeList outputNodeList = doc.getElementsByTagName(SpecificationConstants.Config.OUTPUT_FORMAT);
             String outputFormatString = outputNodeList.item(0).getTextContent();
 
             String outputFormat;
@@ -76,7 +76,7 @@ public class ConfigurationParser {
 
             configuration.setOutputRDFFormat(outputFormat);
 
-            NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LOCALE);
+            NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Config.LOCALE);
             
             String localeText = "";
             Locale locale;
@@ -115,7 +115,7 @@ public class ConfigurationParser {
 
             configuration.setLocale(locale);
 
-            NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.SIMILARITY);
+            NodeList similarityNodeList = doc.getElementsByTagName(SpecificationConstants.Config.SIMILARITY);
             String similarityText = "";
             String similarity;
             
@@ -152,34 +152,34 @@ public class ConfigurationParser {
 
             configuration.setSimilarity(similarity);
 
-            NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.RULES);
+            NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Config.RULES);
             String rules = rulesNodeList.item(0).getTextContent();
             configuration.setRulesPath(rules);
             
-            NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LEFT_DATASET);
+            NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Config.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);
             NodeList leftChilds = leftNode.getChildNodes();
             for (int i = 0; i < leftChilds.getLength(); i++) {
                 Node n = leftChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FILE)) {
                         configuration.setPathDatasetA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {
                         configuration.setIdA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }
                         configuration.setEndpointA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.CATEGORIES)) {
                         configuration.setCategoriesA(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.DATE)) {
                         String dateString = n.getTextContent();
                         if(StringUtils.isBlank(dateString)){
                             configuration.setDateB(null);
                         } else {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Config.DATE_FORMAT);
                             simpleDateFormat.setLenient(false);
                             try {
                                 Date dateA = simpleDateFormat.parse(dateString);
@@ -187,7 +187,7 @@ public class ConfigurationParser {
                             } catch (ParseException ex) {
                                 LOG.error(ex);
                                 throw new WrongInputException("Date in \"left\" dataset does not have the expected format. "
-                                        + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
+                                        + "\nSupported format is " + SpecificationConstants.Config.DATE_FORMAT);
                             }                            
                         }
                     }
@@ -195,7 +195,7 @@ public class ConfigurationParser {
                 n.getNextSibling();
             }
 
-            NodeList rightNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.RIGHT_DATASET);
+            NodeList rightNodeList = doc.getElementsByTagName(SpecificationConstants.Config.RIGHT_DATASET);
             Node rightNode = rightNodeList.item(0);
             NodeList rightChilds = rightNode.getChildNodes();
             for (int i = 0; i < rightChilds.getLength(); i++) {
@@ -204,23 +204,23 @@ public class ConfigurationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FILE)) {
                         configuration.setPathDatasetB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {
                         configuration.setIdB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }
                         configuration.setEndpointB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.CATEGORIES)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.CATEGORIES)) {
                         configuration.setCategoriesB(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.DATE)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.DATE)) {
                         String dateString = n.getTextContent();
                         if(StringUtils.isBlank(dateString)){
                             configuration.setDateB(null);
                         } else {
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Spec.DATE_FORMAT);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(SpecificationConstants.Config.DATE_FORMAT);
                             simpleDateFormat.setLenient(false);
                             try {
                                 Date dateB = simpleDateFormat.parse(dateString);
@@ -228,7 +228,7 @@ public class ConfigurationParser {
                             } catch (ParseException ex) {
                                 LOG.error(ex);
                                 throw new WrongInputException("Date in \"right\" dataset does not have the expected format. "
-                                        + "\nSupported format is " + SpecificationConstants.Spec.DATE_FORMAT);
+                                        + "\nSupported format is " + SpecificationConstants.Config.DATE_FORMAT);
                             }                            
                         }
                     }
@@ -236,7 +236,7 @@ public class ConfigurationParser {
                 n.getNextSibling();
             }
 
-            NodeList linksNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.LINKS);
+            NodeList linksNodeList = doc.getElementsByTagName(SpecificationConstants.Config.LINKS);
             Node linksNode = linksNodeList.item(0);
             NodeList linksChilds = linksNode.getChildNodes();
             for (int i = 0; i < linksChilds.getLength(); i++) {
@@ -245,11 +245,11 @@ public class ConfigurationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FILE)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FILE)) {
                         configuration.setPathLinks(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {
                         configuration.setIdLinks(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }                        
@@ -259,7 +259,7 @@ public class ConfigurationParser {
                 n.getNextSibling();
             }
 
-            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.Spec.TARGET);
+            NodeList targetNodeList = doc.getElementsByTagName(SpecificationConstants.Config.TARGET);
             Node targetNode = targetNodeList.item(0);
             NodeList targetChilds = targetNode.getChildNodes();
             for (int i = 0; i < targetChilds.getLength(); i++) {
@@ -267,21 +267,21 @@ public class ConfigurationParser {
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
 
-                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.OUTPUT_DIR)) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.OUTPUT_DIR)) {
                         configuration.setOutputDir(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.FUSED)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FUSED)) {
                         configuration.setFused(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.REMAINING)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.REMAINING)) {
                         configuration.setRemaining(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.AMBIGUOUS)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.AMBIGUOUS)) {
                         configuration.setAmbiguousDatasetFilepath(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.STATISTICS)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.STATISTICS)) {
                         configuration.setStatsFilepath(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.MODE)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.MODE)) {
                         configuration.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ID)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {
                         configuration.setIdOutput(n.getTextContent());
-                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Spec.ENDPOINT)) {
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ENDPOINT)) {
                         if(!StringUtils.isBlank(n.getTextContent())){
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }                        

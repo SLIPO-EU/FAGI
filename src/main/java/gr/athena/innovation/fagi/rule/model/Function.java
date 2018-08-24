@@ -22,7 +22,7 @@ public final class Function {
     public Function(String functionString) throws WrongInputException {
 
         if (StringUtils.isBlank(functionString)) {
-            throw new WrongInputException("Found empty function string in " + SpecificationConstants.Spec.RULES_XML);
+            throw new WrongInputException("Found empty function string in " + SpecificationConstants.Config.RULES_XML);
         }
 
         if (functionString.contains("(") && functionString.contains(")")) {

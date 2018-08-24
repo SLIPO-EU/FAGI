@@ -7,7 +7,6 @@ import gr.athena.innovation.fagi.model.RightDataset;
 import static gr.athena.innovation.fagi.repository.AbstractRepository.parseLinksFile;
 import java.io.File;
 import java.text.ParseException;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.LogManager;

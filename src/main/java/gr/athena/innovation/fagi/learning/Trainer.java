@@ -1,149 +1,117 @@
 package gr.athena.innovation.fagi.learning;
 
-import gr.athena.innovation.fagi.core.function.literal.TermResolver;
-import gr.athena.innovation.fagi.core.normalizer.AdvancedGenericNormalizer;
-import gr.athena.innovation.fagi.core.normalizer.BasicGenericNormalizer;
 import gr.athena.innovation.fagi.exception.ApplicationException;
-import gr.athena.innovation.fagi.model.NormalizedLiteral;
-import gr.athena.innovation.fagi.model.WeightedPairLiteral;
-import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import gr.athena.innovation.fagi.specification.Configuration;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Set;
+import java.util.logging.Level;
 
 /**
- *
+ * Class preparing the training process.
+ * 
  * @author nkarag
  */
 public class Trainer {
 
     private final Configuration configuration;
-    
-    public Trainer(Configuration configuration){
+
+    public Trainer(Configuration configuration) {
         this.configuration = configuration;
     }
-    
-    public void train() throws FileNotFoundException{
-        
-        
-        //change void to custom result object in order to pass it down to 'extractFeatures'
-        parseTrainingSet();
-        
-        //change void to custom pair-feature object in order to pass it down to 'exportToFile'
-        extractFeatures();
-        
-        exportToFile();
-        
+
+    public void train() throws FileNotFoundException {
+        parseTrainingSet(configuration.getLocale(), configuration.getPropertyFrequencyA(), configuration.getPropertyFrequencyB());
     }
 
-    private void parseTrainingSet() throws FileNotFoundException {
-        
-        //csv path containing the train set entities.
-        String path = "";
-        String cvsSplitBy = "\\^";
-        
-        String line;
+    private void parseTrainingSet(Locale locale, String frequencyPathA, String frequencyPathB) throws FileNotFoundException {
 
-        BufferedReader br = new BufferedReader(new FileReader(path));
+        ArrayList<String> freqA = ReadFrequent.getFrequencies(frequencyPathA, 100, 3); //input freq
+        //ArrayList<String> freqB = ReadFrequent.getFrequencies(a_path + "files/nameValue.freq.txt", 100, 3); //input freqB
+        //ArrayList<String> category = ReadFrequent.getFrequencies(a_path + "files/categoryFrequencies.txt", 30, 3); //input cat frequencies
+
+        String cvsSplitBy = "\\^";
+        String line;
+        BufferedReader br = new BufferedReader(new FileReader(configuration.getTrainingSetCsvPath()));
+        ArrayList<Features> featuresList = new ArrayList<>();
 
         try {
-        
-            int l = 0;
+            int index = -2;
             while ((line = br.readLine()) != null) {
 
                 //skip first two lines of csv
-                if (l < 2) {
-                    l++;
+                if (index < 0) {
+                    index++;
                     continue;
                 }
 
-                String[] spl = line.split(cvsSplitBy);
-
-                //StringBuffer sb = new StringBuffer("");
-                if (spl.length < 22) {
+                String[] tokenArray = line.split(cvsSplitBy);
+                if (tokenArray.length < 22) {
                     continue;
                 }
-                String idA = spl[0];
-                String idB = spl[1];
-
-                String distanceMeters = spl[2];
-
-                String nameA = spl[3];
-                String nameB = spl[4];
-                String nameFusionAction = spl[5];
-
-                String streetA = spl[6];
-                String streetB = spl[7];
-                String streetFusionAction = spl[8];
-
-                String streetNumberA = spl[9];
-                String streetNumberB = spl[10];
-
-                String phoneA = spl[11];
-                String phoneB = spl[12];
-                String phoneFusionAction = spl[13];
-
-                String emailA = spl[14];
-                String emailB = spl[15];
-                String emailFusionAction = spl[16];
-
-                String websiteA = spl[17];
-                String websiteB = spl[18];
-                String websiteFusionAction = spl[19];
-
-                String score = spl[20];
-                String names1 = spl[21];
-                String acceptance = spl[22];
                 
-                //implement method to deal with the above fields and keep them in a pair object
-                createTrainingPair();
+                TrainingSet trainingSet = new TrainingSet(tokenArray);
+
+                Features features = new Features();
+
+                String idA = trainingSet.getIdA();
+                //b not used in this version
+                //String idB = trainingSet.getIdA();
+                String nameA = trainingSet.getNameA();
+                String nameB = trainingSet.getNameB();
+                String frequenciesA = " " + String.join(" ", freqA) + " ";
+                String acceptance = trainingSet.getAcceptance();
+                String fusionAction = trainingSet.getNameFusionAction();
                 
-                l++;
+                //todo: replace freqA with freqB and evaluate if needed
+                features.setFeatures(idA, idA, nameA, nameB, frequenciesA, frequenciesA,locale, acceptance, fusionAction);
+
+                features.setphoneFeatures(trainingSet.getPhoneA(), trainingSet.getPhoneB());
+                features.setaddrFeature(trainingSet.getStreetNumberA(), trainingSet.getStreetNumberB());
+                features.setaddrNameFeature(trainingSet.getStreetA(), trainingSet.getStreetB());
+                
+                featuresList.add(index, features);
+
+                index++;
             }
-        } catch(IOException | RuntimeException ex){  
+        } catch (IOException | RuntimeException ex) {
             throw new ApplicationException(ex.getMessage());
+        }
+
+        try {
+
+            exportToFile(featuresList);
+
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(Trainer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void extractFeatures() {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
+    private void exportToFile(ArrayList<Features> features) throws IOException {
+        String outputFilename = configuration.getOutputDir() + SpecificationConstants.Config.FEATURES_CSV;
+        BufferedWriter writer;
+        writer = new BufferedWriter(new FileWriter(outputFilename, true));
+        Field[] fields = Features.class.getDeclaredFields();
+        
+        for (Field field : fields) {
+            writer.append(field.getName() + ", ");
+        }
+        
+        writer.newLine();
 
-    private void exportToFile() {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
+        for (Features key : features) {
+            String value = key.toString();
+            writer.append(value);
+            writer.newLine();
+        }
 
-    private void createTrainingPair() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    private WeightedPairLiteral getWeightedPair(String a, String b) throws IOException{
-        
-        //override locale if needed
-        Locale locale = configuration.getLocale();
-        
-        //Load resources
-        ResourceFileLoader resourceFileLoader = new ResourceFileLoader();
-        
-        //get special terms from custom file (this should be changed to use 'getSpecialTerms' when we have extracted the final list) 
-        String specialTermsPath = "";
-        Set<String> specialTerms = resourceFileLoader.getSpecialTermsFromPath(specialTermsPath);
-
-        TermResolver.setTerms(specialTerms);        
-        
-        BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
-
-        NormalizedLiteral normA = normalizer.getNormalizedLiteral(a, b, locale);
-        NormalizedLiteral normB = normalizer.getNormalizedLiteral(b, a, locale);
-        
-        AdvancedGenericNormalizer advancedNormalizer = new AdvancedGenericNormalizer();
-        
-        WeightedPairLiteral weightedPair = advancedNormalizer.getWeightedPair(normA, normB, locale);
-
-        return weightedPair;
+        writer.close();
     }
 }

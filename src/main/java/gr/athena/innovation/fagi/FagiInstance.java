@@ -175,7 +175,7 @@ public class FagiInstance {
         long stopTimeComputeStatistics = System.currentTimeMillis();
 
         if(exportSimilaritiesPerLink){
-            //similarity viewer for each pair and a,b,c normalization
+            //similarity viewer for each pair and a, b, c, d normalization
             RDFInputSimilarityViewer qualityViewer = new RDFInputSimilarityViewer();
 
             try {
@@ -198,6 +198,8 @@ public class FagiInstance {
 
         if(train){
             LOG.info("Training...");
+            String trainingCsvPath = "";
+            configuration.setTrainingSetCsvPath(trainingCsvPath);
             Trainer trainer = new Trainer(configuration);
             trainer.train();
         }

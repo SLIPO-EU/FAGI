@@ -4,6 +4,8 @@ import gr.athena.innovation.fagi.core.normalizer.SimpleLiteralNormalizer;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.specification.EnumDataset;
 import gr.athena.innovation.fagi.specification.Configuration;
+import gr.athena.innovation.fagi.specification.Namespace;
+import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,43 +56,20 @@ public class FileFrequencyCounter implements FrequencyCounter {
                 prop.insert(prop.length(), ">");
             }
 
-            //Create a user friendly filename based on each property and input dataset.
-            String filenamePrefix;
+            String outputFilename = getFilename(property, index, inputFilename, dataset);
 
-            if (property.lastIndexOf("#") != -1) {
-                filenamePrefix = property.substring(property.lastIndexOf("#") + 1);
-            } else if (property.lastIndexOf("/") != -1) {
-                filenamePrefix = property.substring(property.lastIndexOf("/") + 1);
-            } else {
-                filenamePrefix = "_" + index;
+            if(property.equals(Namespace.NAME_VALUE_NO_BRACKETS)){
+                //nameValue property: Set the output result path of this property to be used in learning process.
+                switch(dataset){
+                    case LEFT:
+                        Configuration.getInstance().setPropertyFrequencyA(outputFilename);
+                        break;
+                    case RIGHT:
+                        Configuration.getInstance().setPropertyFrequencyB(outputFilename);
+                        break;
+                }
             }
 
-            String filenameTemp = inputFilename.substring(inputFilename.lastIndexOf("/") + 1);
-            
-            String filename;
-            if(filenameTemp.indexOf('.') > -1){
-                filename = "_" + filenameTemp.substring(0, filenameTemp.lastIndexOf("."));
-            } else {
-                filename = "_" + filenameTemp;
-            }
-            
-            String filenameSuffix;
-            
-            switch(dataset){
-                case LEFT:
-                    filenameSuffix = ".a.freq.txt";
-                    break;
-                case RIGHT:
-                    filenameSuffix = ".b.freq.txt";
-                    break;
-                default:
-                    throw new ApplicationException("Wrong parameter for EnumDataset in Frequency export. "
-                            + "Only LEFT or RIGHT allowed.");                    
-                    
-            }
-            
-            String outputFilename = configuration.getOutputDir() + "frequencies/" 
-                    + filenamePrefix + filename + filenameSuffix;
             File outputFile = new File(outputFilename);
 
             LOG.info("frequency file:" + outputFilename);
@@ -121,6 +100,44 @@ public class FileFrequencyCounter implements FrequencyCounter {
         }
     }
 
+    private String getFilename(String property, int index, String inputFilename, EnumDataset dataset) throws ApplicationException {
+        //Create a user friendly filename based on each property and input dataset.
+        String filenamePrefix;
+        if (property.lastIndexOf("#") != -1) {
+            filenamePrefix = property.substring(property.lastIndexOf("#") + 1);
+        } else if (property.lastIndexOf("/") != -1) {
+            filenamePrefix = property.substring(property.lastIndexOf("/") + 1);
+        } else {
+            filenamePrefix = "_" + index;
+        }
+        String filenameTemp = inputFilename.substring(inputFilename.lastIndexOf("/") + 1);
+        String filename;
+        if(filenameTemp.indexOf('.') > -1){
+            filename = "_" + filenameTemp.substring(0, filenameTemp.lastIndexOf("."));
+        } else {
+            filename = "_" + filenameTemp;
+        }
+
+        String filenameSuffix;
+
+        switch(dataset){
+            case LEFT:
+                filenameSuffix = SpecificationConstants.Config.FREQ_SUFFIX_A;
+                break;
+            case RIGHT:
+                filenameSuffix = SpecificationConstants.Config.FREQ_SUFFIX_B;
+                break;
+            default:
+                throw new ApplicationException("Wrong parameter for EnumDataset in Frequency export. "
+                        + "Only LEFT or RIGHT allowed.");
+                
+        }
+        String outputFilename = configuration.getOutputDir() + "frequencies/"
+                + filenamePrefix + filename + filenameSuffix;
+
+        return outputFilename;
+    }
+
     private void writePropertyFrequency(StringBuilder property, String inputFilename, String outputFilename) throws IOException {
         BufferedWriter writer = null;
         try {
@@ -133,6 +150,9 @@ public class FileFrequencyCounter implements FrequencyCounter {
             Frequency frequency = new Frequency();
 
             while ((line = bufferedReader.readLine()) != null) {
+                if(StringUtils.isBlank(line)){
+                    continue;
+                }
 
                 String[] spl = line.split(splitBy);
 
@@ -167,7 +187,6 @@ public class FileFrequencyCounter implements FrequencyCounter {
             if (writer != null) {
                 writer.close();
             }
-            LOG.error(ex);
             throw new ApplicationException(ex.getMessage());
         }
     }

@@ -488,7 +488,6 @@ public class LinkedPair {
                 return false; //stop link fusion
             }
         }
-
         return true;
     }
 

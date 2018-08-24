@@ -126,7 +126,7 @@ public class InputValidator {
                 if (index != -1){
                     String functionNameBeforeParenthesis = function.substring(0, index).toLowerCase();
                     if(!functionSet.contains(functionNameBeforeParenthesis)){
-                        LOG.fatal("Functions defined in " + SpecificationConstants.Spec.RULES_XML + " is not valid. "
+                        LOG.fatal("Functions defined in " + SpecificationConstants.Config.RULES_XML + " is not valid. "
                                 + functionNameBeforeParenthesis + " is malformed or not supported.");
                         return false;
                     }
