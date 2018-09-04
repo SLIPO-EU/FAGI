@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 
 /**
  * Class evaluating similarity between two literals given a threshold. Uses the simple normalization process.
@@ -34,7 +35,9 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeLiteralSt
     @Override
     public boolean evaluate(Literal literalA, Literal literalB, String threshold) {
 
-        double thres = Double.parseDouble(threshold);
+        if(literalA == null || literalB == null){
+            return false;
+        }
 
         if(StringUtils.isBlank(literalA.getLexicalForm()) || StringUtils.isBlank(literalB.getLexicalForm())){
             return false;
@@ -46,6 +49,18 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeLiteralSt
             return true;
         }
 
+        double thrs = 0;
+        if(!StringUtils.isBlank(threshold)){
+            try {
+                thrs = Double.parseDouble(threshold);
+                if(thrs < 0 || thrs > 1){
+                    throw new ApplicationException("Threshold out of range [0,1]: " + threshold);
+                }
+            } catch(NumberFormatException ex){
+                throw new ApplicationException("Cannot parse threshold as a double number: " + threshold);
+            }
+        }
+        
         BasicGenericNormalizer normalizer = new BasicGenericNormalizer();
 
         NormalizedLiteral normA = normalizer.getNormalizedLiteral(literalA.getLexicalForm(), literalB.getLexicalForm(), locale);
@@ -55,7 +70,7 @@ public class IsSameSimpleNormalize implements IFunction, IFunctionThreeLiteralSt
         
         double result = WeightedSimilarity.computeBSimilarity(normA, normB, simName);
         
-        return result > thres;
+        return result > thrs;
     }
 
     @Override

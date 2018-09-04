@@ -257,17 +257,17 @@ public class Fuser implements IFuser{
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
         
-        Set<String> rightLocalNames = new HashSet<>();
+        Set<String> leftLocalNames = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
-            String localName = pair.getRightNode().getLocalName();
-            rightLocalNames.add(localName);
+            String localName = pair.getLeftNode().getLocalName();
+            leftLocalNames.add(localName);
         }
         
         leftModel.write(remainingStream, configuration.getOutputRDFFormat());
         
-        addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), rightLocalNames);
+        addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNames);
         
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
         //addMessageToEmptyOutput(remaining);
@@ -276,20 +276,20 @@ public class Fuser implements IFuser{
     private void abMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration, String remaining) throws IOException {
         LOG.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
         Model leftModel = LeftDataset.getLeftDataset().getModel();
-        
-        Set<String> leftLocalNames = new HashSet<>();
+
+        Set<String> rightLocalNames = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
-            
+
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             leftModel.add(fusedDataModel);
-            String localName = pair.getLeftNode().getLocalName();
-            leftLocalNames.add(localName);
-            
+            String localName = pair.getRightNode().getLocalName();
+
+            rightLocalNames.add(localName);
         }
         
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
-        
-        addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), leftLocalNames);
+
+        addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), rightLocalNames);
         
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
         //addMessageToEmptyOutput(remaining);
@@ -467,7 +467,7 @@ public class Fuser implements IFuser{
 
         try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
              BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, true))) {
-
+            
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
@@ -478,6 +478,7 @@ public class Fuser implements IFuser{
                     bufferedWriter.append(line);
                     bufferedWriter.newLine();
                 }
+                //else the line belongs to interlinked entity
             }
         }   
     }
@@ -497,13 +498,12 @@ public class Fuser implements IFuser{
                     bufferedWriter.newLine();
                 }
             }
-        }   
+        }
     }
-    
+
     private static String getResourceURI(String part) {
         int endPosition = StringUtils.lastIndexOf(part, "/");
         int startPosition = StringUtils.ordinalIndexOf(part, "/", 5) + 1;
-        
         String res;
         if(part.substring(startPosition).contains("/")){
             res = part.subSequence(startPosition, endPosition).toString();

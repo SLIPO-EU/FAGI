@@ -97,7 +97,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 calculatePercentageOfPrimaryDateFormats(leftModel, rightModel, EnumStat.PRIMARY_DATE_FORMATS_PERCENT));
 
         map.put(EnumStat.NAMES_PERCENT.getKey(),
-                calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME_VALUE));
+                calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT, Namespace.NAME));
         map.put(EnumStat.PHONES_PERCENT.getKey(),
                 calculatePropertyPercentage(leftModel, rightModel, EnumStat.PHONES_PERCENT, Namespace.PHONE));
         map.put(EnumStat.STREETS_PERCENT.getKey(),
@@ -322,7 +322,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             case NAMES_PERCENT:
                 map.put(EnumStat.NAMES_PERCENT.getKey(),
                         calculatePropertyPercentage(leftModel, rightModel, EnumStat.NAMES_PERCENT,
-                                Namespace.NAME_VALUE));
+                                Namespace.NAME));
                 break;
             case WEBSITE_PERCENT:
                 map.put(EnumStat.WEBSITE_PERCENT.getKey(),
@@ -1378,7 +1378,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             return EnumEntity.RIGHT;
         }
 
-        //both are not null, checked at higher level
+        //both are not null, checked above
         String propertyValueA = literalA.getString();
         String propertyValueB = literalB.getString();
 

@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.model.Link;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
@@ -48,7 +49,7 @@ public abstract class AbstractRepository {
      * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
      */    
     public abstract void parseLinks(String filepath) throws ParseException, WrongInputException;
-    
+
     /**
      * Parses the given RDF link file into a list of <code>Link</code> objects.
      * 
@@ -59,24 +60,28 @@ public abstract class AbstractRepository {
     public static List<Link> parseLinksFile(final String linksFile) throws ParseException {
 
         List<Link> links = new ArrayList<>();
-        
+
         Model model = ModelFactory.createDefaultModel();
         RDFDataMgr.read(model, linksFile);
-        
+
         final StmtIterator iter = model.listStatements();
-        
+
         while(iter.hasNext()) {
-            
+
             final Statement statement = iter.nextStatement();
             final String nodeA = statement.getSubject().getURI();
-            final String uriA = statement.getSubject().getLocalName();
+            //jena getLocalName problem with URIs. Using custom implementation.
+            //final String uriA = statement.getSubject().getLocalName();
+            final String uriA = getResourceURI(statement.getSubject().toString());
             final String nodeB;
             final String uriB;
             final RDFNode object = statement.getObject();
 
             if(object.isResource()) {
                 nodeB = object.asResource().getURI();
-                uriB = object.asResource().getLocalName();
+                //jena getLocalName problem with URIs. Using custom implementation.
+                //uriB = object.asResource().getLocalName();
+                uriB= getResourceURI(object.toString());
             }
             else {
                 throw new ParseException("Failed to parse link (object not a resource): " + statement.toString(), 0);
@@ -84,7 +89,15 @@ public abstract class AbstractRepository {
             Link link = new Link(nodeA, uriA, nodeB, uriB);
             links.add(link);
         }
-        
+
         return links;       
-    }       
+    }
+
+    private static String getResourceURI(String resourceString) {
+
+        int startPosition = StringUtils.ordinalIndexOf(resourceString, "/", 5) + 1;
+        String res = resourceString.subSequence(startPosition, resourceString.length()).toString();
+
+        return res;
+    }
 }

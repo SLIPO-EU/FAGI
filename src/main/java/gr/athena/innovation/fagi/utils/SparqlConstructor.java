@@ -1,6 +1,8 @@
 package gr.athena.innovation.fagi.utils;
 
 import gr.athena.innovation.fagi.specification.Namespace;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -140,6 +142,7 @@ public class SparqlConstructor {
         return query;
     }
     
+    //todo: check behaviour with language tags on literals. Try filters for specific languages
     public static String selectNodeWithLiteralQuery(String predicate, String literal){
         String query = "SELECT ?s " 
                         + "WHERE {"
@@ -147,7 +150,25 @@ public class SparqlConstructor {
                         + "}";
         return query;
     }  
-    
+
+    public static String selectNodeWithLiteralQuery(String predicate, Literal literal){
+        String query;
+        String langTag = literal.getLanguage();
+        if(StringUtils.isBlank(langTag)){
+            query = "SELECT ?s " 
+                            + "WHERE {"
+                            + "?s <" + predicate + "> \"" + literal +"\" "
+                            + "}";
+        } else {
+            query = "SELECT ?s " 
+                            + "WHERE {"
+                            + "?s <" + predicate + "> \"" + literal.getLexicalForm() +"\"@" + langTag + " "
+                            + "}";
+        }
+
+        return query;
+    }  
+
     public static String selectNodeWithGeometryQuery(String predicate, String literal){
         String query = "SELECT ?s " 
                         + "WHERE {"
@@ -276,12 +297,19 @@ public class SparqlConstructor {
     }
     
     public static String countProperties(String countVar, String predicate){
-        String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
+        String query = "SELECT (COUNT (DISTINCT(?s)) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s " + predicate + " ?o}";
         return query;
     }
 
+    public static String countPropertyChains(String countVar, String predicate1, String predicate2){
+        String query = "SELECT (COUNT (DISTINCT(?s)) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s " + predicate1 + " ?o . ?o " + predicate2 + " ?o2}";
+        return query;
+    }
+    
     public static String countLinkedWithPropertyA(String countVar, String predicate){
         String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +

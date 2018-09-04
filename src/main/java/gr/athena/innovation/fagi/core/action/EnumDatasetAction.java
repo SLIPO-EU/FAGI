@@ -88,7 +88,7 @@ public enum EnumDatasetAction {
      * Deserialization class. 
      */
     public static class Deserializer extends JsonDeserializer<EnumDatasetAction> {
-        
+
         /**
          * Deserializes the EnumDatasetAction
          * 
@@ -104,7 +104,7 @@ public enum EnumDatasetAction {
 			return EnumDatasetAction.fromString(parser.getValueAsString());
 		}
 	}
-    
+
     @Override
     public String toString() {
         switch(this) {

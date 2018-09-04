@@ -8,6 +8,8 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Checks if the provided property exists in the RDF model of a resource.
@@ -16,6 +18,8 @@ import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters
  */
 public class Exists implements IFunction, IFunctionTwoModelStringParameters{
 
+    private static final Logger LOG = LogManager.getLogger(Exists.class);
+    
     /**
      * Evaluates the existence of the property in the model.
      * 
@@ -30,7 +34,7 @@ public class Exists implements IFunction, IFunctionTwoModelStringParameters{
     }
 
     private static boolean propertyExistsInModel(Model model, Property property){
-
+        
         for (StmtIterator i = model.listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
 
             Statement originalStatement = i.nextStatement();
