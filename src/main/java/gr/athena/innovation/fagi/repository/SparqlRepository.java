@@ -3,12 +3,7 @@ package gr.athena.innovation.fagi.repository;
 import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -88,6 +83,37 @@ public class SparqlRepository {
         return result;
     }
 
+    public static Resource getSubjectOfProperty(String property, Model model) {
+
+        String var = "s";
+        String queryString = SparqlConstructor.selectSubjectOfPropertyQuery(property);
+        
+        Query query = null;
+        try {
+            query = QueryFactory.create(queryString);
+        } catch (org.apache.jena.query.QueryParseException ex){
+            LOG.warn("Query parse exception with query:\n" + queryString);
+        }
+        LOG.trace(queryString);
+        if(query == null){
+            return null;
+        }
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode result = soln.get(var);
+                if (result.isResource()) {
+                    return (Resource) result;
+                }
+            }
+        }
+        return null;
+    }
+
     public static Resource getSubjectWithLiteral(String property, String literal, Model model) {
 
         String var = "s";
@@ -99,7 +125,7 @@ public class SparqlRepository {
         } catch (org.apache.jena.query.QueryParseException ex){
             LOG.warn("Query parse exception with query:\n" + queryString);
         }
-
+        LOG.trace(queryString);
         if(query == null){
             return null;
         }

@@ -51,6 +51,7 @@ public class Namespace {
     public static final String OFFICIAL_LITERAL = "official";
 
     public static final String SOURCE = "<http://slipo.eu/def#source>";
+    public static final String SOURCE_NO_BRACKETS = "http://slipo.eu/def#source";
     public static final String LOCALITY = "<http://slipo.eu/def#locality>";
     public static final String ADDRESS = "<http://slipo.eu/def#address>";
     public static final String STREET = "<http://slipo.eu/def#street>";

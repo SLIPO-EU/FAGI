@@ -142,6 +142,14 @@ public class SparqlConstructor {
         return query;
     }
     
+    public static String selectSubjectOfPropertyQuery(String predicate){
+        String query = "SELECT ?s " 
+                        + "WHERE {"
+                        + "?s <" + predicate + "> ?o "
+                        + "}";
+        return query;
+    } 
+
     //todo: check behaviour with language tags on literals. Try filters for specific languages
     public static String selectNodeWithLiteralQuery(String predicate, String literal){
         String query = "SELECT ?s " 
@@ -151,20 +159,21 @@ public class SparqlConstructor {
         return query;
     }  
 
+    //todo: check why sparql does not return literal when they contain language tag.
     public static String selectNodeWithLiteralQuery(String predicate, Literal literal){
         String query;
         String langTag = literal.getLanguage();
-        if(StringUtils.isBlank(langTag)){
+//        if(StringUtils.isBlank(langTag)){
             query = "SELECT ?s " 
                             + "WHERE {"
-                            + "?s <" + predicate + "> \"" + literal +"\" "
+                            + "?s <" + predicate + "> \"" + literal.getLexicalForm() +"\" "
                             + "}";
-        } else {
-            query = "SELECT ?s " 
-                            + "WHERE {"
-                            + "?s <" + predicate + "> \"" + literal.getLexicalForm() +"\"@" + langTag + " "
-                            + "}";
-        }
+//        } else {
+//            query = "SELECT ?s " 
+//                            + "WHERE {"
+//                            + "?s <" + predicate + "> \"" + literal.getLexicalForm() +"\"@" + langTag + " "
+//                            + "}";
+//        }
 
         return query;
     }  
@@ -311,14 +320,14 @@ public class SparqlConstructor {
     }
     
     public static String countLinkedWithPropertyA(String countVar, String predicate){
-        String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
+        String query = "SELECT (COUNT (DISTINCT(?s)) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s " + predicate + " ?o . ?s <http://www.w3.org/2002/07/owl#sameAs> ?o1 . }";
         return query;
     }
     
     public static String countLinkedWithPropertyA(String countVar, String predicate1, String predicate2){
-        String query = "SELECT (COUNT (?s1) AS ?" + countVar + ")\n" +
+        String query = "SELECT (COUNT (DISTINCT(?s1)) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s1 " + predicate1 + " ?o1 . ?o1 " + predicate2 + " ?o2 . " + 
                        "?s1 <http://www.w3.org/2002/07/owl#sameAs> ?s2 . }";
@@ -326,14 +335,14 @@ public class SparqlConstructor {
     }
     
     public static String countLinkedWithPropertyB(String countVar, String predicate){
-        String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
+        String query = "SELECT (COUNT (DISTINCT(?s)) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s " + predicate + " ?o . ?o1 <http://www.w3.org/2002/07/owl#sameAs> ?s . }";
         return query;
     }
 
     public static String countLinkedWithPropertyB(String countVar, String predicate1, String predicate2){
-        String query = "SELECT (COUNT (?s1) AS ?" + countVar + ")\n" +
+        String query = "SELECT (COUNT (DISTINCT(?s1)) AS ?" + countVar + ")\n" +
                        "WHERE\n" +
                        "{?s1 " + predicate1 + " ?o . " + 
                        "?o " + predicate2 + " ?o2 . " + 

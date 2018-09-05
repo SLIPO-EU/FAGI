@@ -25,6 +25,7 @@ import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 import gr.athena.innovation.fagi.core.function.geo.GeometriesIntersect;
 import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
+import gr.athena.innovation.fagi.model.CustomRDFProperty;
 
 /**
  * Condition represents the result of an expression or a function that decides if a fusion action is going to be
@@ -41,8 +42,8 @@ public class Condition {
     private Function func;
     private Expression expression;
 
-    public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, String fusionProperty, Literal valueA, Literal valueB,
-            Map<String, ExternalProperty> externalProperties) throws WrongInputException {
+    public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, CustomRDFProperty fusionProperty, 
+            Literal valueA, Literal valueB, Map<String, ExternalProperty> externalProperties) throws WrongInputException {
 
         if (isSingleFunction()) {
             Function function2 = new Function(this.function);
@@ -231,7 +232,7 @@ public class Condition {
     }
 
     private boolean evaluateOperator(Map<String, IFunction> functionMap, Function function, LinkedPair pair, 
-            String fusionProperty, Literal valueA, Literal valueB, Map<String, ExternalProperty> externalProperties) 
+            CustomRDFProperty fusionProperty, Literal valueA, Literal valueB, Map<String, ExternalProperty> externalProperties) 
                 throws WrongInputException {
 
         //todo: add implemented functions
@@ -402,7 +403,6 @@ public class Condition {
 
                     switch (parameter) {
                         case SpecificationConstants.Rule.A:
-                            
                             return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), fusionProperty);
                             
                         case SpecificationConstants.Rule.B:

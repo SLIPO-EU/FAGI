@@ -8,6 +8,10 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters;
+import gr.athena.innovation.fagi.model.CustomRDFProperty;
+import gr.athena.innovation.fagi.repository.SparqlRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Checks if the provided property is absent from the RDF model of a resource.
@@ -16,6 +20,8 @@ import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters
  */
 public class NotExists implements IFunction, IFunctionTwoModelStringParameters{
 
+    private static final Logger LOG = LogManager.getLogger(NotExists.class);
+    
     /**
      * Evaluates the absence of the property in the model.
      * 
@@ -29,6 +35,22 @@ public class NotExists implements IFunction, IFunctionTwoModelStringParameters{
         return !propertyExistsInModel(model, property);
     }
     
+    public boolean evaluate(Model model, CustomRDFProperty property) {
+        return propertyExistsInModel(model, property);
+    }
+
+    private static boolean propertyExistsInModel(Model model, CustomRDFProperty property){
+        
+        int c;
+        if(property.isSingleLevel()){
+            c = SparqlRepository.countProperty(model, property.getValueProperty().toString());
+        } else {
+            c = SparqlRepository.countPropertyChain(model, property.getParent().toString(), property.getValueProperty().toString());
+        }
+        
+        return c > 0;
+    }
+
     private static boolean propertyExistsInModel(Model model, Property property){
 
         for (StmtIterator i = model.listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {

@@ -1,6 +1,9 @@
 package gr.athena.innovation.fagi.specification;
 
 import java.text.Collator;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class with the specification constants used across the application.
@@ -287,6 +290,22 @@ public class SpecificationConstants {
          */
         public static final String CONCATENATION_SEP = ", ";
     }  
+
+    /**
+     * Property mapping for constructing nodes.
+     */
+    public static class Mapping {
+        
+        public static final Map<String, String> myMap;
+        static {
+            Map<String, String> aMap = new HashMap<>();
+            aMap.put("http://slipo.eu/def#openingHours", "timeSlot");
+            aMap.put("http://slipo.eu/def#fax", "fax");//
+            aMap.put("http://slipo.eu/def#address", "address");
+            aMap.put("http://slipo.eu/def#phone", "phone");
+            myMap = Collections.unmodifiableMap(aMap);
+        }
+    }
 
     /**
      * Similarity class groups anything that has to do with similarity constants.

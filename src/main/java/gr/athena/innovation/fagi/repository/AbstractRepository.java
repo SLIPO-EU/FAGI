@@ -2,10 +2,10 @@ package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.Link;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
@@ -72,7 +72,7 @@ public abstract class AbstractRepository {
             final String nodeA = statement.getSubject().getURI();
             //jena getLocalName problem with URIs. Using custom implementation.
             //final String uriA = statement.getSubject().getLocalName();
-            final String uriA = getResourceURI(statement.getSubject().toString());
+            final String uriA = RDFUtils.getIdFromResource(statement.getSubject().toString());
             final String nodeB;
             final String uriB;
             final RDFNode object = statement.getObject();
@@ -81,7 +81,7 @@ public abstract class AbstractRepository {
                 nodeB = object.asResource().getURI();
                 //jena getLocalName problem with URIs. Using custom implementation.
                 //uriB = object.asResource().getLocalName();
-                uriB= getResourceURI(object.toString());
+                uriB= RDFUtils.getIdFromResource(object.toString());
             }
             else {
                 throw new ParseException("Failed to parse link (object not a resource): " + statement.toString(), 0);
@@ -93,11 +93,4 @@ public abstract class AbstractRepository {
         return links;       
     }
 
-    private static String getResourceURI(String resourceString) {
-
-        int startPosition = StringUtils.ordinalIndexOf(resourceString, "/", 5) + 1;
-        String res = resourceString.subSequence(startPosition, resourceString.length()).toString();
-
-        return res;
-    }
 }
