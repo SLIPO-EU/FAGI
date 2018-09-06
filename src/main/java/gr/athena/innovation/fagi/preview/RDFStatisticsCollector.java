@@ -59,7 +59,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
         /* Non empty properties */
         map.put(EnumStat.NON_EMPTY_NAMES.getKey(), countNonEmptyProperty(leftModel, rightModel,
-                EnumStat.NON_EMPTY_NAMES, Namespace.NAME_VALUE));
+                EnumStat.NON_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE));
         map.put(EnumStat.NON_EMPTY_PHONES.getKey(), countNonEmptyProperty(leftModel, rightModel,
                 EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
         map.put(EnumStat.NON_EMPTY_STREETS.getKey(), countNonEmptyProperty(leftModel, rightModel,
@@ -630,6 +630,25 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    public StatisticResultPair countNonEmptyProperty(Model a, Model b, EnumStat stat, String property1, String property2) {
+
+        Integer propertyA = countNonEmptyProperty(property1, property2, a);
+        Integer propertyB = countNonEmptyProperty(property1, property2, b);
+        Integer total = propertyA + propertyB;
+
+        StatisticResultPair pair = new StatisticResultPair(propertyA.toString(), propertyB.toString(), null);
+
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
+        pair.setValueTotal(total.toString());
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setLegendA(stat.getLegendA());
+        pair.setLegendB(stat.getLegendB());
+
+        return pair;
+    }
+
     public StatisticResultPair countEmptyProperty(Model a, Model b, EnumStat stat, String property) {
 
         Integer nA;
@@ -651,9 +670,17 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 return pair;
             }
         } else {
-            StatisticResultPair nonEmptyProperty = countNonEmptyProperty(a, b, stat, property);
-            nA = Integer.parseInt(nonEmptyProperty.getValueA());
-            nB = Integer.parseInt(nonEmptyProperty.getValueB());
+            //todo: consider counting all non-empty using chain query. Only names have multiple distinct nodes for the same property for now.
+            if(stat.equals(EnumStat.EMPTY_NAMES)){
+                StatisticResultPair nonEmptyProperty = countNonEmptyProperty(a, b, stat, Namespace.NAME, Namespace.NAME_VALUE);
+                nA = Integer.parseInt(nonEmptyProperty.getValueA());
+                nB = Integer.parseInt(nonEmptyProperty.getValueB());
+            } else {
+                StatisticResultPair nonEmptyProperty = countNonEmptyProperty(a, b, stat, property);
+                nA = Integer.parseInt(nonEmptyProperty.getValueA());
+                nB = Integer.parseInt(nonEmptyProperty.getValueB());
+            }
+
             total = nA + nB;
         }
 
@@ -1018,6 +1045,10 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     private Integer countNonEmptyProperty(String property, Model model) {
         return SparqlRepository.countProperty(model, property);
+    }
+
+    private Integer countNonEmptyProperty(String property1, String property2, Model model) {
+        return SparqlRepository.countPropertyChains(model, property1, property2);
     }
 
     public StatisticResultPair computeNonEmptyLinkedPropertyChain(Model modelA, Model modelB, Model linksModel,
