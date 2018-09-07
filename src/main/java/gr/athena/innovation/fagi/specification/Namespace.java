@@ -57,6 +57,7 @@ public class Namespace {
     public static final String STREET = "<http://slipo.eu/def#street>";
     public static final String STREET_NUMBER = "<http://slipo.eu/def#number>";
     public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
+    public static final String HOMEPAGE_NO_BRACKETS = "http://slipo.eu/def#homepage";
     public static final String EMAIL = "<http://slipo.eu/def#email>";
     public static final String PHONE = "<http://slipo.eu/def#phone>";
     public static final String CONTACT_VALUE = "<http://slipo.eu/def#contactValue>";

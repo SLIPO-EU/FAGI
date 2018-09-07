@@ -142,10 +142,18 @@ public class SparqlConstructor {
         return query;
     }
     
-    public static String selectSubjectOfPropertyQuery(String predicate){
+    public static String selectSubjectOfSinglePropertyQuery(String predicate){
         String query = "SELECT ?s " 
                         + "WHERE {"
                         + "?s <" + predicate + "> ?o "
+                        + "}";
+        return query;
+    }
+
+    public static String selectChildSubjectOfPropertyChainQuery(String predicate1, String predicate2){
+        String query = "SELECT ?o " 
+                        + "WHERE {"
+                        + "?s <" + predicate1 + "> ?o . ?o <" + predicate2 + "> ?o2 "
                         + "}";
         return query;
     } 

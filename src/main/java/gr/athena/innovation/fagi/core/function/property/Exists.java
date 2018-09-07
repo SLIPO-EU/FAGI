@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoModelStringParameters;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,9 +57,10 @@ public class Exists implements IFunction, IFunctionTwoModelStringParameters{
 
         int c;
         if(property.isSingleLevel()){
-            c = SparqlRepository.countProperty(model, property.getValueProperty().toString());
+            c = SparqlRepository.countProperty(model, RDFUtils.addBrackets(property.getValueProperty().toString()));
         } else {
-            c = SparqlRepository.countPropertyChain(model, property.getParent().toString(), property.getValueProperty().toString());
+            c = SparqlRepository.countPropertyChain(model, RDFUtils.addBrackets(property.getParent().toString()), 
+                    RDFUtils.addBrackets(property.getValueProperty().toString()));
         }
         
         return c > 0;

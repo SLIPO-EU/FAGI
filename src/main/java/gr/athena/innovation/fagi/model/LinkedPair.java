@@ -797,24 +797,28 @@ public class LinkedPair {
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
         if(resource == null){
-            LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
-            resource = RDFUtils.getRootResource(leftNode, rightNode);
-            Resource renamedResource = RDFUtils.resolveResource(leftNode, rightNode, customProperty);
             if(literalA != null){
+                //LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
+                resource = RDFUtils.getRootResource(leftNode, rightNode);
+                Resource renamedResource = RDFUtils.resolveResource(leftNode, rightNode, customProperty);
+
+                RDFNode node = createNode(customProperty, literalA);
                 if(customProperty.isSingleLevel()){
-                    fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+                    fusedModel.add(resource, customProperty.getValueProperty(), node);
                 } else {
                     fusedModel.add(resource, customProperty.getParent(), renamedResource);
-                    fusedModel.add(renamedResource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+                    fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                 }
             }
         } else {
             if(literalA != null){
+                
+                RDFNode node = createNode(customProperty, literalA);
                 if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
                     RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
                     fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalA, geometryDatatype));
                 } else {
-                    fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalA));
+                    fusedModel.add(resource, customProperty.getValueProperty(), node);
                 }
             }
         }
@@ -833,24 +837,28 @@ public class LinkedPair {
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
         if(resource == null){
-            LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
+            //LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
             resource = RDFUtils.getRootResource(leftNode, rightNode);
             Resource renamedResource = RDFUtils.resolveResource(leftNode, rightNode, customProperty);
             if(literalB != null){
+                
+                RDFNode node = createNode(customProperty, literalB);
                 if(customProperty.isSingleLevel()){
-                    fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+                    fusedModel.add(resource, customProperty.getValueProperty(), node);
                 } else {
                     fusedModel.add(resource, customProperty.getParent(), renamedResource);
-                    fusedModel.add(renamedResource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+                    fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                 }
             }
         } else {
             if(literalB != null){
+                
+                RDFNode node = createNode(customProperty, literalB);
                 if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
                     RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
                     fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalB, geometryDatatype));
                 } else {
-                    fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(literalB));
+                    fusedModel.add(resource, customProperty.getValueProperty(), node);
                 }
             }
         }
@@ -1111,23 +1119,24 @@ public class LinkedPair {
                 longest = literalB;
             }
         }
-        
+
+        RDFNode node = createNode(customProperty, longest);
         Resource resource = getResourceAndRemoveLiteral(fusedModel, customProperty, literalA, literalB);
 
         if(resource == null){
-            LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
+            //LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
             resource = RDFUtils.getRootResource(leftNode, rightNode);
             //todo: a resolved resource may contain a localname that has no type in the RDF. Maybe add the type from the mapping.
             Resource renamedResource = RDFUtils.resolveResource(leftNode, rightNode, customProperty);
 
             if(customProperty.isSingleLevel()){
-                fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(longest));
+                fusedModel.add(resource, customProperty.getValueProperty(), node);
             } else {
                 fusedModel.add(resource, customProperty.getParent(), renamedResource);
-                fusedModel.add(renamedResource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(longest));
+                fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
             }
         } else {
-            fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createStringLiteral(longest));
+            fusedModel.add(resource, customProperty.getValueProperty(), node);
         }
 
         fusedEntityData = fusedEntity.getEntityData();
@@ -1137,6 +1146,16 @@ public class LinkedPair {
         if(mark){
             markAmbiguous(customProperty, resource, fusedModel);
         }
+    }
+
+    private RDFNode createNode(CustomRDFProperty customProperty, String literalA) {
+        RDFNode node;
+        if(customProperty.getValueProperty().toString().equals(Namespace.HOMEPAGE_NO_BRACKETS)){
+            node = ResourceFactory.createResource(literalA);
+        } else {
+            node = ResourceFactory.createStringLiteral(literalA);
+        }
+        return node;
     }
 
     private void markAmbiguous(CustomRDFProperty customProperty, Resource node, Model fusedModel) {
@@ -1265,14 +1284,8 @@ public class LinkedPair {
         Resource node;
         if(literalA == null){
             node = SparqlRepository.getSubjectWithLiteral(property.getValueProperty().toString(), literalB, model);
-            if(node != null){
-                //model.removeAll(resource, property, (RDFNode) null);
-            }
         } else if(literalB == null){
             node = SparqlRepository.getSubjectWithLiteral(property.getValueProperty().toString(), literalA, model);
-            if(node != null){
-                //model.removeAll(resource, property, (RDFNode) null);
-            }
         } else {
             //both literals not null, try to find subject:
             node = SparqlRepository.getSubjectWithLiteral(property.getValueProperty().toString(), literalA, model);
@@ -1283,23 +1296,13 @@ public class LinkedPair {
 
         //find by property
         if(node == null){
-            if(literalA == null){
-                node = SparqlRepository.getSubjectOfProperty(property.getValueProperty().toString(), model);
-            } else if(literalB == null){
-                node = SparqlRepository.getSubjectOfProperty(property.getValueProperty().toString(), model);
+            if(property.isSingleLevel()){
+                node = SparqlRepository.getSubjectOfSingleProperty(property.getValueProperty().toString(), model);
             } else {
-                //both literals not null, try to find subject:
-                node = SparqlRepository.getSubjectOfProperty(property.getValueProperty().toString(), model);
-                if(node == null){
-                    node = SparqlRepository.getSubjectOfProperty(property.getValueProperty().toString(), model);
-                }
-            }
-            
-            if(node == null && literalB != null){ //literalA not null but failed to retriece resource.
-                node = SparqlRepository.getSubjectOfProperty(property.getValueProperty().toString(), model);
+                node = SparqlRepository.getSubjectOfProperty(property.getParent().toString(), property.getValueProperty().toString(), model);
             }
         }
-        
+
         if(node != null){
             model.removeAll(node, property.getValueProperty(), (RDFNode) null);
         }

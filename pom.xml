@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gr.athena.innovation</groupId>
     <artifactId>fagi</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9</version>
     <packaging>jar</packaging>
 
     <name>FAGI</name>
@@ -21,7 +21,7 @@
             <email>nkaragiannakis at imis.athena-innovation.gr</email>
         </developer>
     </developers>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <geotools.version>2.7-M0</geotools.version>
@@ -29,7 +29,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    
+
     <build>
         <plugins>
             
@@ -59,7 +59,7 @@
                     </archive>
                 </configuration>
             </plugin>
-            
+
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-dependency-plugin</artifactId>
@@ -80,7 +80,7 @@
                   </execution>
               </executions>
             </plugin>
-                 
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -121,7 +121,7 @@
                     </execution>
                 </executions>
             </plugin>
-                                                                                                                                                                 
+                                                                                                                     
         </plugins>
     </build>
 
@@ -138,7 +138,7 @@
         </plugin>
       </plugins>
     </reporting>
-    
+
     <repositories>
         <repository>
             <id>osgeo</id>
@@ -146,7 +146,7 @@
             <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>             
     </repositories>
-    
+
     <dependencies>
 
         <dependency>
@@ -173,43 +173,44 @@
            <type>pom</type>
            <version>${jena.version}</version>
         </dependency>
-        
+
         <dependency>
           <groupId>org.apache.logging.log4j</groupId>
           <artifactId>log4j-api</artifactId>
           <version>2.8.2</version>
         </dependency>
-        
+
         <dependency>
           <groupId>org.apache.logging.log4j</groupId>
           <artifactId>log4j-core</artifactId>
           <version>2.8.2</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
         </dependency>  
-                
+
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
             <version>1.13</version>
         </dependency>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
           <version>4.11</version>
           <scope>test</scope>
         </dependency>
-        
+
         <dependency>
           <groupId>org.hamcrest</groupId>
           <artifactId>hamcrest-core</artifactId>
@@ -222,7 +223,7 @@
             <artifactId>commons-text</artifactId>
             <version>1.1</version>
         </dependency>
-          
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -234,13 +235,13 @@
             <artifactId>lucene-spellchecker</artifactId>
             <version>3.6.2</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>23.0</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>

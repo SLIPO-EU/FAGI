@@ -296,14 +296,18 @@ public class SpecificationConstants {
      */
     public static class Mapping {
         
-        public static final Map<String, String> myMap;
+        public static final Map<String, String> PROPERTY_MAPPINGS;
         static {
-            Map<String, String> aMap = new HashMap<>();
-            aMap.put("http://slipo.eu/def#openingHours", "timeSlot");
-            aMap.put("http://slipo.eu/def#fax", "fax");//
-            aMap.put("http://slipo.eu/def#address", "address");
-            aMap.put("http://slipo.eu/def#phone", "phone");
-            myMap = Collections.unmodifiableMap(aMap);
+            Map<String, String> map = new HashMap<>();
+            map.put("http://slipo.eu/def#openingHours", "timeSlot");
+            map.put("http://slipo.eu/def#fax", "fax");
+            map.put("http://slipo.eu/def#address", "address");
+            map.put("http://slipo.eu/def#phone", "phone");
+            map.put("http://slipo.eu/def#email", "email");
+            map.put("http://www.opengis.net/ont/geosparql#hasGeometry", "geom");
+            map.put("http://slipo.eu/def#name", "name");
+            map.put("http://slipo.eu/def#source", "sourceInfo");
+            PROPERTY_MAPPINGS = Collections.unmodifiableMap(map);
         }
     }
 

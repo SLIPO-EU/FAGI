@@ -38,8 +38,9 @@ public class SparqlRepository {
             if (object.isLiteral()) {
                 return object.asLiteral();
             } else {
-                LOG.warn("Object is not a Literal! " + object.toString());
-                return null;
+                return ResourceFactory.createStringLiteral(object.toString());
+                //LOG.warn("Object is not a Literal! " + object.toString());
+                //return null;
             }
         } else if (objectList.size() > 1) {
             //Possible duplicate triple. Happens with synthetic data. Returns the first literal
@@ -47,8 +48,9 @@ public class SparqlRepository {
             if (object.isLiteral()) {
                 return object.asLiteral();
             } else {
-                LOG.warn("Object is not a Literal! " + object.toString());
-                return null;
+                return ResourceFactory.createStringLiteral(object.toString());
+                //LOG.warn("Object is not a Literal! " + object.toString());
+                //return null;
             }
         } else {
             LOG.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
@@ -83,10 +85,41 @@ public class SparqlRepository {
         return result;
     }
 
-    public static Resource getSubjectOfProperty(String property, Model model) {
+    public static Resource getSubjectOfSingleProperty(String property, Model model) {
 
         String var = "s";
-        String queryString = SparqlConstructor.selectSubjectOfPropertyQuery(property);
+        String queryString = SparqlConstructor.selectSubjectOfSinglePropertyQuery(property);
+        
+        Query query = null;
+        try {
+            query = QueryFactory.create(queryString);
+        } catch (org.apache.jena.query.QueryParseException ex){
+            LOG.warn("Query parse exception with query:\n" + queryString);
+        }
+        LOG.trace(queryString);
+        if(query == null){
+            return null;
+        }
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode result = soln.get(var);
+                if (result.isResource()) {
+                    return (Resource) result;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Resource getSubjectOfProperty(String property1, String property2, Model model) {
+
+        String var = "o";
+        String queryString = SparqlConstructor.selectChildSubjectOfPropertyChainQuery(property1, property2);
         
         Query query = null;
         try {

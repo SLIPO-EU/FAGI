@@ -1,5 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
@@ -40,17 +41,22 @@ public class RDFUtils {
     public static String getLocalName(CustomRDFProperty property) {
         String localName;
         if(property.isSingleLevel()){
-            localName = SpecificationConstants.Mapping.myMap.get(property.getValueProperty().toString());
+            localName = SpecificationConstants.Mapping.PROPERTY_MAPPINGS.get(property.getValueProperty().toString());
         } else {
-            localName = SpecificationConstants.Mapping.myMap.get(property.getParent().toString());
+            localName = SpecificationConstants.Mapping.PROPERTY_MAPPINGS.get(property.getParent().toString());
         }
         if(localName == null){
-            LOG.warn("fail fail with property " + property.getParent() + " " + property.getValueProperty());
+            LOG.warn("Failed to retrieve mapping with property " + property.getParent() + " " + property.getValueProperty());
+            //do not stop fusion due to this
+            //throw new ApplicationException("Property mapping does not exist.");
         }
         return localName;
     }
     
-    
+    public static String addBrackets(String node){
+        return "<" + node + ">";
+    }
+
     public static Resource getRootResource(Entity leftNode, Entity rightNode) {
 
         EnumOutputMode mode = Configuration.getInstance().getOutputMode();
@@ -61,11 +67,11 @@ public class RDFUtils {
             case A_MODE:
             case L_MODE:
             case DEFAULT:
-                return SparqlRepository.getSubjectOfProperty(Namespace.SOURCE_NO_BRACKETS, leftNode.getEntityData().getModel());
+                return SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, leftNode.getEntityData().getModel());
             case BB_MODE:
             case BA_MODE:
             case B_MODE:
-                return SparqlRepository.getSubjectOfProperty(Namespace.SOURCE_NO_BRACKETS, rightNode.getEntityData().getModel());
+                return SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, rightNode.getEntityData().getModel());
             default:
                 LOG.fatal("Cannot resolved fused Entity's URI. Check Default fused output mode.");
                 throw new IllegalArgumentException();
@@ -83,14 +89,14 @@ public class RDFUtils {
             case L_MODE:
             case DEFAULT:
             {
-                resource = SparqlRepository.getSubjectOfProperty(Namespace.SOURCE_NO_BRACKETS, leftNode.getEntityData().getModel());
+                resource = SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, leftNode.getEntityData().getModel());
                 String resourceString = resource.toString() +"/"+ RDFUtils.getLocalName(property);
                 return ResourceFactory.createResource(resourceString);
             }
             case BB_MODE:
             case BA_MODE:
             case B_MODE:{
-                resource = SparqlRepository.getSubjectOfProperty(Namespace.SOURCE_NO_BRACKETS, rightNode.getEntityData().getModel());
+                resource = SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, rightNode.getEntityData().getModel());
                 String resourceString = resource.toString() +"/"+ RDFUtils.getLocalName(property);
                 return ResourceFactory.createResource(resourceString);
             }
