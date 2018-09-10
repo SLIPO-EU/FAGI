@@ -18,6 +18,8 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
+import gr.athena.innovation.fagi.utils.RDFUtils;
+import org.opengis.geometry.MismatchedDimensionException;
 
 /**
  * Function class that checks if the given geometries are closer than the given distance.
@@ -59,15 +61,19 @@ public class GeometriesCloserThan implements IFunction, IFunctionThreeLiteralStr
         }
 
         try {
-            geometryA = reader.read(wktA.getLexicalForm());
+            String aLexical = RDFUtils.extractGeometry(wktA).getLexicalForm();
+            geometryA = reader.read(aLexical);
         } catch (ParseException ex) {
+            LOG.warn(ex);
             LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
-            geometryB = reader.read(wktB.getLexicalForm());
+            String bLexical = RDFUtils.extractGeometry(wktB).getLexicalForm();
+            geometryB = reader.read(bLexical);
         } catch (ParseException ex) {
+            LOG.warn(ex);
             LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;
         }
@@ -91,8 +97,9 @@ public class GeometriesCloserThan implements IFunction, IFunctionThreeLiteralStr
             LOG.trace("Minimum distance: " + minimumDistance);
             
             return minimumDistance <= dis;
-        } catch (FactoryException | TransformException ex) {
+        } catch (MismatchedDimensionException | FactoryException | TransformException  ex) {
             LOG.warn("Fail to transform geometries. Evaluating to false.", ex);
+            LOG.warn(wktA + "\n" + wktB);
             return false;
         }
     }

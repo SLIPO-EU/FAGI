@@ -7,6 +7,7 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 
 /**
  * Function class that evaluates the <code>coveredBy</code> geometry relationship.
@@ -53,14 +54,16 @@ public class IsGeometryCoveredBy  implements IFunction, IFunctionTwoLiteralParam
         Geometry geometryB;
 
         try {
-            geometryA = reader.read(wktA.getLexicalForm());
+            String aLexical = RDFUtils.extractGeometry(wktA).getLexicalForm();
+            geometryA = reader.read(aLexical);
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
-            geometryB = reader.read(wktB.getLexicalForm());
+            String bLexical = RDFUtils.extractGeometry(wktB).getLexicalForm();
+            geometryB = reader.read(bLexical);
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;

@@ -42,6 +42,19 @@ public class GeometriesCloserThanTest {
         boolean expResult2 = false;
         boolean result2 = instance.evaluate(wktALiteral, wktBLiteral, tolerance2);
         assertEquals(expResult2, result2);
+        
+        String wktA3 = "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(38.03667880446578 23.80251648397791)^^http://www.opengis.net/ont/geosparql#wktLiteral";
+        Literal wktALiteral3 = ResourceFactory.createTypedLiteral(wktA3);
+        String wktB3 = "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT (38.043919 23.804989)^^http://www.opengis.net/ont/geosparql#wktLiteral";
+        Literal wktBLiteral3 = ResourceFactory.createTypedLiteral(wktB3);
+        String tolerance3 = "850";
+        
+        boolean expResult3 = true;
+        boolean result3 = instance.evaluate(wktALiteral3, wktBLiteral3, tolerance3);
+
+        assertEquals(expResult3, result3);
+        
+        
     }
 
     /**

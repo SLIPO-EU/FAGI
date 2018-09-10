@@ -18,6 +18,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionThreeLiteralStringParameters;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 
 /**
  * Function class with evaluation on the centroid of the geometries.
@@ -59,14 +60,16 @@ public class IsSameCentroid implements IFunction, IFunctionThreeLiteralStringPar
         }
 
         try {
-            geometryA = reader.read(wktA.getLexicalForm());
+            String aLexical = RDFUtils.extractGeometry(wktA).getLexicalForm();
+            geometryA = reader.read(aLexical);
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktA + "\nReturning false.");
             return false;
         }
 
         try {
-            geometryB = reader.read(wktB.getLexicalForm());
+            String bLexical = RDFUtils.extractGeometry(wktB).getLexicalForm();
+            geometryB = reader.read(bLexical);
         } catch (ParseException ex) {
             LOG.warn("Could not parse WKT: " + wktB + "\nReturning false.");
             return false;

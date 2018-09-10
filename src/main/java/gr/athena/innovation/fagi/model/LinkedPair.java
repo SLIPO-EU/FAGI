@@ -451,6 +451,7 @@ public class LinkedPair {
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
         if (!isValidLink(validationAction, ambiguousModel, fusedEntityData)) {
+            //LOG.info("link rejected");
             //stop fusion, link is rejected
             return true;
         }

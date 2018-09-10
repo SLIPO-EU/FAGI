@@ -9,6 +9,8 @@ import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +57,30 @@ public class RDFUtils {
     
     public static String addBrackets(String node){
         return "<" + node + ">";
+    }
+
+    public static Literal extractGeometry(Literal wkt){
+        String lexicalForm = wkt.getLexicalForm();
+        RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
+        
+        if(lexicalForm.startsWith(Namespace.CRS_4326)){
+            lexicalForm = lexicalForm.replaceAll(Namespace.CRS_4326, "").trim();
+            Literal wktLiteral = ResourceFactory.createTypedLiteral(lexicalForm, geometryDatatype);
+            
+            return wktLiteral;
+        } else {
+            return wkt;
+        }
+    }
+
+    public static String extractGeometry(String wkt){
+
+        if(wkt.startsWith(Namespace.CRS_4326)){
+            String targetWKT = wkt.replaceAll(Namespace.CRS_4326, "").trim();
+            return targetWKT;
+        } else {
+            return wkt;
+        }
     }
 
     public static Resource getRootResource(Entity leftNode, Entity rightNode) {

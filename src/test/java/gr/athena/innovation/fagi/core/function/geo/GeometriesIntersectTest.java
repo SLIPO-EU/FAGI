@@ -37,7 +37,16 @@ public class GeometriesIntersectTest {
 
         assertEquals(expResult1, result);
 
-      
+        String wktA3 = "<http://www.opengis.net/def/crs/EPSG/0/4326> LINESTRING(23.6940765 37.9381054, 23.7117577 37.951372, 23.7313271 37.9653128)^^http://www.opengis.net/ont/geosparql#wktLiteral";
+        Literal wktA3Literal = ResourceFactory.createTypedLiteral(wktA3);
+
+        String wktB3 = "<http://www.opengis.net/def/crs/EPSG/0/4326> LINESTRING(23.6896133 37.9630121, 23.6980247 37.9552973, 23.7225723 37.9374285)^^http://www.opengis.net/ont/geosparql#wktLiteral";
+        Literal wktB3Literal = ResourceFactory.createTypedLiteral(wktB3);
+        boolean expResult3 = true;
+        boolean result3 = instance.evaluate(wktA3Literal, wktB3Literal);
+
+        assertEquals(expResult3, result3);
+        
         String wktA2 = "LINESTRING(23.6868668 37.9432499, 23.6968231 37.9470403, 23.7181091 37.9616587)";
         Literal wktA2Literal = ResourceFactory.createTypedLiteral(wktA2, geometryDatatype);
         String wktB2 = "LINESTRING(23.6966515 37.9360746, 23.7072945 37.9427084, 23.7199974 37.9527256)";

@@ -7,6 +7,7 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 
 /**
  * Function class with evaluation method geometry type.
@@ -26,12 +27,13 @@ public class IsPointGeometry implements IFunction, IFunctionOneParameter {
     @Override
     public boolean evaluate(Literal wkt) {
 
-        String wktString = wkt.getLexicalForm();
         WKTReader reader = new WKTReader();
         Geometry geometry;
 
         try {
-            geometry = reader.read(wktString);
+            String lexical = RDFUtils.extractGeometry(wkt).getLexicalForm();
+            
+            geometry = reader.read(lexical);
             String geometryType = geometry.getGeometryType().toUpperCase();
             return geometryType.equals("POINT");
             

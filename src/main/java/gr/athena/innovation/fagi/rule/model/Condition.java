@@ -23,8 +23,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
+import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralStringParameters;
+import gr.athena.innovation.fagi.core.function.geo.GeometriesCloserThan;
 import gr.athena.innovation.fagi.core.function.geo.GeometriesIntersect;
+import gr.athena.innovation.fagi.core.function.literal.IsLiteralNumeric;
 import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
+import gr.athena.innovation.fagi.core.function.literal.LiteralContains;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 
 /**
@@ -237,22 +241,43 @@ public class Condition {
 
         //todo: add implemented functions
         switch (function.getName()) {
-            case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT: {
-                
-                IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
-
-                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDateKnownFormat);
-            }
-            case SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT: {
-                IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
-                
-                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDatePrimaryFormat);
-            }
             case SpecificationConstants.Functions.IS_LITERAL_ABBREVIATION: {
                 
                 IsLiteralAbbreviation isLiteralAbbreviation = (IsLiteralAbbreviation) functionMap.get(function.getName());
                 return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isLiteralAbbreviation);
                  
+            }
+            case SpecificationConstants.Functions.IS_LITERAL_NUMERIC: {
+                
+                IsLiteralNumeric isLiteralNumeric = (IsLiteralNumeric) functionMap.get(function.getName());
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isLiteralNumeric);
+                 
+            }
+            case SpecificationConstants.Functions.LITERAL_CONTAINS: {
+
+                String parameter = function.getParameters()[0];
+                String stringValue = function.getParameters()[2];
+                LiteralContains literalContains
+                        = (LiteralContains) functionMap.get(function.getName());
+
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+
+                    return literalContains.evaluate(valueA, stringValue);
+                } else {
+                    ExternalProperty property = externalProperties.get(parameter);
+
+                    if (property == null) {
+                        throw new WrongInputException(parameter + " is wrong. "
+                                + SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE
+                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                    }
+
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                        return literalContains.evaluate(property.getValueA(), stringValue);
+                    } else {
+                        return literalContains.evaluate(property.getValueB(), stringValue);
+                    }
+                }
             }
             case SpecificationConstants.Functions.IS_PHONE_NUMBER_PARSABLE: {
 
@@ -285,30 +310,30 @@ public class Condition {
                 return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, geometriesIntersect);
 
             }
-            case SpecificationConstants.Functions.IS_VALID_DATE: {
-                IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
-                String parameterA = function.getParameters()[0];
-                String parameterB = function.getParameters()[1];
-                switch (parameterA) {
-                    case SpecificationConstants.Rule.A:
-                        return isValidDate.evaluate(valueA, parameterB);
-                    case SpecificationConstants.Rule.B:
-                        return isValidDate.evaluate(valueB, parameterB);
-                    default:
+            case SpecificationConstants.Functions.GEOMETRIES_CLOSER_THAN: {
 
-                        ExternalProperty property = externalProperties.get(parameterA);
+                String parameter = function.getParameters()[0];
+                String threshold = function.getParameters()[2];
+                GeometriesCloserThan geometriesCloserThan
+                        = (GeometriesCloserThan) functionMap.get(function.getName());
 
-                        if (property == null) {
-                            throw new WrongInputException(parameterA + " is wrong. "
-                                    + SpecificationConstants.Functions.IS_VALID_DATE
-                                    + " requires one parameter a or b followed by the external property id number. Eg. a1");
-                        }
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
 
-                        if (parameterA.startsWith(SpecificationConstants.Rule.A)) {
-                            return isValidDate.evaluate(property.getValueA(), parameterB);
-                        } else {
-                            return isValidDate.evaluate(property.getValueB(), parameterB);
-                        }
+                    return geometriesCloserThan.evaluate(valueA, valueB, threshold);
+                } else {
+                    ExternalProperty property = externalProperties.get(parameter);
+
+                    if (property == null) {
+                        throw new WrongInputException(parameter + " is wrong. "
+                                + SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE
+                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                    }
+
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                        return geometriesCloserThan.evaluate(property.getValueA(),property.getValueB(), threshold);
+                    } else {
+                        return geometriesCloserThan.evaluate(property.getValueB(),property.getValueB(), threshold);
+                    }
                 }
             }
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE: {
@@ -460,7 +485,44 @@ public class Condition {
                 } else {
                     throw new WrongInputException(SpecificationConstants.Functions.NOT_EXISTS + " requires one parameter!");
                 }
-            }            
+            }
+            case SpecificationConstants.Functions.IS_DATE_KNOWN_FORMAT: {
+                
+                IsDateKnownFormat isDateKnownFormat = (IsDateKnownFormat) functionMap.get(function.getName());
+
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDateKnownFormat);
+            }
+            case SpecificationConstants.Functions.IS_DATE_PRIMARY_FORMAT: {
+                IsDatePrimaryFormat isDatePrimaryFormat = (IsDatePrimaryFormat) functionMap.get(function.getName());
+                
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isDatePrimaryFormat);
+            }
+            case SpecificationConstants.Functions.IS_VALID_DATE: {
+                IsValidDate isValidDate = (IsValidDate) functionMap.get(function.getName());
+                String parameterA = function.getParameters()[0];
+                String parameterB = function.getParameters()[1];
+                switch (parameterA) {
+                    case SpecificationConstants.Rule.A:
+                        return isValidDate.evaluate(valueA, parameterB);
+                    case SpecificationConstants.Rule.B:
+                        return isValidDate.evaluate(valueB, parameterB);
+                    default:
+
+                        ExternalProperty property = externalProperties.get(parameterA);
+
+                        if (property == null) {
+                            throw new WrongInputException(parameterA + " is wrong. "
+                                    + SpecificationConstants.Functions.IS_VALID_DATE
+                                    + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                        }
+
+                        if (parameterA.startsWith(SpecificationConstants.Rule.A)) {
+                            return isValidDate.evaluate(property.getValueA(), parameterB);
+                        } else {
+                            return isValidDate.evaluate(property.getValueB(), parameterB);
+                        }
+                }
+            }
             default:
                 throw new WrongInputException("Function used in rules.xml is malformed does not exist or currently not supported!" + function.getName());
         }
@@ -515,6 +577,29 @@ public class Condition {
             }
 
             return twoParameterFunction.evaluate(property.getValueA(), property.getValueB());
+        }
+    }
+
+    private boolean evaluateTwoLiteralStringFunction(Function function, Literal valueA, String valueB, 
+            Map<String, ExternalProperty> externalProperties, IFunctionTwoLiteralStringParameters twoParameterFunction) 
+            throws WrongInputException {
+
+        if (function.getParameters().length != 2) {
+            throw new WrongInputException("Number of parameters in function is wrong.");
+        }
+
+        String parameter = function.getParameters()[0];
+        //skip actual parameters because twoParameterFunction refers always to the two literals a,b
+        if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+            return twoParameterFunction.evaluate(valueA, valueB);
+        } else {
+            ExternalProperty property = externalProperties.get(parameter);
+            
+            if (property == null) {
+                throw new WrongInputException("Wrong parameter for external property: " + parameter);
+            }
+
+            return twoParameterFunction.evaluate(property.getValueA(), valueB);
         }
     }
 

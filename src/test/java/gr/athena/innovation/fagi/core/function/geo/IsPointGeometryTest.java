@@ -31,6 +31,14 @@ public class IsPointGeometryTest {
         boolean result1 = instance.evaluate(wktLiteral1);
         assertEquals(expResult1, result1);
         
+        String wkt3 = "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(38.1 23.8)^^http://www.opengis.net/ont/geosparql#wktLiteral";
+        Literal wktLiteral3 = ResourceFactory.createStringLiteral(wkt3);
+        
+        
+        boolean expResult3 = true;
+        boolean result3 = instance.evaluate(wktLiteral3);
+        assertEquals(expResult3, result3);
+
         String wkt2 = "LINESTRING(38 23, 39 23, 40 23)";
         Literal wktLiteral2 = ResourceFactory.createStringLiteral(wkt2);
         boolean expResult2 = false;
