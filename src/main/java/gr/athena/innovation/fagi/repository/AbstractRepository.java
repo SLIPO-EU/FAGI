@@ -42,6 +42,13 @@ public abstract class AbstractRepository {
     public abstract void parseRight(String filepath) throws WrongInputException;
     
     /**
+     * Loads the given RDF file into a RDF model as the fused dataset.
+     * @param filepath The path of the file.
+     * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
+     */  
+    public abstract void parseFused(String filepath) throws WrongInputException;
+    
+    /**
      * Loads the given links file into a RDF model.
      * 
      * @param filepath The path of the file.

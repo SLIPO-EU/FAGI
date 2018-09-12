@@ -287,8 +287,23 @@ public enum EnumStat {
     /**
      * Number of fully matching address street numbers between linked POIs in the two datasets.
      */
-    FULL_MATCH_STREET_NUMBERS("fullMatchingStreetNumbers");
+    FULL_MATCH_STREET_NUMBERS("fullMatchingStreetNumbers"),
 
+    /**
+     * Number of fused POIs vs initial links.
+     */
+    FUSED_VS_LINKED("fusedVsLinked"),
+    
+    /**
+     * Number of rejected POIs vs initial links.
+     */
+    FUSED_REJECTED_VS_LINKED("fusedRejected"),
+    
+    /**
+     * Number of POIs in the initial datasets and number of POIs in the fused dataset.
+     */
+    FUSED_INITIAL("fusedInitial");
+    
 	private final String value;
 
 	private static final Map<String, EnumStat> stringToTypeMap = new HashMap<>();
@@ -413,6 +428,9 @@ public enum EnumStat {
             case LONGER_PHONES: return "Number of phone values from dataset A that are longer than the phones of the corresponding POIs from dataset B.";
             case FULL_MATCH_STREETS: return "Number of fully matching address streets between linked POIs in the two datasets.";
             case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers between linked POIs in the two datasets.";
+            case FUSED_VS_LINKED: return "Number of fused POIs vs. initial links.";
+            case FUSED_REJECTED_VS_LINKED: return "Number of rejected POIs vs. initial links.";
+            case FUSED_INITIAL: return "Number of initial POIs vs number of POIs in fused.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -474,6 +492,9 @@ public enum EnumStat {
             case LONGER_PHONES: return "Longer phone values";
             case FULL_MATCH_STREETS: return "Full matching streets";
             case FULL_MATCH_STREET_NUMBERS: return "Full matching street numbers";
+            case FUSED_VS_LINKED: return "Fused vs linked";
+            case FUSED_REJECTED_VS_LINKED: return "Rejected vs linked";
+            case FUSED_INITIAL: return "Initial vs fused POIs";
             default: throw new IllegalArgumentException();
         }
     }

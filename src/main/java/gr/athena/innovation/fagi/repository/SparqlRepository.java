@@ -651,7 +651,7 @@ public class SparqlRepository {
         int count = 0;
 
         String countVar = "cnt";
-        String queryString = SparqlConstructor.countPropertyChain(countVar, property1, property2);
+        String queryString = SparqlConstructor.countPropertyChains(countVar, property1, property2);
         Query query = QueryFactory.create(queryString);
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {

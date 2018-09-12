@@ -56,6 +56,9 @@ public class FagiInstance {
     private final boolean exportSimilaritiesPerLink = false;
     private final boolean train = false;
     private final boolean fuse = true;
+    private Integer fused = null;
+    private Integer rejected = null;
+    private Integer ambiguous = null;
 
     /**
      * FagiInstance Constructor. Expects the absolute path of the configuration XML file.
@@ -157,11 +160,12 @@ public class FagiInstance {
 
         long startTimeComputeStatistics = System.currentTimeMillis(); 
 
+        StatisticsContainer container;
         if (exportStatistics) {
             LOG.info("Calculating statistics...");
             //statistics obtained using RDF
             StatisticsCollector collector = new RDFStatisticsCollector();
-            StatisticsContainer container = collector.collect();
+            container = collector.collect();
             StatisticsExporter exporter = new StatisticsExporter();
 
             if(!container.isValid() && !container.isComplete()){
@@ -225,12 +229,14 @@ public class FagiInstance {
 
             long stopTimeWrite = System.currentTimeMillis();
 
+            rejected = LinksModel.getLinksModel().getRejected().size();
+            fused = fuser.getFusedPairsCount() - rejected;
+            //ambiguous = AmbiguousDataset.getAmbiguousDataset().getModel();
             LOG.info(configuration.toString());
             
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
             LOG.info("Interlinked: " + fusedEntities.size() 
-                    + ", Fused: " + fuser.getFusedPairsCount() 
-                    + ", Rejected links: " + LinksModel.getLinksModel().getRejected().size() 
+                    + ", Fused: " + fused + ", Rejected links: " + rejected 
                     + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
             LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
@@ -313,7 +319,14 @@ public class FagiInstance {
 
         long startCompute = System.currentTimeMillis();
         
-        StatisticsCollector collector = new RDFStatisticsCollector();
+        RDFStatisticsCollector collector = new RDFStatisticsCollector();
+        
+        if(fused != null){
+            genericRDFRepository.parseFused(configuration.getFused());
+            collector.setFusedPOIs(fused);
+            collector.setRejected(rejected);
+        }
+
         StatisticsContainer container = collector.collect(selected);
         
         long stopCompute = System.currentTimeMillis();

@@ -1,6 +1,7 @@
 package gr.athena.innovation.fagi.repository;
 
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.model.FusedDataset;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
@@ -55,6 +56,23 @@ public class GenericRDFRepository extends AbstractRepository{
         rightModel.setFilepath(filepath);
     }   
     
+    @Override
+    public void parseFused(String filepath) throws WrongInputException {
+        LOG.debug("Loading fused dataset file:\" " + filepath + "\" with Generic Loader");
+        
+        if(!isValidPath(filepath)){
+            throw new WrongInputException("Invalid path for fused dataset: " + filepath + ". Check the config file.");
+        }
+        
+        Model model = ModelFactory.createDefaultModel();
+        model.read(filepath, null); //null base URI, since URIs are absolute
+        
+        FusedDataset fusedModel = FusedDataset.getFusedDataset();
+        LOG.debug("Jena model size for fused dataset: " + model.size());
+        fusedModel.setModel(model);
+        fusedModel.setFilepath(filepath);
+    }
+
     @Override
     public void parseLinks(String filepath) throws ParseException, WrongInputException{
         

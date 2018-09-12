@@ -46,9 +46,9 @@ public class StatGroup {
             case POI_BASED: 
                 this.enumGroup = enumGroup;
                 this.title = "Number of POIs";
-                this.legendA = "#POIs in A";
-                this.legendB = "#POIs in B";
-                this.legendTotal = "Total POIs";
+                this.legendA = "Number of POIs ";
+                this.legendB = "Number of POIs";
+                this.legendTotal = "Total";
                 
                 break;
             default: throw new IllegalArgumentException();

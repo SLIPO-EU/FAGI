@@ -13,8 +13,7 @@ public class TTLRepository extends AbstractRepository{
     
     @Override
     public void readFile(String path) {
-        LOG.info("Reading from path", path);
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -24,6 +23,11 @@ public class TTLRepository extends AbstractRepository{
 
     @Override
     public void parseRight(String filepath) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void parseFused(String filepath) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

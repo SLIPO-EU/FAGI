@@ -15,7 +15,7 @@ public interface StatisticsCollector {
      * @return the statistics container.
      */
     public StatisticsContainer collect();
-    
+
     /**
      * Returns a statistics container with the selected statistics.
      * 

@@ -1,7 +1,6 @@
 package gr.athena.innovation.fagi.utils;
 
 import gr.athena.innovation.fagi.specification.Namespace;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.logging.log4j.LogManager;
 
@@ -355,14 +354,6 @@ public class SparqlConstructor {
                        "{?s1 " + predicate1 + " ?o . " + 
                        "?o " + predicate2 + " ?o2 . " + 
                        "?s2 <http://www.w3.org/2002/07/owl#sameAs> ?s1 . }";
-        return query;
-    }
-    
-    public static String countPropertyChain(String countVar, String predicate1, String predicate2){
-        String query = "SELECT (COUNT (?o2) AS ?" + countVar + ")\n" +
-                       "WHERE {" + 
-                       "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2" + 
-                       "}";
         return query;
     }
 }

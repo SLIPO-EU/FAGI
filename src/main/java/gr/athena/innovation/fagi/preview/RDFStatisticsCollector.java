@@ -5,6 +5,7 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticsCollector;
 import gr.athena.innovation.fagi.preview.statistics.StatisticResultPair;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.model.EnumEntity;
+import gr.athena.innovation.fagi.model.FusedDataset;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
@@ -39,6 +40,8 @@ public class RDFStatisticsCollector implements StatisticsCollector {
     private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
     private Integer totalPOIsA = null;
     private Integer totalPOIsB = null;
+    private Integer fusedPOIs = null;
+    private Integer rejected = null;
     private final StatisticsContainer container = new StatisticsContainer();
     private final Map<String, StatisticResultPair> map = new HashMap<>();
 
@@ -480,6 +483,15 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 map.put(EnumStat.FULL_MATCH_STREET_NUMBERS.getKey(),
                         countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREET_NUMBERS,
                                 Namespace.ADDRESS, Namespace.STREET_NUMBER));
+                break;
+            case FUSED_VS_LINKED:
+                map.put(EnumStat.FUSED_VS_LINKED.getKey(), countFusedVsLinked(links, EnumStat.FUSED_VS_LINKED));
+                break;
+            case FUSED_REJECTED_VS_LINKED:
+                map.put(EnumStat.FUSED_REJECTED_VS_LINKED.getKey(), countRejectedVsLinked(links, EnumStat.FUSED_REJECTED_VS_LINKED));
+                break;
+            case FUSED_INITIAL:
+                map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
                 break;
         }
     }
@@ -1384,6 +1396,67 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    public StatisticResultPair countFusedVsLinked(List<Link> links, EnumStat stat) {
+
+        if(fusedPOIs == null){
+            getFailedStatistic(EnumStat.FUSED_VS_LINKED, Namespace.SOURCE);
+        }
+
+        Integer linkedPOIs = links.size();
+        Integer total = fusedPOIs + linkedPOIs;
+        StatisticResultPair pair = new StatisticResultPair(fusedPOIs.toString(), linkedPOIs.toString(), total.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
+    public StatisticResultPair countRejectedVsLinked(List<Link> links, EnumStat stat) {
+
+        if(rejected == null){
+            getFailedStatistic(EnumStat.FUSED_REJECTED_VS_LINKED, Namespace.SOURCE);
+        }
+
+        Integer linkedPOIs = links.size();
+        StatisticResultPair pair = new StatisticResultPair(rejected.toString(), linkedPOIs.toString(), linkedPOIs.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
+    public StatisticResultPair countInitialVsFused(Model a, Model b, EnumStat stat) {
+
+        if(fusedPOIs == null){
+            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
+        }
+
+        if (totalPOIsA == null || totalPOIsB == null) {
+            StatisticResultPair totalEntities = countTotalEntities(a, b);
+            totalPOIsA = Integer.parseInt(totalEntities.getValueA());
+            totalPOIsB = Integer.parseInt(totalEntities.getValueB());
+        }
+
+        if (cannotCompute(totalPOIsA, totalPOIsB)) {
+            return getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
+        }
+
+        Integer totalPoisInFused = SparqlRepository.countPOIs(FusedDataset.getFusedDataset().getModel());
+        
+        StatisticResultPair pair = new StatisticResultPair(totalPOIsA.toString(), totalPOIsB.toString(), null);
+        pair.setValueTotal(totalPoisInFused.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
     private int getAverageProperties(Model model, int sum, String node) {
         int properties = SparqlRepository.countDistinctPropertiesOfResource(model, node);
         sum = sum + properties;
@@ -1469,5 +1542,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public void setTotalPOIsB(int totalPOIsB) {
         this.totalPOIsB = totalPOIsB;
+    }
+
+    public void setFusedPOIs(Integer fusedPOIs) {
+        this.fusedPOIs = fusedPOIs;
+    }
+
+    public void setRejected(Integer rejected) {
+        this.rejected = rejected;
     }
 }
