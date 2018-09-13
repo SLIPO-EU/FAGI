@@ -6,7 +6,7 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticResultPair;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.EnumEntity;
-import gr.athena.innovation.fagi.model.FusedDataset;
+//import gr.athena.innovation.fagi.model.FusedDataset;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
@@ -19,19 +19,15 @@ import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.Configuration;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -500,9 +496,10 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             case FUSED_REJECTED_VS_LINKED:
                 map.put(EnumStat.FUSED_REJECTED_VS_LINKED.getKey(), countRejectedVsLinked(links, EnumStat.FUSED_REJECTED_VS_LINKED));
                 break;
-//            case FUSED_INITIAL:
-//                map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
-//                break;
+            case FUSED_INITIAL:
+                LOG.info(":counting initial");
+                map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
+                break;
         }
     }
 
@@ -1456,13 +1453,15 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
 
         Integer totalPoisInFused = 0;
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(Configuration.getInstance().getFused()), StandardCharsets.UTF_8)) {
-            for (String line; (line = br.readLine()) != null;) {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"));
+            for(String line; (line = br.readLine()) !=null;) {
                 if(line.contains(Namespace.SOURCE)){
                     totalPoisInFused++;
                 }
             }
-        } catch (IOException ex) {   
+        } catch (ApplicationException | IOException ex) {
+            LOG.fatal(ex);
             throw new ApplicationException(ex.getMessage());
         }
         

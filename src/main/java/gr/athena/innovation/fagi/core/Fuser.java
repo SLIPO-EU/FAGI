@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -158,6 +159,7 @@ public class Fuser implements IFuser{
         String ambiguous = configuration.getAmbiguousDatasetFilepath();
 
         OutputStream fusedStream = new FileOutputStream(fused, false);
+        //OutputStreamWriter fusedStream2 = new OutputStreamWriter(new FileOutputStream(fused, false), StandardCharsets.UTF_8);
         OutputStream remainingStream = new FileOutputStream(remaining, false);
         OutputStream ambiguousStream = new FileOutputStream(ambiguous, false);
 
@@ -291,7 +293,7 @@ public class Fuser implements IFuser{
 
         addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), rightLocalNames);
         
-        writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
         //addMessageToEmptyOutput(remaining);
     }
 
