@@ -261,7 +261,7 @@ public class FagiInstance {
      */
     public String computeStatistics(List<String> selected) 
             throws WrongInputException, ParserConfigurationException, SAXException, IOException, ParseException{
-        LOG.info("calculating statistics...");
+        LOG.info("Initiating statistics process...");
         long startInit = System.currentTimeMillis();
         
         //Validate input

@@ -41,6 +41,11 @@ public enum EnumStat {
     NON_EMPTY_PHONES("nonEmptyPhones"),
 
     /**
+     * Number of non empty phone numbers in each input dataset.
+     */    
+    NON_EMPTY_FAX("nonEmptyFax"),
+
+    /**
      * Number of non empty street addresses in each input dataset.
      */    
     NON_EMPTY_STREETS("nonEmptyStreets"),
@@ -49,6 +54,11 @@ public enum EnumStat {
      * Number of non empty address street numbers in each input dataset.
      */    
     NON_EMPTY_STREET_NUMBERS("nonEmptyStreetNumbers"),
+    
+    /**
+     * Number of non empty street addresses in each input dataset.
+     */    
+    NON_EMPTY_POSTCODE("nonEmptyPostcode"),
 
     /**
      * Number of non empty web-sites in each input dataset.
@@ -317,7 +327,27 @@ public enum EnumStat {
     /**
      * Number of POIs that have the homepage property in the fused dataset.
      */
-    FUSED_HOMEPAGE("fusedWebsites");  
+    FUSED_HOMEPAGE("fusedWebsites"),
+    
+    /**
+     * Number of POIs that have the postcode property in the fused dataset.
+     */
+    FUSED_POSTCODE("fusedPostcode"),
+    
+    /**
+     * Number of POIs that have the address-street property in the fused dataset.
+     */
+    FUSED_STREET("fusedStreet"),
+
+    /**
+     * Number of POIs that have the address-street number property in the fused dataset.
+     */
+    FUSED_STREET_NUMBER("fusedStreetNumber"),
+    
+    /**
+     * Number of POIs that have the fax property in the fused dataset.
+     */
+    FUSED_FAX("fusedFax");
     
 	private final String value;
 
@@ -395,6 +425,8 @@ public enum EnumStat {
             case NON_EMPTY_PHONES: return "Total number of POIs that have the phone property in each input dataset.";
             case NON_EMPTY_STREETS: return "Total number of POIs that have the address street property in each input dataset.";
             case NON_EMPTY_STREET_NUMBERS: return "Total number of POIs that have the address street number property in each input dataset.";
+            case NON_EMPTY_POSTCODE: return "Total number of POIs that have the postcode property in each input dataset.";
+            case NON_EMPTY_FAX: return "Total number of POIs that have the fax property in each input dataset.";
             case NON_EMPTY_WEBSITES: return "Total number of POIs that have the website property in each input dataset.";
             case NON_EMPTY_EMAILS: return "Total number of POIs that have the email property in each input dataset.";
             case NON_EMPTY_DATES: return "Total number of POIs that have the date property in each input dataset.";
@@ -449,7 +481,11 @@ public enum EnumStat {
             case FUSED_PHONES: return "Number of POIs with phones in the fused dataset.";
             case FUSED_EMAILS: return "Number of POIs with emails in the fused dataset.";
             case FUSED_HOMEPAGE: return "Number of POIs with websites in the fused dataset.";
-            default: throw new IllegalArgumentException();
+            case FUSED_POSTCODE: return "Number of POIs with postcode in the fused dataset.";
+            case FUSED_STREET: return "Number of POIs with adrees-street in the fused dataset.";
+            case FUSED_STREET_NUMBER: return "Number of POIs with street-number in the fused dataset.";
+            case FUSED_FAX: return "Number of POIs with fax in the fused dataset.";
+            default: return "undefined";
         }
     }
 
@@ -462,6 +498,7 @@ public enum EnumStat {
             case NON_EMPTY_PHONES: return "Phones";
             case NON_EMPTY_STREETS: return "Streets";
             case NON_EMPTY_STREET_NUMBERS: return "Street Numbers";
+            case NON_EMPTY_POSTCODE: return "Postcode";
             case NON_EMPTY_WEBSITES: return "Websites";
             case NON_EMPTY_EMAILS: return "E-mails";
             case NON_EMPTY_DATES: return "Dates";
@@ -516,7 +553,11 @@ public enum EnumStat {
             case FUSED_PHONES: return "Initial vs fused phones";
             case FUSED_EMAILS: return "Initial vs fused emails";
             case FUSED_HOMEPAGE: return "Initial vs fused websites";
-            default: throw new IllegalArgumentException();
+            case FUSED_POSTCODE: return "Initial vs fused postcodes";
+            case FUSED_STREET: return "Initial vs fused address-streets";
+            case FUSED_STREET_NUMBER: return "Initial vs fused street-numbers";
+            case FUSED_FAX: return "Initial vs fused fax values";
+            default: return "undefined";
         }
     }
     
@@ -577,7 +618,7 @@ public enum EnumStat {
             case LONGER_PHONES: return "Phone values from dataset A that are longer than the corresponding values from dataset B.";
             case FULL_MATCH_STREETS: return "Number of fully matching address streets from Dataset A.";
             case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers from Dataset A.";
-            default: throw new IllegalArgumentException();
+            default: return "undefined";
         }
     }
     
@@ -638,7 +679,7 @@ public enum EnumStat {
             case LONGER_PHONES: return "Total phone values of linked POIs.";
             case FULL_MATCH_STREETS: return "Number of fully matching address streets from Dataset B.";
             case FULL_MATCH_STREET_NUMBERS: return "Number of fully matching address street numbers from Dataset B.";
-            default: throw new IllegalArgumentException();
+            default: return "undefined";
         }
     }      
 }

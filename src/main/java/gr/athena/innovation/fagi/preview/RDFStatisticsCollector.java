@@ -269,6 +269,10 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 map.put(EnumStat.NON_EMPTY_PHONES.getKey(),
                         countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
                 break;
+            case NON_EMPTY_FAX:
+                map.put(EnumStat.NON_EMPTY_FAX.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_FAX, Namespace.FAX));
+                break;
             case NON_EMPTY_STREETS:
                 map.put(EnumStat.NON_EMPTY_STREETS.getKey(),
                         countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
@@ -277,6 +281,10 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 map.put(EnumStat.NON_EMPTY_STREET_NUMBERS.getKey(),
                         countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_STREET_NUMBERS,
                                 Namespace.STREET_NUMBER));
+                break;
+            case NON_EMPTY_POSTCODE:
+                map.put(EnumStat.NON_EMPTY_POSTCODE.getKey(),
+                        countNonEmptyProperty(leftModel, rightModel, EnumStat.NON_EMPTY_POSTCODE, Namespace.POSTCODE));
                 break;
             case NON_EMPTY_WEBSITES:
                 map.put(EnumStat.NON_EMPTY_WEBSITES.getKey(),
@@ -500,13 +508,32 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
                 break;
             case FUSED_PHONES:
-                map.put(EnumStat.FUSED_PHONES.getKey(), countFusedPhones(leftModel, rightModel, EnumStat.FUSED_PHONES));
+                map.put(EnumStat.FUSED_PHONES.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_PHONES, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE));
                 break;
             case FUSED_EMAILS:
-                map.put(EnumStat.FUSED_EMAILS.getKey(), countFusedEmails(leftModel, rightModel, EnumStat.FUSED_EMAILS));
+                map.put(EnumStat.FUSED_EMAILS.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_EMAILS, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL));
                 break;
             case FUSED_HOMEPAGE:
-                map.put(EnumStat.FUSED_HOMEPAGE.getKey(), countFusedWebsites(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE));
+                map.put(EnumStat.FUSED_HOMEPAGE.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                break;
+            case FUSED_POSTCODE:
+                map.put(EnumStat.FUSED_POSTCODE.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, EnumStat.NON_EMPTY_POSTCODE, Namespace.POSTCODE));
+                break;
+            case FUSED_STREET:
+                map.put(EnumStat.FUSED_STREET.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET, EnumStat.NON_EMPTY_STREETS, Namespace.STREET));
+                break;
+            case FUSED_STREET_NUMBER:
+                map.put(EnumStat.FUSED_STREET_NUMBER.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET_NUMBER, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.STREET_NUMBER));
+                break;
+            case FUSED_FAX:
+                map.put(EnumStat.FUSED_FAX.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_FAX, EnumStat.NON_EMPTY_FAX, Namespace.FAX));
                 break;
         }
     }
@@ -1482,102 +1509,27 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
-    public StatisticResultPair countFusedPhones(Model a, Model b, EnumStat stat) {
+    public StatisticResultPair countFusedProperty(Model a, Model b, EnumStat fusedStat, EnumStat initialStat, String property) {
 
         if(fusedPOIs == null){
             getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
         }
 
-        StatisticResultPair phones = map.get(EnumStat.NON_EMPTY_PHONES.getKey());
+        StatisticResultPair initialPair = map.get(initialStat.getKey());
 
-        if (phones == null) {
-            phones = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE);
+        if (initialPair == null) {
+            initialPair = countNonEmptyProperty(a, b, initialStat, property);
         }
         
-        Integer phonesA = Integer.parseInt(phones.getValueA());
-        Integer phonesB = Integer.parseInt(phones.getValueB());
+        Integer initialA = Integer.parseInt(initialPair.getValueA());
+        Integer initialB = Integer.parseInt(initialPair.getValueB());
         
-        Integer phonesFused = 0;
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"))){
-            for(String line; (line = br.readLine()) !=null;) {
-                if(line.contains(Namespace.PHONE)){
-                    phonesFused++;
-                }
-            }
-        } catch (ApplicationException | IOException ex) {
-            LOG.fatal(ex);
-            throw new ApplicationException(ex.getMessage());
-        }
-        
-        StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString(), null);
-        pair.setValueTotal(phonesFused.toString());
-        pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
-        pair.setTitle(stat.toString());
-        pair.setLegendTotal(stat.getLegendTotal());
-
-        return pair;
-    }
-
-    public StatisticResultPair countFusedEmails(Model a, Model b, EnumStat stat) {
-
-        if(fusedPOIs == null){
-            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
-        }
-
-        StatisticResultPair emails = map.get(EnumStat.NON_EMPTY_EMAILS.getKey());
-
-        if (emails == null) {
-            emails = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL);
-        }
-        
-        Integer emailsA = Integer.parseInt(emails.getValueA());
-        Integer emailsB = Integer.parseInt(emails.getValueB());
-        
-        Integer emailsFused = 0;
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"))){
-            for(String line; (line = br.readLine()) !=null;) {
-                if(line.contains(Namespace.EMAIL)){
-                    emailsFused++;
-                }
-            }
-        } catch (ApplicationException | IOException ex) {
-            LOG.fatal(ex);
-            throw new ApplicationException(ex.getMessage());
-        }
-
-        StatisticResultPair pair = new StatisticResultPair(emailsA.toString(), emailsB.toString(), null);
-        pair.setValueTotal(emailsFused.toString());
-        pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
-        pair.setTitle(stat.toString());
-        pair.setLegendTotal(stat.getLegendTotal());
-
-        return pair;
-    }
-
-    public StatisticResultPair countFusedWebsites(Model a, Model b, EnumStat stat) {
-
-        if(fusedPOIs == null){
-            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
-        }
-
-        StatisticResultPair websites = map.get(EnumStat.NON_EMPTY_WEBSITES.getKey());
-
-        if (websites == null) {
-            websites = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE);
-        }
-        
-        Integer websitesA = Integer.parseInt(websites.getValueA());
-        Integer websitesB = Integer.parseInt(websites.getValueB());
-        
-        Integer websitesFused = 0;
+        Integer fused = 0;
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"));
             for(String line; (line = br.readLine()) !=null;) {
-                if(line.contains(Namespace.HOMEPAGE)){
-                    websitesFused++;
+                if(line.contains(property)){
+                    fused++;
                 }
             }
         } catch (ApplicationException | IOException ex) {
@@ -1585,12 +1537,12 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             throw new ApplicationException(ex.getMessage());
         }
         
-        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
-        pair.setValueTotal(websitesFused.toString());
+        StatisticResultPair pair = new StatisticResultPair(initialA.toString(), initialB.toString(), null);
+        pair.setValueTotal(fused.toString());
         pair.setType(EnumStatViewType.BAR);
-        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
-        pair.setTitle(stat.toString());
-        pair.setLegendTotal(stat.getLegendTotal());
+        pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
+        pair.setTitle(fusedStat.toString());
+        pair.setLegendTotal(fusedStat.getLegendTotal());
 
         return pair;
     }
