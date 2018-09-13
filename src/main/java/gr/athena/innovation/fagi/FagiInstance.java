@@ -322,7 +322,7 @@ public class FagiInstance {
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
         
         if(fused != null){
-            genericRDFRepository.parseFused(configuration.getFused());
+            //genericRDFRepository.parseFused(configuration.getFused());
             collector.setFusedPOIs(fused);
             collector.setRejected(rejected);
         }

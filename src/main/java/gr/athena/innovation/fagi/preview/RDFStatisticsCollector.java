@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticsContainer;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsCollector;
 import gr.athena.innovation.fagi.preview.statistics.StatisticResultPair;
 import gr.athena.innovation.fagi.core.function.date.IsDatePrimaryFormat;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.EnumEntity;
 import gr.athena.innovation.fagi.model.FusedDataset;
 import gr.athena.innovation.fagi.model.LeftDataset;
@@ -16,12 +17,21 @@ import gr.athena.innovation.fagi.preview.statistics.StatGroup;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.Configuration;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -490,9 +500,9 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             case FUSED_REJECTED_VS_LINKED:
                 map.put(EnumStat.FUSED_REJECTED_VS_LINKED.getKey(), countRejectedVsLinked(links, EnumStat.FUSED_REJECTED_VS_LINKED));
                 break;
-            case FUSED_INITIAL:
-                map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
-                break;
+//            case FUSED_INITIAL:
+//                map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
+//                break;
         }
     }
 
@@ -1445,7 +1455,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
             return getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
         }
 
-        Integer totalPoisInFused = SparqlRepository.countPOIs(FusedDataset.getFusedDataset().getModel());
+        Integer totalPoisInFused = 0;
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(Configuration.getInstance().getFused()), StandardCharsets.UTF_8)) {
+            for (String line; (line = br.readLine()) != null;) {
+                if(line.contains(Namespace.SOURCE)){
+                    totalPoisInFused++;
+                }
+            }
+        } catch (IOException ex) {   
+            throw new ApplicationException(ex.getMessage());
+        }
         
         StatisticResultPair pair = new StatisticResultPair(totalPOIsA.toString(), totalPOIsB.toString(), null);
         pair.setValueTotal(totalPoisInFused.toString());
