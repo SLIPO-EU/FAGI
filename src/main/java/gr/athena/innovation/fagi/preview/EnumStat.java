@@ -302,7 +302,22 @@ public enum EnumStat {
     /**
      * Number of POIs in the initial datasets and number of POIs in the fused dataset.
      */
-    FUSED_INITIAL("fusedInitial");
+    FUSED_INITIAL("fusedInitial"),
+    
+    /**
+     * Number of POIs that have the phone-contactValue property in the fused dataset.
+     */
+    FUSED_PHONES("fusedPhones"),
+    
+    /**
+     * Number of POIs that have the email-contactValue property in the fused dataset.
+     */
+    FUSED_EMAILS("fusedEmails"),
+    
+    /**
+     * Number of POIs that have the homepage property in the fused dataset.
+     */
+    FUSED_HOMEPAGE("fusedWebsites");  
     
 	private final String value;
 
@@ -431,6 +446,9 @@ public enum EnumStat {
             case FUSED_VS_LINKED: return "Number of fused POIs vs. initial links.";
             case FUSED_REJECTED_VS_LINKED: return "Number of rejected POIs vs. initial links.";
             case FUSED_INITIAL: return "Number of initial POIs vs number of POIs in fused.";
+            case FUSED_PHONES: return "Number of POIs with phones in the fused dataset.";
+            case FUSED_EMAILS: return "Number of POIs with emails in the fused dataset.";
+            case FUSED_HOMEPAGE: return "Number of POIs with websites in the fused dataset.";
             default: throw new IllegalArgumentException();
         }
     }
@@ -495,6 +513,9 @@ public enum EnumStat {
             case FUSED_VS_LINKED: return "Fused vs linked";
             case FUSED_REJECTED_VS_LINKED: return "Rejected vs linked";
             case FUSED_INITIAL: return "Initial vs fused POIs";
+            case FUSED_PHONES: return "Initial vs fused phones";
+            case FUSED_EMAILS: return "Initial vs fused emails";
+            case FUSED_HOMEPAGE: return "Initial vs fused websites";
             default: throw new IllegalArgumentException();
         }
     }

@@ -497,8 +497,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 map.put(EnumStat.FUSED_REJECTED_VS_LINKED.getKey(), countRejectedVsLinked(links, EnumStat.FUSED_REJECTED_VS_LINKED));
                 break;
             case FUSED_INITIAL:
-                LOG.info(":counting initial");
                 map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
+                break;
+            case FUSED_PHONES:
+                map.put(EnumStat.FUSED_PHONES.getKey(), countFusedPhones(leftModel, rightModel, EnumStat.FUSED_PHONES));
+                break;
+            case FUSED_EMAILS:
+                map.put(EnumStat.FUSED_EMAILS.getKey(), countFusedEmails(leftModel, rightModel, EnumStat.FUSED_EMAILS));
+                break;
+            case FUSED_HOMEPAGE:
+                map.put(EnumStat.FUSED_HOMEPAGE.getKey(), countFusedWebsites(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE));
                 break;
         }
     }
@@ -1453,8 +1461,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
 
         Integer totalPoisInFused = 0;
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"))){
             for(String line; (line = br.readLine()) !=null;) {
                 if(line.contains(Namespace.SOURCE)){
                     totalPoisInFused++;
@@ -1467,6 +1474,119 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         
         StatisticResultPair pair = new StatisticResultPair(totalPOIsA.toString(), totalPOIsB.toString(), null);
         pair.setValueTotal(totalPoisInFused.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
+    public StatisticResultPair countFusedPhones(Model a, Model b, EnumStat stat) {
+
+        if(fusedPOIs == null){
+            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
+        }
+
+        StatisticResultPair phones = map.get(EnumStat.NON_EMPTY_PHONES.getKey());
+
+        if (phones == null) {
+            phones = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE);
+        }
+        
+        Integer phonesA = Integer.parseInt(phones.getValueA());
+        Integer phonesB = Integer.parseInt(phones.getValueB());
+        
+        Integer phonesFused = 0;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"))){
+            for(String line; (line = br.readLine()) !=null;) {
+                if(line.contains(Namespace.PHONE)){
+                    phonesFused++;
+                }
+            }
+        } catch (ApplicationException | IOException ex) {
+            LOG.fatal(ex);
+            throw new ApplicationException(ex.getMessage());
+        }
+        
+        StatisticResultPair pair = new StatisticResultPair(phonesA.toString(), phonesB.toString(), null);
+        pair.setValueTotal(phonesFused.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
+    public StatisticResultPair countFusedEmails(Model a, Model b, EnumStat stat) {
+
+        if(fusedPOIs == null){
+            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
+        }
+
+        StatisticResultPair emails = map.get(EnumStat.NON_EMPTY_EMAILS.getKey());
+
+        if (emails == null) {
+            emails = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL);
+        }
+        
+        Integer emailsA = Integer.parseInt(emails.getValueA());
+        Integer emailsB = Integer.parseInt(emails.getValueB());
+        
+        Integer emailsFused = 0;
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"))){
+            for(String line; (line = br.readLine()) !=null;) {
+                if(line.contains(Namespace.EMAIL)){
+                    emailsFused++;
+                }
+            }
+        } catch (ApplicationException | IOException ex) {
+            LOG.fatal(ex);
+            throw new ApplicationException(ex.getMessage());
+        }
+
+        StatisticResultPair pair = new StatisticResultPair(emailsA.toString(), emailsB.toString(), null);
+        pair.setValueTotal(emailsFused.toString());
+        pair.setType(EnumStatViewType.BAR);
+        pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
+        pair.setTitle(stat.toString());
+        pair.setLegendTotal(stat.getLegendTotal());
+
+        return pair;
+    }
+
+    public StatisticResultPair countFusedWebsites(Model a, Model b, EnumStat stat) {
+
+        if(fusedPOIs == null){
+            getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
+        }
+
+        StatisticResultPair websites = map.get(EnumStat.NON_EMPTY_WEBSITES.getKey());
+
+        if (websites == null) {
+            websites = countNonEmptyProperty(a, b, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE);
+        }
+        
+        Integer websitesA = Integer.parseInt(websites.getValueA());
+        Integer websitesB = Integer.parseInt(websites.getValueB());
+        
+        Integer websitesFused = 0;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"));
+            for(String line; (line = br.readLine()) !=null;) {
+                if(line.contains(Namespace.HOMEPAGE)){
+                    websitesFused++;
+                }
+            }
+        } catch (ApplicationException | IOException ex) {
+            LOG.fatal(ex);
+            throw new ApplicationException(ex.getMessage());
+        }
+        
+        StatisticResultPair pair = new StatisticResultPair(websitesA.toString(), websitesB.toString(), null);
+        pair.setValueTotal(websitesFused.toString());
         pair.setType(EnumStatViewType.BAR);
         pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setTitle(stat.toString());
