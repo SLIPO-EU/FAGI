@@ -521,7 +521,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 break;
             case FUSED_POSTCODE:
                 map.put(EnumStat.FUSED_POSTCODE.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, EnumStat.NON_EMPTY_POSTCODE, Namespace.POSTCODE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_POSTCODE, EnumStat.NON_EMPTY_POSTCODE, Namespace.POSTCODE));
                 break;
             case FUSED_STREET:
                 map.put(EnumStat.FUSED_STREET.getKey(), 

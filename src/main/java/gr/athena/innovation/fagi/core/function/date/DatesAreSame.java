@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -22,29 +23,33 @@ public class DatesAreSame implements IFunction, IFunctionFiveStringParameters {
     /**
      * The method evaluates if the given dates are the same using a tolerance value in days.
      * 
-     * @param dateAString the dateA string.
+     * @param dateALiteral the dateA literal.
+     * @param dateBLiteral the dateB literal.
      * @param dateFormatA the date format of dateA.
-     * @param dateBString the dateB string.
      * @param dateFormatB the date format of dateB.
      * @param tolerance the tolerance value in days. Expects integer.
      * @return 
      */
     @Override
-    public boolean evaluate(String dateAString, String dateFormatA, String dateBString, String dateFormatB, String tolerance) {
+    public boolean evaluate(Literal dateALiteral, String dateFormatA, Literal dateBLiteral, String dateFormatB, String tolerance) {
+
+        String dateAString = dateALiteral.getLexicalForm();
+        String dateBString = dateBLiteral.getLexicalForm();
 
         int tlr = 0;
         if(!StringUtils.isBlank(tolerance)){
             try {
-                tlr = Integer.parseInt(tolerance);
+                tlr = Integer.parseInt(tolerance.trim());
             } catch(NumberFormatException ex){
+                LOG.error(ex);
                 throw new ApplicationException("Could not parse tolerance integer: " + tolerance);
             }
         }
 
-        SimpleDateFormat simpleDateFormatA = new SimpleDateFormat(dateFormatA);
+        SimpleDateFormat simpleDateFormatA = new SimpleDateFormat(dateFormatA.trim());
         simpleDateFormatA.setLenient(false);
         
-        SimpleDateFormat simpleDateFormatB = new SimpleDateFormat(dateFormatB);
+        SimpleDateFormat simpleDateFormatB = new SimpleDateFormat(dateFormatB.trim());
         simpleDateFormatB.setLenient(false);
         
         Date dateA;

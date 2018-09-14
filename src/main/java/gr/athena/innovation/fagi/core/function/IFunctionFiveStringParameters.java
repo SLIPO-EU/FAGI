@@ -1,5 +1,7 @@
 package gr.athena.innovation.fagi.core.function;
 
+import org.apache.jena.rdf.model.Literal;
+
 /**
  * Interface for a condition function that takes five string parameters as input.
  * 
@@ -17,6 +19,6 @@ public interface IFunctionFiveStringParameters extends IFunction{
      * @param value
      * @return the evaluation result.
      */
-    public boolean evaluate(String literalA, String paramA, String literalB, String paramB, String value);
+    public boolean evaluate(Literal literalA, String paramA, Literal literalB, String paramB, String value);
     
 }

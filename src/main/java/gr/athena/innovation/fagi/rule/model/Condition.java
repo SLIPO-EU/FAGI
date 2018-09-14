@@ -24,11 +24,20 @@ import org.apache.jena.rdf.model.Literal;
 import gr.athena.innovation.fagi.core.function.IFunctionOneParameter;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralParameters;
 import gr.athena.innovation.fagi.core.function.IFunctionTwoLiteralStringParameters;
+import gr.athena.innovation.fagi.core.function.date.DatesAreSame;
 import gr.athena.innovation.fagi.core.function.geo.GeometriesCloserThan;
+import gr.athena.innovation.fagi.core.function.geo.GeometriesHaveSameArea;
 import gr.athena.innovation.fagi.core.function.geo.GeometriesIntersect;
+import gr.athena.innovation.fagi.core.function.geo.IsGeometryCoveredBy;
+import gr.athena.innovation.fagi.core.function.geo.IsGeometryMoreComplex;
+import gr.athena.innovation.fagi.core.function.geo.IsPointGeometry;
+import gr.athena.innovation.fagi.core.function.geo.IsSameCentroid;
 import gr.athena.innovation.fagi.core.function.literal.IsLiteralNumeric;
 import gr.athena.innovation.fagi.core.function.literal.IsSameNormalized;
 import gr.athena.innovation.fagi.core.function.literal.LiteralContains;
+import gr.athena.innovation.fagi.core.function.literal.LiteralContainsTheOther;
+import gr.athena.innovation.fagi.core.function.literal.LiteralHasLanguageAnnotation;
+import gr.athena.innovation.fagi.core.function.phone.PhoneHasMoreDigits;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 
 /**
@@ -253,6 +262,18 @@ public class Condition {
                 return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isLiteralNumeric);
                  
             }
+            case SpecificationConstants.Functions.LITERAL_CONTAINS_THE_OTHER: {
+                
+                LiteralContainsTheOther literalContainsTheOther = (LiteralContainsTheOther) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, literalContainsTheOther);
+                 
+            }
+            case SpecificationConstants.Functions.LITERAL_HAS_LANGUAGE_ANNOTATION: {
+                
+                LiteralHasLanguageAnnotation literalHasLanguageAnnotation = (LiteralHasLanguageAnnotation) functionMap.get(function.getName());
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, literalHasLanguageAnnotation);
+                 
+            }
             case SpecificationConstants.Functions.LITERAL_CONTAINS: {
 
                 String parameter = function.getParameters()[0];
@@ -304,10 +325,76 @@ public class Condition {
                 return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isSameNormalized);
 
             }
+            case SpecificationConstants.Functions.IS_GEOMETRY_MORE_COMPLEX: {
+                
+                IsGeometryMoreComplex isGeometryMoreComplex = (IsGeometryMoreComplex) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isGeometryMoreComplex);
+
+            }
+            case SpecificationConstants.Functions.IS_POINT_GEOMETRY: {
+                
+                IsPointGeometry isPointGeometry = (IsPointGeometry) functionMap.get(function.getName());
+                return evaluateOneParameterFunction(function, valueA, valueB, externalProperties, isPointGeometry);
+
+            }
+            case SpecificationConstants.Functions.GEOMETRIES_HAVE_SAME_AREA: {
+
+                String parameter = function.getParameters()[0];
+                String threshold = function.getParameters()[2];
+                GeometriesHaveSameArea geometriesHaveSameArea = (GeometriesHaveSameArea) functionMap.get(function.getName());
+
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+                    return geometriesHaveSameArea.evaluate(valueA, valueB, threshold);
+                } else {
+                    ExternalProperty property = externalProperties.get(parameter);
+
+                    if (property == null) {
+                        throw new WrongInputException(parameter + " is wrong. "
+                                + SpecificationConstants.Functions.GEOMETRIES_HAVE_SAME_AREA
+                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                    }
+
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                        return geometriesHaveSameArea.evaluate(property.getValueA(), property.getValueB(), threshold);
+                    } else {
+                        return geometriesHaveSameArea.evaluate(property.getValueB(), property.getValueB(), threshold);
+                    }
+                }
+            }
+            case SpecificationConstants.Functions.IS_SAME_CENTROID: {
+
+                String parameter = function.getParameters()[0];
+                String threshold = function.getParameters()[2];
+                IsSameCentroid isSameCentroid = (IsSameCentroid) functionMap.get(function.getName());
+
+                if (parameter.equals(SpecificationConstants.Rule.A) || parameter.equals(SpecificationConstants.Rule.B)) {
+                    return isSameCentroid.evaluate(valueA, valueB, threshold);
+                } else {
+                    ExternalProperty property = externalProperties.get(parameter);
+
+                    if (property == null) {
+                        throw new WrongInputException(parameter + " is wrong. "
+                                + SpecificationConstants.Functions.IS_SAME_CENTROID
+                                + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                    }
+
+                    if (parameter.startsWith(SpecificationConstants.Rule.A)) {
+                        return isSameCentroid.evaluate(property.getValueA(), property.getValueB(), threshold);
+                    } else {
+                        return isSameCentroid.evaluate(property.getValueB(), property.getValueB(), threshold);
+                    }
+                }
+            }
             case SpecificationConstants.Functions.GEOMETRIES_INTERSECT: {
                 
                 GeometriesIntersect geometriesIntersect = (GeometriesIntersect) functionMap.get(function.getName());
                 return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, geometriesIntersect);
+
+            }
+            case SpecificationConstants.Functions.IS_GEOMETRY_COVERED_BY: {
+                
+                IsGeometryCoveredBy isGeometryCoveredBy = (IsGeometryCoveredBy) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, isGeometryCoveredBy);
 
             }
             case SpecificationConstants.Functions.GEOMETRIES_CLOSER_THAN: {
@@ -335,6 +422,12 @@ public class Condition {
                         return geometriesCloserThan.evaluate(property.getValueB(),property.getValueB(), threshold);
                     }
                 }
+            }
+            case SpecificationConstants.Functions.PHONE_HAS_MORE_DIGITS: {
+                
+                PhoneHasMoreDigits phoneHasMoreDigits = (PhoneHasMoreDigits) functionMap.get(function.getName());
+                return evaluateTwoLiteralFunction(function, valueA, valueB, externalProperties, phoneHasMoreDigits);
+
             }
             case SpecificationConstants.Functions.IS_SAME_PHONE_NUMBER_EXIT_CODE: {
 
@@ -520,6 +613,35 @@ public class Condition {
                             return isValidDate.evaluate(property.getValueA(), parameterB);
                         } else {
                             return isValidDate.evaluate(property.getValueB(), parameterB);
+                        }
+                }
+            }
+            case SpecificationConstants.Functions.DATES_ARE_SAME: {
+                DatesAreSame datesAreSame = (DatesAreSame) functionMap.get(function.getName());
+                String parameterA = function.getParameters()[0];
+                String parameterB = function.getParameters()[1];
+                //String parameterC = function.getParameters()[2];
+                String parameterD = function.getParameters()[3];
+                String parameterE = function.getParameters()[4];
+                switch (parameterA) {
+                    case SpecificationConstants.Rule.A:
+                        return datesAreSame.evaluate(valueA, parameterB, valueB, parameterD, parameterE);
+                    case SpecificationConstants.Rule.B:
+                        return datesAreSame.evaluate(valueA, parameterB, valueB, parameterD, parameterE);
+                    default:
+
+                        ExternalProperty property = externalProperties.get(parameterA);
+
+                        if (property == null) {
+                            throw new WrongInputException(parameterA + " is wrong. "
+                                    + SpecificationConstants.Functions.IS_VALID_DATE
+                                    + " requires one parameter a or b followed by the external property id number. Eg. a1");
+                        }
+
+                        if (parameterA.startsWith(SpecificationConstants.Rule.A)) {
+                            return datesAreSame.evaluate(property.getValueA(), parameterB, property.getValueB(), parameterD, parameterE);
+                        } else {
+                            return datesAreSame.evaluate(property.getValueB(), parameterD, property.getValueA(), parameterB, parameterE);
                         }
                 }
             }

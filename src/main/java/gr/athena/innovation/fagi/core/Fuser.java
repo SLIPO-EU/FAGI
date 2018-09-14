@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -271,7 +270,7 @@ public class Fuser implements IFuser{
         
         addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNames);
         
-        writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
         //addMessageToEmptyOutput(remaining);
     }
 
@@ -324,7 +323,7 @@ public class Fuser implements IFuser{
         
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
         
-        writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
     private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
@@ -342,7 +341,7 @@ public class Fuser implements IFuser{
         
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
         
-        writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
+        //writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
     
     private Entity constructEntity(Model model, String resourceURI, String localName) {
