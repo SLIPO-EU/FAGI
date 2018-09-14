@@ -40,6 +40,20 @@ public class RDFUtils {
         return id;
     }
 
+    public static String getIdFromResourcePart(String resourcePart) {
+        //expects: <namespace:id> or <namespace:id/localname>
+        int endPosition = StringUtils.lastIndexOf(resourcePart, "/");
+        int startPosition = StringUtils.ordinalIndexOf(resourcePart, "/", 5) + 1;
+        String res;
+        if(resourcePart.substring(startPosition).contains("/")){
+            res = resourcePart.subSequence(startPosition, endPosition).toString();
+        } else {
+            res = resourcePart.subSequence(startPosition, resourcePart.length()-1).toString();
+        }
+
+        return res;
+    }
+
     public static String getLocalName(CustomRDFProperty property) {
         String localName;
         if(property.isSingleLevel()){

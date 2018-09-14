@@ -315,6 +315,11 @@ public enum EnumStat {
     FUSED_INITIAL("fusedInitial"),
     
     /**
+     * Number of POIs that have the name-nameValue property in the fused dataset.
+     */
+    FUSED_NAMES("fusedNames"),
+
+    /**
      * Number of POIs that have the phone-contactValue property in the fused dataset.
      */
     FUSED_PHONES("fusedPhones"),
@@ -479,6 +484,7 @@ public enum EnumStat {
             case FUSED_REJECTED_VS_LINKED: return "Number of rejected POIs vs. initial links.";
             case FUSED_INITIAL: return "Number of initial POIs vs number of POIs in fused.";
             case FUSED_PHONES: return "Number of POIs with phones in the fused dataset.";
+            case FUSED_NAMES: return "Number of POIs with names in the fused dataset.";
             case FUSED_EMAILS: return "Number of POIs with emails in the fused dataset.";
             case FUSED_HOMEPAGE: return "Number of POIs with websites in the fused dataset.";
             case FUSED_POSTCODE: return "Number of POIs with postcode in the fused dataset.";
@@ -550,6 +556,7 @@ public enum EnumStat {
             case FUSED_VS_LINKED: return "Fused vs linked";
             case FUSED_REJECTED_VS_LINKED: return "Rejected vs linked";
             case FUSED_INITIAL: return "Initial vs fused POIs";
+            case FUSED_NAMES: return "Initial vs fused name";
             case FUSED_PHONES: return "Initial vs fused phones";
             case FUSED_EMAILS: return "Initial vs fused emails";
             case FUSED_HOMEPAGE: return "Initial vs fused websites";

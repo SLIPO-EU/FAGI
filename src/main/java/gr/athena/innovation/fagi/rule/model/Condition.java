@@ -289,7 +289,7 @@ public class Condition {
 
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. "
-                                + SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE
+                                + SpecificationConstants.Functions.LITERAL_CONTAINS
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");
                     }
 
@@ -412,7 +412,7 @@ public class Condition {
 
                     if (property == null) {
                         throw new WrongInputException(parameter + " is wrong. "
-                                + SpecificationConstants.Functions.IS_SAME_CUSTOM_NORMALIZE
+                                + SpecificationConstants.Functions.GEOMETRIES_CLOSER_THAN
                                 + " requires one parameter a or b followed by the external property id number. Eg. a1");
                     }
 
@@ -618,6 +618,10 @@ public class Condition {
             }
             case SpecificationConstants.Functions.DATES_ARE_SAME: {
                 DatesAreSame datesAreSame = (DatesAreSame) functionMap.get(function.getName());
+                if(function.getParameters().length != 5){
+                    throw new WrongInputException(SpecificationConstants.Functions.DATES_ARE_SAME
+                            + " require 2 date formats and a tolerance (days).");
+                }
                 String parameterA = function.getParameters()[0];
                 String parameterB = function.getParameters()[1];
                 //String parameterC = function.getParameters()[2];
@@ -634,7 +638,7 @@ public class Condition {
 
                         if (property == null) {
                             throw new WrongInputException(parameterA + " is wrong. "
-                                    + SpecificationConstants.Functions.IS_VALID_DATE
+                                    + SpecificationConstants.Functions.DATES_ARE_SAME
                                     + " requires one parameter a or b followed by the external property id number. Eg. a1");
                         }
 

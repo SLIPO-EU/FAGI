@@ -18,6 +18,7 @@ import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.specification.Configuration;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,8 +27,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.Normalizer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -506,6 +509,10 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 break;
             case FUSED_INITIAL:
                 map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
+                break;
+            case FUSED_NAMES:
+                map.put(EnumStat.FUSED_NAMES.getKey(), 
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_NAMES, EnumStat.NON_EMPTY_NAMES, Namespace.NAME));
                 break;
             case FUSED_PHONES:
                 map.put(EnumStat.FUSED_PHONES.getKey(), 
@@ -1523,22 +1530,28 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         
         Integer initialA = Integer.parseInt(initialPair.getValueA());
         Integer initialB = Integer.parseInt(initialPair.getValueB());
-        
-        Integer fused = 0;
+
+        Set<String> set = new HashSet<>();
+
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(Configuration.getInstance().getFused()),"utf-8"));
             for(String line; (line = br.readLine()) !=null;) {
                 if(line.contains(property)){
-                    fused++;
+
+                    String[] parts = line.split(" ");
+                    String idPart = parts[0];
+                    String id = RDFUtils.getIdFromResourcePart(idPart);
+                    set.add(id);
                 }
             }
         } catch (ApplicationException | IOException ex) {
             LOG.fatal(ex);
             throw new ApplicationException(ex.getMessage());
         }
-        
+
+        Integer size = set.size();
         StatisticResultPair pair = new StatisticResultPair(initialA.toString(), initialB.toString(), null);
-        pair.setValueTotal(fused.toString());
+        pair.setValueTotal(size.toString());
         pair.setType(EnumStatViewType.BAR);
         pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
         pair.setTitle(fusedStat.toString());
