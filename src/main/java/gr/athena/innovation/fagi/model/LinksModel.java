@@ -1,13 +1,8 @@
 package gr.athena.innovation.fagi.model;
 
-import gr.athena.innovation.fagi.specification.Namespace;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
 
 /**
  * Class holding information about the links between the datasets.
@@ -90,25 +85,6 @@ public final class LinksModel {
      */
     public void setFilepath(String filepath) {
         this.filepath = filepath;
-    }
-    
-    /**
-     * Removes a link from the links-list as well as from the RDF model. Helps the link rejection process.
-     * 
-     * @param link the link to be removed
-     */
-    public void removeLink(Link link){
-        
-        //remove link from the list
-        links.remove(link);
-        
-        //remove link from the RDF model.
-        Resource a = ResourceFactory.createResource(link.getNodeA());
-        Property pred = ResourceFactory.createProperty(Namespace.SAME_AS);
-        Resource b = ResourceFactory.createResource(link.getNodeB());
-        
-        Statement statement = ResourceFactory.createStatement(a, pred, b);
-        model.remove(statement);
     }
 
     public List<Link> getRejected() {

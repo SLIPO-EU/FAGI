@@ -55,8 +55,14 @@ public class LinkedPair {
     private Entity leftNode;
     private Entity rightNode;
     private Entity fusedEntity;
+    private boolean rejected;
 
     EnumValidationAction validation = EnumValidationAction.UNDEFINED;
+    private final EnumDatasetAction defaultDatasetAction;
+
+    public LinkedPair(EnumDatasetAction defaultDatasetAction) {
+        this.defaultDatasetAction = defaultDatasetAction;
+    }
 
     /**
      *
@@ -152,7 +158,7 @@ public class LinkedPair {
 
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and break.
-            if (validationRule.getActionRuleSet() == null) {
+            if (validationRule.getActionRuleSet() == null || validationRule.getActionRuleSet().getActionRuleList().isEmpty()) {
                 LOG.trace("Rule without ACTION RULE SET, using default validation action.");
 
                 validation = validationRule.getDefaultValidationAction();
@@ -286,11 +292,12 @@ public class LinkedPair {
             LOG.trace("fusing: " + literalA + " " + literalB);
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and continue to next rule.
-            if (rule.getActionRuleSet() == null) {
+            if (rule.getActionRuleSet() == null || rule.getActionRuleSet().getActionRuleList().isEmpty()) {
                 LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
                     boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
                     if(rejected){
+                        this.rejected = true;
                         return;
                     }
                 }
@@ -328,6 +335,7 @@ public class LinkedPair {
                     boolean rejected = fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
 
                     if(rejected){
+                        this.rejected = true;
                         return;
                     }
 
@@ -343,6 +351,7 @@ public class LinkedPair {
                 boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
                 
                 if(rejected){
+                    this.rejected = true;
                     return;
                 }
             }
@@ -557,13 +566,7 @@ public class LinkedPair {
                     break;
                 }
 
-                if(literalA != null && literalB != null){
-                    keepBoth(fusedModel, customProperty, aLexicalForm, bLexicalForm, false);
-                } else if(literalA != null){
-                    keepLeft(fusedModel, customProperty, aLexicalForm, bLexicalForm, false);
-                } else if(literalB != null){
-                    keepRight(fusedModel, customProperty, aLexicalForm, bLexicalForm, false);
-                }
+                keepBoth(fusedModel, customProperty, aLexicalForm, bLexicalForm, false);
 
                 break;
             }
@@ -776,7 +779,10 @@ public class LinkedPair {
                     fusedModel.add(resource, customProperty.getValueProperty(), nodeA);
                     fusedModel.add(resource, customProperty.getValueProperty(), nodeB);
                 } else {
+                    //if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
                     fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    //}
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), nodeA);
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), nodeB);
                 }
@@ -785,7 +791,9 @@ public class LinkedPair {
                 if(customProperty.isSingleLevel()){
                     fusedModel.add(resource, customProperty.getValueProperty(), nodeA);
                 } else {
-                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    //if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    //}
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), nodeA);
                 }
             } else if(literalB != null){
@@ -793,7 +801,9 @@ public class LinkedPair {
                 if(customProperty.isSingleLevel()){
                     fusedModel.add(resource, customProperty.getValueProperty(), nodeB);
                 } else {
-                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    //if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    //}
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), nodeB);
                 }
             }
@@ -842,7 +852,9 @@ public class LinkedPair {
                 if(customProperty.isSingleLevel()){
                     fusedModel.add(resource, customProperty.getValueProperty(), node);
                 } else {
-                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    }
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                 }
             }
@@ -882,7 +894,9 @@ public class LinkedPair {
                 if(customProperty.isSingleLevel()){
                     fusedModel.add(resource, customProperty.getValueProperty(), node);
                 } else {
-                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    }
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                 }
             }
@@ -921,7 +935,9 @@ public class LinkedPair {
                 if(customProperty.isSingleLevel()){
                     fusedModel.add(resource, customProperty.getValueProperty(), node);
                 } else {
-                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                        fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                    }
                     fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                 }
             }
@@ -958,7 +974,9 @@ public class LinkedPair {
                         if(customProperty.isSingleLevel()){
                             fusedModel.add(resource, customProperty.getValueProperty(), node);
                         } else {
-                            fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                            if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                                fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                            }
                             fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                         }
                     }
@@ -970,7 +988,9 @@ public class LinkedPair {
                         if(customProperty.isSingleLevel()){
                             fusedModel.add(resource, customProperty.getValueProperty(), node);
                         } else {
-                            fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                            if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                                fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                            }
                             fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
                         }
                     }
@@ -1213,7 +1233,9 @@ public class LinkedPair {
             if(customProperty.isSingleLevel()){
                 fusedModel.add(resource, customProperty.getValueProperty(), node);
             } else {
-                fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                if(!fusedModel.contains(resource, customProperty.getParent(), renamedResource)){
+                    fusedModel.add(resource, customProperty.getParent(), renamedResource);
+                }
                 fusedModel.add(renamedResource, customProperty.getValueProperty(), node);
             }
         } else {
@@ -1273,7 +1295,9 @@ public class LinkedPair {
     }
 
     private void rejectMarkAmbiguous(Model ambiguousModel, EntityData fusedEntityData) {
-        LinksModel.getLinksModel().getRejected().add(link);
+        if(!LinksModel.getLinksModel().getRejected().contains(link)){
+            LinksModel.getLinksModel().getRejected().add(link);
+        }
 
         Model fusedModel = fusedEntityData.getModel();
 
@@ -1304,11 +1328,41 @@ public class LinkedPair {
     }
 
     private void reject(EntityData fusedEntityData) {
-        //removes link from the list and from the original also.
-        LinksModel.getLinksModel().getRejected().add(link);
+        if(!LinksModel.getLinksModel().getRejected().contains(link)){
+            LinksModel.getLinksModel().getRejected().add(link);
+        }
+        
         Model fusedModel = fusedEntityData.getModel();
         if (!fusedModel.isEmpty()) {
-            fusedModel.removeAll();
+            EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+            switch(mode) {
+                case AA_MODE:
+                case AB_MODE:  
+                case A_MODE:    
+                {
+                    if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_RIGHT)){
+                        fusedModel.removeAll();
+                    }
+                    break;
+                }
+                case BB_MODE:
+                case BA_MODE:
+                case B_MODE:
+                {
+                    if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_LEFT)){
+                        fusedModel.removeAll();
+                    }
+                    break;
+                }
+                case L_MODE:
+                {
+                    fusedModel.removeAll();
+                    break; 
+                }
+
+                default:
+                    throw new UnsupportedOperationException("Wrong Output mode!");               
+            }
         }
 
         fusedEntityData.setModel(fusedModel);
@@ -1575,5 +1629,9 @@ public class LinkedPair {
             newModel.add(newStatement);
         }
         entityToBeRenamed.getEntityData().setModel(newModel);
+    }
+
+    public boolean isRejected() {
+        return rejected;
     }
 }

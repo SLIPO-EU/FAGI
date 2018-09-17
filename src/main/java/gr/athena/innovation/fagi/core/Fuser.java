@@ -56,6 +56,7 @@ public class Fuser implements IFuser{
     private static final Logger LOG = LogManager.getLogger(Fuser.class);
     private int linkedEntitiesNotFoundInDataset = 0;
     private int fusedPairsCount = 0;
+    private int rejectedCount = 0;
     private final Model tempModelA = ModelFactory.createDefaultModel();
     private final Model tempModelB = ModelFactory.createDefaultModel();
 
@@ -92,9 +93,12 @@ public class Fuser implements IFuser{
             }
             
             LinkedPair linkedPair = fuseLink(link, modelA, modelB, ruleSpec, functionMap, mode);
-            
+            if(linkedPair.isRejected()){
+                rejectedCount++;
+            } else {
+                fusedPairsCount++;
+            }
             fusedList.add(linkedPair);
-            fusedPairsCount++;
         }
 
         //links.getLinks().removeAll(links.getRejected());
@@ -106,7 +110,7 @@ public class Fuser implements IFuser{
     private LinkedPair fuseLink(Link link, Model modelA, Model modelB, RuleSpecification ruleSpec, 
             Map<String, IFunction> functionMap, EnumOutputMode mode) throws WrongInputException {
 
-        LinkedPair linkedPair = new LinkedPair();
+        LinkedPair linkedPair = new LinkedPair(ruleSpec.getDefaultDatasetAction());
         linkedPair.setLink(link);
 
         String leftURI = link.getNodeA();
@@ -462,6 +466,15 @@ public class Fuser implements IFuser{
      */
     public int getFusedPairsCount() {
         return fusedPairsCount;
+    }
+
+    /**
+     * Returns the total rejected links.
+     * 
+     * @return the number of the rejected links.
+     */
+    public int getRejectedCount() {
+        return rejectedCount;
     }
 
     private void addUnlinkedTriples(String outputPath, String datasetPath, Set<String> uriSet) throws IOException {

@@ -73,6 +73,10 @@ public class RDFUtils {
         return "<" + node + ">";
     }
 
+    public static String removeBrackets(String node){
+        return node.substring(1, node.length()-1);
+    }
+
     public static Literal extractGeometry(Literal wkt){
         String lexicalForm = wkt.getLexicalForm();
         RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;

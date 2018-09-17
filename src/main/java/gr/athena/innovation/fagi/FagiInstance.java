@@ -29,10 +29,13 @@ import gr.athena.innovation.fagi.specification.ConfigurationParser;
 import gr.athena.innovation.fagi.utils.InputValidator;
 import gr.athena.innovation.fagi.repository.ResourceFileLoader;
 import gr.athena.innovation.fagi.specification.Namespace;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.ParserConfigurationException;
@@ -229,8 +232,17 @@ public class FagiInstance {
 
             long stopTimeWrite = System.currentTimeMillis();
 
-            rejected = LinksModel.getLinksModel().getRejected().size();
-            fused = fuser.getFusedPairsCount() - rejected;
+            rejected = fuser.getRejectedCount();
+            fused = fuser.getFusedPairsCount();
+            
+            Properties prop = new Properties();
+            prop.setProperty("fused", fused.toString());
+            prop.setProperty("rejected", rejected.toString());
+            OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
+            prop.store(st, null);
+            StatisticsExporter exporter = new StatisticsExporter();
+            exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
+
             //ambiguous = AmbiguousDataset.getAmbiguousDataset().getModel();
             LOG.info(configuration.toString());
             
@@ -320,12 +332,6 @@ public class FagiInstance {
         long startCompute = System.currentTimeMillis();
         
         RDFStatisticsCollector collector = new RDFStatisticsCollector();
-        
-        if(fused != null){
-            //genericRDFRepository.parseFused(configuration.getFused());
-            collector.setFusedPOIs(fused);
-            collector.setRejected(rejected);
-        }
 
         StatisticsContainer container = collector.collect(selected);
         
