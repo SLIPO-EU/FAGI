@@ -12,7 +12,6 @@ import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.learning.Trainer;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
-import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.preview.FrequencyCalculationProcess;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;

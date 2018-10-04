@@ -1,6 +1,5 @@
 package gr.athena.innovation.fagi.utils;
 
-import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
@@ -134,6 +133,10 @@ public class RDFUtils {
             case DEFAULT:
             {
                 resource = SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, leftNode.getEntityData().getModel());
+                String localName = RDFUtils.getLocalName(property);
+                if(localName == null){
+                    return ResourceFactory.createResource(resource.toString());
+                }
                 String resourceString = resource.toString() +"/"+ RDFUtils.getLocalName(property);
                 return ResourceFactory.createResource(resourceString);
             }
@@ -141,6 +144,10 @@ public class RDFUtils {
             case BA_MODE:
             case B_MODE:{
                 resource = SparqlRepository.getSubjectOfSingleProperty(Namespace.SOURCE_NO_BRACKETS, rightNode.getEntityData().getModel());
+                String localName = RDFUtils.getLocalName(property);
+                if(localName == null){
+                    return ResourceFactory.createResource(resource.toString());
+                }
                 String resourceString = resource.toString() +"/"+ RDFUtils.getLocalName(property);
                 return ResourceFactory.createResource(resourceString);
             }

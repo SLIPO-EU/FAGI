@@ -227,8 +227,7 @@ public class LinkedPair {
     public void fusePair(RuleSpecification ruleSpec, Map<String, IFunction> functionMap,
             EnumValidationAction validationAction) throws WrongInputException {
 
-        //TODO: optimization: resolve validation action here 
-        EnumDatasetAction defaultDatasetAction = ruleSpec.getDefaultDatasetAction();
+        //TODO: optimization: resolve validation action here
 
         EntityData leftEntityData = leftNode.getEntityData();
         EntityData rightEntityData = rightNode.getEntityData();
@@ -295,8 +294,8 @@ public class LinkedPair {
             if (rule.getActionRuleSet() == null || rule.getActionRuleSet().getActionRuleList().isEmpty()) {
                 LOG.trace("Rule without ACTION RULE SET, use plain action: " + defaultFusionAction);
                 if (defaultFusionAction != null) {
-                    boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
-                    if(rejected){
+                    boolean rejectedFromRule = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                    if(rejectedFromRule){
                         this.rejected = true;
                         return;
                     }
@@ -332,9 +331,9 @@ public class LinkedPair {
                     LOG.debug("Condition : " + condition + " evaluated true. Fusion with action: " + fusionAction);
                     LOG.debug("Literals to be fused: " + literalA + " <--> " + literalB);
 
-                    boolean rejected = fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
+                    boolean rejectedFromRule = fuseRuleAction(fusionAction, validationAction, customPropertyA, literalA, literalB);
 
-                    if(rejected){
+                    if(rejectedFromRule){
                         this.rejected = true;
                         return;
                     }
@@ -348,9 +347,9 @@ public class LinkedPair {
             if (actionRuleToApply == false) {
                 LOG.debug("All conditions evaluated to false in fusion rule. Using default fusion action: "
                         + defaultFusionAction);
-                boolean rejected = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
+                boolean rejectedFromRule = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
                 
-                if(rejected){
+                if(rejectedFromRule){
                     this.rejected = true;
                     return;
                 }
@@ -460,8 +459,8 @@ public class LinkedPair {
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
         if (!isValidLink(validationAction, ambiguousModel, fusedEntityData)) {
-            //LOG.info("link rejected");
-            //stop fusion, link is rejected
+            //LOG.info("link rejectedFromRule");
+            //stop fusion, link is rejectedFromRule
             return true;
         }
 
@@ -1301,28 +1300,54 @@ public class LinkedPair {
 
         Model fusedModel = fusedEntityData.getModel();
 
-        if (!fusedModel.isEmpty()) {
-            fusedModel.removeAll();
-        }
+        EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+        switch(mode) {
+            case AA_MODE:
+            case AB_MODE:  
+            case A_MODE:    
+            {
+                if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_RIGHT)){
+                    fusedModel.removeAll();
+                } else if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_BOTH)){
+                    fusedModel.removeAll();
+                    fusedModel.add(leftNode.getEntityData().getModel());
+                }
 
-        EnumDataset dataset = resolveRejectedEntityModel();
+                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
+                fusedModel.add(statement);
 
-        switch (dataset) {
-            case LEFT: {
-                ambiguousModel.add(leftNode.getEntityData().getModel());
-                break;
-            }
-            case RIGHT: {
                 ambiguousModel.add(rightNode.getEntityData().getModel());
                 break;
             }
+            case BB_MODE:
+            case BA_MODE:
+            case B_MODE:
+            {
+                
+                if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_LEFT)){
+                    fusedModel.removeAll();
+                } else if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_BOTH)){
+                    fusedModel.removeAll();
+                    fusedModel.add(rightNode.getEntityData().getModel());
+                }
+                
+                Statement statement = getAmbiguousLinkStatement(rightNode.getResourceURI(), leftNode.getResourceURI());
+                fusedModel.add(statement);
+                ambiguousModel.add(leftNode.getEntityData().getModel());
+                break;
+            }
+            case L_MODE:
+            {
+                fusedModel.removeAll();
+                Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
+                fusedModel.add(statement);
+                break; 
+            }
+
+            default:
+                throw new UnsupportedOperationException("Wrong Output mode!");               
         }
 
-        Statement statement = getAmbiguousLinkStatement(leftNode.getResourceURI(), rightNode.getResourceURI());
-
-        ambiguousModel.add(statement);
-
-        fusedModel.add(statement);
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
     }
@@ -1342,6 +1367,9 @@ public class LinkedPair {
                 {
                     if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_RIGHT)){
                         fusedModel.removeAll();
+                    } else if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_BOTH)){
+                        fusedModel.removeAll();
+                        fusedModel.add(leftNode.getEntityData().getModel());
                     }
                     break;
                 }
@@ -1351,6 +1379,9 @@ public class LinkedPair {
                 {
                     if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_LEFT)){
                         fusedModel.removeAll();
+                    } else if(defaultDatasetAction.equals(EnumDatasetAction.KEEP_BOTH)){
+                        fusedModel.removeAll();
+                        fusedModel.add(rightNode.getEntityData().getModel());
                     }
                     break;
                 }
@@ -1524,7 +1555,7 @@ public class LinkedPair {
     }
 
     private boolean isRejectedByPreviousRule(Model model) {
-        //the link has been rejected (or rejected and marked ambiguous) by previous rule.
+        //the link has been rejectedFromRule (or rejectedFromRule and marked ambiguous) by previous rule.
         //TODO: if size is 1, maybe strict check if the triple contains the ambiguity
 
         return model.isEmpty() || model.size() == 1;
