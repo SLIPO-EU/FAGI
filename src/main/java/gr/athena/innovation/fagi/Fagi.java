@@ -33,21 +33,29 @@ public class Fagi {
         String value;
 
         int i = 0;
+        
+        try {
 
-        while (i < args.length) {
-            arg = args[i];
-            if (arg.startsWith("-")) {
-                if (arg.equals("-help")) {
-                    LOG.info(SpecificationConstants.HELP);
-                    System.exit(-1);
+            while (i < args.length) {
+                arg = args[i];
+                if (arg.startsWith("-")) {
+                    if (arg.equals("-help")) {
+                        LOG.info(SpecificationConstants.HELP);
+                        System.exit(-1);
+                    }
                 }
+                value = args[i + 1];
+                if (arg.equals("-spec")) {
+                    config = value;
+                    break;
+                }
+                i++;
             }
-            value = args[i + 1];
-            if (arg.equals("-spec")) {
-                config = value;
-                break;
-            }
-            i++;
+
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            LOG.info(SpecificationConstants.HELP);
+            System.exit(-1);
         }
 
         try {
