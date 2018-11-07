@@ -56,6 +56,7 @@ public class LinkedPair {
     private Entity rightNode;
     private Entity fusedEntity;
     private boolean rejected;
+    private final FusionLog fusionLog = new FusionLog();
 
     EnumValidationAction validation = EnumValidationAction.UNDEFINED;
     private final EnumDatasetAction defaultDatasetAction;
@@ -221,12 +222,19 @@ public class LinkedPair {
      * @param ruleSpec the rule specification.
      * @param functionMap the map containing the evaluation functions.
      * @param validationAction the validation action.
+     * @return the fusion info for this pair.
      * 
      * @throws WrongInputException error with given input.
      */
-    public void fusePair(RuleSpecification ruleSpec, Map<String, IFunction> functionMap,
+    public FusionLog fusePair(RuleSpecification ruleSpec, Map<String, IFunction> functionMap,
             EnumValidationAction validationAction) throws WrongInputException {
 
+        fusionLog.setLeftURI(leftNode.getResourceURI());
+        fusionLog.setRightURI(rightNode.getResourceURI());
+        fusionLog.setDefaultFusionAction(defaultDatasetAction);
+        fusionLog.setValidationAction(validationAction);
+
+        LOG.debug("fusing: " + leftNode.getResourceURI() + " " + rightNode.getResourceURI());
         //TODO: optimization: resolve validation action here
 
         EntityData leftEntityData = leftNode.getEntityData();
@@ -297,7 +305,8 @@ public class LinkedPair {
                     boolean rejectedFromRule = fuseRuleAction(defaultFusionAction, validationAction, customPropertyA, literalA, literalB);
                     if(rejectedFromRule){
                         this.rejected = true;
-                        return;
+                        fusionLog.setValidationAction(EnumValidationAction.REJECT);
+                        return fusionLog;
                     }
                 }
                 continue;
@@ -335,7 +344,8 @@ public class LinkedPair {
 
                     if(rejectedFromRule){
                         this.rejected = true;
-                        return;
+                        fusionLog.setValidationAction(EnumValidationAction.REJECT);
+                        return fusionLog;
                     }
 
                     actionRuleToApply = true;
@@ -351,7 +361,8 @@ public class LinkedPair {
                 
                 if(rejectedFromRule){
                     this.rejected = true;
-                    return;
+                    fusionLog.setValidationAction(EnumValidationAction.REJECT);
+                    return fusionLog;
                 }
             }
         }
@@ -360,6 +371,8 @@ public class LinkedPair {
             LOG.trace("No rules were applied for this link. Failed to retrieve literals for any of the given properties. "
                     + "" + this.getLink().getKey());
         }
+        LOG.debug(fusionLog);
+        return fusionLog;
     }
 
     private void evaluateExternalProperty(Map.Entry<String, ExternalProperty> externalPropertyEntry,
@@ -764,6 +777,20 @@ public class LinkedPair {
 
     private void keepBoth(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), 
+                    literalA, literalB, literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), 
+                    literalA, literalB, literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB);
+        }
+
+        fusionLog.addAction(action);
+        
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
         if(resource == null){
@@ -839,6 +866,17 @@ public class LinkedPair {
 
     private void keepLeft(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, literalA);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, literalA);
+        }
+
+        fusionLog.addAction(action);
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
         if(resource == null){
@@ -880,6 +918,18 @@ public class LinkedPair {
     }
 
     private void keepRight(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
+
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, literalB);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, literalB);
+        }
+
+        fusionLog.addAction(action);
 
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
@@ -923,6 +973,20 @@ public class LinkedPair {
 
     private void concatenate(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
 
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), 
+                    literalA, literalB, literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), 
+                    literalA, literalB, literalA + SpecificationConstants.Rule.CONCATENATION_SEP + literalB);
+        }
+
+        fusionLog.addAction(action);
+
         Resource resource = getResourceAndRemoveLiteral(fusedModel, customProperty, literalA, literalB);
         if(resource == null){
             //LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
@@ -953,7 +1017,7 @@ public class LinkedPair {
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
     }
-    
+
     private void keepMostRecent(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) 
             throws ApplicationException {
 
@@ -961,6 +1025,7 @@ public class LinkedPair {
         RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
         Resource resource = getResourceAndRemoveFromModel(customProperty, fusedModel, literalA, literalB);
 
+        String fusedValue = null;
         if(resource == null){
             //LOG.debug("Property " + customProperty.getValueProperty() + " is missing from fused. Construct chain from scratch.");
             resource = RDFUtils.getRootResource(leftNode, rightNode);
@@ -968,6 +1033,7 @@ public class LinkedPair {
             
             switch (mostRecent) {
                 case LEFT: {
+                    fusedValue = literalA;
                     if(literalA != null){
                         RDFNode node = createNode(customProperty, literalA);
                         if(customProperty.isSingleLevel()){
@@ -982,6 +1048,7 @@ public class LinkedPair {
                     break;
                 }
                 case RIGHT: {
+                    fusedValue = literalB;
                     if(literalB != null){
                         RDFNode node = createNode(customProperty, literalB);
                         if(customProperty.isSingleLevel()){
@@ -1003,6 +1070,7 @@ public class LinkedPair {
         } else {
             switch (mostRecent) {
                 case LEFT: {
+                    fusedValue = literalA;
                     if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
                         fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalA, geometryDatatype));
                     } else {
@@ -1011,6 +1079,7 @@ public class LinkedPair {
                     break;
                 }
                 case RIGHT: {
+                    fusedValue = literalB;
                     if(customProperty.getValueProperty().getLocalName().equals(Namespace.WKT_LOCALNAME)){
                         fusedModel.add(resource, customProperty.getValueProperty(), ResourceFactory.createTypedLiteral(literalB, geometryDatatype));
                     } else {
@@ -1024,6 +1093,18 @@ public class LinkedPair {
                     break;
             }
         }
+
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
 
         if(mark){
             markAmbiguous(customProperty, resource, fusedModel);
@@ -1043,8 +1124,9 @@ public class LinkedPair {
             return;
         }
 
+        String fusedValue;
         if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
-
+            fusedValue = literalA;
             Literal geometryLiteral = ResourceFactory.createTypedLiteral(literalA, geometryDatatype);
             fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
 
@@ -1054,7 +1136,7 @@ public class LinkedPair {
             fusedEntity.setEntityData(fusedEntityData);
 
         } else {
-
+            fusedValue = literalB;
             Literal geometryLiteral = ResourceFactory.createTypedLiteral(literalB, geometryDatatype);
             fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
 
@@ -1064,6 +1146,18 @@ public class LinkedPair {
             fusedEntity.setEntityData(fusedEntityData);
         }
 
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
+
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
         }
@@ -1071,7 +1165,7 @@ public class LinkedPair {
 
     private void keepMorePointsAndShift(String literalA, String literalB, Model fusedModel, 
             CustomRDFProperty customProperty, boolean mark) {
-        
+
         EntityData fusedEntityData;
         Geometry leftGeometry = parseGeometry(literalA);
         Geometry rightGeometry = parseGeometry(literalB);
@@ -1083,8 +1177,9 @@ public class LinkedPair {
             LOG.trace("null property value. Keep more points and shift will not be applied between literals {} - {}", literalA, literalB);
             return;
         }
-        
+        String fusedValue = null;
         if (leftGeometry.getNumPoints() >= rightGeometry.getNumPoints()) {
+            
             CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(rightGeometry);
             Geometry fusedGeometry = centroidTranslator.shift(leftGeometry);
             String wktFusedGeometry = getWKTLiteral(fusedGeometry);
@@ -1098,6 +1193,7 @@ public class LinkedPair {
             fusedEntityData.setModel(fusedModel);
             fusedEntity.setEntityData(fusedEntityData);
 
+            fusedValue = geometryLiteral.toString();
         } else if (leftGeometry.getNumPoints() < rightGeometry.getNumPoints()) {
 
             CentroidShiftTranslator centroidTranslator = new CentroidShiftTranslator(leftGeometry);
@@ -1112,7 +1208,20 @@ public class LinkedPair {
             fusedEntityData = fusedEntity.getEntityData();
             fusedEntityData.setModel(fusedModel);
             fusedEntity.setEntityData(fusedEntityData);
+            fusedValue = geometryLiteral.toString();
         }
+
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
 
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
@@ -1139,6 +1248,19 @@ public class LinkedPair {
         fusedModel.add(node, customProperty.getValueProperty(), geometryLiteral);
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
+
+        String fusedValue = geometryLiteral.toString();
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
 
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
@@ -1167,6 +1289,19 @@ public class LinkedPair {
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
 
+        String fusedValue = geometryLiteral.toString();
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
+
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
         }
@@ -1194,17 +1329,31 @@ public class LinkedPair {
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
 
+        String fusedValue = geometryLiteral.toString();
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
+
         if(mark){
             markAmbiguous(customProperty, node, fusedModel);
         }
     }
 
-    private void keepLongest(Model fusedModel, CustomRDFProperty customProperty, String literalA, String literalB, boolean mark) {
+    private void keepLongest(Model fusedModel, CustomRDFProperty customProperty, String literalA, 
+            String literalB, boolean mark) {
 
         EntityData fusedEntityData;
 
         String longest;
-        
+
         if(literalA != null && literalB == null){
             longest = literalA;
         } else if(literalB != null && literalA == null){
@@ -1244,6 +1393,19 @@ public class LinkedPair {
         fusedEntityData = fusedEntity.getEntityData();
         fusedEntityData.setModel(fusedModel);
         fusedEntity.setEntityData(fusedEntityData);
+
+        String fusedValue = node.toString();
+        String valueProperty = customProperty.getValueProperty().toString();
+
+        Action action;
+        if(customProperty.isSingleLevel()){
+            action = new Action(valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        } else {
+            String parentProperty = customProperty.getParent().toString();
+            action = new Action(parentProperty + " " + valueProperty, EnumFusionAction.KEEP_BOTH.toString(), literalA, literalB, fusedValue);
+        }
+
+        fusionLog.addAction(action);
 
         if(mark){
             markAmbiguous(customProperty, resource, fusedModel);
@@ -1613,36 +1775,19 @@ public class LinkedPair {
         }
     }
 
-    private EnumDataset resolveRejectedEntityModel() {
-        EnumOutputMode mode = Configuration.getInstance().getOutputMode();
-        switch (mode) {
-            case AA_MODE:
-            case AB_MODE:
-            case A_MODE:
-            case L_MODE:
-                return EnumDataset.RIGHT;
-            case BB_MODE:
-            case BA_MODE:
-            case B_MODE:
-                return EnumDataset.LEFT;
-            default:
-                throw new ApplicationException("Wrong output mode: " + mode);
-        }
-    }
-
     private void renameResourceURIs(Entity entityToBeRenamed, Entity entity) {
         Model original = entityToBeRenamed.getEntityData().getModel();
         Iterator<Statement> statementIterator = original.listStatements().toList().iterator();
 
         Model newModel = ModelFactory.createDefaultModel();
         while (statementIterator.hasNext()) {
-            
+
             Statement statement = statementIterator.next();
 
             String newSub = statement.getSubject().toString().replaceAll(entityToBeRenamed.getResourceURI(), entity.getResourceURI());
             String newPred = statement.getPredicate().toString().replaceAll(entityToBeRenamed.getResourceURI(), entity.getResourceURI());
             String newOb = statement.getObject().toString().replaceAll(entityToBeRenamed.getResourceURI(), entity.getResourceURI());
-            
+
             Resource subject = ResourceFactory.createResource(newSub);
             Property predicate = ResourceFactory.createProperty(newPred);
 

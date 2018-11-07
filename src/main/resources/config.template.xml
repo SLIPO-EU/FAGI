@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification>
+	<inputFormat>NT</inputFormat>
+	<outputFormat>NT</outputFormat>
+	<locale></locale>
+	<similarity>jarowinkler</similarity>
+	<rules></rules>
+	<left>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+		<date></date>
+	</left>
+	<right>
+		<id></id>
+		<endpoint></endpoint>
+		<file></file>
+		<categories></categories>
+		<date></date>
+	</right>
+	<links>
+		<id>links</id>
+		<endpoint></endpoint>
+		<file></file>
+	</links>	
+	<target>
+		<id>fused</id>
+		<mode>aa_mode</mode>
+		<outputDir></outputDir>
+		<fused></fused>
+		<remaining></remaining>
+		<ambiguous></ambiguous>
+		<statistics></statistics>
+		<fusionLog></fusionLog>
+	</target>
+</specification>
+

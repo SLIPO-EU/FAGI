@@ -1,6 +1,6 @@
 package gr.athena.innovation.fagi;
 
-import gr.athena.innovation.fagi.core.Fuser;
+import gr.athena.innovation.fagi.core.POIFuser;
 import gr.athena.innovation.fagi.core.function.FunctionRegistry;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.core.function.literal.AbbreviationAndAcronymResolver;
@@ -216,7 +216,7 @@ public class FagiInstance {
         if(fuse){
             LOG.info("Initiating fusion process...");
 
-            Fuser fuser = new Fuser();
+            POIFuser fuser = new POIFuser();
             Map<String, IFunction> functionRegistryMap = functionRegistry.getFunctionMap();
 
             List<LinkedPair> fusedEntities = fuser.fuseAll(configuration, ruleSpec, functionRegistryMap);
