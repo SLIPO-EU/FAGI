@@ -72,15 +72,15 @@ public class ConfigurationParser {
                     break;
                 default:
                     outputFormat = "NT";
-            }            
+            }
 
             configuration.setOutputRDFFormat(outputFormat);
 
             NodeList localeNodeList = doc.getElementsByTagName(SpecificationConstants.Config.LOCALE);
-            
+
             String localeText = "";
             Locale locale;
-            
+
             if (localeNodeList.getLength() > 0) {
                 localeText = localeNodeList.item(0).getTextContent();
             }
@@ -277,6 +277,8 @@ public class ConfigurationParser {
                         configuration.setAmbiguousDatasetFilepath(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.STATISTICS)) {
                         configuration.setStatsFilepath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FUSION_LOG)) {
+                        configuration.setFusionLog(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.MODE)) {
                         configuration.setOutputMode(EnumOutputMode.fromString(n.getTextContent()));
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {

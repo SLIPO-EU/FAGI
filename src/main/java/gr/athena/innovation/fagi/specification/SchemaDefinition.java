@@ -131,6 +131,7 @@ public class SchemaDefinition {
 "			  <xs:element name=\"remaining\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"ambiguous\" type=\"xs:anyURI\"/>\n" +
 "			  <xs:element name=\"statistics\" type=\"xs:anyURI\"/>\n" +
+"                         <xs:element name=\"fusionLog\" type=\"xs:anyURI\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>				\n" +

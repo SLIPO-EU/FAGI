@@ -123,6 +123,7 @@
 			  <xs:element name="remaining" type="xs:anyURI"/>
 			  <xs:element name="ambiguous" type="xs:anyURI"/>
 			  <xs:element name="statistics" type="xs:anyURI"/>
+                          <xs:element name="fusionLog" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
 		</xs:element>				

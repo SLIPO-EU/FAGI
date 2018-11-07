@@ -15,7 +15,12 @@ public class SpecificationConstants {
     /**
      * Connector/separator for building strings in FAGI.
      */
-    public static final int CONNECTOR = ' ';
+    public static final char CONNECTOR = ' ';
+    
+    /**
+     * Buffer size for fusion log output.
+     */
+    public static final int FUSION_LOG_BUFFER_SIZE = 1000;
 
     /**
      * Help message.
@@ -67,6 +72,11 @@ public class SpecificationConstants {
          * Name for similarity tag in XML.
          */
         public static final String SIMILARITY = "similarity";
+        
+        /**
+         * Name for fusion log tag in XML.
+         */
+        public static final String FUSION_LOG = "fusionLog";
 
         /**
          * Name for rules (file-path) tag in XML. 
@@ -172,6 +182,11 @@ public class SpecificationConstants {
          * Name for default statistics filename.
          */
         public static final String DEFAULT_STATS_FILENAME = "stats.json";
+        
+        /**
+         * Name for default fusionLog filename.
+         */
+        public static final String DEFAULT_FUSION_LOG_FILENAME = "fusionLog.txt";
 
         /**
          * Suffix for naming frequency-related files for dataset A.

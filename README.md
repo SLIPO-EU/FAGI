@@ -79,6 +79,8 @@ Furthermore, the `target` tag refers to the target/output dataset and contains t
 
 `statistics`: Optional tag. Specifies the path of the statistics file. By default a file with name "statistics.txt" will be written under the output directory defined above.
 
+`fusionLog`: Specifies the path of the fusion log file. By default a file with name "fusionLog.txt" will be written under the output directory defined above.
+
 | Mode        | Description     
 | ------------- |:-------------:|
 | aa_mode | Only linked triples are handled: Fused triples replace the respective ones of dataset A (the fusion output is exclusively written on A). 

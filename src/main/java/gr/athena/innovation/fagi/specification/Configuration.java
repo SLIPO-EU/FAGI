@@ -47,6 +47,7 @@ public class Configuration {
     private String rulesPath;
     private Locale locale = null;
     private String similarity;
+    private String fusionLog;
     private String trainingSetCsvPath;
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
@@ -651,6 +652,26 @@ public class Configuration {
         this.trainingSetCsvPath = trainingSetCsvPath;
     }
 
+    public String getFusionLog() {
+        return fusionLog;
+    }
+
+    public void setFusionLog(String fusionLog) throws WrongInputException {
+        if(StringUtils.isBlank(fusionLog)){
+            if(StringUtils.isBlank(outputDir)){
+                throw new WrongInputException("Define " + SpecificationConstants.Config.FUSION_LOG
+                        + " filepath after " + SpecificationConstants.Config.OUTPUT_DIR 
+                        + " tag in " + SpecificationConstants.Config.CONFIG_XML);
+            }
+
+            this.fusionLog = outputDir + SpecificationConstants.Config.DEFAULT_FUSION_LOG_FILENAME;
+        } else {
+            this.fusionLog = fusionLog;
+        }
+
+        this.fusionLog = fusionLog;
+    }
+
     @Override
     public String toString() {
         return "\nconfiguration{" + 
@@ -674,6 +695,7 @@ public class Configuration {
                     "\n remaining=" + remaining +
                     "\n ambiguous=" + ambiguousDatasetFilepath +
                     "\n stats=" + statsFilepath +
+                    "\n fusionLog=" + fusionLog +
                     "\n\n outputRDFFormat=" + outputRDFFormat + 
                     "\n inputRDFFormat=" + inputRDFFormat + 
                     "\n locale=" + locale +
