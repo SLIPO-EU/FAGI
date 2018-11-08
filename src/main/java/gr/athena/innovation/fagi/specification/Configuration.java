@@ -28,6 +28,7 @@ public class Configuration {
     private String pathLinks;
     private String idLinks;
     private String endpointLinks;
+    private String linksFormat;
     private String outputDir;
     private String statsFilepath;
     private String fused;
@@ -672,6 +673,14 @@ public class Configuration {
         this.fusionLog = fusionLog;
     }
 
+    public String getLinksFormat() {
+        return linksFormat;
+    }
+
+    public void setLinksFormat(String linksFormat) {
+        this.linksFormat = linksFormat.toLowerCase();
+    }
+
     @Override
     public String toString() {
         return "\nconfiguration{" + 
@@ -688,7 +697,7 @@ public class Configuration {
                     "\n dateB=" + dateB +                
                     "\n\n pathLinks=" + pathLinks + 
                     "\n idLinks=" + idLinks + 
-                    //"\n endpointLinks=" + endpointLinks + 
+                    "\n linksFormat=" + linksFormat +
                     "\n\n outputMode=" + outputMode +
                     "\n outputDir=" + outputDir +
                     "\n fused=" + fused +

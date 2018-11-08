@@ -23,7 +23,9 @@ public class RDFUtils {
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(RDFUtils.class);
     
     public static String getIdFromResource(String resourceString) {
-
+        //example
+        //input: http://slipo.eu/id/poi/0d1bb367-f3a5-10c1-b33c-381ef1e2f041
+        //returns 0d1bb367-f3a5-10c1-b33c-381ef1e2f041
         int startPosition = StringUtils.ordinalIndexOf(resourceString, "/", 5) + 1;
         String id = resourceString.subSequence(startPosition, resourceString.length()).toString();
 

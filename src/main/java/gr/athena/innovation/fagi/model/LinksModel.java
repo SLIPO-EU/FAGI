@@ -70,15 +70,6 @@ public final class LinksModel {
     }
 
     /**
-     * Get the links file path.
-     * 
-     * @return the file path
-     */
-    public String getFilepath() {
-        return filepath;
-    }
-
-    /**
      * Set the links file path.
      * 
      * @param filepath the file path

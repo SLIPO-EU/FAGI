@@ -109,6 +109,26 @@ public class SpecificationConstants {
         public static final String LINKS = "links";
 
         /**
+         * Name for links format tag in XML.
+         */
+        public static final String LINKS_FORMAT = "linksFormat";
+
+        /**
+         * NT value for links format tag in XML.
+         */
+        public static final String NT = "nt";
+
+        /**
+         * CSV value for links format tag in XML.
+         */
+        public static final String CSV = "csv";
+        
+        /**
+         * CSV-unique-links value for links format tag in XML.
+         */
+        public static final String CSV_UNIQUE_LINKS = "csv-unique-links";
+
+        /**
          * Name for categories tag in XML.
          */
         public static final String CATEGORIES = "categories";

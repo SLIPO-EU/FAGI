@@ -244,7 +244,6 @@ public class ConfigurationParser {
                 Node n = linksChilds.item(i);
 
                 if (n.getNodeType() == Node.ELEMENT_NODE) {
-
                     if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.FILE)) {
                         configuration.setPathLinks(n.getTextContent());
                     } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ID)) {
@@ -254,6 +253,27 @@ public class ConfigurationParser {
                             throw new UnsupportedOperationException("Endpoints are not supported yet.");
                         }                        
                         configuration.setEndpointLinks(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.LINKS_FORMAT)) {
+                        String linksFormatText = n.getTextContent();
+                        String linksFormat;
+                        
+                        switch (linksFormatText.toLowerCase()) {
+                            case "nt":
+                                linksFormat = SpecificationConstants.Config.NT;
+                                break;
+                            case "csv":
+                                linksFormat = SpecificationConstants.Config.CSV;
+                                break;                    
+                            case "csv-unique-links":
+                                linksFormat = SpecificationConstants.Config.CSV_UNIQUE_LINKS;
+                                break;  
+                            default:
+                                throw new WrongInputException("Wrong links format. Define between " 
+                                        + SpecificationConstants.Config.NT + " " 
+                                        + SpecificationConstants.Config.CSV + " " 
+                                        + SpecificationConstants.Config.CSV_UNIQUE_LINKS);
+                        }
+                        configuration.setLinksFormat(linksFormat);
                     }
                 }
                 n.getNextSibling();

@@ -24,8 +24,6 @@ public abstract class AbstractRepository {
     
     private static final Logger LOG = LogManager.getLogger(AbstractRepository.class);
     
-    public abstract void readFile(String path);
-    
     /**
      * Loads the given RDF file into a RDF model as the left dataset.
      * 
@@ -47,7 +45,7 @@ public abstract class AbstractRepository {
      * @throws gr.athena.innovation.fagi.exception.WrongInputException Indicates wrong input.
      */  
     public abstract void parseFused(String filepath) throws WrongInputException;
-    
+
     /**
      * Loads the given links file into a RDF model.
      * 
@@ -78,7 +76,6 @@ public abstract class AbstractRepository {
             final Statement statement = iter.nextStatement();
             final String nodeA = statement.getSubject().getURI();
             //jena getLocalName problem with URIs. Using custom implementation.
-            //final String uriA = statement.getSubject().getLocalName();
             final String uriA = RDFUtils.getIdFromResource(statement.getSubject().toString());
             final String nodeB;
             final String uriB;
@@ -87,17 +84,15 @@ public abstract class AbstractRepository {
             if(object.isResource()) {
                 nodeB = object.asResource().getURI();
                 //jena getLocalName problem with URIs. Using custom implementation.
-                //uriB = object.asResource().getLocalName();
                 uriB= RDFUtils.getIdFromResource(object.toString());
-            }
-            else {
+            } else {
                 throw new ParseException("Failed to parse link (object not a resource): " + statement.toString(), 0);
             }
+
             Link link = new Link(nodeA, uriA, nodeB, uriB);
             links.add(link);
         }
 
         return links;       
     }
-
 }

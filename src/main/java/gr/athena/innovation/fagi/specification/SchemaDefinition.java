@@ -105,6 +105,15 @@ public class SchemaDefinition {
 "			<xs:sequence>\n" +
 "			  <xs:element name=\"id\" type=\"xs:string\"/>\n" +
 "			  <xs:element name=\"endpoint\" type=\"xs:string\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"linksFormat\">\n" +
+"				<xs:simpleType>\n" +
+"				  <xs:restriction base=\"xs:string\">\n" +
+"				    <xs:enumeration value=\"csv\"/>\n" +
+"				    <xs:enumeration value=\"csv-unique-links\"/>\n" +
+"				    <xs:enumeration value=\"nt\"/>				    \n" +
+"				  </xs:restriction>\n" +
+"				</xs:simpleType>\n" +
+"			  </xs:element>			  \n" +
 "			  <xs:element name=\"file\" type=\"xs:anyURI\"/>\n" +
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +

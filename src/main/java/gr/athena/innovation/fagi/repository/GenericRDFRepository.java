@@ -86,10 +86,10 @@ public class GenericRDFRepository extends AbstractRepository{
         loadLinksList(filepath);
 
     }
-    
+
     private void loadLinksModel(String filepath){
         Model model = ModelFactory.createDefaultModel();
-        model.read(filepath) ;
+        model.read(filepath);
         LinksModel linksModel = LinksModel.getLinksModel();
         linksModel.setModel(model);
         linksModel.setFilepath(filepath);
@@ -100,11 +100,6 @@ public class GenericRDFRepository extends AbstractRepository{
         linksModel.setLinks(parseLinksFile(filepath));
     }
 
-    @Override
-    public void readFile(String path) {
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
-    
     private boolean isValidPath(String filepath){
         File file = new File(filepath);
         return (file.exists() && !file.isDirectory());

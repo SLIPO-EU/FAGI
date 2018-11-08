@@ -22,6 +22,7 @@
 	<links>
 		<id>links</id>
 		<endpoint></endpoint>
+		<linksFormat></linksFormat>
 		<file></file>
 	</links>	
 	<target>
