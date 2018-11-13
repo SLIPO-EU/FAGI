@@ -256,9 +256,10 @@ public class FagiInstance {
             prop.setProperty("rejected", rejected.toString());
             OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
             prop.store(st, null);
-            StatisticsExporter exporter = new StatisticsExporter();
-            exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
-
+            if(exportStatistics){
+                StatisticsExporter exporter = new StatisticsExporter();
+                exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
+            }
             //ambiguous = AmbiguousDataset.getAmbiguousDataset().getModel();
             LOG.info(configuration.toString());
             

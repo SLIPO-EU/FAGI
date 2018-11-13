@@ -26,11 +26,13 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,7 +66,7 @@ public class POIFuser implements Fuser{
     private final Model tempModelA = ModelFactory.createDefaultModel();
     private final Model tempModelB = ModelFactory.createDefaultModel();
     private final List<FusionLog> fusionLogBuffer = new ArrayList<>();
-    private final boolean verbose = false;
+    private final boolean verbose = Configuration.getInstance().isVerbose();
 
     /**
      * Fuses all links using the Rules defined in the XML file.
@@ -86,6 +88,13 @@ public class POIFuser implements Fuser{
         LinksModel links = LinksModel.getLinksModel();
 
         EnumOutputMode mode = configuration.getOutputMode();
+
+        if(verbose){
+            //clean fusion log
+            if(new File(configuration.getFusionLog()).exists()){
+                FileChannel.open(Paths.get(configuration.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
+            }
+        }
 
         for (Link link : links.getLinks()){
 

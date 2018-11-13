@@ -52,7 +52,9 @@ public class Configuration {
     private String trainingSetCsvPath;
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
-    private final int minOptionalDepth = 1;    
+    private final int minOptionalDepth = 1;
+    
+    private final boolean verbose = true;
 
     private Configuration() {
     }
@@ -669,8 +671,6 @@ public class Configuration {
         } else {
             this.fusionLog = fusionLog;
         }
-
-        this.fusionLog = fusionLog;
     }
 
     public String getLinksFormat() {
@@ -679,6 +679,10 @@ public class Configuration {
 
     public void setLinksFormat(String linksFormat) {
         this.linksFormat = linksFormat.toLowerCase();
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 
     @Override

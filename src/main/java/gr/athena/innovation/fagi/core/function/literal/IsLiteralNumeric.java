@@ -21,6 +21,11 @@ public class IsLiteralNumeric implements IFunction, IFunctionOneParameter {
      */
     @Override
     public boolean evaluate(Literal literal) {
+
+        if(literal == null){
+            return false;
+        }
+
         return literal.getLexicalForm().matches(SpecificationConstants.Regex.NUMERIC);
     }
 

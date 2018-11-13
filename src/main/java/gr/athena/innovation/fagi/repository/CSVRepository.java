@@ -96,7 +96,7 @@ public class CSVRepository extends AbstractRepository{
                 links.add(link);
 
                 Resource s = ResourceFactory.createResource(nodeA);
-                Property p = ResourceFactory.createProperty(Namespace.SAME_AS);
+                Property p = ResourceFactory.createProperty(Namespace.SAME_AS_NO_BRACKETS);
                 Resource o = ResourceFactory.createResource(nodeB);
                 Statement statement = ResourceFactory.createStatement(s, p, o);
                 model.add(statement);
@@ -118,10 +118,11 @@ public class CSVRepository extends AbstractRepository{
      * <code>
      * A1	B1	0.8
      * A1	B2	0.4
-     * A1	B2	0.7
-     * A2	B3	0.5
-     * A3	B2	0.55
+     * A1	B3	0.7
+     * A2	B3	0.55
+     * A3	B2	0.5
      * A3	B4	0.6
+     * A4	B3	0.2
      * </code>
      * The above input will give the following output:
      * <code>
@@ -132,6 +133,9 @@ public class CSVRepository extends AbstractRepository{
      * 
      * The B2 entity could not make it to the final list, 
      * because the A1 has a stronger link with B1 and A3 has a stronger link with B4.
+     * 
+     * The A4 entity could not make it to the final list also because B3 has stronger link with A1, 
+     * but A1 has stronger link with B1.
      * 
      * @param linksFile The file path of the initialLinks.
      * @return List of link objects.
@@ -144,13 +148,14 @@ public class CSVRepository extends AbstractRepository{
         List<Link> filteredLinks = new ArrayList<>();
 
         Map<String, Entry<String, Double>> mapA = new HashMap<>();
-        
+
         try(BufferedReader br = new BufferedReader(new FileReader(linksFile))) {
             for(String line; (line = br.readLine()) != null; ) {
 
                 if(StringUtils.isBlank(line)){
                     continue;
                 }
+
                 String[] parts = line.split("\\s+");
                 String nodeA = RDFUtils.removeBrackets(parts[0]);
                 String nodeB = RDFUtils.removeBrackets(parts[1]);
@@ -167,20 +172,19 @@ public class CSVRepository extends AbstractRepository{
         initialLinks.sort((o1, o2) -> -o1.getScore().compareTo(o2.getScore())); //descending
 
         for (Link initialLink : initialLinks) {
-
             if(!listContainsNodeA(filteredLinks, initialLink.getNodeA()) 
                     && !listContainsNodeB(filteredLinks, initialLink.getNodeB())){
-                
+
                 filteredLinks.add(initialLink);
-                
+
                 Resource s = ResourceFactory.createResource(initialLink.getNodeA());
-                Property p = ResourceFactory.createProperty(Namespace.SAME_AS);
+                Property p = ResourceFactory.createProperty(Namespace.SAME_AS_NO_BRACKETS);
                 Resource o = ResourceFactory.createResource(initialLink.getNodeB());
                 Statement statement = ResourceFactory.createStatement(s, p, o);
                 model.add(statement);
             }
         }
-        
+
         LinksModel linksModel = LinksModel.getLinksModel();
         linksModel.setModel(model);
         linksModel.setFilepath(linksFile);

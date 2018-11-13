@@ -756,10 +756,12 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         Integer emptyA = totalPOIsA - nA;
         Integer emptyB = totalPOIsB - nB;
 
+        Integer totalEmpty = emptyA + emptyB;
+
         StatisticResultPair pair = new StatisticResultPair(emptyA.toString(), emptyB.toString(), null);
         pair.setType(EnumStatViewType.BAR);
         pair.setGroup(new StatGroup(EnumStatGroup.PROPERTY));
-        pair.setValueTotal(total.toString());
+        pair.setValueTotal(totalEmpty.toString());
         pair.setTitle(stat.toString());
         pair.setLegendTotal(stat.getLegendTotal());
         pair.setLegendA(stat.getLegendA());
