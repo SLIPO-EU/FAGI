@@ -12,6 +12,12 @@ public class Link implements Serializable {
     private final String nodeB;
     private final String localNameA;
     private final String localNameB;
+    private Double score;
+
+    @Override
+    public String toString() {
+        return "Link{" + "nodeA=" + nodeA + ", nodeB=" + nodeB + ", score=" + score + '}';
+    }
     
     /**
      * Constructs a new link between two nodes.
@@ -25,6 +31,22 @@ public class Link implements Serializable {
         this.nodeB = nodeB;
         this.localNameA = localNameA;
         this.localNameB = localNameB;
+    }
+
+    /**
+     * Constructs a new link between two nodes.
+     * @param nodeA the first node
+     * @param localNameA the URI of the first node
+     * @param nodeB the second node
+     * @param localNameB the URI of the second
+     * @param score the link's confidence score
+     */
+    public Link(final String nodeA, final String localNameA, final String nodeB, final String localNameB, final Double score) {
+        this.nodeA = nodeA;
+        this.nodeB = nodeB;
+        this.localNameA = localNameA;
+        this.localNameB = localNameB;
+        this.score = score;
     }
     
     /**
@@ -66,4 +88,12 @@ public class Link implements Serializable {
     public String getKey() {
         return nodeA + " <--> " + nodeB;
     } 
+
+    /**
+     * 
+     * @return the score of the link
+     */
+    public Double getScore() {
+        return score;
+    }
 }

@@ -28,6 +28,7 @@ public class Configuration {
     private String pathLinks;
     private String idLinks;
     private String endpointLinks;
+    private String linksFormat;
     private String outputDir;
     private String statsFilepath;
     private String fused;
@@ -51,7 +52,9 @@ public class Configuration {
     private String trainingSetCsvPath;
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
-    private final int minOptionalDepth = 1;    
+    private final int minOptionalDepth = 1;
+    
+    private final boolean verbose = true;
 
     private Configuration() {
     }
@@ -668,8 +671,18 @@ public class Configuration {
         } else {
             this.fusionLog = fusionLog;
         }
+    }
 
-        this.fusionLog = fusionLog;
+    public String getLinksFormat() {
+        return linksFormat;
+    }
+
+    public void setLinksFormat(String linksFormat) {
+        this.linksFormat = linksFormat.toLowerCase();
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 
     @Override
@@ -688,7 +701,7 @@ public class Configuration {
                     "\n dateB=" + dateB +                
                     "\n\n pathLinks=" + pathLinks + 
                     "\n idLinks=" + idLinks + 
-                    //"\n endpointLinks=" + endpointLinks + 
+                    "\n linksFormat=" + linksFormat +
                     "\n\n outputMode=" + outputMode +
                     "\n outputDir=" + outputDir +
                     "\n fused=" + fused +

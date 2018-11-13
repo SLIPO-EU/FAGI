@@ -39,6 +39,7 @@ import gr.athena.innovation.fagi.core.function.literal.LiteralContainsTheOther;
 import gr.athena.innovation.fagi.core.function.literal.LiteralHasLanguageAnnotation;
 import gr.athena.innovation.fagi.core.function.phone.PhoneHasMoreDigits;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Condition represents the result of an expression or a function that decides if a fusion action is going to be
@@ -56,7 +57,22 @@ public class Condition {
     private Expression expression;
 
     public boolean evaluate(Map<String, IFunction> functionMap, LinkedPair pair, CustomRDFProperty fusionProperty, 
-            Literal valueA, Literal valueB, Map<String, ExternalProperty> externalProperties) throws WrongInputException {
+            RDFNode nodeA, RDFNode nodeB, Map<String, ExternalProperty> externalProperties) throws WrongInputException {
+        
+        Literal valueA = null;
+        Literal valueB = null;
+        
+        if(nodeA != null){
+            if(nodeA.isLiteral()){
+                valueA = nodeA.asLiteral();
+            }
+        }
+        
+        if(nodeB != null){
+            if(nodeB.isLiteral()){
+                valueB = nodeB.asLiteral();
+            }
+        }
 
         if (isSingleFunction()) {
             Function function2 = new Function(this.function);

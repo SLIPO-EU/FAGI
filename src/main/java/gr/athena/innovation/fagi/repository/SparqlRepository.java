@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.util.List;
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -15,6 +16,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -29,7 +31,7 @@ public class SparqlRepository {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(SparqlRepository.class);
 
-    public static Literal getObjectOfProperty(Property p, Model model) {
+    public static Literal getLiteralOfProperty(Property p, Model model) {
 
         List<RDFNode> objectList = model.listObjectsOfProperty(p).toList();
 
@@ -58,7 +60,26 @@ public class SparqlRepository {
         }
     }
 
-    public static Literal getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
+    public static RDFNode getObjectOfProperty(Property p, Model model) {
+
+        List<RDFNode> objectList = model.listObjectsOfProperty(p).toList();
+
+        if (objectList.size() == 1) {
+            RDFNode object = objectList.get(0);
+            return object;
+
+        } else if (objectList.size() > 1) {
+            //Possible duplicate triple. Happens with synthetic data. Returns the first literal
+            LOG.trace("found more than one object of property " + p);
+            RDFNode object = objectList.get(0);
+            return object;
+        } else {
+            LOG.debug("Problem finding unique result with property: " + p + "\nObjects returned: " + objectList.size());
+            return null;
+        }
+    }
+
+    public static Literal getLiteralFromPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
 
         String var = "o2";
         Literal result = null;
@@ -79,7 +100,29 @@ public class SparqlRepository {
                     } else {
                         result = c.asLiteral();
                     }
+                } else {
+                    LOG.warn("Expected literal but found resource " + c);
                 }
+            }
+        }
+        return result;
+    }
+
+    public static RDFNode getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
+
+        String var = "o2";
+        Literal result = null;
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2, checkOfficial);
+
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(var);
+                return c;
             }
         }
         return result;
@@ -178,6 +221,50 @@ public class SparqlRepository {
         return null;
     }
 
+    public static Resource getSubjectOfNode(Property property, RDFNode node, Model model) {
+
+        if(node.isLiteral()){
+            String literalString = node.asLiteral().getLexicalForm();
+            RDFDatatype datatype = node.asLiteral().getDatatype();
+            
+            String var = "s";
+            String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property.toString(), literalString, datatype.getURI());
+            LOG.error(queryString);
+            
+            Query query = null;
+            try {
+                query = QueryFactory.create(queryString);
+            } catch (org.apache.jena.query.QueryParseException ex){
+                LOG.warn("Query parse exception with query:\n" + queryString);
+            }
+            LOG.trace(queryString);
+            if(query == null){
+                return null;
+            }
+
+            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                ResultSet results = qexec.execSelect();
+
+                for (; results.hasNext();) {
+                    QuerySolution soln = results.nextSolution();
+
+                    RDFNode result = soln.get(var);
+                    if (result.isResource()) {
+                        return (Resource) result;
+                    }
+                }
+            }
+        } else if(node.isResource()){
+            ResIterator resources = model.listResourcesWithProperty(property, node);
+            if(resources.hasNext()){
+                Resource result = resources.nextResource();
+                return result;
+            }
+        }
+
+        return null;
+    }
+
     public static Resource getSubjectWithLiteral(String property, Literal literal, Model model) {
 
         String var = "s";
@@ -239,7 +326,19 @@ public class SparqlRepository {
         }
         return null;
     }
-    
+
+    public static RDFNode getObjectOfProperty(Resource resource, Property property, Model model) {
+
+        Statement statement = model.getProperty(resource, property);
+
+        if (statement == null) {
+            LOG.debug("Could not find " + property + " for " + resource);
+            return null;
+        }
+
+        return statement.getObject();
+    }
+
     public static String getObjectOfProperty(String property, Model model) {
         String rdfObjectValue = null;
 

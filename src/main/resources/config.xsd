@@ -97,6 +97,15 @@
 			<xs:sequence>
 			  <xs:element name="id" type="xs:string"/>
 			  <xs:element name="endpoint" type="xs:string" minOccurs="0"/>
+			  <xs:element name="linksFormat">
+				<xs:simpleType>
+				  <xs:restriction base="xs:string">
+				    <xs:enumeration value="nt"/>
+                                    <xs:enumeration value="csv"/>
+                                    <xs:enumeration value="csv-unique-links"/>				    
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>	
 			  <xs:element name="file" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>

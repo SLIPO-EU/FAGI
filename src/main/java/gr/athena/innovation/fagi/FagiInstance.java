@@ -19,6 +19,7 @@ import gr.athena.innovation.fagi.preview.statistics.StatisticsCollector;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsContainer;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsExporter;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
+import gr.athena.innovation.fagi.repository.CSVRepository;
 import gr.athena.innovation.fagi.repository.GenericRDFRepository;
 import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.rule.RuleProcessor;
@@ -134,9 +135,25 @@ public class FagiInstance {
         long startTimeReadFiles = System.currentTimeMillis();
 
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
+        
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
-        genericRDFRepository.parseLinks(configuration.getPathLinks());
+        
+        switch(configuration.getLinksFormat()){
+            case SpecificationConstants.Config.NT: {
+                genericRDFRepository.parseLinks(configuration.getPathLinks());
+                break;
+            }
+            case SpecificationConstants.Config.CSV: {
+                CSVRepository csvRepository = new CSVRepository();
+                csvRepository.parseLinks(configuration.getPathLinks());
+                break;
+            }
+            case SpecificationConstants.Config.CSV_UNIQUE_LINKS:{
+                CSVRepository.extractUniqueLinks(configuration.getPathLinks());
+                break;
+            }
+        }
 
         AmbiguousDataset.getAmbiguousDataset().getModel();
         
@@ -239,9 +256,10 @@ public class FagiInstance {
             prop.setProperty("rejected", rejected.toString());
             OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
             prop.store(st, null);
-            StatisticsExporter exporter = new StatisticsExporter();
-            exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
-
+            if(exportStatistics){
+                StatisticsExporter exporter = new StatisticsExporter();
+                exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
+            }
             //ambiguous = AmbiguousDataset.getAmbiguousDataset().getModel();
             LOG.info(configuration.toString());
             

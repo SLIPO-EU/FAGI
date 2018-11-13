@@ -65,6 +65,12 @@ Specifically:
 
 `date`: Optional tag. Denotes which dataset is the most recent. Format expected: yyyy-MM-dd
 
+Specifically for the links, there are two supported formats. N-triples like `<poiA> <owl:sameAs> <poiB>` format and CSV like `poiA poiB score` (space separated and [0-1] value for the score). In the case of a CSV file, you can define two different modes. The first takes into account all the provided links and executes the fusion process accordingly and the second keeps unique links with the highest confidence score. The values described are the following: 
+
+* nt
+* csv
+* csv-unique-links
+
 Furthermore, the `target` tag refers to the target/output dataset and contains the following configuration tags:
 
 `mode`: Specify the fused dataset mode. The supported modes are shown in the table below.

@@ -166,6 +166,35 @@ public class SparqlConstructor {
         return query;
     }  
 
+    public static String selectSubjectOfResource(String predicate, String resource){
+        
+        String query = "SELECT ?s " 
+                        + "WHERE {"
+                        + "?s <" + predicate + "> <" + resource +"> "
+                        + "}";
+        return query;
+    }  
+
+    public static String selectNodeWithLiteralQuery(String predicate, String lexicalForm, String datatype){
+
+        String query = "SELECT ?s " 
+                            + "WHERE {"
+                            + "?s <" + predicate + "> \"" + lexicalForm +"\"^^" + datatype + " "
+                            + "}";
+
+        return query;
+    }  
+
+    public static String selectNodeWithLiteralQueryWithTag(String predicate, String lexicalForm, String languageTag){
+
+        String query = "SELECT ?s " 
+                            + "WHERE {"
+                            + "?s <" + predicate + "> \"" + lexicalForm +"\"@" + languageTag + " "
+                            + "}";
+
+        return query;
+    }
+
     //todo: check why sparql does not return literal when they contain language tag.
     public static String selectNodeWithLiteralQuery(String predicate, Literal literal){
         String query;

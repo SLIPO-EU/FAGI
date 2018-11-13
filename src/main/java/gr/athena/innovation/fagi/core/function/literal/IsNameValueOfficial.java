@@ -28,7 +28,7 @@ public class IsNameValueOfficial implements IFunction, IFunctionTwoModelStringPa
         String name = Namespace.NAME_NO_BRACKETS;
         String nameValue = Namespace.NAME_VALUE_NO_BRACKETS;
         
-        Literal literal = SparqlRepository.getObjectOfPropertyChain(name, nameValue, model, true);
+        Literal literal = SparqlRepository.getLiteralFromPropertyChain(name, nameValue, model, true);
 
         return !StringUtils.isBlank(literal.toString());
     }
