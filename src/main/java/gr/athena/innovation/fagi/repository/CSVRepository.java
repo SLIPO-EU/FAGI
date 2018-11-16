@@ -91,7 +91,7 @@ public class CSVRepository extends AbstractRepository{
                 String nodeB = RDFUtils.removeBrackets(parts[1]);
                 final String uriB = RDFUtils.getIdFromResource(nodeB);
 
-                double score = Double.parseDouble(parts[2]);
+                Float score = Float.parseFloat(parts[2]);
                 Link link = new Link(nodeA, uriA, nodeB, uriB, score);
                 links.add(link);
 
@@ -160,7 +160,7 @@ public class CSVRepository extends AbstractRepository{
                 String nodeA = RDFUtils.removeBrackets(parts[0]);
                 String nodeB = RDFUtils.removeBrackets(parts[1]);
 
-                double score = Double.parseDouble(parts[2]);
+                Float score = Float.parseFloat(parts[2]);
 
                 final String uriA = RDFUtils.getIdFromResource(nodeA);
                 final String uriB = RDFUtils.getIdFromResource(nodeB);

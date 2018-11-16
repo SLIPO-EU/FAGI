@@ -277,6 +277,7 @@ A sample rules.xml file could look like this:
 | keep-right | Both | Keeps the value of the right source dataset in the fused model.
 | concatenate | Literal | Keeps both values of the source datasets as a concatenated literal in the same property of the fused model.
 | keep-longest | Literal | Keeps the value of the longest literal in the fused model using the NFC normalization before comparing the literals.
+| keep-most-complete-name | Name Resources | Keeps the longest values of names with the same type (e.g. official, international etc). Regarding the names without a type it keeps the longest value of each language. This action is supposed to work only for name attributes.
 | keep-both | Both | Keeps both values of the source datasets in the fused model.
 | keep-more-points | Geometry | Keeps the geometry that is composed with more points than the other.
 | keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.

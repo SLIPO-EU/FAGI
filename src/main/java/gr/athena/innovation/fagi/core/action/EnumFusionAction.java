@@ -107,7 +107,20 @@ public enum EnumFusionAction {
     /**
      * Produces a geometry collection from the given geometries. Marks the property as ambiguous.
      */
-    CONCATENATE_GEOMETRY_MARK(22);    
+    CONCATENATE_GEOMETRY_MARK(22),
+    /**
+     * This action can be applied only to name attributes. 
+     * It keeps the longest unique value of all the mapped name types (e.g unique value of official, international).
+     * It also keeps all different names based on language property, unique and longest for each language also.
+     */
+    KEEP_MOST_COMPLETE_NAME(23),  
+    /**
+     * This action can be applied only to name attributes. 
+     * It keeps the longest unique value of all the mapped name types (e.g unique value of official, international).
+     * It also keeps all different names based on language property, unique and longest for each language also. 
+     * Marks the property as ambiguous.
+     */
+    KEEP_MOST_COMPLETE_NAME_MARK(24);    
 
     private final int value;
 
@@ -230,7 +243,11 @@ public enum EnumFusionAction {
             case SHIFT_RIGHT_GEOMETRY:
                 return "shift-right-geometry";
             case SHIFT_RIGHT_GEOMETRY_MARK:
-                return "shift-right-geometry-mark-ambiguous";                
+                return "shift-right-geometry-mark-ambiguous";
+            case KEEP_MOST_COMPLETE_NAME:
+                return "keep-most-complete-name";
+            case KEEP_MOST_COMPLETE_NAME_MARK:
+                return "keep-most-complete-name-mark-ambiguous";   
             default:
                 throw new IllegalArgumentException();
         }

@@ -1,10 +1,14 @@
 package gr.athena.innovation.fagi.repository;
 
+import gr.athena.innovation.fagi.model.NameAttribute;
+import gr.athena.innovation.fagi.model.NameModel;
+import gr.athena.innovation.fagi.model.TypedNameAttribute;
 import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -16,7 +20,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.NodeIterator;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -159,174 +162,6 @@ public class SparqlRepository {
         return null;
     }
 
-    public static Resource getSubjectOfProperty(String property1, String property2, Model model) {
-
-        String var = "o";
-        String queryString = SparqlConstructor.selectChildSubjectOfPropertyChainQuery(property1, property2);
-        
-        Query query = null;
-        try {
-            query = QueryFactory.create(queryString);
-        } catch (org.apache.jena.query.QueryParseException ex){
-            LOG.warn("Query parse exception with query:\n" + queryString);
-        }
-        LOG.trace(queryString);
-        if(query == null){
-            return null;
-        }
-
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-            ResultSet results = qexec.execSelect();
-
-            for (; results.hasNext();) {
-                QuerySolution soln = results.nextSolution();
-
-                RDFNode result = soln.get(var);
-                if (result.isResource()) {
-                    return (Resource) result;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Resource getSubjectWithLiteral(String property, String literal, Model model) {
-
-        String var = "s";
-        String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property, literal);
-        
-        Query query = null;
-        try {
-            query = QueryFactory.create(queryString);
-        } catch (org.apache.jena.query.QueryParseException ex){
-            LOG.warn("Query parse exception with query:\n" + queryString);
-        }
-        LOG.trace(queryString);
-        if(query == null){
-            return null;
-        }
-
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-            ResultSet results = qexec.execSelect();
-
-            for (; results.hasNext();) {
-                QuerySolution soln = results.nextSolution();
-
-                RDFNode result = soln.get(var);
-                if (result.isResource()) {
-                    return (Resource) result;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Resource getSubjectOfNode(Property property, RDFNode node, Model model) {
-
-        if(node.isLiteral()){
-            String literalString = node.asLiteral().getLexicalForm();
-            RDFDatatype datatype = node.asLiteral().getDatatype();
-            
-            String var = "s";
-            String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property.toString(), literalString, datatype.getURI());
-            LOG.error(queryString);
-            
-            Query query = null;
-            try {
-                query = QueryFactory.create(queryString);
-            } catch (org.apache.jena.query.QueryParseException ex){
-                LOG.warn("Query parse exception with query:\n" + queryString);
-            }
-            LOG.trace(queryString);
-            if(query == null){
-                return null;
-            }
-
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-
-                for (; results.hasNext();) {
-                    QuerySolution soln = results.nextSolution();
-
-                    RDFNode result = soln.get(var);
-                    if (result.isResource()) {
-                        return (Resource) result;
-                    }
-                }
-            }
-        } else if(node.isResource()){
-            ResIterator resources = model.listResourcesWithProperty(property, node);
-            if(resources.hasNext()){
-                Resource result = resources.nextResource();
-                return result;
-            }
-        }
-
-        return null;
-    }
-
-    public static Resource getSubjectWithLiteral(String property, Literal literal, Model model) {
-
-        String var = "s";
-        String queryString = SparqlConstructor.selectNodeWithLiteralQuery(property, literal);
-        
-        Query query = null;
-        try {
-            query = QueryFactory.create(queryString);
-        } catch (org.apache.jena.query.QueryParseException ex){
-            LOG.warn("Query parse exception with query:\n" + queryString);
-        }
-
-        if(query == null){
-            return null;
-        }
-
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-            ResultSet results = qexec.execSelect();
-
-            for (; results.hasNext();) {
-                QuerySolution soln = results.nextSolution();
-
-                RDFNode result = soln.get(var);
-                if (result.isResource()) {
-                    return (Resource) result;
-                }
-            }
-        }
-        return null;
-    }
-
-    public static Resource getSubjectWithGeometry(String property, String literal, Model model) {
-
-        String var = "s";
-        String queryString = SparqlConstructor.selectNodeWithGeometryQuery(property, literal);
-
-        Query query = null;
-        try {
-            query = QueryFactory.create(queryString);
-        } catch (org.apache.jena.query.QueryParseException ex){
-            LOG.warn("Query parse exception with query:\n" + queryString);
-        }
-        
-        if(query == null){
-            return null;
-        }
-
-        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-            ResultSet results = qexec.execSelect();
-
-            for (; results.hasNext();) {
-                QuerySolution soln = results.nextSolution();
-
-                RDFNode result = soln.get(var);
-                if (result.isResource()) {
-                    return (Resource) result;
-                }
-            }
-        }
-        return null;
-    }
-
     public static RDFNode getObjectOfProperty(Resource resource, Property property, Model model) {
 
         Statement statement = model.getProperty(resource, property);
@@ -398,20 +233,6 @@ public class SparqlRepository {
             }
         }
         return null;
-    }
-
-    public static Literal getObjectOfProperty(String resource, String property, Model model) {
-
-        Resource s = ResourceFactory.createResource(resource);
-        Property p = ResourceFactory.createProperty(property);
-        Statement statement = model.getProperty(s, p);
-
-        if (statement == null) {
-            LOG.debug("Could not find " + property + " for " + resource);
-            return null;
-        }
-
-        return statement.getLiteral();
     }
 
     public static int countDistinctProperties(Model model) {
@@ -890,5 +711,55 @@ public class SparqlRepository {
         NodeIterator objects = model.listObjectsOfProperty(property);
         
         return objects;
+    }
+    
+    public static NodeIterator getObjectsOfProperty(Property property, Model model){
+
+        NodeIterator objects = model.listObjectsOfProperty(property);
+        
+        return objects;
+    }
+    
+    public static NameModel getNameAttributes(Model model) {
+
+        String nameValue = "?nameValue";
+        String nameType = "?nameType";
+        String language = "?language";
+        String poi = "?poi";
+        String o = "?o";
+
+        String queryString = SparqlConstructor.getNameModel(nameType, language, poi, o, nameValue);
+        
+        LinkedHashSet<TypedNameAttribute> typedNameAttributes = new LinkedHashSet<>();
+        LinkedHashSet<NameAttribute> nameAttributes = new LinkedHashSet<>();
+
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                Resource poiURI = soln.get(poi).asResource();
+                RDFNode nameVal = soln.get(nameValue);
+                RDFNode nType = soln.get(nameType);
+                RDFNode lang = soln.get(language);
+                RDFNode obURI = soln.get(o);
+                
+                if(nType == null){
+                    NameAttribute nameAttribute = new NameAttribute(poiURI, nameVal, lang, obURI);
+                    nameAttributes.add(nameAttribute);
+                } else {
+                    TypedNameAttribute typedNameAttribute = new TypedNameAttribute(poiURI, nameVal, nType, lang, obURI);
+                    typedNameAttributes.add(typedNameAttribute);
+                }
+            }
+        }
+        NameModel nameModel = new NameModel();
+        nameModel.setTyped(typedNameAttributes);
+        nameModel.setWithoutType(nameAttributes);
+
+        return nameModel;
     }
 }
