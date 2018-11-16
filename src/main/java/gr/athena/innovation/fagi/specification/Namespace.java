@@ -49,6 +49,8 @@ public class Namespace {
     public static final String NAME_VALUE2_NO_BRACKETS = "http://www.slipo.eu/ont/poi-model#nameValue";
     public static final String NAME_VALUE_NO_BRACKETS = "http://slipo.eu/def#nameValue";
     public static final String NAME_TYPE = "<http://slipo.eu/def#nameType>";
+    public static final String NAME_TYPE_NO_BRACKETS = "http://slipo.eu/def#nameType";
+    public static final String LANGUAGE_NO_BRACKETS = "http://slipo.eu/def#language";
     public static final String OFFICIAL_LITERAL = "official";
 
     public static final String SOURCE = "<http://slipo.eu/def#source>";
@@ -68,6 +70,8 @@ public class Namespace {
     public static final String LINKED_AMBIGUOUSLY = "http://slipo.eu/def#linked-ambiguously-with";
     public static final String HAS_AMBIGUOUS_PROPERTY = "http://slipo.eu/def#has-ambiguous-property";
     public static final String HAS_AMBIGUOUS_SUB_PROPERTY = "http://slipo.eu/def#has-ambiguous-sub-property";
+    
+    public static final String FUSED_POI_SCORE_PROPERTY = "http://slipo.eu/def#fused-poi-score";
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;

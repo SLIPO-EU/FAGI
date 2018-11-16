@@ -92,6 +92,12 @@ public class RDFUtils {
         return node.substring(1, node.length()-1);
     }
 
+    /**
+     * This method basically removes the CRS prefix from a WKT Literal.
+     * 
+     * @param wkt the literal that contains the geometry.
+     * @return the WKT literal with the CRS prefix removed
+     */
     public static Literal extractGeometry(Literal wkt){
         String lexicalForm = wkt.getLexicalForm();
         RDFDatatype geometryDatatype = Namespace.WKT_RDF_DATATYPE;
@@ -349,5 +355,27 @@ public class RDFUtils {
             LOG.error("The selected action " + action.toString() + " does not apply on geometries.");
             throw new WrongInputException("The selected action " + action.toString() + " does not apply on geometries.");
         }
+    }
+    
+    public static void validateNameAction(CustomRDFProperty property) throws WrongInputException {
+        if(property.isSingleLevel()){
+            if(!property.getValueProperty().toString().equals(Namespace.NAME_NO_BRACKETS)){
+            LOG.error("The \"keep-most-complete-name\" can be applied only on the name property.");
+            throw new WrongInputException("The \"keep-most-complete-name\" can be applied only on the name property.");
+            }
+        } else {
+            LOG.error("The \"keep-most-complete-name\" can be applied only on name property as a parent");
+            throw new WrongInputException("The \"keep-most-complete-name\" can be applied only on name property as a parent");
+        }
+    }
+
+    public static Statement getLinkScoreStatement(String uri, float score) {
+
+        Property fusedPoiScoreProperty = ResourceFactory.createProperty(Namespace.FUSED_POI_SCORE_PROPERTY);
+        Resource resource = ResourceFactory.createResource(uri);
+        Literal literal = ResourceFactory.createTypedLiteral(score);
+        Statement statement = ResourceFactory.createStatement(resource, fusedPoiScoreProperty, literal);
+
+        return statement;
     }
 }

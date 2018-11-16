@@ -17,6 +17,7 @@ import gr.athena.innovation.fagi.model.FusionLog;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.utils.RDFUtils;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -90,7 +91,7 @@ public class POIFuser implements Fuser{
         EnumOutputMode mode = configuration.getOutputMode();
 
         if(verbose){
-            //clean fusion log
+            //clean fusion log if exists already
             if(new File(configuration.getFusionLog()).exists()){
                 FileChannel.open(Paths.get(configuration.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
             }
@@ -113,6 +114,10 @@ public class POIFuser implements Fuser{
             } else {
                 fusedPairsCount++;
             }
+
+            String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
+            Statement scoreStatement = RDFUtils.getLinkScoreStatement(fusedUri, link.getScore());
+            linkedPair.getFusedEntity().getEntityData().getModel().add(scoreStatement);
             fusedList.add(linkedPair);
         }
 

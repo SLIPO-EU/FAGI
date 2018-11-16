@@ -551,11 +551,19 @@ public class Condition {
                             }
 
                             if (parameter.startsWith(SpecificationConstants.Rule.A)) {
-                                return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), 
-                                        property.getValueA().getLexicalForm());
+                                if(property.getValueA() != null){
+                                    return exists.evaluate(pair.getLeftNode().getEntityData().getModel(), 
+                                            property.getValueA().getLexicalForm());
+                                } else {
+                                    return false;
+                                }
                             } else {
-                                return exists.evaluate(pair.getRightNode().getEntityData().getModel(), 
-                                        property.getValueB().getLexicalForm());
+                                if(property.getValueB() != null){
+                                    return exists.evaluate(pair.getRightNode().getEntityData().getModel(), 
+                                            property.getValueB().getLexicalForm());
+                                } else {
+                                    return false;
+                                }
                             }
                     }
                 } else {

@@ -12,7 +12,7 @@ public class Link implements Serializable {
     private final String nodeB;
     private final String localNameA;
     private final String localNameB;
-    private Double score;
+    private Float score;
 
     @Override
     public String toString() {
@@ -41,7 +41,7 @@ public class Link implements Serializable {
      * @param localNameB the URI of the second
      * @param score the link's confidence score
      */
-    public Link(final String nodeA, final String localNameA, final String nodeB, final String localNameB, final Double score) {
+    public Link(final String nodeA, final String localNameA, final String nodeB, final String localNameB, final Float score) {
         this.nodeA = nodeA;
         this.nodeB = nodeB;
         this.localNameA = localNameA;
@@ -93,7 +93,7 @@ public class Link implements Serializable {
      * 
      * @return the score of the link
      */
-    public Double getScore() {
+    public Float getScore() {
         return score;
     }
 }

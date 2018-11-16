@@ -169,6 +169,8 @@
 											  <xs:enumeration value="concatenate-geometry-mark-ambiguous"/>
 											  <xs:enumeration value="keep-longest"/>
 											  <xs:enumeration value="keep-longest-mark-ambiguous"/>
+											  <xs:enumeration value="keep-most-complete-name"/>
+											  <xs:enumeration value="keep-most-complete-name-mark-ambiguous"/>
 											  <xs:enumeration value="keep-both"/>
 											  <xs:enumeration value="keep-both-mark-ambiguous"/>
 											  <xs:enumeration value="keep-more-points"/>
@@ -200,7 +202,9 @@
 								  <xs:enumeration value="concatenate-geometry"/>
 								  <xs:enumeration value="concatenate-geometry-mark-ambiguous"/>								  							  
 								  <xs:enumeration value="keep-longest"/>
-								  <xs:enumeration value="keep-longest-mark-ambiguous"/>								  
+								  <xs:enumeration value="keep-longest-mark-ambiguous"/>	
+								  <xs:enumeration value="keep-most-complete-name"/>
+								  <xs:enumeration value="keep-most-complete-name-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-both"/>
 								  <xs:enumeration value="keep-both-mark-ambiguous"/>								  
 								  <xs:enumeration value="keep-more-points"/>
