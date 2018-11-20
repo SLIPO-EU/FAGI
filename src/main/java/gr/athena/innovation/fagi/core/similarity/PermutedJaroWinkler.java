@@ -52,20 +52,16 @@ public class PermutedJaroWinkler {
         Set<String> permSetA = new HashSet();
         Set<String> permSetB = new HashSet();
 
-        int count = 0;
         while(permA.hasNext()){
             String[] permArrayA = permA.next();
             String permStringA = String.join(" ", permArrayA);
             permSetA.add(permStringA);
-            //count++;
         }
         
-        count = 0;
         while(permB.hasNext()){
             String[] permArrayB = permB.next();
             String permStringB = String.join(" ", permArrayB);
             permSetB.add(permStringB);
-            count++;
         }        
         
         double maxSimilarity = 0;

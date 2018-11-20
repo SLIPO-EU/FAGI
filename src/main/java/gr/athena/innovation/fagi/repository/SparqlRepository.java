@@ -7,8 +7,10 @@ import gr.athena.innovation.fagi.preview.Frequency;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -23,6 +25,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -109,6 +112,50 @@ public class SparqlRepository {
             }
         }
         return result;
+    }
+
+    public static List<String> getLiteralsFromPropertyChain(String p1, String p2, Model model) {
+        List<String> literals = new ArrayList<>();
+        String var = "o2";
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(var);
+                if (c.isLiteral()) {
+                    literals.add(c.asLiteral().getLexicalForm());
+                } else {
+                    LOG.warn("Expected literal but found resource " + c);
+                }
+            }
+        }
+        return literals;
+    }
+
+    public static Literal getLiteralFromPropertyChain(String p1, String p2, Model model) {
+        String var = "o2";
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2);
+
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(var);
+                if (c.isLiteral()) {
+                    return c.asLiteral();
+                } else {
+                    LOG.warn("Expected literal but found resource " + c);
+                }
+            }
+        }
+        return null;
     }
 
     public static RDFNode getObjectOfPropertyChain(String p1, String p2, Model model, boolean checkOfficial) {
@@ -333,6 +380,15 @@ public class SparqlRepository {
         }
 
         return count;
+    }
+
+    public static Set<Property> getDistinctPropertiesOfResource(Model model, Resource resource) {
+        StmtIterator props = model.listStatements(resource, (Property) null, (RDFNode) null);
+        Set<Property> set = new HashSet<>();
+        while(props.hasNext()){
+            set.add(props.nextStatement().getPredicate());
+        }
+        return set;
     }
 
     public static int countPOIs(Model model) {
@@ -761,5 +817,15 @@ public class SparqlRepository {
         nameModel.setWithoutType(nameAttributes);
 
         return nameModel;
+    }
+
+    public static Literal getPreviousScore(Resource node, Model model) {
+        Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS);
+        NodeIterator previousScores = model.listObjectsOfProperty(scoreProperty);
+        while(previousScores.hasNext()){
+            RDFNode n = previousScores.next();
+            return n.asLiteral();
+        }
+        return null;
     }
 }

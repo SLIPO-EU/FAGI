@@ -826,24 +826,28 @@ public class LinkedPair {
             return;
         }
 
-        NameModel nameAttributes = SparqlRepository.getNameAttributes(fusedModel);
+        Model union = ModelFactory.createDefaultModel();
 
-        NodeIterator nameNodes = SparqlRepository.getObjectsOfProperty(customProperty.getValueProperty(), fusedModel);
-        
+        union.add(leftNode.getEntityData().getModel());
+        union.add(rightNode.getEntityData().getModel());
+
+        NameModel nameAttributes = SparqlRepository.getNameAttributes(union);
+        NodeIterator nameNodes = SparqlRepository.getObjectsOfProperty(customProperty.getValueProperty(), union);
+
         while(nameNodes.hasNext()){
             RDFNode node = nameNodes.next();
             fusedModel.removeAll((Resource) null, (Property) null, node.asResource());
             fusedModel.removeAll(node.asResource(), (Property) null, (RDFNode) null);
         }
-        
+
         fusedModel.removeAll((Resource) null, customProperty.getValueProperty(), (RDFNode) null);
-        
+
         StringJoiner joiner = new StringJoiner(SpecificationConstants.Rule.CONCATENATION_SEP);
         for(TypedNameAttribute typed : nameAttributes.getTyped()){
             fusedModel.add(typed.getStatements());
             joiner.add(typed.getNameValue().toString());
         }
-        
+
         for(NameAttribute noType : nameAttributes.getWithoutType()){
             fusedModel.add(noType.getStatements());
             joiner.add(noType.getNameValue().toString());

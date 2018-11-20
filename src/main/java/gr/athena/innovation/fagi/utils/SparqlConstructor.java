@@ -248,6 +248,15 @@ public class SparqlConstructor {
         return query;
     }
     
+    public static String selectObjectFromChainQuery(String predicate1, String predicate2){
+        String query = "SELECT ?o2 " 
+                    + "WHERE {"
+                    + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2"
+                    + "}";            
+
+        return query;
+    }
+
     public static String selectObject(String subject, String predicate){
         String query = "SELECT ?o2 " 
                         + "WHERE {"
@@ -385,14 +394,14 @@ public class SparqlConstructor {
                        "?s2 <http://www.w3.org/2002/07/owl#sameAs> ?s1 . }";
         return query;
     }
-    
+
     public static String getNameModel(String nameType, String language, String poi, String o, String nameValue){
         String query = 
             "SELECT " + nameType + " " + language + " " + poi + " " + o + " " + nameValue + " WHERE {\n" +
             "  ?poi <http://slipo.eu/def#name> ?o . " +
             "  ?o <http://slipo.eu/def#nameValue> ?nameValue . \n" +
             "  ?o <http://slipo.eu/def#language> ?language .\n" +
-            "  OPTIONAL {?o <http://slipo.eu/def#nameType> ?nameType . } } ORDER BY STRLEN(?nameValue) \n";
+            "  OPTIONAL {?o <http://slipo.eu/def#nameType> ?nameType . } } ORDER BY DESC(STRLEN(?nameValue)) \n";
 
         return query;
     }
