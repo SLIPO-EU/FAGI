@@ -40,7 +40,7 @@ public class PhoneNumberNormalizer implements INormalizer{
         return normalizedNumber;
     }
 
-    private static String removeNonNumericCharacters(String number){
+    public static String removeNonNumericCharacters(String number){
         
         String numberNumerical = number.replaceAll("[^0-9]", "");
         

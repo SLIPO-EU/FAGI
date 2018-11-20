@@ -31,6 +31,10 @@ public final class Levenshtein {
     public static double computeDistance(String a, String b, Integer threshold){
         //TODO: add weights for insertions, deletions, subs and return 1 if the distance is greater than the max lengths.
         
+        if(a == null || b == null){
+            return 1.0;
+        }
+
         //https://stackoverflow.com/questions/6629712/levensteindistance-commons-lang-3-0-api
         try {
 

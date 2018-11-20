@@ -115,9 +115,19 @@ public class POIFuser implements Fuser{
                 fusedPairsCount++;
             }
 
+            //Add interlinking score, fusion score, fusion confidence
+            Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
+            
             String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
-            Statement scoreStatement = RDFUtils.getLinkScoreStatement(fusedUri, link.getScore());
-            linkedPair.getFusedEntity().getEntityData().getModel().add(scoreStatement);
+            Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore());
+            
+            Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
+            Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
+
+            fusedModel.add(fusionConfidence);
+            fusedModel.add(fusionScore);
+            fusedModel.add(interlinkingScore);
+            
             fusedList.add(linkedPair);
         }
 
@@ -168,6 +178,9 @@ public class POIFuser implements Fuser{
         /* FUSION */
         FusionLog fusionLog = linkedPair.fusePair(ruleSpec, functionMap, validation);
 
+        Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
+        
+        
         if(verbose){
             fusionLogBuffer.add(fusionLog);
 
@@ -380,6 +393,7 @@ public class POIFuser implements Fuser{
             leftModel.add(fusedDataModel);
         }
         
+        
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
         
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
@@ -523,7 +537,7 @@ public class POIFuser implements Fuser{
 
         try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
              BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, true))) {
-            
+            String previousId = "";
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
@@ -531,6 +545,14 @@ public class POIFuser implements Fuser{
                 String id = getResourceURI(idPart);
 
                 if(!uriSet.contains(id)){
+                    //add original flag to poi. Exclude flags from classification triples
+                    //todo: this does not bring any score existed, but flags it original
+                    if(!idPart.contains("term") && !id.equals(previousId)){
+                        String fl = RDFUtils.getUnlinkedFlag(idPart);
+                        bufferedWriter.append(fl);
+                        bufferedWriter.newLine();
+                    }
+                    previousId = id;
                     bufferedWriter.append(line);
                     bufferedWriter.newLine();
                 }

@@ -63,15 +63,24 @@ public class Namespace {
     public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
     public static final String HOMEPAGE_NO_BRACKETS = "http://slipo.eu/def#homepage";
     public static final String EMAIL = "<http://slipo.eu/def#email>";
+    public static final String PHONE_NO_BRACKETS = "http://slipo.eu/def#phone";
     public static final String PHONE = "<http://slipo.eu/def#phone>";
     public static final String FAX = "<http://slipo.eu/def#fax>";
     public static final String CONTACT_VALUE = "<http://slipo.eu/def#contactValue>";
+    public static final String CONTACT_VALUE_NO_BRACKETS = "http://slipo.eu/def#contactValue";
 
     public static final String LINKED_AMBIGUOUSLY = "http://slipo.eu/def#linked-ambiguously-with";
     public static final String HAS_AMBIGUOUS_PROPERTY = "http://slipo.eu/def#has-ambiguous-property";
     public static final String HAS_AMBIGUOUS_SUB_PROPERTY = "http://slipo.eu/def#has-ambiguous-sub-property";
     
-    public static final String FUSED_POI_SCORE_PROPERTY = "http://slipo.eu/def#fused-poi-score";
+    public static final String INTERLINKING_SCORE = "http://slipo.eu/def#interlinking-score";
+    
+    public static final String FUSION_SCORE_NO_BRACKETS = "http://slipo.eu/def#fusion-score";
+    public static final String FUSION_SCORE = "<http://slipo.eu/def#fusion-score>";
+    public static final String FUSION_CONFIDENCE_NO_BRACKETS = "http://slipo.eu/def#fusion-confidence";
+    public static final String FUSION_CONFIDENCE = "<http://slipo.eu/def#fusion-confidence>";
+    
+    public static final String ORIGINAL_LITERAL = " \"original\" . ";
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;

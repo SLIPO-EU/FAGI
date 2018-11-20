@@ -7,6 +7,10 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import gr.athena.innovation.fagi.core.action.EnumFusionAction;
+import gr.athena.innovation.fagi.core.function.geo.MinimumOrthodromicDistance;
+import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
+import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
+import gr.athena.innovation.fagi.core.similarity.Levenshtein;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.model.Entity;
@@ -15,7 +19,12 @@ import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
@@ -369,13 +378,161 @@ public class RDFUtils {
         }
     }
 
-    public static Statement getLinkScoreStatement(String uri, float score) {
+    public static Statement getInterlinkingScore(String uri, float score) {
 
-        Property fusedPoiScoreProperty = ResourceFactory.createProperty(Namespace.FUSED_POI_SCORE_PROPERTY);
+        Property fusedPoiScoreProperty = ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE);
         Resource resource = ResourceFactory.createResource(uri);
         Literal literal = ResourceFactory.createTypedLiteral(score);
         Statement statement = ResourceFactory.createStatement(resource, fusedPoiScoreProperty, literal);
 
         return statement;
+    }
+
+    public static String getUnlinkedFlag(String uri) {
+        String flag = uri + " " + Namespace.FUSION_SCORE + Namespace.ORIGINAL_LITERAL;
+        return flag;
+    }
+
+    public static Statement getFusionConfidenceStatement(String fusedUri, Model modelA, Model modelB, Model fusedModel) {
+
+        Resource fusedRes = ResourceFactory.createResource(fusedUri);
+        Property confidenceProperty = ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS);
+
+        List<Double> sims = new ArrayList<>();
+        Double nameSimilarity = computeNameSimilarity(modelA, modelB);
+        Double geoSimilarity = computeGeoSimilarity(modelA, modelB);
+        Double phoneSimilarity = computePhoneSimilarity(modelA, modelB);
+        
+        if(nameSimilarity != null){
+            sims.add(nameSimilarity);
+        }
+        
+        if(geoSimilarity != null){
+            sims.add(geoSimilarity);
+        }
+        
+        if(phoneSimilarity != null){
+            sims.add(phoneSimilarity);
+        }
+
+        double sum = sims.stream().mapToDouble(Double::doubleValue).sum();
+        Double confidence =  sum / (double) sims.size(); 
+
+        Literal confidenceLiteral = ResourceFactory.createTypedLiteral(confidence.floatValue());
+
+        Statement statement = ResourceFactory.createStatement(fusedRes, confidenceProperty , confidenceLiteral);
+
+        return statement;
+    }
+
+    public static Statement getFusionScoreStatement(String fusedUri, String nodeA, String nodeB, Model modelA, 
+            Model modelB, Model fusedModel) {
+        //get previous score if exists. Append new score
+        Resource resA = ResourceFactory.createResource(nodeA);
+        Resource resB = ResourceFactory.createResource(nodeB);
+        Resource fusedRes = ResourceFactory.createResource(fusedUri);
+
+        float fusionScore = computeFusionScore(fusedRes, resA, resB, modelA, modelB, fusedModel);
+
+        Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS);
+
+        Literal scoreA = SparqlRepository.getPreviousScore(resA, modelA);
+        Literal scoreB = SparqlRepository.getPreviousScore(resB, modelB);
+        Literal scoreLiteral = constructScoreString(scoreA, scoreB, fusionScore);
+
+        Statement statement = ResourceFactory.createStatement(fusedRes, scoreProperty , scoreLiteral);
+
+        return statement;
+    }
+
+    public static float computeFusionScore(Resource fusedUri, Resource nodeA, Resource nodeB, Model modelA, Model modelB, Model fusedModel) {
+        Set<Property> propsA = SparqlRepository.getDistinctPropertiesOfResource(modelA, nodeA);
+        Set<Property> propsB = SparqlRepository.getDistinctPropertiesOfResource(modelB, nodeB);
+        Set<Property> fusedProps = SparqlRepository.getDistinctPropertiesOfResource(fusedModel, fusedUri);
+        Collection common = CollectionUtils.intersection(propsA, propsB);
+
+        if(propsA.isEmpty() && propsB.isEmpty()){
+            return 0f;
+        }
+
+        Double score = (fusedProps.size() - common.size())/ (double)(propsA.size() + propsB.size());
+
+        return score.floatValue();
+    }
+
+    private static Literal constructScoreString(Literal scoreA, Literal scoreB, float fusionScore) {
+        String a;
+        String b;
+        if(scoreA == null){
+            a = "original";
+        } else {
+            a = scoreA.toString();
+        }
+        if(scoreB == null){
+            b = "original";
+        } else {
+            b = scoreB.toString();
+        }
+
+        String scoreString = "{scoreA: " + a + ", scoreB: " + b + ", fusionScore: " + fusionScore + "}";
+        return ResourceFactory.createTypedLiteral(scoreString);
+    }
+
+    private static Double computeNameSimilarity(Model modelA, Model modelB) {
+        List<String> namesA = SparqlRepository.getLiteralsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
+                Namespace.NAME_VALUE_NO_BRACKETS, modelA);
+        List<String> namesB = SparqlRepository.getLiteralsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
+                Namespace.NAME_VALUE_NO_BRACKETS, modelB);
+        
+        if(namesA.isEmpty() || namesB.isEmpty()){
+            return null;
+        }
+        
+        double maxSimilarity = 0;
+        for (String stringA : namesA ) {
+            for (String stringB : namesB) {
+                double tempSimilarity = JaroWinkler.computeSimilarity(stringA, stringB);
+                if(tempSimilarity > maxSimilarity){
+                    maxSimilarity = tempSimilarity;
+                }
+            }
+        }
+
+        return maxSimilarity;
+    }
+
+    private static Double computePhoneSimilarity(Model modelA, Model modelB) {
+        Literal phoneA = SparqlRepository.getLiteralFromPropertyChain(Namespace.PHONE_NO_BRACKETS, 
+                Namespace.CONTACT_VALUE_NO_BRACKETS, modelA);
+        Literal phoneB = SparqlRepository.getLiteralFromPropertyChain(Namespace.PHONE_NO_BRACKETS, 
+                Namespace.CONTACT_VALUE_NO_BRACKETS, modelB);
+
+        if(phoneA == null || phoneB == null){
+            return null;
+        }
+
+        String a = PhoneNumberNormalizer.removeNonNumericCharacters(phoneA.getLexicalForm());
+        String b = PhoneNumberNormalizer.removeNonNumericCharacters(phoneB.getLexicalForm());
+
+        return Levenshtein.computeSimilarity(a, b, null);
+
+    }
+
+    private static Double computeGeoSimilarity(Model modelA, Model modelB) {
+        Literal geoA = SparqlRepository.getLiteralFromPropertyChain(Namespace.GEOSPARQL_HAS_GEOMETRY, Namespace.WKT, modelA);
+        Literal geoB = SparqlRepository.getLiteralFromPropertyChain(Namespace.GEOSPARQL_HAS_GEOMETRY, Namespace.WKT, modelB);
+
+        if(geoA == null || geoB == null){
+            return null;
+        }
+
+        Double distance = MinimumOrthodromicDistance.compute(geoA, geoB);
+        
+        //arbitrary value for normalizing to a similarity. Distance greater than 300 meters is considered as 0 similarity.
+        if(distance > 300){
+            return 0.0;
+        } else {
+            return 1 - (distance / (double) 300);
+        }
     }
 }
