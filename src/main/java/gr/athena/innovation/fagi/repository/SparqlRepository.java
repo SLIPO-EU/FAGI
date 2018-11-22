@@ -819,8 +819,7 @@ public class SparqlRepository {
         return nameModel;
     }
 
-    public static Literal getPreviousScore(Resource node, Model model) {
-        Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS);
+    public static Literal getPreviousScore(Model model, Property scoreProperty) {
         NodeIterator previousScores = model.listObjectsOfProperty(scoreProperty);
         while(previousScores.hasNext()){
             RDFNode n = previousScores.next();

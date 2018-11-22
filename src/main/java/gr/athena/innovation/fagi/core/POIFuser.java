@@ -16,6 +16,7 @@ import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.FusionLog;
 import gr.athena.innovation.fagi.model.RightDataset;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
+import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.utils.RDFUtils;
 import gr.athena.innovation.fagi.utils.SparqlConstructor;
@@ -48,6 +49,9 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.logging.log4j.LogManager;
@@ -117,17 +121,21 @@ public class POIFuser implements Fuser{
 
             //Add interlinking score, fusion score, fusion confidence
             Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
-            
+
             String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
-            Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore());
-            
+            Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore(), modelA, modelB);
+
             Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
             Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
+
+            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS), (RDFNode) null);
+            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
+            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
 
             fusedModel.add(fusionConfidence);
             fusedModel.add(fusionScore);
             fusedModel.add(interlinkingScore);
-            
+
             fusedList.add(linkedPair);
         }
 
@@ -141,7 +149,7 @@ public class POIFuser implements Fuser{
 
         //links.getLinks().removeAll(links.getRejected());
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
-        
+
         return fusedList;
     }
 

@@ -378,12 +378,16 @@ public class RDFUtils {
         }
     }
 
-    public static Statement getInterlinkingScore(String uri, float score) {
+    public static Statement getInterlinkingScore(String uri, float score, Model modelA, Model modelB) {
 
-        Property fusedPoiScoreProperty = ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE);
         Resource resource = ResourceFactory.createResource(uri);
-        Literal literal = ResourceFactory.createTypedLiteral(score);
-        Statement statement = ResourceFactory.createStatement(resource, fusedPoiScoreProperty, literal);
+        Property scoreProperty = ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE);
+
+        Literal scoreA = SparqlRepository.getPreviousScore(modelA, scoreProperty);
+        Literal scoreB = SparqlRepository.getPreviousScore(modelB, scoreProperty);
+        Literal scoreLiteral = constructScoreString(scoreA, scoreB, score);
+
+        Statement statement = ResourceFactory.createStatement(resource, scoreProperty , scoreLiteral);
 
         return statement;
     }
@@ -394,25 +398,30 @@ public class RDFUtils {
     }
 
     public static Statement getFusionConfidenceStatement(String fusedUri, Model modelA, Model modelB, Model fusedModel) {
-
         Resource fusedRes = ResourceFactory.createResource(fusedUri);
         Property confidenceProperty = ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS);
 
         List<Double> sims = new ArrayList<>();
         Double nameSimilarity = computeNameSimilarity(modelA, modelB);
-        Double geoSimilarity = computeGeoSimilarity(modelA, modelB);
         Double phoneSimilarity = computePhoneSimilarity(modelA, modelB);
-        
+        Double streetSimilarity = computeAddressStreetSimilarity(modelA, modelB);
+
+        Double geoSimilarity = computeGeoSimilarity(modelA, modelB);
+
         if(nameSimilarity != null){
             sims.add(nameSimilarity);
         }
-        
-        if(geoSimilarity != null){
-            sims.add(geoSimilarity);
+
+        if(streetSimilarity != null){
+            sims.add(streetSimilarity);
         }
-        
+
         if(phoneSimilarity != null){
             sims.add(phoneSimilarity);
+        }
+
+        if(geoSimilarity != null){
+            sims.add(geoSimilarity);
         }
 
         double sum = sims.stream().mapToDouble(Double::doubleValue).sum();
@@ -436,8 +445,8 @@ public class RDFUtils {
 
         Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS);
 
-        Literal scoreA = SparqlRepository.getPreviousScore(resA, modelA);
-        Literal scoreB = SparqlRepository.getPreviousScore(resB, modelB);
+        Literal scoreA = SparqlRepository.getPreviousScore(modelA, scoreProperty);
+        Literal scoreB = SparqlRepository.getPreviousScore(modelB, scoreProperty);
         Literal scoreLiteral = constructScoreString(scoreA, scoreB, fusionScore);
 
         Statement statement = ResourceFactory.createStatement(fusedRes, scoreProperty , scoreLiteral);
@@ -460,21 +469,21 @@ public class RDFUtils {
         return score.floatValue();
     }
 
-    private static Literal constructScoreString(Literal scoreA, Literal scoreB, float fusionScore) {
+    private static Literal constructScoreString(Literal scoreA, Literal scoreB, float score) {
         String a;
         String b;
         if(scoreA == null){
-            a = "original";
+            a = "1.0";
         } else {
             a = scoreA.toString();
         }
         if(scoreB == null){
-            b = "original";
+            b = "1.0";
         } else {
             b = scoreB.toString();
         }
 
-        String scoreString = "{scoreA: " + a + ", scoreB: " + b + ", fusionScore: " + fusionScore + "}";
+        String scoreString = "{scoreA: " + a + ", scoreB: " + b + ", score: " + score + "}";
         return ResourceFactory.createTypedLiteral(scoreString);
     }
 
@@ -516,6 +525,19 @@ public class RDFUtils {
 
         return Levenshtein.computeSimilarity(a, b, null);
 
+    }
+
+    private static Double computeAddressStreetSimilarity(Model modelA, Model modelB) {
+        Literal streetA = SparqlRepository.getLiteralFromPropertyChain(Namespace.ADDRESS_NO_BRACKETS, 
+                Namespace.STREET_NO_BRACKETS, modelA);
+        Literal streetB = SparqlRepository.getLiteralFromPropertyChain(Namespace.ADDRESS_NO_BRACKETS, 
+                Namespace.STREET_NO_BRACKETS, modelB);
+
+        if(streetA == null || streetB == null){
+            return null;
+        }
+        
+        return JaroWinkler.computeSimilarity(streetA.toString(), streetB.toString());
     }
 
     private static Double computeGeoSimilarity(Model modelA, Model modelB) {
