@@ -57,7 +57,9 @@ public class Namespace {
     public static final String SOURCE_NO_BRACKETS = "http://slipo.eu/def#source";
     public static final String LOCALITY = "<http://slipo.eu/def#locality>";
     public static final String ADDRESS = "<http://slipo.eu/def#address>";
+    public static final String ADDRESS_NO_BRACKETS = "http://slipo.eu/def#address";
     public static final String STREET = "<http://slipo.eu/def#street>";
+    public static final String STREET_NO_BRACKETS = "http://slipo.eu/def#street";
     public static final String STREET_NUMBER = "<http://slipo.eu/def#number>";
     public static final String POSTCODE = "<http://slipo.eu/def#postcode>";
     public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
@@ -75,12 +77,11 @@ public class Namespace {
     
     public static final String INTERLINKING_SCORE = "http://slipo.eu/def#interlinking-score";
     
-    public static final String FUSION_SCORE_NO_BRACKETS = "http://slipo.eu/def#fusion-score";
-    public static final String FUSION_SCORE = "<http://slipo.eu/def#fusion-score>";
+    public static final String FUSION_GAIN_NO_BRACKETS = "http://slipo.eu/def#fusion-gain";
+    public static final String FUSION_GAIN = "<http://slipo.eu/def#fusion-gain>";
     public static final String FUSION_CONFIDENCE_NO_BRACKETS = "http://slipo.eu/def#fusion-confidence";
-    public static final String FUSION_CONFIDENCE = "<http://slipo.eu/def#fusion-confidence>";
     
-    public static final String ORIGINAL_LITERAL = " \"original\" . ";
+    public static final String ORIGINAL_LITERAL = " \"1.0\" . ";
 
     private String leftLinksNamespace;
     private String rightLinksNamespace;

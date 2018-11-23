@@ -155,6 +155,10 @@ public class ConfigurationParser {
             NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Config.RULES);
             String rules = rulesNodeList.item(0).getTextContent();
             configuration.setRulesPath(rules);
+
+            NodeList verboseNodeList = doc.getElementsByTagName(SpecificationConstants.Config.VERBOSE);
+            String verbose = verboseNodeList.item(0).getTextContent();
+            configuration.setVerbose(Boolean.parseBoolean(verbose));
             
             NodeList leftNodeList = doc.getElementsByTagName(SpecificationConstants.Config.LEFT_DATASET);
             Node leftNode = leftNodeList.item(0);

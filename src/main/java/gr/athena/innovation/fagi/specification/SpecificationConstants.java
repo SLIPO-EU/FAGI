@@ -209,6 +209,11 @@ public class SpecificationConstants {
         public static final String DEFAULT_FUSION_LOG_FILENAME = "fusionLog.txt";
 
         /**
+         * Name for verbose tag in XML.
+         */
+        public static final String VERBOSE = "verbose";
+
+        /**
          * Suffix for naming frequency-related files for dataset A.
          */
         public static final String FREQ_SUFFIX_A = ".a.freq.txt";

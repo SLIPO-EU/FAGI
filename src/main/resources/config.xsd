@@ -69,6 +69,7 @@
 			</xs:restriction>
 		  </xs:simpleType>
 		</xs:element>
+		<xs:element name="verbose" type="xs:boolean"/>
 		<xs:element name="rules" type="xs:anyURI"/>		
 		<xs:element name="left">
 		  <xs:complexType>

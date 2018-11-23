@@ -77,6 +77,7 @@ public class SchemaDefinition {
 "			</xs:restriction>\n" +
 "		  </xs:simpleType>\n" +
 "		</xs:element>\n" +
+"		<xs:element name=\"verbose\" type=\"xs:boolean\" />		\n" +
 "		<xs:element name=\"rules\" type=\"xs:anyURI\"/>		\n" +
 "		<xs:element name=\"left\">\n" +
 "		  <xs:complexType>\n" +
