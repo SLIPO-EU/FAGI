@@ -943,6 +943,7 @@ public class LinkedPair {
     }
 
     private void concatenate(Model fusedModel, CustomRDFProperty customProperty, RDFNode nodeA, RDFNode nodeB, boolean mark) {
+        //todo: resolve language tag if exists
         Model sourceModel;
         String sep = SpecificationConstants.Rule.CONCATENATION_SEP;
         RDFNode concatenated;

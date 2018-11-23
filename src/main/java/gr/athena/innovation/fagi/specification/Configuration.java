@@ -54,7 +54,7 @@ public class Configuration {
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;
     
-    private final boolean verbose = true;
+    private boolean verbose;
 
     private Configuration() {
     }
@@ -679,6 +679,10 @@ public class Configuration {
 
     public void setLinksFormat(String linksFormat) {
         this.linksFormat = linksFormat.toLowerCase();
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     public boolean isVerbose() {

@@ -393,7 +393,7 @@ public class RDFUtils {
     }
 
     public static String getUnlinkedFlag(String uri) {
-        String flag = uri + " " + Namespace.FUSION_SCORE + Namespace.ORIGINAL_LITERAL;
+        String flag = uri + " " + Namespace.FUSION_GAIN + Namespace.ORIGINAL_LITERAL;
         return flag;
     }
 
@@ -443,7 +443,7 @@ public class RDFUtils {
 
         float fusionScore = computeFusionScore(fusedRes, resA, resB, modelA, modelB, fusedModel);
 
-        Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS);
+        Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS);
 
         Literal scoreA = SparqlRepository.getPreviousScore(modelA, scoreProperty);
         Literal scoreB = SparqlRepository.getPreviousScore(modelB, scoreProperty);

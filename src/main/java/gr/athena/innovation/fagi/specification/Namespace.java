@@ -77,10 +77,9 @@ public class Namespace {
     
     public static final String INTERLINKING_SCORE = "http://slipo.eu/def#interlinking-score";
     
-    public static final String FUSION_SCORE_NO_BRACKETS = "http://slipo.eu/def#fusion-score";
-    public static final String FUSION_SCORE = "<http://slipo.eu/def#fusion-score>";
+    public static final String FUSION_GAIN_NO_BRACKETS = "http://slipo.eu/def#fusion-gain";
+    public static final String FUSION_GAIN = "<http://slipo.eu/def#fusion-gain>";
     public static final String FUSION_CONFIDENCE_NO_BRACKETS = "http://slipo.eu/def#fusion-confidence";
-    public static final String FUSION_CONFIDENCE = "<http://slipo.eu/def#fusion-confidence>";
     
     public static final String ORIGINAL_LITERAL = " \"1.0\" . ";
 

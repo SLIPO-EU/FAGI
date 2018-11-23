@@ -128,7 +128,7 @@ public class POIFuser implements Fuser{
             Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
             Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
 
-            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_SCORE_NO_BRACKETS), (RDFNode) null);
+            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
             fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
             fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
 
