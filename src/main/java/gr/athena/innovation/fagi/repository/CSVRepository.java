@@ -35,6 +35,8 @@ import org.apache.logging.log4j.Logger;
 public class CSVRepository extends AbstractRepository{
 
     private static final Logger LOG = LogManager.getLogger(CSVRepository.class);
+    private static int initialCount;
+    private static int uniqueCount;
 
     @Override
     public void parseLeft(String filepath) throws WrongInputException {
@@ -84,6 +86,8 @@ public class CSVRepository extends AbstractRepository{
                     continue;
                 }
 
+                initialCount++;
+                
                 String[] parts = line.split("\\s+");
                 String nodeA = RDFUtils.removeBrackets(parts[0]);
                 final String uriA = RDFUtils.getIdFromResource(nodeA);
@@ -156,6 +160,8 @@ public class CSVRepository extends AbstractRepository{
                     continue;
                 }
 
+                initialCount++;
+
                 String[] parts = line.split("\\s+");
                 String nodeA = RDFUtils.removeBrackets(parts[0]);
                 String nodeB = RDFUtils.removeBrackets(parts[1]);
@@ -190,6 +196,7 @@ public class CSVRepository extends AbstractRepository{
         linksModel.setFilepath(linksFile);
         linksModel.setLinks(filteredLinks);
 
+        uniqueCount = filteredLinks.size();
         return filteredLinks;       
     }
 
@@ -214,5 +221,13 @@ public class CSVRepository extends AbstractRepository{
     private boolean isValidPath(String filepath){
         File file = new File(filepath);
         return (file.exists() && !file.isDirectory());
+    }
+    
+    public static int getInitialCount() {
+        return initialCount;
+    }
+    
+    public static int getUniqueCount() {
+        return uniqueCount;
     }
 }
