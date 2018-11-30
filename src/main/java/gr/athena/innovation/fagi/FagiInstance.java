@@ -55,13 +55,14 @@ public class FagiInstance {
 
     private final boolean runEvaluation = false;
     private final boolean exportFrequencies = false;
-    private final boolean exportStatistics = true;
+    private final boolean exportStatistics = false;
     private final boolean exportSimilaritiesPerLink = false;
     private final boolean train = false;
     private final boolean fuse = true;
     private Integer fused = null;
     private Integer rejected = null;
     private Integer ambiguous = null;
+    private int originalInputLinksCount = 0;
 
     /**
      * FagiInstance Constructor. Expects the absolute path of the configuration XML file.
@@ -250,23 +251,27 @@ public class FagiInstance {
 
             rejected = fuser.getRejectedCount();
             fused = fuser.getFusedPairsCount();
-            
+
             Properties prop = new Properties();
             prop.setProperty("fused", fused.toString());
             prop.setProperty("rejected", rejected.toString());
             OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
             prop.store(st, null);
+
             if(exportStatistics){
                 StatisticsExporter exporter = new StatisticsExporter();
                 exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
             }
-            //ambiguous = AmbiguousDataset.getAmbiguousDataset().getModel();
+
             LOG.info(configuration.toString());
-            
+
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-            LOG.info("Interlinked: " + fusedEntities.size() 
-                    + ", Fused: " + fused + ", Rejected links: " + rejected 
-                    + ", Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
+            LOG.info("Interlinked (might contain multiples): " + CSVRepository.getInitialCount());
+            if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
+                LOG.info("Unique links: " + CSVRepository.getUniqueCount());
+            }
+            LOG.info("Fused: " + fused + ", Rejected links: " + rejected);
+            LOG.info("Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
             LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
             LOG.info("Statistics computed in " + (stopTimeComputeStatistics - startTimeComputeStatistics) + "ms.");

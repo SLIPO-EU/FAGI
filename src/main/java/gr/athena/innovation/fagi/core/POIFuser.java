@@ -47,8 +47,10 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -118,25 +120,29 @@ public class POIFuser implements Fuser{
             } else {
                 fusedPairsCount++;
             }
+            
+            //Add scores only on accepted pairs.
+            if(!linkedPair.isRejected()){
+                //Add interlinking score, fusion score, fusion confidence
+                Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
 
-            //Add interlinking score, fusion score, fusion confidence
-            Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
+                String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
+                Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore(), modelA, modelB);
 
-            String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
-            Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore(), modelA, modelB);
+                Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
+                Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
 
-            Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
-            Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
+                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
+                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
+                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
 
-            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
-            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
-            fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
-
-            fusedModel.add(fusionConfidence);
-            fusedModel.add(fusionScore);
-            fusedModel.add(interlinkingScore);
-
-            fusedList.add(linkedPair);
+                fusedModel.add(fusionConfidence);
+                fusedModel.add(fusionScore);
+                fusedModel.add(interlinkingScore);
+            }
+            
+            //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
+            fusedList.add(linkedPair); 
         }
 
         //flush fusionLogBuffer if not empty
@@ -186,9 +192,6 @@ public class POIFuser implements Fuser{
         /* FUSION */
         FusionLog fusionLog = linkedPair.fusePair(ruleSpec, functionMap, validation);
 
-        Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
-        
-        
         if(verbose){
             fusionLogBuffer.add(fusionLog);
 
@@ -281,19 +284,22 @@ public class POIFuser implements Fuser{
         
         Model rightModel = RightDataset.getRightDataset().getModel();
         
-        Set<String> leftLocalNames = new HashSet<>();
+        Set<String> leftLocalNamesToBeExcluded = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
             
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
-            String localName = pair.getLeftNode().getLocalName();
-            leftLocalNames.add(localName);
-            
+
+            //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should be considered unlinked.
+            if(!pair.isRejected()){
+                String localName = pair.getLeftNode().getLocalName();
+                leftLocalNamesToBeExcluded.add(localName);
+            }
         }
         
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
         
-        removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNames, remaining);
+        removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNamesToBeExcluded, remaining);
     }
 
     private void aMode(String fused, String remaining, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) throws IOException {
@@ -302,17 +308,21 @@ public class POIFuser implements Fuser{
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
-        Set<String> rightLocalNames = new HashSet<>();
+        Set<String> rightLocalNamesToBeExcluded = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             leftModel.add(fusedDataModel);
-            String localName = pair.getRightNode().getLocalName();
-            rightLocalNames.add(localName);
+            
+            //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should be considered unlinked.
+            if(!pair.isRejected()){
+                String localName = pair.getRightNode().getLocalName();
+                rightLocalNamesToBeExcluded.add(localName);
+            }
         }
 
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
 
-        removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNames, remaining);
+        removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNamesToBeExcluded, remaining);
     }
 
     private void baMode(String fused, List<LinkedPair> fusedEntities, OutputStream remainingStream, Configuration configuration, String remaining) throws IOException {
@@ -320,69 +330,77 @@ public class POIFuser implements Fuser{
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
         
-        Set<String> leftLocalNames = new HashSet<>();
+        Set<String> leftLocalNamesToBeExcluded = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
-            String localName = pair.getLeftNode().getLocalName();
-            leftLocalNames.add(localName);
+            
+            //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should come from the other.
+            if(!pair.isRejected()){
+                String localName = pair.getRightNode().getLocalName();
+                leftLocalNamesToBeExcluded.add(localName);
+            }
         }
         
         leftModel.write(remainingStream, configuration.getOutputRDFFormat());
         
-        addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNames);
+        addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNamesToBeExcluded);
         
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
-        //addMessageToEmptyOutput(remaining);
     }
 
     private void abMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration, String remaining) throws IOException {
         LOG.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
-        Set<String> rightLocalNames = new HashSet<>();
+        Set<String> rightLocalNamesToBeExcluded = new HashSet<>();
         for(LinkedPair pair : fusedEntities){
 
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
-            leftModel.add(fusedDataModel);
-            String localName = pair.getRightNode().getLocalName();
-
-            rightLocalNames.add(localName);
+            leftModel.add(fusedDataModel); 
+            
+            //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should come from the other.
+            if(!pair.isRejected()){
+                String localName = pair.getRightNode().getLocalName();
+                rightLocalNamesToBeExcluded.add(localName);
+            }
         }
-        
+
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
 
-        addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), rightLocalNames);
-        
+        addUnlinkedTriples(fused, RightDataset.getRightDataset().getFilepath(), rightLocalNamesToBeExcluded);
+
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
-        //addMessageToEmptyOutput(remaining);
     }
 
     private void lMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) {
         LOG.info(EnumOutputMode.L_MODE + ": Output result will be written to " + fused);
 
         Model newModel = ModelFactory.createDefaultModel();
-        
+
         for(LinkedPair pair : fusedEntities){
-            
-            Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
-            newModel.add(fusedModel);
+            //only accepted links should appear in the fused.
+            if(!pair.isRejected()){
+                Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
+                newModel.add(fusedModel);
+            }
         }
 
         newModel.write(fusedStream, configuration.getOutputRDFFormat());
     }
 
-    private void bbMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration, String remaining) throws IOException {
+    private void bbMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
+            Configuration configuration, String remaining) throws IOException {
         LOG.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
-        
+
         Model rightModel = RightDataset.getRightDataset().getModel();
-        
-        for(LinkedPair p : fusedEntities){
-            
-            Model fusedModel = p.getFusedEntity().getEntityData().getModel();
+
+        for(LinkedPair pair : fusedEntities){
+            //add both accepted and rejected to fused model, because the rejected have been removed from the right model.
+            Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedModel);
         }
-        
+
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
         
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
@@ -391,19 +409,17 @@ public class POIFuser implements Fuser{
     private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
             Configuration configuration, String remaining) throws IOException {
         LOG.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
-        
+
         Model leftModel = LeftDataset.getLeftDataset().getModel();
-        
+
         for(LinkedPair pair : fusedEntities){
-            
+            //add both accepted and rejected to fused model, because the rejected have been removed from the left model.
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
-            
             leftModel.add(fusedDataModel);
         }
         
-        
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
-        
+
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 

@@ -343,7 +343,7 @@ public class AbbreviationAndAcronymResolver {
                 }
             }
         }
-        
+
         boolean hasNull = Arrays.asList(full).contains(null);
         if(!hasNull){
             return String.join(" ", full);
@@ -351,16 +351,18 @@ public class AbbreviationAndAcronymResolver {
             return null;
         }
     }
-    
+
     private static boolean startsWithSameChar(String wordA, String wordB){
-        
-        
+        if(StringUtils.isBlank(wordA) || StringUtils.isBlank(wordB)){
+            return false;
+        }
+
         char[] charsA = wordA.toLowerCase(locale).toCharArray();
         char[] charsB = wordB.toLowerCase(locale).toCharArray();
-        
+
         return charsA[0] == charsB[0];
     }
-    
+
     private static int vowelsCount(char[] chars){
         String word = new String(chars);
         

@@ -638,7 +638,6 @@ public class SpecificationConstants {
      * Functions class contains all name constants of the normalize functions.
      */
     public static class Normalize {
-
         public static final String PHONE_NUMBER_NORMALIZER = "phonenumbernormalizer";
         public static final String NORMALIZE_DATE_TO_FORMAT = "normalizedatetoformat";
         public static final String NORMALIZE_ALPHABETICALLY = "alphabeticalnormalizer";
@@ -655,7 +654,22 @@ public class SpecificationConstants {
     /**
      * Constant for EPSG:3857 coordinate reference system.
      */
-    public static final String CRS_EPSG_3857 = "EPSG:3857";
+    public static final String CRS_EPSG_3857 = "EPSG:3857"; //google all
+    
+    /**
+     * Constant for EPSG:4508 coordinate reference system.
+     */
+    public static final String CRS_EPSG_4508 = "EPSG:4508"; //thai
+    
+    /**
+     * Constant for EPSG:2100 coordinate reference system.
+     */
+    public static final String CRS_EPSG_2100 = "EPSG:2100"; //greece
+    
+    /**
+     * Constant for EPSG:5243 coordinate reference system.
+     */
+    public static final String CRS_EPSG_5243 = "EPSG:5243"; //germany
 
     /**
      * Array constant with the date formats treat as "known date formats" in FAGI.

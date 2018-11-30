@@ -155,7 +155,6 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
 
         //set + and country code
         if(number.indexOf('+') == 0){
-            
             phoneNumber.setHasPlus(true);
             if(number.indexOf("(") == 1 && number.indexOf(")") == 4){
                 phoneNumber.setCountryCode(number.substring(2, 4));
@@ -178,7 +177,7 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
         if(phoneNumber.getCountryCode() != null){
 
             String[] codes = StringUtils.substringsBetween(number, "(", ")");
-            if(codes != null){
+            if(codes != null && codes.length > 1){
                 phoneNumber.setAreaCode(codes[1]);
             }
         } else {
@@ -215,9 +214,16 @@ public class IsSamePhoneNumberCustomNormalize  implements IFunction, IFunctionTw
             }
         } else if(number.contains("-")){
             int index = number.indexOf("-", number.indexOf("-") + 1);
-            String lineNumber = number.substring(index);
-            phoneNumber.setLineNumber(removeNonNumericCharacters(lineNumber));
-            
+            if(index == -1){
+                phoneNumber.setUnknownFormat(true);
+                phoneNumber.setNumericalValue(removeNonNumericCharacters(number));
+                phoneNumber.setLineNumber(number);
+
+                return phoneNumber;
+            } else {
+                String lineNumber = number.substring(index);
+                phoneNumber.setLineNumber(removeNonNumericCharacters(lineNumber));
+            }
         } else {
             phoneNumber.setUnknownFormat(true);
             phoneNumber.setNumericalValue(removeNonNumericCharacters(number));

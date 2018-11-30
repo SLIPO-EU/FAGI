@@ -550,6 +550,9 @@ public class RDFUtils {
 
         Double distance = MinimumOrthodromicDistance.compute(geoA, geoB);
         
+        if(distance == null){
+            return 0.0;
+        }
         //arbitrary value for normalizing to a similarity. Distance greater than 300 meters is considered as 0 similarity.
         if(distance > 300){
             return 0.0;
