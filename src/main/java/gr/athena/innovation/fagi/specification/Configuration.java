@@ -50,6 +50,12 @@ public class Configuration {
     private String similarity;
     private String fusionLog;
     private String trainingSetCsvPath;
+    private String nameModelPath;
+    private String addressModelPath;
+    private String phoneModelPath;
+    private String websiteModelPath;
+    private String emailModelPath;
+    private String geoModelPath;
     private int optionalDepth = 1; //depth of optional in sparql queries
     private final int maxOptionalDepth = 4;
     private final int minOptionalDepth = 1;
@@ -687,6 +693,54 @@ public class Configuration {
 
     public boolean isVerbose() {
         return verbose;
+    }
+
+    public String getNameModelPath() {
+        return nameModelPath;
+    }
+
+    public void setNameModelPath(String nameModelPath) {
+        this.nameModelPath = nameModelPath;
+    }
+
+    public String getAddressModelPath() {
+        return addressModelPath;
+    }
+
+    public void setAddressModelPath(String addressModelPath) {
+        this.addressModelPath = addressModelPath;
+    }
+
+    public String getPhoneModelPath() {
+        return phoneModelPath;
+    }
+
+    public void setPhoneModelPath(String phoneModelPath) {
+        this.phoneModelPath = phoneModelPath;
+    }
+
+    public String getWebsiteModelPath() {
+        return websiteModelPath;
+    }
+
+    public void setWebsiteModelPath(String websiteModelPath) {
+        this.websiteModelPath = websiteModelPath;
+    }
+
+    public String getEmailModelPath() {
+        return emailModelPath;
+    }
+
+    public void setEmailModelPath(String emailModelPath) {
+        this.emailModelPath = emailModelPath;
+    }
+
+    public String getGeoModelPath() {
+        return geoModelPath;
+    }
+
+    public void setGeoModelPath(String geoModelPath) {
+        this.geoModelPath = geoModelPath;
     }
 
     @Override

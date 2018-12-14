@@ -9,6 +9,7 @@ import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.learning.FeaturePreprocessor;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.Condition;
 import gr.athena.innovation.fagi.rule.model.Rule;
@@ -22,6 +23,8 @@ import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import gr.athena.innovation.fagi.utils.RDFUtils;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,10 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import weka.classifiers.Classifier;
+import weka.classifiers.trees.RandomForest;
+import weka.core.DenseInstance;
+import weka.core.SerializationHelper;
 
 /**
  * Class representing a pair of interlinked RDF entities.
@@ -765,6 +772,28 @@ public class LinkedPair {
 
                 break;
             }
+//            case KEEP_RECOMMENDED: {
+//                RDFUtils.validateNameAction(customProperty);
+//
+//                if (RDFUtils.isRejectedByPreviousRule(fusedModel)) {
+//                    break;
+//                }
+//
+//                keepRecommended(fusedModel,customProperty, nodeA, nodeB, false);
+//
+//                break;
+//            }
+//            case KEEP_RECOMMENDED_MARK: {
+//                RDFUtils.validateNameAction(customProperty);
+//
+//                if (RDFUtils.isRejectedByPreviousRule(fusedModel)) {
+//                    break;
+//                }
+//
+//                keepRecommended(fusedModel,customProperty, nodeA, nodeB, true);
+//
+//                break;
+//            }
             default:
                 throw new ApplicationException("fusion action not supported: " + action);
         }
@@ -1214,6 +1243,71 @@ public class LinkedPair {
         }
     }
 
+    private void keepRecommended(Model fusedModel, CustomRDFProperty customProperty, RDFNode nodeA, RDFNode nodeB, boolean mark) 
+            throws ApplicationException {
+
+        //todo: complete action with the updated models
+        Configuration config = Configuration.getInstance();
+
+        try {
+
+            DenseInstance instance = new DenseInstance(10);
+
+            String prop = customProperty.getValueProperty().toString();
+            switch (prop) {
+                case Namespace.NAME_NO_BRACKETS:
+                    RandomForest nameClassifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, Namespace.NAME_VALUE_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, Namespace.NAME_VALUE_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance nameInstance = FeaturePreprocessor.createNameInst(left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] res1 = nameClassifier.distributionForInstance(nameInstance);
+                    
+                    //keep left | keep right | keep both | keep any  
+                    break;
+
+                case Namespace.ADDRESS_NO_BRACKETS:
+                    Classifier addressClassifier = (Classifier) SerializationHelper.read(new FileInputStream(config.getAddressModelPath()));
+                    double res2 = addressClassifier.classifyInstance(instance);
+                    break;
+                case Namespace.HOMEPAGE_NO_BRACKETS:
+                    Classifier websiteClassifier = (Classifier) SerializationHelper.read(new FileInputStream(config.getWebsiteModelPath()));
+                    double res3 = websiteClassifier.classifyInstance(instance);
+                    break;
+                case Namespace.CONTACT_VALUE_NO_BRACKETS:
+                    Classifier phoneClassifier = (Classifier) SerializationHelper.read(new FileInputStream(config.getPhoneModelPath()));
+                    double res4 = phoneClassifier.classifyInstance(instance);
+                    break;
+                case Namespace.EMAIL:
+                    Classifier emailClassifier = (Classifier) SerializationHelper.read(new FileInputStream(config.getEmailModelPath()));
+                    double res5 = emailClassifier.classifyInstance(instance);
+                    break;
+                case Namespace.WKT:
+                    Classifier geoClassifier = (Classifier) SerializationHelper.read(new FileInputStream(config.getGeoModelPath()));
+                    double res6 = geoClassifier.classifyInstance(instance);
+                    break;
+            }
+
+        } catch (FileNotFoundException ex) {
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
+        } catch (Exception ex) {
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
+        }
+
+        //if the property is name and the names are multiple from the input, apply "keep-most-complete-name"
+        //in any other case, send the pair to the ML model.
+        RDFNode fused = null;
+        if(verbose){
+            if(mark){
+                addToLog(EnumFusionAction.KEEP_RECOMMENDED_MARK, customProperty, nodeA, nodeB, fused);
+            } else {
+                addToLog(EnumFusionAction.KEEP_RECOMMENDED, customProperty, nodeA, nodeB, fused);
+            }
+        }
+    }
+
     private void updateFusedModel(CustomRDFProperty customProperty, Model fusedModel, RDFNode fusedNode, Model sourceModel, 
             boolean mark) throws ApplicationException {
         
@@ -1487,5 +1581,9 @@ public class LinkedPair {
                     valA + SpecificationConstants.Rule.CONCATENATION_SEP + valB);
         }
         fusionLog.addAction(action);
+    }
+
+    public FusionLog getFusionLog() {
+        return fusionLog;
     }
 }

@@ -11,6 +11,7 @@ import gr.athena.innovation.fagi.core.function.geo.MinimumOrthodromicDistance;
 import gr.athena.innovation.fagi.core.normalizer.phone.PhoneNumberNormalizer;
 import gr.athena.innovation.fagi.core.similarity.JaroWinkler;
 import gr.athena.innovation.fagi.core.similarity.Levenshtein;
+import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.model.Entity;
@@ -373,8 +374,10 @@ public class RDFUtils {
             throw new WrongInputException("The \"keep-most-complete-name\" can be applied only on the name property.");
             }
         } else {
-            LOG.error("The \"keep-most-complete-name\" can be applied only on name property as a parent");
-            throw new WrongInputException("The \"keep-most-complete-name\" can be applied only on name property as a parent");
+            if(!property.getParent().toString().equals(Namespace.NAME_NO_BRACKETS)){
+                LOG.error("The \"keep-most-complete-name\" can be applied only on the name property.");
+                throw new WrongInputException("The \"keep-most-complete-name\" can be applied only on the name property.");
+            }
         }
     }
 
@@ -385,7 +388,7 @@ public class RDFUtils {
 
         Literal scoreA = SparqlRepository.getPreviousScore(modelA, scoreProperty);
         Literal scoreB = SparqlRepository.getPreviousScore(modelB, scoreProperty);
-        Literal scoreLiteral = constructScoreString(scoreA, scoreB, score);
+        Literal scoreLiteral = constructScoreLiteral(scoreA, scoreB, score);
 
         Statement statement = ResourceFactory.createStatement(resource, scoreProperty , scoreLiteral);
 
@@ -401,6 +404,17 @@ public class RDFUtils {
         Resource fusedRes = ResourceFactory.createResource(fusedUri);
         Property confidenceProperty = ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS);
 
+        Double conf = computeFusionConfidence(modelA, modelB);
+        
+        Literal confidenceLiteral = ResourceFactory.createTypedLiteral(conf.floatValue());
+
+        Statement statement = ResourceFactory.createStatement(fusedRes, confidenceProperty , confidenceLiteral);
+
+        return statement;
+    }
+    
+    public static Double computeFusionConfidence(Model modelA, Model modelB){
+        
         List<Double> sims = new ArrayList<>();
         Double nameSimilarity = computeNameSimilarity(modelA, modelB);
         Double phoneSimilarity = computePhoneSimilarity(modelA, modelB);
@@ -426,35 +440,31 @@ public class RDFUtils {
 
         double sum = sims.stream().mapToDouble(Double::doubleValue).sum();
         Double confidence =  sum / (double) sims.size(); 
-
-        Literal confidenceLiteral = ResourceFactory.createTypedLiteral(confidence.floatValue());
-
-        Statement statement = ResourceFactory.createStatement(fusedRes, confidenceProperty , confidenceLiteral);
-
-        return statement;
+        
+        return confidence;
     }
 
-    public static Statement getFusionScoreStatement(String fusedUri, String nodeA, String nodeB, Model modelA, 
+    public static Statement getFusionGainStatement(String fusedUri, String nodeA, String nodeB, Model modelA, 
             Model modelB, Model fusedModel) {
         //get previous score if exists. Append new score
         Resource resA = ResourceFactory.createResource(nodeA);
         Resource resB = ResourceFactory.createResource(nodeB);
         Resource fusedRes = ResourceFactory.createResource(fusedUri);
 
-        float fusionScore = computeFusionScore(fusedRes, resA, resB, modelA, modelB, fusedModel);
+        float fusionGain = computeFusionGain(fusedRes, resA, resB, modelA, modelB, fusedModel);
 
         Property scoreProperty = ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS);
 
         Literal scoreA = SparqlRepository.getPreviousScore(modelA, scoreProperty);
         Literal scoreB = SparqlRepository.getPreviousScore(modelB, scoreProperty);
-        Literal scoreLiteral = constructScoreString(scoreA, scoreB, fusionScore);
+        Literal gainLiteral = constructScoreLiteral(scoreA, scoreB, fusionGain);
 
-        Statement statement = ResourceFactory.createStatement(fusedRes, scoreProperty , scoreLiteral);
+        Statement statement = ResourceFactory.createStatement(fusedRes, scoreProperty , gainLiteral);
 
         return statement;
     }
 
-    public static float computeFusionScore(Resource fusedUri, Resource nodeA, Resource nodeB, Model modelA, Model modelB, Model fusedModel) {
+    public static float computeFusionGain(Resource fusedUri, Resource nodeA, Resource nodeB, Model modelA, Model modelB, Model fusedModel) {
         Set<Property> propsA = SparqlRepository.getDistinctPropertiesOfResource(modelA, nodeA);
         Set<Property> propsB = SparqlRepository.getDistinctPropertiesOfResource(modelB, nodeB);
         Set<Property> fusedProps = SparqlRepository.getDistinctPropertiesOfResource(fusedModel, fusedUri);
@@ -469,7 +479,7 @@ public class RDFUtils {
         return score.floatValue();
     }
 
-    private static Literal constructScoreString(Literal scoreA, Literal scoreB, float score) {
+    private static Literal constructScoreLiteral(Literal scoreA, Literal scoreB, float score) {
         String a;
         String b;
         if(scoreA == null){
@@ -559,5 +569,24 @@ public class RDFUtils {
         } else {
             return 1 - (distance / (double) 300);
         }
+    }
+    
+    public static Double getLastFusionGainFromLiteral(Literal literal) {
+        
+        //example of fusion gain literal:{scoreA: 1.0, scoreB: 1.0, score: 0.11111111}"
+
+        String value = literal.getString();
+        
+        int startIndex = value.lastIndexOf(' '); 
+        int endIndex = value.lastIndexOf('}');
+        if(startIndex == -1 || endIndex == -1){
+            LOG.warn("cannot parse fusion gain from: " + literal);
+            throw new ApplicationException("cannot parse fusion gain from: " + literal);
+        }
+        
+        String gainString = value.substring(startIndex, endIndex);
+        
+        Double gain = Double.parseDouble(gainString);
+        return gain;
     }
 }

@@ -15,7 +15,6 @@ import gr.athena.innovation.fagi.model.AmbiguousDataset;
 import gr.athena.innovation.fagi.preview.FrequencyCalculationProcess;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
-import gr.athena.innovation.fagi.preview.statistics.StatisticsCollector;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsContainer;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsExporter;
 import gr.athena.innovation.fagi.repository.AbstractRepository;
@@ -54,8 +53,8 @@ public class FagiInstance {
     private final String config;
 
     private final boolean runEvaluation = false;
-    private final boolean exportFrequencies = false;
-    private final boolean exportStatistics = false;
+    private final boolean exportFrequencies = true;
+    private final boolean exportStatistics = true;
     private final boolean exportSimilaritiesPerLink = false;
     private final boolean train = false;
     private final boolean fuse = true;
@@ -96,7 +95,7 @@ public class FagiInstance {
         InputValidator validator = new InputValidator(config, functionSet);
 
         LOG.info("Validating input..");
-        
+
         if (!validator.isValidConfigurationXSD()) {
             LOG.info(SpecificationConstants.HELP);
             System.exit(-1);
@@ -157,7 +156,7 @@ public class FagiInstance {
         }
 
         AmbiguousDataset.getAmbiguousDataset().getModel();
-        
+
         long stopTimeReadFiles = System.currentTimeMillis();
 
         //Load resources
@@ -177,26 +176,6 @@ public class FagiInstance {
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
             freqProcess.run(configuration, rdfProperties);
         }
-
-        long startTimeComputeStatistics = System.currentTimeMillis(); 
-
-        StatisticsContainer container;
-        if (exportStatistics) {
-            LOG.info("Calculating statistics...");
-            //statistics obtained using RDF
-            StatisticsCollector collector = new RDFStatisticsCollector();
-            container = collector.collect();
-            StatisticsExporter exporter = new StatisticsExporter();
-
-            if(!container.isValid() && !container.isComplete()){
-                LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
-                        + Namespace.SOURCE + " property that is being used to count the entities."); 
-            }
-
-            exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
-        }
-
-        long stopTimeComputeStatistics = System.currentTimeMillis();
 
         if(exportSimilaritiesPerLink){
             //similarity viewer for each pair and a, b, c, d normalization
@@ -249,20 +228,50 @@ public class FagiInstance {
 
             long stopTimeWrite = System.currentTimeMillis();
 
+            long startTimeComputeStatistics = System.currentTimeMillis(); 
+
             rejected = fuser.getRejectedCount();
             fused = fuser.getFusedPairsCount();
 
-            Properties prop = new Properties();
-            prop.setProperty("fused", fused.toString());
-            prop.setProperty("rejected", rejected.toString());
-            OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
-            prop.store(st, null);
-
-            if(exportStatistics){
+            StatisticsContainer container;
+            if (exportStatistics) {
+                LOG.info("Calculating statistics...");
+                //statistics obtained using RDF
+                RDFStatisticsCollector collector = new RDFStatisticsCollector();
+                collector.setFusedPOIs(fused);
+                collector.setRejectedPairs(rejected);
+                container = collector.collect();
                 StatisticsExporter exporter = new StatisticsExporter();
+
+                if(!container.isValid() && !container.isComplete()){
+                    LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
+                            + Namespace.SOURCE + " property that is being used to count the entities."); 
+                }
+
                 exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
             }
 
+            long stopTimeComputeStatistics = System.currentTimeMillis();
+
+            Long datasetLoadTime = stopTimeReadFiles - startTimeReadFiles;
+            Long statisticsTime = stopTimeComputeStatistics - startTimeComputeStatistics;
+            Long fusionTime = stopTimeFusion - startTimeFusion;
+            Long totalTime = stopTimeWrite - startTimeInput;
+            
+            Properties prop = new Properties();
+            prop.setProperty("fused", fused.toString());
+            prop.setProperty("rejected", rejected.toString());
+            prop.setProperty("average-gain", fuser.getAverageGain().toString());
+            prop.setProperty("max-gain", fuser.getMaxGain().toString());
+            prop.setProperty("average-confidence", fuser.getAverageConfidence().toString());
+            prop.setProperty("dataset-load-time(ms)", datasetLoadTime.toString());
+            prop.setProperty("statistics-time(ms)", statisticsTime.toString());
+            prop.setProperty("fusion(ms)", fusionTime.toString());
+            prop.setProperty("total-time(ms)", totalTime.toString());
+            
+            OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
+            prop.store(st, null);
+            
             LOG.info(configuration.toString());
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
@@ -273,11 +282,11 @@ public class FagiInstance {
             LOG.info("Fused: " + fused + ", Rejected links: " + rejected);
             LOG.info("Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
-            LOG.info("Datasets loaded in " + (stopTimeReadFiles - startTimeReadFiles) + "ms.");
-            LOG.info("Statistics computed in " + (stopTimeComputeStatistics - startTimeComputeStatistics) + "ms.");
-            LOG.info("Fusion completed in " + (stopTimeFusion - startTimeFusion) + "ms.");
+            LOG.info("Datasets loaded in " + datasetLoadTime + "ms.");
+            LOG.info("Statistics computed in " + statisticsTime + "ms.");
+            LOG.info("Fusion completed in " + fusionTime + "ms.");
             LOG.info("Combining files and write to disk completed in " + (stopTimeWrite - startTimeWrite) + "ms.");
-            LOG.info("Total time {}ms.", stopTimeWrite - startTimeInput);
+            LOG.info("Total time {}ms.", totalTime);
             LOG.info("####### ###### ##### #### ### ## # # # # # # ## ### #### ##### ###### #######");            
         }
     }
@@ -344,7 +353,24 @@ public class FagiInstance {
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
-        genericRDFRepository.parseLinks(configuration.getPathLinks());
+        
+        //genericRDFRepository.parseLinks(configuration.getPathLinks());
+
+        switch(configuration.getLinksFormat()){
+            case SpecificationConstants.Config.NT: {
+                genericRDFRepository.parseLinks(configuration.getPathLinks());
+                break;
+            }
+            case SpecificationConstants.Config.CSV: {
+                CSVRepository csvRepository = new CSVRepository();
+                csvRepository.parseLinks(configuration.getPathLinks());
+                break;
+            }
+            case SpecificationConstants.Config.CSV_UNIQUE_LINKS:{
+                CSVRepository.extractUniqueLinks(configuration.getPathLinks());
+                break;
+            }
+        }
 
         long stopTimeReadFiles = System.currentTimeMillis();
         long readTime = stopTimeReadFiles - startTimeReadFiles;

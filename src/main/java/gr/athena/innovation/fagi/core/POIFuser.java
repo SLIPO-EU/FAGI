@@ -47,10 +47,8 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -72,8 +70,11 @@ public class POIFuser implements Fuser{
     private int rejectedCount = 0;
     private final Model tempModelA = ModelFactory.createDefaultModel();
     private final Model tempModelB = ModelFactory.createDefaultModel();
-    private final List<FusionLog> fusionLogBuffer = new ArrayList<>();
+    private final List<String> fusionLogBuffer = new ArrayList<>();
     private final boolean verbose = Configuration.getInstance().isVerbose();
+    private Double averageConfidence = null;
+    private Double averageGain = null;
+    private double maxGain = 0.0;
 
     /**
      * Fuses all links using the Rules defined in the XML file.
@@ -129,18 +130,38 @@ public class POIFuser implements Fuser{
                 String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
                 Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore(), modelA, modelB);
 
-                Statement fusionScore = RDFUtils.getFusionScoreStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
+                Statement fusionGain = RDFUtils.getFusionGainStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
                 Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
 
                 fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
                 fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
                 fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
 
+                fusedModel.add(fusionGain);
                 fusedModel.add(fusionConfidence);
-                fusedModel.add(fusionScore);
                 fusedModel.add(interlinkingScore);
+
+                double confidence = Double.parseDouble(fusionConfidence.getString());
+
+                if(averageConfidence == null){
+                    averageConfidence = confidence;
+                }
+
+                averageConfidence = (averageConfidence + confidence)/2;
+
+                Double gain = RDFUtils.getLastFusionGainFromLiteral(fusionGain.getLiteral());
+                if(averageGain == null){
+                    averageGain = gain;
+                }
+
+                if(gain > maxGain){
+                    maxGain = gain;
+                }
+
+                averageGain = (averageGain + gain)/2;
+                linkedPair.getFusionLog().setConfidenceScore(fusionConfidence.getString());
             }
-            
+
             //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
             fusedList.add(linkedPair); 
         }
@@ -193,7 +214,7 @@ public class POIFuser implements Fuser{
         FusionLog fusionLog = linkedPair.fusePair(ruleSpec, functionMap, validation);
 
         if(verbose){
-            fusionLogBuffer.add(fusionLog);
+            fusionLogBuffer.add(fusionLog.toJson());
 
             if(fusionLogBuffer.size() > SpecificationConstants.FUSION_LOG_BUFFER_SIZE){
                 writeFusionLog(fusionLogBuffer);
@@ -423,7 +444,7 @@ public class POIFuser implements Fuser{
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
-    private void writeFusionLog(List<FusionLog> fusionLogBuffer) throws IOException {
+    private void writeFusionLog(List<String> fusionLogBuffer) throws IOException {
         String path = Configuration.getInstance().getFusionLog();
 	FileUtils.writeLines(new File(path), "UTF-8", fusionLogBuffer, "\n", true);
     }
@@ -620,5 +641,17 @@ public class POIFuser implements Fuser{
         Path inputPath = Paths.get(inputDatasetPath);
         Path remaining = Paths.get(remainingPath);
         Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);        
+    }
+
+    public Double getAverageConfidence() {
+        return averageConfidence;
+    }
+
+    public Double getAverageGain() {
+        return averageGain;
+    }
+
+    public Double getMaxGain() {
+        return maxGain;
     }
 }

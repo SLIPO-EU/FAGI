@@ -1,11 +1,15 @@
 package gr.athena.innovation.fagi.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumValidationAction;
+import gr.athena.innovation.fagi.exception.ApplicationException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -13,14 +17,16 @@ import java.util.Map;
  */
 public class FusionLog {
 
+    private static final Logger LOG = LogManager.getLogger(FusionLog.class);
+    
     //add model-selection score if case of ML action
     //keep previeous values to be fed to user feedback at a later time
     private String leftURI;
     private String rightURI;
-    //private final Map<String, String> actions = new HashMap<>();
     private final List<Action> actions = new ArrayList<>();
     private EnumDatasetAction defaultFusionAction;
     private EnumValidationAction validationAction;
+    private String confidenceScore;
 
     @Override
     public String toString() {
@@ -29,6 +35,22 @@ public class FusionLog {
                 + ", validationAction=" + validationAction + '}';
     }
 
+    public String toJson() {
+        try {
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            
+            String json = objectMapper.writeValueAsString(this);
+
+            return json;
+
+        } catch (IOException ex) {
+            LOG.error(ex);
+            throw new ApplicationException("Json serialization failed.");
+        }
+    }
+    
     public String getLeftURI() {
         return leftURI;
     }
@@ -44,14 +66,6 @@ public class FusionLog {
     public void setRightURI(String rightURI) {
         this.rightURI = rightURI;
     }
-
-//    public Map<String, String> getActions() {
-//        return actions;
-//    }
-//
-//    public void addAction(String property, String action) {
-//        actions.put(property, action);
-//    }
 
     public List<Action> getActions() {
         return actions;
@@ -76,7 +90,14 @@ public class FusionLog {
     public void setValidationAction(EnumValidationAction validationAction) {
         this.validationAction = validationAction;
     }
-}
 
+    public String getConfidenceScore() {
+        return confidenceScore;
+    }
+
+    public void setConfidenceScore(String confidenceScore) {
+        this.confidenceScore = confidenceScore;
+    }
+}
 
 

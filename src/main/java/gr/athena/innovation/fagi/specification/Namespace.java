@@ -65,6 +65,7 @@ public class Namespace {
     public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
     public static final String HOMEPAGE_NO_BRACKETS = "http://slipo.eu/def#homepage";
     public static final String EMAIL = "<http://slipo.eu/def#email>";
+    public static final String EMAIL_NO_BRACKETS = "http://slipo.eu/def#email";
     public static final String PHONE_NO_BRACKETS = "http://slipo.eu/def#phone";
     public static final String PHONE = "<http://slipo.eu/def#phone>";
     public static final String FAX = "<http://slipo.eu/def#fax>";
