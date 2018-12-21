@@ -217,6 +217,39 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 countFullMatchingValue(leftModel, rightModel, links, EnumStat.FULL_MATCH_STREET_NUMBERS,
                         Namespace.ADDRESS, Namespace.STREET_NUMBER));
 
+        map.put(EnumStat.FUSED_VS_LINKED.getKey(), countFusedVsLinked(links, EnumStat.FUSED_VS_LINKED));
+
+
+        map.put(EnumStat.FUSED_REJECTED_VS_LINKED.getKey(), countRejectedVsLinked(links, EnumStat.FUSED_REJECTED_VS_LINKED));
+
+
+        map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
+
+        map.put(EnumStat.FUSED_NAMES.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_NAMES, 
+                EnumStat.NON_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE));
+
+        map.put(EnumStat.FUSED_PHONES.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_PHONES, 
+                EnumStat.NON_EMPTY_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE));
+
+        map.put(EnumStat.FUSED_EMAILS.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_EMAILS, 
+                EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE));
+
+        map.put(EnumStat.FUSED_HOMEPAGE.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, 
+                EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+
+        map.put(EnumStat.FUSED_POSTCODE.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_POSTCODE, 
+                EnumStat.NON_EMPTY_POSTCODE, Namespace.ADDRESS, Namespace.POSTCODE));
+
+        map.put(EnumStat.FUSED_STREET.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET, 
+                EnumStat.NON_EMPTY_STREETS, Namespace.ADDRESS, Namespace.STREET));
+
+        map.put(EnumStat.FUSED_STREET_NUMBER.getKey(), countFusedProperty(leftModel, rightModel, 
+                EnumStat.FUSED_STREET_NUMBER, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER));
+
+        map.put(EnumStat.FUSED_FAX.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_FAX, 
+                EnumStat.NON_EMPTY_FAX, Namespace.FAX, Namespace.CONTACT_VALUE));
+
+        
         if (totalPOIsA == null || totalPOIsA == 0 || totalPOIsB == null || totalPOIsB == 0) {
             container.setValid(false);
         } else {
@@ -1001,6 +1034,15 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         int propertyA = SparqlRepository.countProperty(a, property);
         int propertyB = SparqlRepository.countProperty(b, property);
 
+        //assign to ceiling value 100 when the inputPOIs have multiple values for the same property
+        if(propertyA > totalPOIsA){
+            propertyA = totalPOIsA;
+        }
+        
+        if(propertyB > totalPOIsB){
+            propertyB = totalPOIsB;
+        }
+
         Double percentageA = roundHalfDown((100 * propertyA) / (double) totalPOIsA);
         Double percentageB = roundHalfDown((100 * propertyB) / (double) totalPOIsB);
 
@@ -1447,7 +1489,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public StatisticResultPair countFusedVsLinked(List<Link> links, EnumStat stat) {
 
-        String fused = null;
+        String fused;
         try {
             InputStream inputStream = new FileInputStream(Configuration.getInstance().getOutputDir() + "/fusion.properties");
             Properties props = new Properties();
@@ -1475,7 +1517,7 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public StatisticResultPair countRejectedVsLinked(List<Link> links, EnumStat stat) {
 
-        String rejected = null;
+        String rejected;
         try {
             InputStream inputStream = new FileInputStream(Configuration.getInstance().getOutputDir() + "/fusion.properties");
             Properties props = new Properties();
@@ -1487,13 +1529,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         } catch (IOException ex) {
             return getFailedStatistic(stat, null);
         }
-
+        
         if(rejected == null){
             return getFailedStatistic(EnumStat.FUSED_REJECTED_VS_LINKED, Namespace.SOURCE);
         }
 
         Integer linkedPOIs = links.size();
-        StatisticResultPair pair = new StatisticResultPair(rejected.toString(), linkedPOIs.toString(), linkedPOIs.toString());
+        StatisticResultPair pair = new StatisticResultPair(rejected, linkedPOIs.toString(), linkedPOIs.toString());
         pair.setType(EnumStatViewType.BAR);
         pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setTitle(stat.toString());
@@ -1505,9 +1547,9 @@ public class RDFStatisticsCollector implements StatisticsCollector {
     public StatisticResultPair countInitialVsFused(Model a, Model b, EnumStat stat) {
 
         String path = Configuration.getInstance().getFused();
-        Integer fusedPOIs = getCount(path, Namespace.SOURCE_NO_BRACKETS);
+        Integer fused = getCount(path, Namespace.SOURCE_NO_BRACKETS);
 
-        if(fusedPOIs == 0){
+        if(fused == null){
             return getFailedStatistic(EnumStat.FUSED_INITIAL, Namespace.SOURCE);
         }
         

@@ -350,6 +350,13 @@ public class SparqlConstructor {
         return query;
     }
     
+    public static String countObjectsOfPropertyChain(String countVar, String predicate1, String predicate2){
+        String query = "SELECT (COUNT (?o) AS ?" + countVar + ")\n" +
+                       "WHERE\n" +
+                       "{?s " + predicate1 + " ?o1 . ?o1 " + predicate2 + " ?o}";
+        return query;
+    }
+
     public static String countProperties(String countVar, String predicate){
         String query = "SELECT (COUNT (?s) AS ?" + countVar + ")\n" +
                        "WHERE\n" +

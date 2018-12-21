@@ -9,6 +9,7 @@ import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.ApplicationException;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.learning.FeaturePreprocessor;
 import gr.athena.innovation.fagi.rule.model.ActionRule;
 import gr.athena.innovation.fagi.rule.model.Condition;
 import gr.athena.innovation.fagi.rule.model.Rule;
@@ -22,6 +23,8 @@ import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.CentroidShiftTranslator;
 import gr.athena.innovation.fagi.utils.RDFUtils;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,9 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import weka.classifiers.trees.RandomForest;
+import weka.core.DenseInstance;
+import weka.core.SerializationHelper;
 
 /**
  * Class representing a pair of interlinked RDF entities.
@@ -750,7 +756,7 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMostCompleteName(fusedModel,customProperty, nodeA, nodeB, false);
+                keepMostCompleteName(fusedModel, customProperty, nodeA, nodeB, false);
 
                 break;
             }
@@ -761,7 +767,29 @@ public class LinkedPair {
                     break;
                 }
 
-                keepMostCompleteName(fusedModel,customProperty, nodeA, nodeB, true);
+                keepMostCompleteName(fusedModel, customProperty, nodeA, nodeB, true);
+
+                break;
+            }
+            case KEEP_RECOMMENDED: {
+                RDFUtils.validateNameAction(customProperty);
+
+                if (RDFUtils.isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                keepRecommended(fusedModel,customProperty, nodeA, nodeB, false);
+
+                break;
+            }
+            case KEEP_RECOMMENDED_MARK: {
+                RDFUtils.validateNameAction(customProperty);
+
+                if (RDFUtils.isRejectedByPreviousRule(fusedModel)) {
+                    break;
+                }
+
+                keepRecommended(fusedModel,customProperty, nodeA, nodeB, true);
 
                 break;
             }
@@ -1062,7 +1090,6 @@ public class LinkedPair {
     private void keepMorePointsAndShift(RDFNode nodeA, RDFNode nodeB, Model fusedModel, 
             CustomRDFProperty customProperty, boolean mark) {
 
-        //RDFNode fused;
         RDFNode geometryLiteral;
         Model sourceModel;
         if(nodeA == null){
@@ -1210,6 +1237,135 @@ public class LinkedPair {
                 addToLog(EnumFusionAction.CONCATENATE_GEOMETRY_MARK, customProperty, nodeA, nodeB, concatenatedGeom);
             } else {
                 addToLog(EnumFusionAction.CONCATENATE_GEOMETRY, customProperty, nodeA, nodeB, concatenatedGeom);
+            }
+        }
+    }
+
+    private void keepRecommended(Model fusedModel, CustomRDFProperty customProperty, RDFNode nodeA, RDFNode nodeB, boolean mark) 
+            throws ApplicationException {
+
+        Configuration config = Configuration.getInstance();
+
+        try {
+
+            String prop;
+            if(customProperty.isSingleLevel()){
+                prop = customProperty.getValueProperty().toString();
+            } else {
+                prop = customProperty.getParent().toString();
+            }
+
+            switch (prop) {
+                case Namespace.NAME_NO_BRACKETS: {
+                    Model sourceA = leftNode.getEntityData().getModel();
+                    Model sourceB = rightNode.getEntityData().getModel();
+                    int countA = SparqlRepository.countObjectsOfPropertyChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, sourceA);
+                    int countB = SparqlRepository.countObjectsOfPropertyChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, sourceB);
+                    
+                    if(countA > 1 || countB > 1){
+                        //overriding model in order to ensure the "keepMostCompleteModel" action in case of multiple name properties.
+                        keepMostCompleteName(fusedModel, customProperty, nodeA, nodeB, mark);
+                        break;
+                    }
+                    
+                    RandomForest nameClassifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance nameInstance = FeaturePreprocessor.createNameInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] probabilities = nameClassifier.distributionForInstance(nameInstance);
+                    applyRecommendedAction(probabilities, fusedModel, customProperty, nodeA, nodeB, mark);
+  
+                    break;
+                }
+                case Namespace.ADDRESS_NO_BRACKETS:
+                case Namespace.STREET_NO_BRACKETS:
+                case Namespace.STREET_NUMBER_NO_BRACKETS: {
+
+                    //get same action for address street and address number to avoid cross-mixing values.
+                    RandomForest classifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.ADDRESS_NO_BRACKETS, 
+                            Namespace.STREET_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.ADDRESS_NO_BRACKETS, 
+                            Namespace.STREET_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance dInstance = FeaturePreprocessor.createStreetInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] probabilities = classifier.distributionForInstance(dInstance);
+                    applyRecommendedAction(probabilities, fusedModel, customProperty, nodeA, nodeB, mark);
+
+                    break;
+                }
+                case Namespace.HOMEPAGE_NO_BRACKETS: {
+                    RandomForest classifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNode(Namespace.HOMEPAGE_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNode(Namespace.HOMEPAGE_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance dInstance = FeaturePreprocessor.createWebInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] probabilities = classifier.distributionForInstance(dInstance);
+                    applyRecommendedAction(probabilities, fusedModel, customProperty, nodeA, nodeB, mark);
+
+                    break;
+                }
+                case Namespace.PHONE_NO_BRACKETS: {
+
+                    RandomForest classifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.PHONE_NO_BRACKETS, 
+                            Namespace.CONTACT_VALUE_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.PHONE_NO_BRACKETS, 
+                            Namespace.CONTACT_VALUE_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance dInstance = FeaturePreprocessor.createTeleInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] probabilities = classifier.distributionForInstance(dInstance);
+                    applyRecommendedAction(probabilities, fusedModel, customProperty, nodeA, nodeB, mark);
+
+                    break;
+                }
+                case Namespace.EMAIL_NO_BRACKETS: {
+
+                    RandomForest classifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.EMAIL_NO_BRACKETS, 
+                            Namespace.CONTACT_VALUE_NO_BRACKETS, nodeA.getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.EMAIL_NO_BRACKETS, 
+                            Namespace.CONTACT_VALUE_NO_BRACKETS, nodeB.getModel());
+                    DenseInstance dInstance = FeaturePreprocessor.createEmailInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+
+                    double[] probabilities = classifier.distributionForInstance(dInstance);
+                    applyRecommendedAction(probabilities, fusedModel, customProperty, nodeA, nodeB, mark);
+
+                    break;
+                }
+                case Namespace.GEOSPARQL_HAS_GEOMETRY: {
+                    //overriding ML model to ensure the "keep-more-points" action will be applied
+                    keepMorePoints(nodeA, nodeB, fusedModel, customProperty, mark);
+                    break;
+                }
+            }
+
+        } catch (FileNotFoundException ex) {
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
+        } catch (Exception ex) {
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
+        }
+
+        //if the property is name and the names are multiple from the input, apply "keep-most-complete-name"
+        //in any other case, send the pair to the ML model.
+        RDFNode fused = null;
+        if(verbose){
+            if(mark){
+                addToLog(EnumFusionAction.KEEP_RECOMMENDED_MARK, customProperty, nodeA, nodeB, fused);
+            } else {
+                addToLog(EnumFusionAction.KEEP_RECOMMENDED, customProperty, nodeA, nodeB, fused);
             }
         }
     }
@@ -1487,5 +1643,39 @@ public class LinkedPair {
                     valA + SpecificationConstants.Rule.CONCATENATION_SEP + valB);
         }
         fusionLog.addAction(action);
+    }
+
+    private void applyRecommendedAction(double[] probabilities, Model fusedModel, 
+            CustomRDFProperty customProp, RDFNode a, RDFNode b, boolean mark) {
+
+        double maxValue = -1;
+        int maxIndex = 0;
+        for(int i = 0; i < probabilities.length; i++){
+            if(probabilities[i] > maxValue){
+                maxIndex = i;
+            }
+        }
+        //0:keep left |1: keep right |2: keep both |3: keep any
+        switch(maxIndex){
+            case 0:
+            case 3:
+                //keep any is recommended when both values are the same. Keeping the left value in this case
+                keepLeft(fusedModel, customProp, a, b, mark);
+                break;
+            case 1:
+                keepRight(fusedModel, customProp, a, b, mark);
+                break;
+            case 2:
+                concatenate(fusedModel, customProp, a, b, mark);
+                break;
+            default:
+                LOG.warn("ML failed to recommend an action for property: " + customProp.getValueProperty() + ". Keeping left.");
+                keepLeft(fusedModel, customProp, a, b, mark);
+                break;
+        }
+    }
+
+    public FusionLog getFusionLog() {
+        return fusionLog;
     }
 }

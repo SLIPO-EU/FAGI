@@ -320,7 +320,9 @@ public class SchemaDefinition {
 "											  <xs:enumeration value=\"concatenate-geometry\"/>\n" +
 "											  <xs:enumeration value=\"concatenate-geometry-mark-ambiguous\"/>\n" +            
 "											  <xs:enumeration value=\"keep-longest\"/>\n" +
-"											  <xs:enumeration value=\"keep-longest-mark-ambiguous\"/>\n" +            
+"											  <xs:enumeration value=\"keep-longest-mark-ambiguous\"/>\n" +   
+"											  <xs:enumeration value=\"keep-recommended\"/>\n" +
+"											  <xs:enumeration value=\"keep-recommended-mark-ambiguous\"/>\n" +
 "											  <xs:enumeration value=\"keep-both\"/>\n" +
 "											  <xs:enumeration value=\"keep-both-mark-ambiguous\"/>\n" +
 "											  <xs:enumeration value=\"keep-most-complete-name\"/>\n" +
@@ -357,6 +359,8 @@ public class SchemaDefinition {
 "								  <xs:enumeration value=\"keep-most-complete-name-mark-ambiguous\"/>\n" +     
 "								  <xs:enumeration value=\"keep-longest\"/>\n" +
 "								  <xs:enumeration value=\"keep-longest-mark-ambiguous\"/>\n" +  
+"								  <xs:enumeration value=\"keep-recommended\"/>\n" +
+"								  <xs:enumeration value=\"keep-recommended-mark-ambiguous\"/>\n" +
 "								  <xs:enumeration value=\"keep-both\"/>\n" +
 "								  <xs:enumeration value=\"keep-both-mark-ambiguous\"/>\n" +            
 "								  <xs:enumeration value=\"keep-more-points\"/>\n" +

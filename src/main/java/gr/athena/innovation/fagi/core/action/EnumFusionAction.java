@@ -20,107 +20,143 @@ public enum EnumFusionAction {
      *
      */
     UNDEFINED(0),
+    
     /**
      * Keeps the model of the entity from the left source dataset.
      */
     KEEP_LEFT(1),
+    
     /**
      * Keeps the model of the entity from the left source dataset and marks the property being fused as ambiguous.
      */
-    KEEP_LEFT_MARK(2),    
+    KEEP_LEFT_MARK(2),
+    
     /**
      * Keeps the model of the entity from the right source dataset.
      */
     KEEP_RIGHT(3),
+    
     /**
      * Keeps the model of the entity from the right source dataset and marks the property being fused as ambiguous.
      */
-    KEEP_RIGHT_MARK(4),      
+    KEEP_RIGHT_MARK(4),
+    
     /**
      * Keeps both models of the entity from left and right source datasets.
      */
     KEEP_BOTH(5),
+    
     /**
      * Keeps both models of the entity from left and right source datasets and marks the property being fused as ambiguous.
      */
-    KEEP_BOTH_MARK(6),    
+    KEEP_BOTH_MARK(6),
+    
     /**
      * Keeps the model of the entity with the longest value.
      */
     KEEP_LONGEST(7),
+    
     /**
      * Keeps the model of the entity with the longest value and marks it ambiguous.
      */
-    KEEP_LONGEST_MARK(8),    
+    KEEP_LONGEST_MARK(8),
+    
     /**
      * Concatenates the two literals and keeps them in the same property.
      */
     CONCATENATE(9),
+    
     /**
      * Concatenates the two literals into a single value of the same property and marks the property as ambiguous. 
      */
-    CONCATENATE_MARK(10),    
+    CONCATENATE_MARK(10),
+    
     /**
      * Keeps the most recent model, based on the dataset dates provided in the specification.
      */
     KEEP_MOST_RECENT(11),
+    
     /**
      * Keeps the most recent model, based on the dataset dates provided in the specification. Marks property as ambiguous.
      */
-    KEEP_MOST_RECENT_MARK(12),    
+    KEEP_MOST_RECENT_MARK(12),
+    
     /**
      * Keeps the geometry containing more points than the other.
      */
     KEEP_MORE_POINTS(13),
+    
     /**
      * Keeps the geometry containing more points than the other. Marks the property as ambiguous.
      */
-    KEEP_MORE_POINTS_MARK(14),    
+    KEEP_MORE_POINTS_MARK(14),
+    
     /**
      * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
      */
     KEEP_MORE_POINTS_AND_SHIFT(15),
+    
     /**
      * Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry. Marks the property as ambiguous.
      */
-    KEEP_MORE_POINTS_AND_SHIFT_MARK(16),    
+    KEEP_MORE_POINTS_AND_SHIFT_MARK(16),
+    
     /**
      * Shifts the geometry of the left source entity to the centroid of the right.
      */
     SHIFT_LEFT_GEOMETRY(17),
+    
     /**
      * Shifts the geometry of the left source entity to the centroid of the right. Marks the property as ambiguous.
      */
-    SHIFT_LEFT_GEOMETRY_MARK(18),    
+    SHIFT_LEFT_GEOMETRY_MARK(18),
+    
     /**
      * Shifts the geometry of the right source entity to the centroid of the left.
      */
     SHIFT_RIGHT_GEOMETRY(19),
+    
     /**
      * Shifts the geometry of the right source entity to the centroid of the left. Marks the property as ambiguous.
      */
-    SHIFT_RIGHT_GEOMETRY_MARK(20),    
+    SHIFT_RIGHT_GEOMETRY_MARK(20),
+    
     /**
      * Produces a geometry collection from the given geometries.
      */
     CONCATENATE_GEOMETRY(21),
+    
     /**
      * Produces a geometry collection from the given geometries. Marks the property as ambiguous.
      */
     CONCATENATE_GEOMETRY_MARK(22),
+    
     /**
      * This action can be applied only to name attributes. 
      * It keeps the longest unique value of all the mapped name types (e.g unique value of official, international).
      * It also keeps all different names based on language property, unique and longest for each language also.
      */
-    KEEP_MOST_COMPLETE_NAME(23),  
+    KEEP_MOST_COMPLETE_NAME(23),
+    
     /**
      * This action can be applied only to name attributes. 
      * It keeps the longest unique value of all the mapped name types (e.g unique value of official, international).
      * It also keeps all different names based on language property, unique and longest for each language also. 
      * Marks the property as ambiguous.
      */
-    KEEP_MOST_COMPLETE_NAME_MARK(24);    
+    KEEP_MOST_COMPLETE_NAME_MARK(24),
+
+    /**
+     * Applies the recommended action using the ML model. 
+     * 
+     */
+    KEEP_RECOMMENDED(25),
+    
+    /**
+     * Applies the recommended action using the ML model. Marks the property as ambiguous.
+     * 
+     */
+    KEEP_RECOMMENDED_MARK(26); 
 
     private final int value;
 
@@ -247,7 +283,11 @@ public enum EnumFusionAction {
             case KEEP_MOST_COMPLETE_NAME:
                 return "keep-most-complete-name";
             case KEEP_MOST_COMPLETE_NAME_MARK:
-                return "keep-most-complete-name-mark-ambiguous";   
+                return "keep-most-complete-name-mark-ambiguous";
+            case KEEP_RECOMMENDED:
+                return "keep-recommended";
+            case KEEP_RECOMMENDED_MARK:
+                return "keep-recommended-mark-ambiguous";  
             default:
                 throw new IllegalArgumentException();
         }

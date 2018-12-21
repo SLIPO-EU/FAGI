@@ -114,7 +114,29 @@ public class SparqlRepository {
         return result;
     }
 
-    public static List<String> getLiteralsFromPropertyChain(String p1, String p2, Model model) {
+    public static int countObjectsOfPropertyChain(String p1, String p2, Model model) {
+        int count = 0;
+
+        String countVar = "cnt";
+        String queryString = SparqlConstructor.countObjectsOfPropertyChain(countVar, p1, p2);
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(countVar);
+                if (c.isLiteral()) {
+                    count = c.asLiteral().getInt();
+                }
+            }
+        }
+        return count;
+    }
+
+    public static List<String> getLiteralStringsFromPropertyChain(String p1, String p2, Model model) {
         List<String> literals = new ArrayList<>();
         String var = "o2";
         String queryString = SparqlConstructor.selectObjectFromChainQuery(p1, p2);
