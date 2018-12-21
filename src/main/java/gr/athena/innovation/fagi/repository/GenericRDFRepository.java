@@ -1,11 +1,11 @@
 package gr.athena.innovation.fagi.repository;
 
+import static gr.athena.innovation.fagi.repository.AbstractRepository.parseLinksFile;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.FusedDataset;
 import gr.athena.innovation.fagi.model.LeftDataset;
 import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.RightDataset;
-import static gr.athena.innovation.fagi.repository.AbstractRepository.parseLinksFile;
 import java.io.File;
 import java.text.ParseException;
 import org.apache.jena.rdf.model.Model;
@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class GenericRDFRepository extends AbstractRepository{
 
     private static final Logger LOG = LogManager.getLogger(GenericRDFRepository.class);
-    
+
     @Override
     public void parseLeft(String filepath) throws WrongInputException{
         LOG.debug("Loading left dataset file:\" " + filepath + "\" with Generic Loader");

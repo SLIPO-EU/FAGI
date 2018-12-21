@@ -49,8 +49,6 @@ public class RDFStatisticsCollector implements StatisticsCollector {
     private static final Logger LOG = LogManager.getLogger(RDFStatisticsCollector.class);
     private Integer totalPOIsA = null;
     private Integer totalPOIsB = null;
-    private Integer fusedPOIs = null;
-    private Integer rejectedPairs = null;
     private final StatisticsContainer container = new StatisticsContainer();
     private final Map<String, StatisticResultPair> map = new HashMap<>();
 
@@ -1491,11 +1489,20 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public StatisticResultPair countFusedVsLinked(List<Link> links, EnumStat stat) {
 
-        if(fusedPOIs == null){
+        String fused;
+        try {
+            InputStream inputStream = new FileInputStream(Configuration.getInstance().getOutputDir() + "/fusion.properties");
+            Properties props = new Properties();
+            props.load(inputStream);
+            
+            fused = props.getProperty("fused");
+        } catch (FileNotFoundException ex) {
+            return getFailedStatistic(stat, null);
+        } catch (IOException ex) {
             return getFailedStatistic(stat, null);
         }
 
-        Integer count = fusedPOIs;
+        Integer count = Integer.parseInt(fused);
         
         Integer linkedPOIs = links.size();
         Integer total = count + linkedPOIs;
@@ -1510,12 +1517,25 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public StatisticResultPair countRejectedVsLinked(List<Link> links, EnumStat stat) {
 
-        if(rejectedPairs == null){
+        String rejected;
+        try {
+            InputStream inputStream = new FileInputStream(Configuration.getInstance().getOutputDir() + "/fusion.properties");
+            Properties props = new Properties();
+            props.load(inputStream);
+            
+            rejected = props.getProperty("rejected");
+        } catch (FileNotFoundException ex) {
+            return getFailedStatistic(stat, null);
+        } catch (IOException ex) {
+            return getFailedStatistic(stat, null);
+        }
+        
+        if(rejected == null){
             return getFailedStatistic(EnumStat.FUSED_REJECTED_VS_LINKED, Namespace.SOURCE);
         }
 
         Integer linkedPOIs = links.size();
-        StatisticResultPair pair = new StatisticResultPair(rejectedPairs.toString(), linkedPOIs.toString(), linkedPOIs.toString());
+        StatisticResultPair pair = new StatisticResultPair(rejected, linkedPOIs.toString(), linkedPOIs.toString());
         pair.setType(EnumStatViewType.BAR);
         pair.setGroup(new StatGroup(EnumStatGroup.POI_BASED));
         pair.setTitle(stat.toString());
@@ -1728,13 +1748,5 @@ public class RDFStatisticsCollector implements StatisticsCollector {
 
     public void setTotalPOIsB(int totalPOIsB) {
         this.totalPOIsB = totalPOIsB;
-    }
-
-    public void setFusedPOIs(Integer fusedPOIs) {
-        this.fusedPOIs = fusedPOIs;
-    }
-
-    public void setRejectedPairs(Integer rejectedPairs) {
-        this.rejectedPairs = rejectedPairs;
     }
 }

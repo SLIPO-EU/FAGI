@@ -39,7 +39,7 @@ public class FusionLog {
         try {
             
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+            objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
             
             String json = objectMapper.writeValueAsString(this);
 

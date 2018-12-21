@@ -498,9 +498,9 @@ public class RDFUtils {
     }
 
     private static Double computeNameSimilarity(Model modelA, Model modelB) {
-        List<String> namesA = SparqlRepository.getLiteralsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
+        List<String> namesA = SparqlRepository.getLiteralStringsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
                 Namespace.NAME_VALUE_NO_BRACKETS, modelA);
-        List<String> namesB = SparqlRepository.getLiteralsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
+        List<String> namesB = SparqlRepository.getLiteralStringsFromPropertyChain(Namespace.NAME_NO_BRACKETS, 
                 Namespace.NAME_VALUE_NO_BRACKETS, modelB);
         
         if(namesA.isEmpty() || namesB.isEmpty()){

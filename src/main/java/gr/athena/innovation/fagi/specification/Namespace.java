@@ -61,6 +61,7 @@ public class Namespace {
     public static final String STREET = "<http://slipo.eu/def#street>";
     public static final String STREET_NO_BRACKETS = "http://slipo.eu/def#street";
     public static final String STREET_NUMBER = "<http://slipo.eu/def#number>";
+    public static final String STREET_NUMBER_NO_BRACKETS = "http://slipo.eu/def#number";
     public static final String POSTCODE = "<http://slipo.eu/def#postcode>";
     public static final String HOMEPAGE = "<http://slipo.eu/def#homepage>";
     public static final String HOMEPAGE_NO_BRACKETS = "http://slipo.eu/def#homepage";
@@ -83,24 +84,26 @@ public class Namespace {
     public static final String FUSION_CONFIDENCE_NO_BRACKETS = "http://slipo.eu/def#fusion-confidence";
     
     public static final String ORIGINAL_LITERAL = " \"1.0\" . ";
-
-    private String leftLinksNamespace;
-    private String rightLinksNamespace;
-
-    public String getLeftLinksNamespace() {
-        return leftLinksNamespace;
-    }
-
-    public void setLeftLinksNamespace(String leftLinksNamespace) {
-        this.leftLinksNamespace = leftLinksNamespace;
-    }
-
-    public String getRightLinksNamespace() {
-        return rightLinksNamespace;
-    }
-
-    public void setRightLinksNamespace(String rightLinksNamespace) {
-        this.rightLinksNamespace = rightLinksNamespace;
+    
+    public static class Prov {
+        public static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        public static final String DERIVED = "http://www.w3.org/ns/prov#wasDerivedFrom";
+        public static final String APLLIED_ACTION = "http://www.w3.org/ns/prov#appliedAction";
+        public static final String DERIVED_ACTION = "http://www.w3.org/ns/prov#derivedFromAction";
+        public static final String PROV = "http://www.w3.org/ns/prov#";
+        public static final String PROV_BOOK = "http://www.provbook.org/";
+        public static final String AGENT = "http://www.w3.org/ns/prov#Agent";
+        
+        public static final String PROV_VAL_ACTION = PROV + "validation-action";
+        public static final String PROV_DEFAULT_FUSION_ACTION = PROV + "default-fusion-action";
+        public static final String PROV_SCORE = PROV + "fusion-confidence";
+        public static final String PROV_FUSION_ACTION = PROV + "fusion-action";
+        public static final String PROV_ATTRIBUTE = PROV + "attribute";
+        public static final String PROV_LEFT_VALUE = PROV + "left-value";
+        public static final String PROV_RIGHT_VALUE = PROV + "right-value";
+        public static final String PROV_FUSED_VALUE = PROV + "fused-value";
+        public static final String PROV_LEFT = PROV + "left-uri";
+        public static final String PROV_RIGHT = PROV + "right-uri";
     }
 
 }

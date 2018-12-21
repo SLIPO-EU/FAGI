@@ -1,7 +1,8 @@
 package gr.athena.innovation.fagi.model;
 
 /**
- *
+ * Action class models a fusion action that applies to a specific attribute for fusion logging.
+ * 
  * @author nkarag
  */
 public class Action {
@@ -45,5 +46,4 @@ public class Action {
     public String getFusedValue() {
         return fusedValue;
     }
-
 }

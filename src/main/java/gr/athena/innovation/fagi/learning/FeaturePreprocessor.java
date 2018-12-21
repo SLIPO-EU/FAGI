@@ -26,7 +26,7 @@ public class FeaturePreprocessor {
         return temp.length();
     }
 
-    private String stripPhone(String str) {
+    private static String stripPhone(String str) {
         return str.replaceAll("[^0-9]", "");
     }
 
@@ -51,7 +51,7 @@ public class FeaturePreprocessor {
 
     }
 
-    public DenseInstance createStreetInst(String left, String right) {
+    public static DenseInstance createStreetInst(String left, String right) {
 
         ArrayList<Attribute> atts = createStreetAtts();
         Instances insts = new Instances("street", atts, 0);
@@ -64,7 +64,7 @@ public class FeaturePreprocessor {
 
     }
 
-    public DenseInstance createEmailInst(String left, String right) {
+    public static DenseInstance createEmailInst(String left, String right) {
 
         ArrayList<Attribute> atts = createEmailAtts();
         Instances insts = new Instances("email", atts, 0);
@@ -79,7 +79,7 @@ public class FeaturePreprocessor {
 
     }
 
-    public DenseInstance createWebInst(String left, String right) {
+    public static DenseInstance createWebInst(String left, String right) {
 
         ArrayList<Attribute> atts = createWebAtts();
         Instances insts = new Instances("web", atts, 0);
@@ -94,7 +94,7 @@ public class FeaturePreprocessor {
 
     }
 
-    public DenseInstance createTeleInst(String left, String right) {
+    public static DenseInstance createTeleInst(String left, String right) {
 
         ArrayList<Attribute> atts = createTeleAtts();
         Instances insts = new Instances("tele", atts, 0);
@@ -111,7 +111,7 @@ public class FeaturePreprocessor {
 
     }
 
-    private ArrayList<Attribute> createTeleAtts() {
+    private static ArrayList<Attribute> createTeleAtts() {
         ArrayList<Attribute> teleAtts = new ArrayList<>();
         teleAtts.add(new Attribute("lenR"));
         teleAtts.add(new Attribute("lenL"));
@@ -121,7 +121,7 @@ public class FeaturePreprocessor {
         return teleAtts;
     }
 
-    private ArrayList<Attribute> createWebAtts() {
+    private static ArrayList<Attribute> createWebAtts() {
         ArrayList<Attribute> webAtts = new ArrayList<>();
         webAtts.add(new Attribute("lenR"));
         webAtts.add(new Attribute("lenL"));
@@ -131,7 +131,7 @@ public class FeaturePreprocessor {
         return webAtts;
     }
 
-    private ArrayList<Attribute> createEmailAtts() {
+    private static ArrayList<Attribute> createEmailAtts() {
         ArrayList<Attribute> emailAtts = new ArrayList<>();
         emailAtts.add(new Attribute("lenR"));
         emailAtts.add(new Attribute("lenL"));
@@ -141,7 +141,7 @@ public class FeaturePreprocessor {
         return emailAtts;
     }
 
-    private ArrayList<Attribute> createStreetAtts() {
+    private static ArrayList<Attribute> createStreetAtts() {
         ArrayList<Attribute> streetAtts = new ArrayList<>();
         streetAtts.add(new Attribute("brChar"));
         streetAtts.add(new Attribute("sim"));

@@ -33,7 +33,7 @@ public class StatGroup {
                 this.legendA = "Properties of dataset A";
                 this.legendB = "Properties of dataset B";
                 this.legendTotal = "Total Properties";
-                
+
                 break;
             case TRIPLE_BASED: 
                 this.enumGroup = enumGroup;
@@ -96,10 +96,7 @@ public class StatGroup {
         if (!Objects.equals(this.legendTotal, other.legendTotal)) {
             return false;
         }
-        if (this.enumGroup != other.enumGroup) {
-            return false;
-        }
-        return true;
+        return this.enumGroup == other.enumGroup;
     }
 
     public EnumStatGroup getEnumGroup() {

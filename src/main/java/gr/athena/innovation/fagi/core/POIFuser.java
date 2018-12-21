@@ -4,6 +4,7 @@ import gr.athena.innovation.fagi.core.action.EnumDatasetAction;
 import gr.athena.innovation.fagi.core.action.EnumValidationAction;
 import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
+import gr.athena.innovation.fagi.model.Action;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
 import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.model.Entity;
@@ -47,8 +48,10 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -121,14 +124,20 @@ public class POIFuser implements Fuser{
             } else {
                 fusedPairsCount++;
             }
-            
+
             //Add scores only on accepted pairs.
             if(!linkedPair.isRejected()){
                 //Add interlinking score, fusion score, fusion confidence
                 Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
 
                 String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
-                Statement interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, link.getScore(), modelA, modelB);
+
+                Statement interlinkingScore;
+                Float score = link.getScore();
+                if(score != null){
+                    interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, score, modelA, modelB);
+                    fusedModel.add(interlinkingScore);
+                }
 
                 Statement fusionGain = RDFUtils.getFusionGainStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
                 Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
@@ -139,7 +148,6 @@ public class POIFuser implements Fuser{
 
                 fusedModel.add(fusionGain);
                 fusedModel.add(fusionConfidence);
-                fusedModel.add(interlinkingScore);
 
                 double confidence = Double.parseDouble(fusionConfidence.getString());
 
@@ -158,8 +166,13 @@ public class POIFuser implements Fuser{
                     maxGain = gain;
                 }
 
+                FusionLog log = linkedPair.getFusionLog();
                 averageGain = (averageGain + gain)/2;
-                linkedPair.getFusionLog().setConfidenceScore(fusionConfidence.getString());
+                log.setConfidenceScore(fusionConfidence.getString());
+
+                if(verbose){
+                    addProvenanceToModel(fusedUri, log, fusedModel);
+                }
             }
 
             //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
@@ -178,6 +191,137 @@ public class POIFuser implements Fuser{
         setLinkedEntitiesNotFoundInDataset(linkedEntitiesNotFoundInDataset);
 
         return fusedList;
+    }
+
+    private void addProvenanceToModel(String fusedUri, FusionLog log, Model fusedModel) {
+        String provNodeString = Namespace.Prov.PROV_BOOK + RDFUtils.getIdFromResource(fusedUri);
+        Resource uri = ResourceFactory.createResource(fusedUri);
+        Property prop = ResourceFactory.createProperty(Namespace.Prov.DERIVED);
+        Resource provNode = ResourceFactory.createResource(provNodeString);
+        
+        //type of agent
+        Property typeOf = ResourceFactory.createProperty(Namespace.Prov.RDF_TYPE);
+        Resource agentResource = ResourceFactory.createResource(Namespace.Prov.AGENT);
+        
+        //default fusion action
+        Property defaultFusionActionProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_DEFAULT_FUSION_ACTION);
+        Literal defaultActionLiteral = ResourceFactory.createStringLiteral(log.getDefaultFusionAction().toString());
+        
+        Statement provDefaultFusionAction = ResourceFactory.createStatement(provNode,
+                defaultFusionActionProperty, defaultActionLiteral);
+        
+        //score
+        Property scoreProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_SCORE);
+        Literal scoreLiteral = ResourceFactory.createStringLiteral(log.getConfidenceScore());
+        
+        //left uri
+        Property leftUriProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT);
+        Literal leftUriLiteral = ResourceFactory.createStringLiteral(log.getLeftURI());
+        
+        //right uri
+        Property rightUriProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT);
+        Literal rightUriLiteral = ResourceFactory.createStringLiteral(log.getRightURI());
+
+        //validation action
+        Property valProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_VAL_ACTION);
+        Literal valLiteral = ResourceFactory.createStringLiteral(log.getValidationAction().toString());
+
+        Statement valStatement = ResourceFactory.createStatement(provNode, valProperty, valLiteral);
+        Statement leftStatement = ResourceFactory.createStatement(provNode, leftUriProperty, leftUriLiteral);
+        Statement rightStatement = ResourceFactory.createStatement(provNode, rightUriProperty, rightUriLiteral);
+        Statement scoreStatement = ResourceFactory.createStatement(provNode, scoreProperty, scoreLiteral);
+        Statement provStatement = ResourceFactory.createStatement(uri, prop, provNode);
+        Statement agentStatement = ResourceFactory.createStatement(provNode, typeOf, agentResource);
+        
+        //fused URI agent
+        fusedModel.add(valStatement);
+        fusedModel.add(leftStatement);
+        fusedModel.add(rightStatement);
+        fusedModel.add(scoreStatement);
+        fusedModel.add(provStatement);
+        fusedModel.add(agentStatement);
+        fusedModel.add(provDefaultFusionAction);
+        
+        List<Action> actions = log.getActions();
+        for(Action action : actions){
+            int hash = action.getAttribute().hashCode();
+            
+            String actionString = provNodeString + "/" + hash;
+            Resource actionResource = ResourceFactory.createResource(actionString);
+            Property actionProperty = ResourceFactory.createProperty(Namespace.Prov.APLLIED_ACTION);
+            
+            //fusion action
+            Property fusionAction = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSION_ACTION);
+            Literal literal = ResourceFactory.createStringLiteral(action.getFusionAction());
+            
+            //attribute
+            Property attributeProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_ATTRIBUTE);
+            String attribute = action.getAttribute();
+            
+            if(attribute.contains(" ")){
+                String[] spl = attribute.split(" ");
+                String at1 = spl[0];
+                String at2 = spl[1];
+                Literal at1Lit = ResourceFactory.createStringLiteral(at1);
+                Literal at2Lit = ResourceFactory.createStringLiteral(at2);
+                Statement at1Stat = ResourceFactory.createStatement(actionResource, attributeProperty, at1Lit);
+                Statement at2Stat = ResourceFactory.createStatement(actionResource, attributeProperty, at2Lit);
+                fusedModel.add(at1Stat);
+                fusedModel.add(at2Stat);
+                
+            } else {
+                Literal atLit = ResourceFactory.createStringLiteral(attribute);
+                Statement attStat = ResourceFactory.createStatement(actionResource, attributeProperty, atLit);
+                fusedModel.add(attStat);
+            }
+            
+            //valueA
+            if(action.getValueA() != null){
+                Property leftValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT_VALUE);
+                Literal leftValueLit = ResourceFactory.createStringLiteral(action.getValueA());
+                Statement leftValStat = ResourceFactory.createStatement(actionResource, leftValueProp, leftValueLit);
+                fusedModel.add(leftValStat);
+            } else {
+                Property leftValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT_VALUE);
+                Literal leftValueLit = ResourceFactory.createStringLiteral("null");
+                Statement leftValStat = ResourceFactory.createStatement(actionResource, leftValueProp, leftValueLit);
+                fusedModel.add(leftValStat);
+            }
+            
+            //valueB
+            if(action.getValueB() != null){
+                Property rightValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT_VALUE);
+                Literal rightValueLit = ResourceFactory.createStringLiteral(action.getValueB());
+                Statement rightValStat = ResourceFactory.createStatement(actionResource, rightValueProp, rightValueLit);
+                fusedModel.add(rightValStat);
+            } else {
+                Property rightValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT_VALUE);
+                Literal rightValueLit = ResourceFactory.createStringLiteral("null");
+                Statement rightValStat = ResourceFactory.createStatement(actionResource, rightValueProp, rightValueLit);
+                fusedModel.add(rightValStat);
+            }
+            
+            //fused value
+            if(action.getFusedValue() != null){
+                Property fusedValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSED_VALUE);
+                Literal fusedValueLit = ResourceFactory.createStringLiteral(action.getFusedValue());
+                Statement fusedValStat = ResourceFactory.createStatement(actionResource, fusedValueProp, fusedValueLit);
+                fusedModel.add(fusedValStat);
+            } else {
+                Property fusedValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSED_VALUE);
+                Literal fusedValueLit = ResourceFactory.createStringLiteral("null");
+                Statement fusedValStat = ResourceFactory.createStatement(actionResource, fusedValueProp, fusedValueLit);
+                fusedModel.add(fusedValStat);
+            }
+            
+            Statement s1 = ResourceFactory.createStatement(uri, actionProperty, actionResource);
+            Statement s2 = ResourceFactory.createStatement(actionResource, typeOf, agentResource);
+            Statement s3 = ResourceFactory.createStatement(actionResource, fusionAction, literal);
+            
+            fusedModel.add(s1);
+            fusedModel.add(s2);
+            fusedModel.add(s3);
+        }
     }
 
     private LinkedPair fuseLink(Link link, Model modelA, Model modelB, RuleSpecification ruleSpec, 
@@ -214,6 +358,12 @@ public class POIFuser implements Fuser{
         FusionLog fusionLog = linkedPair.fusePair(ruleSpec, functionMap, validation);
 
         if(verbose){
+            String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
+            Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, 
+                    linkedPair.getFusedEntity().getEntityData().getModel());
+
+            fusionLog.setConfidenceScore(fusionConfidence.getString());
+
             fusionLogBuffer.add(fusionLog.toJson());
 
             if(fusionLogBuffer.size() > SpecificationConstants.FUSION_LOG_BUFFER_SIZE){
@@ -362,7 +512,7 @@ public class POIFuser implements Fuser{
                 leftLocalNamesToBeExcluded.add(localName);
             }
         }
-        
+
         leftModel.write(remainingStream, configuration.getOutputRDFFormat());
         
         addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNamesToBeExcluded);

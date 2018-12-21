@@ -53,7 +53,7 @@ public class FagiInstance {
     private final String config;
 
     private final boolean runEvaluation = false;
-    private final boolean exportFrequencies = true;
+    private final boolean exportFrequencies = false;
     private final boolean exportStatistics = true;
     private final boolean exportSimilaritiesPerLink = false;
     private final boolean train = false;
@@ -139,18 +139,22 @@ public class FagiInstance {
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
         
+        int initialLinksCount = 0;
         switch(configuration.getLinksFormat()){
             case SpecificationConstants.Config.NT: {
                 genericRDFRepository.parseLinks(configuration.getPathLinks());
+                initialLinksCount = AbstractRepository.getInitialCount();
                 break;
             }
             case SpecificationConstants.Config.CSV: {
-                CSVRepository csvRepository = new CSVRepository();
+                AbstractRepository csvRepository = new CSVRepository();
                 csvRepository.parseLinks(configuration.getPathLinks());
+                initialLinksCount = AbstractRepository.getInitialCount();
                 break;
             }
             case SpecificationConstants.Config.CSV_UNIQUE_LINKS:{
                 CSVRepository.extractUniqueLinks(configuration.getPathLinks());
+                initialLinksCount = CSVRepository.getInitialCount();
                 break;
             }
         }
@@ -238,8 +242,6 @@ public class FagiInstance {
                 LOG.info("Calculating statistics...");
                 //statistics obtained using RDF
                 RDFStatisticsCollector collector = new RDFStatisticsCollector();
-                collector.setFusedPOIs(fused);
-                collector.setRejectedPairs(rejected);
                 container = collector.collect();
                 StatisticsExporter exporter = new StatisticsExporter();
 
@@ -257,7 +259,7 @@ public class FagiInstance {
             Long statisticsTime = stopTimeComputeStatistics - startTimeComputeStatistics;
             Long fusionTime = stopTimeFusion - startTimeFusion;
             Long totalTime = stopTimeWrite - startTimeInput;
-            
+
             Properties prop = new Properties();
             prop.setProperty("fused", fused.toString());
             prop.setProperty("rejected", rejected.toString());
@@ -268,14 +270,14 @@ public class FagiInstance {
             prop.setProperty("statistics-time(ms)", statisticsTime.toString());
             prop.setProperty("fusion(ms)", fusionTime.toString());
             prop.setProperty("total-time(ms)", totalTime.toString());
-            
+
             OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
             prop.store(st, null);
-            
+
             LOG.info(configuration.toString());
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
-            LOG.info("Interlinked (might contain multiples): " + CSVRepository.getInitialCount());
+            LOG.info("Interlinked (might contain multiples): " + initialLinksCount);
             if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
                 LOG.info("Unique links: " + CSVRepository.getUniqueCount());
             }
