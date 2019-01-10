@@ -76,6 +76,7 @@
 											  <xs:enumeration value="reject"/>
 											  <xs:enumeration value="reject-mark-ambiguous"/>
 											  <xs:enumeration value="accept-mark-ambiguous"/>
+											  <xs:enumeration value="ml-validation"/>
 											</xs:restriction>
 										  </xs:simpleType>
 									  </xs:element>                          
@@ -92,6 +93,7 @@
 								  <xs:enumeration value="reject"/>
 								  <xs:enumeration value="reject-mark-ambiguous"/>
 								  <xs:enumeration value="accept-mark-ambiguous"/>
+								  <xs:enumeration value="ml-validation"/>
 							  </xs:restriction>
 							</xs:simpleType>
 						  </xs:element>     

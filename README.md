@@ -99,6 +99,22 @@ Furthermore, the `target` tag refers to the target/output dataset and contains t
 | b_mode | All triples are handled: Fused triples replace the respective ones of dataset B; Fused triples are removed from dataset A, which only maintains the remaining, unlinked triples 
 | l_mode | Only linked triples are handled: Only fused triples are written in a third dataset. 
 
+FAGI supports the prediction of validation and fusion actions with the use of ML models. These models are defined in the `ML` group tag. 
+
+`name`: the path of the ML-model for name resources.
+
+`address`: the path of the ML-model for address resources.
+
+`website`: the path of the ML-model for website resources.
+
+`phone`: the path of the ML-model for phone number resources.
+
+`email`: the path of the ML-model for e-mail resources.
+
+`validation`: the path of the ML-model for link validation.
+
+ML-predicted actions on a property cannot be used if the corresponding ML model is not defined in the above tags.
+
 ### How to fill in the rules.xml file
 
 The rules.xml file starts with the root element `<rules>`.
@@ -276,15 +292,27 @@ A sample rules.xml file could look like this:
 | Name        | Type | Description
 | ------------- |:-------------|:------|
 | keep-left | Both | Keeps the value of the left source dataset in the fused model.
+| keep-left-mark-ambiguous | Both | Same as "keep-left". The affected triples are added to the ambiguous output. 
 | keep-right | Both | Keeps the value of the right source dataset in the fused model.
+| keep-right-mark-ambiguous | Both | Same as "keep-right". The affected triples are added to the ambiguous output. 
 | concatenate | Literal | Keeps both values of the source datasets as a concatenated literal in the same property of the fused model.
+| concatenate-mark-ambiguous | Both | Same as "concatenate". The affected triples are added to the ambiguous output. 
 | keep-longest | Literal | Keeps the value of the longest literal in the fused model using the NFC normalization before comparing the literals.
+| keep-longest-mark-ambiguous | Both | Same as "keep-longest". The affected triples are added to the ambiguous output. 
 | keep-most-complete-name | Name Resources | Keeps the longest values of names with the same type (e.g. official, international etc). Regarding the names without a type it keeps the longest value of each language. This action is supposed to work only for name attributes.
+| keep-most-complete-name-mark-ambiguous | Both | Same as "keep-most-complete-name". The affected triples are added to the ambiguous output. 
 | keep-both | Both | Keeps both values of the source datasets in the fused model.
+| keep-both-mark-ambiguous | Both | Same as "keep-both". The affected triples are added to the ambiguous output. 
 | keep-more-points | Geometry | Keeps the geometry that is composed with more points than the other.
+| keep-more-points-mark-ambiguous | Both | Same as "keep-more-points". The affected triples are added to the ambiguous output. 
 | keep-more-points-and-shift | Geometry | Keeps the geometry with more points and shifts its centroid to the centroid of the other geometry.
+| keep-more-points-and-shift-mark-ambiguous | Both | Same as "keep-more-points-and-shift". The affected triples are added to the ambiguous output. 
 | shift-left-geometry | Geometry | Shifts the geometry of the left source entity to the centroid of the right.
+| shift-left-geometry-mark-ambiguous | Both | Same as "shift-left-geometry". The affected triples are added to the ambiguous output. 
 | shift-right-geometry | Geometry | Shifts the geometry of the right source entity to the centroid of the left.
+| shift-right-geometry-mark-ambiguous | Both | Same as "shift-right-geometry". The affected triples are added to the ambiguous output. 
+| keep-recommended | Both | Utilizes the ML model in order to predict the action.
+| keep-recommended-mark-ambiguous | Both | Same as "keep-recommended". The affected triples are added to the ambiguous output. 
 
 ### Available validation actions:
 | Name        | Type | Description
@@ -293,6 +321,7 @@ A sample rules.xml file could look like this:
 | reject| Link | Rejects the whole link based on the rule property.
 | accept-mark-ambiguous | Link | Keeps the default fusion action data, but marks the property as ambiguous by adding a statement to the model.
 | reject-mark-ambiguous | Link | Rejects the link, but marks the property as ambiguous by adding a statement to the model.
+| ml-validation | Link | Accepts/rejects the link based on the ML model prediction.
 
 ### Available default dataset actions:
 | Name        | Type | Description

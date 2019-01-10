@@ -194,6 +194,7 @@ public class POIFuser implements Fuser{
     }
 
     private void addProvenanceToModel(String fusedUri, FusionLog log, Model fusedModel) {
+
         String provNodeString = Namespace.Prov.PROV_BOOK + RDFUtils.getIdFromResource(fusedUri);
         Resource uri = ResourceFactory.createResource(fusedUri);
         Property prop = ResourceFactory.createProperty(Namespace.Prov.DERIVED);
@@ -258,6 +259,7 @@ public class POIFuser implements Fuser{
             Property attributeProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_ATTRIBUTE);
             String attribute = action.getAttribute();
             
+            //attribute has chain properties
             if(attribute.contains(" ")){
                 String[] spl = attribute.split(" ");
                 String at1 = spl[0];
@@ -268,13 +270,13 @@ public class POIFuser implements Fuser{
                 Statement at2Stat = ResourceFactory.createStatement(actionResource, attributeProperty, at2Lit);
                 fusedModel.add(at1Stat);
                 fusedModel.add(at2Stat);
-                
+
             } else {
                 Literal atLit = ResourceFactory.createStringLiteral(attribute);
                 Statement attStat = ResourceFactory.createStatement(actionResource, attributeProperty, atLit);
                 fusedModel.add(attStat);
             }
-            
+
             //valueA
             if(action.getValueA() != null){
                 Property leftValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT_VALUE);
@@ -287,7 +289,7 @@ public class POIFuser implements Fuser{
                 Statement leftValStat = ResourceFactory.createStatement(actionResource, leftValueProp, leftValueLit);
                 fusedModel.add(leftValStat);
             }
-            
+
             //valueB
             if(action.getValueB() != null){
                 Property rightValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT_VALUE);
@@ -300,7 +302,7 @@ public class POIFuser implements Fuser{
                 Statement rightValStat = ResourceFactory.createStatement(actionResource, rightValueProp, rightValueLit);
                 fusedModel.add(rightValStat);
             }
-            
+
             //fused value
             if(action.getFusedValue() != null){
                 Property fusedValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSED_VALUE);

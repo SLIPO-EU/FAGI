@@ -126,7 +126,7 @@ public class FagiInstance {
         LOG.info("Rules: " + configuration.getRulesPath());
         
         RuleProcessor ruleProcessor = new RuleProcessor();
-        RuleSpecification ruleSpec = ruleProcessor.parseRules(configuration.getRulesPath());
+        RuleSpecification ruleSpec = ruleProcessor.parseRules(configuration.getRulesPath());    
         ruleSpec.setFunctionRegistry(functionRegistry);
 
         long stopTimeInput = System.currentTimeMillis();
@@ -278,9 +278,11 @@ public class FagiInstance {
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");
             LOG.info("Interlinked (might contain multiples): " + initialLinksCount);
+
             if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
                 LOG.info("Unique links: " + CSVRepository.getUniqueCount());
             }
+
             LOG.info("Fused: " + fused + ", Rejected links: " + rejected);
             LOG.info("Linked Entities not found: " + fuser.getLinkedEntitiesNotFoundInDataset());
             LOG.info("Analyzing/validating input and configuration completed in " + (stopTimeInput - startTimeInput) + "ms.");
@@ -412,5 +414,5 @@ public class FagiInstance {
             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
         ); 
         return time;
-    }    
+    }
 }

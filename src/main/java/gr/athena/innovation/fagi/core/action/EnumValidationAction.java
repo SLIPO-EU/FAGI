@@ -39,8 +39,13 @@ public enum EnumValidationAction {
     /**
      * Rejects the link, but marks the value as ambiguous in the model using a statement with the POI's URI.
      */       
-    REJECT_MARK_AMBIGUOUS(4);
+    REJECT_MARK_AMBIGUOUS(4),
     
+    /**
+     * Accepts/rejects the link based on the predicted action of the ML model.
+     */       
+    ML_VALIDATION(5);
+
 	private final int value;
 
 	private EnumValidationAction(int value) {
@@ -119,6 +124,7 @@ public enum EnumValidationAction {
         case REJECT: return "reject";
         case ACCEPT_MARK_AMBIGUOUS: return "accept-mark-ambiguous";
         case REJECT_MARK_AMBIGUOUS: return "reject-mark-ambiguous";
+        case ML_VALIDATION: return "ml-validation";
         default: throw new IllegalArgumentException();
       }
     }     

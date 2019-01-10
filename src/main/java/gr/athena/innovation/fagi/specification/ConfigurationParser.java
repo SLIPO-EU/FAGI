@@ -317,6 +317,32 @@ public class ConfigurationParser {
                 n.getNextSibling();
             }
 
+            NodeList mlNodeList = doc.getElementsByTagName(SpecificationConstants.Config.ML);
+            Node mlNode = mlNodeList.item(0);
+            NodeList mlChilds = mlNode.getChildNodes();
+
+            for (int i = 0; i < mlChilds.getLength(); i++) {
+
+                Node n = mlChilds.item(i);
+
+                if (n.getNodeType() == Node.ELEMENT_NODE) {
+                    if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.NAME)) {
+                        configuration.setNameModelPath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.ADDRESS)) {
+                        configuration.setAddressModelPath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.WEBSITE)) {                      
+                        configuration.setWebsiteModelPath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.PHONE)) {                      
+                        configuration.setPhoneModelPath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.EMAIL)) {                      
+                        configuration.setEmailModelPath(n.getTextContent());
+                    } else if (n.getNodeName().equalsIgnoreCase(SpecificationConstants.Config.VALIDATION)) {                      
+                        configuration.setValidationModelPath(n.getTextContent());
+                    }
+                }
+                n.getNextSibling();
+            }
+
         } catch (ParserConfigurationException | SAXException | IOException | DOMException e) {
             LOG.fatal("Exception occured while parsing the configuration: "
                     + configurationPath + "\n" + e);
