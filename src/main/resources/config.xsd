@@ -136,7 +136,19 @@
                           <xs:element name="fusionLog" type="xs:anyURI"/>
 			</xs:sequence>
 		  </xs:complexType>
-		</xs:element>				
+		</xs:element>
+		<xs:element name="ML">
+		  <xs:complexType>
+			<xs:sequence>
+			  <xs:element name="name" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="address" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="website" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="phone" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="email" type="xs:anyURI" minOccurs="0"/>
+			  <xs:element name="validation" type="xs:anyURI" minOccurs="0"/>
+			</xs:sequence>
+		  </xs:complexType>
+		</xs:element>
     </xs:sequence>
   </xs:complexType>
   </xs:element>

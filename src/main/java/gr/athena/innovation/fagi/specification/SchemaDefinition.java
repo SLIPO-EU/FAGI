@@ -6,6 +6,7 @@ package gr.athena.innovation.fagi.specification;
  * @author nkarag
  */
 public class SchemaDefinition {
+
     public static final String CONFIG_XSD = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
 "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
 "<xs:element name=\"specification\">	\n" +
@@ -145,6 +146,18 @@ public class SchemaDefinition {
 "			</xs:sequence>\n" +
 "		  </xs:complexType>\n" +
 "		</xs:element>				\n" +
+"		<xs:element name=\"ML\">\n" +
+"		  <xs:complexType>\n" +
+"			<xs:sequence>\n" +
+"			  <xs:element name=\"name\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"address\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"website\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"phone\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"email\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			  <xs:element name=\"validation\" type=\"xs:anyURI\" minOccurs=\"0\"/>\n" +
+"			</xs:sequence>\n" +
+"		  </xs:complexType>\n" +
+"		</xs:element> \n" +
 "    </xs:sequence>\n" +
 "  </xs:complexType>\n" +
 "  </xs:element>\n" +
@@ -228,6 +241,7 @@ public class SchemaDefinition {
 "											  <xs:enumeration value=\"reject\"/>\n" +
 "											  <xs:enumeration value=\"reject-mark-ambiguous\"/>\n" +
 "											  <xs:enumeration value=\"accept-mark-ambiguous\"/>\n" +
+"											  <xs:enumeration value=\"ml-validation\"/>\n" +
 "											</xs:restriction>\n" +
 "										  </xs:simpleType>\n" +
 "									  </xs:element>                          \n" +
@@ -244,6 +258,7 @@ public class SchemaDefinition {
 "								  <xs:enumeration value=\"reject\"/>\n" +
 "								  <xs:enumeration value=\"reject-mark-ambiguous\"/>\n" +
 "								  <xs:enumeration value=\"accept-mark-ambiguous\"/>\n" +
+"								  <xs:enumeration value=\"ml-validation\"/>\n" +
 "							  </xs:restriction>\n" +
 "							</xs:simpleType>\n" +
 "						  </xs:element>     \n" +

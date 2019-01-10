@@ -50,6 +50,7 @@ public class Configuration {
     private String similarity;
     private String fusionLog;
     private String trainingSetCsvPath;
+    private String validationModelPath;
     private String nameModelPath;
     private String addressModelPath;
     private String phoneModelPath;
@@ -695,6 +696,14 @@ public class Configuration {
         return verbose;
     }
 
+    public String getValidationModelPath() {
+        return validationModelPath;
+    }
+
+    public void setValidationModelPath(String validationModelPath) {
+        this.validationModelPath = validationModelPath;
+    }
+
     public String getNameModelPath() {
         return nameModelPath;
     }
@@ -772,6 +781,12 @@ public class Configuration {
                     "\n locale=" + locale +
                     "\n similarity=" + similarity +
                     "\n optionalDepth=" + optionalDepth + 
+                    "\n -ML-\n" +
+                    "\n name model=" + nameModelPath +
+                    "\n address model=" + addressModelPath +
+                    "\n website model=" + websiteModelPath +
+                    "\n phone model=" + phoneModelPath +
+                    "\n email model=" + emailModelPath +
                     "\n}";
     }
 }

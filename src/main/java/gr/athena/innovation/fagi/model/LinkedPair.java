@@ -512,7 +512,56 @@ public class LinkedPair {
                 rejectMarkAmbiguous(ambiguousModel, fusedEntityData);
                 return false; //stop link fusion
             }
+            case ML_VALIDATION: {
+                
+                try {
+                    String validationModelPath = Configuration.getInstance().getValidationModelPath();
+                    
+                    RandomForest validationClassifier = (RandomForest) SerializationHelper.read(new FileInputStream(validationModelPath));
+                    
+                    RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, leftNode.getEntityData().getModel());
+                    RDFNode right = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, 
+                            Namespace.NAME_VALUE_NO_BRACKETS, rightNode.getEntityData().getModel());
+                    
+                    DenseInstance instance = FeaturePreprocessor.createNameInst(
+                            left.asLiteral().getLexicalForm(), right.asLiteral().getLexicalForm());
+                    
+                    double[] probabilities = validationClassifier.distributionForInstance(instance);
+                    
+                    double maxValue = -1;
+                    int maxIndex = 0;
+                    for(int i = 0; i < probabilities.length; i++){
+                        if(probabilities[i] > maxValue){
+                            maxIndex = i;
+                        }
+                    }
+
+                    //0:accept |1: reject 
+                    switch(maxIndex){
+                        case 0:
+                            //Accept. Do nothing
+                            break;
+                        case 1:
+                            //Reject
+                            reject(fusedEntityData);
+                            return false; //stop link fusion
+                        default:
+                            LOG.warn("ML failed to recommend validation action. Accepting link.");
+                            //Accept. Do nothing
+                            break;
+                    }
+
+                } catch (FileNotFoundException ex) {
+                    LOG.error(ex);
+                    throw new ApplicationException("Validation ML model not found.");
+                } catch (Exception ex) {
+                    LOG.error(ex);
+                    throw new ApplicationException("Failed to recommend validation action.");
+                }
+            }
         }
+
         return true;
     }
 
@@ -1263,13 +1312,16 @@ public class LinkedPair {
                             Namespace.NAME_VALUE_NO_BRACKETS, sourceA);
                     int countB = SparqlRepository.countObjectsOfPropertyChain(Namespace.NAME_NO_BRACKETS, 
                             Namespace.NAME_VALUE_NO_BRACKETS, sourceB);
-                    
+
+                    //if the property is name and the name values are multiple, apply "keep-most-complete-name"
+                    //This is a shortcut, as the model is supposed to predict this action when multiple name values exist. 
+                    //In any other case, send the pair to the ML model.
                     if(countA > 1 || countB > 1){
                         //overriding model in order to ensure the "keepMostCompleteModel" action in case of multiple name properties.
                         keepMostCompleteName(fusedModel, customProperty, nodeA, nodeB, mark);
                         break;
                     }
-                    
+
                     RandomForest nameClassifier = (RandomForest) SerializationHelper.read(new FileInputStream(config.getNameModelPath()));
                     RDFNode left = RDFUtils.getRDFNodeFromChain(Namespace.NAME_NO_BRACKETS, 
                             Namespace.NAME_VALUE_NO_BRACKETS, nodeA.getModel());
@@ -1358,8 +1410,6 @@ public class LinkedPair {
             throw new ApplicationException(ex.getMessage());
         }
 
-        //if the property is name and the names are multiple from the input, apply "keep-most-complete-name"
-        //in any other case, send the pair to the ML model.
         RDFNode fused = null;
         if(verbose){
             if(mark){

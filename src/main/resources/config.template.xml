@@ -36,5 +36,12 @@
 		<statistics></statistics>
 		<fusionLog></fusionLog>
 	</target>
+	<ML>
+		<name></name>
+		<address></address>
+		<website></website>
+		<phone></phone>
+		<email></email>
+	</ML>
 </specification>
 

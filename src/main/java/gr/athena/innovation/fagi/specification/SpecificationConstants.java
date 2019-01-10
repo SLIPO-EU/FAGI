@@ -222,13 +222,47 @@ public class SpecificationConstants {
          * Suffix for naming frequency-related files for dataset B.
          */
         public static final String FREQ_SUFFIX_B = ".b.freq.txt";
-        
+
         /**
          * Filename for extracted features CSV file.
          */
         public static final String FEATURES_CSV = "features_export.csv";
-        
-    }  
+
+        /**
+         * ML group tag in configuration XML.
+         */
+        public static final String ML = "ML";
+
+        /**
+         * File path for the ML validation model.
+         */
+        public static final String VALIDATION = "validation";
+
+        /**
+         * File path for the ML name property model.
+         */
+        public static final String NAME = "name";
+
+        /**
+         * File path for the ML address property model.
+         */
+        public static final String ADDRESS = "address";
+
+        /**
+         * File path for the ML website property model.
+         */
+        public static final String WEBSITE = "website";
+
+        /**
+         * File path for the ML phone property model.
+         */
+        public static final String PHONE = "phone";
+
+        /**
+         * File path for the ML email property model.
+         */
+        public static final String EMAIL = "email";
+    }
 
     /**
      * Rule class groups anything that has to do with the XML rule specification constants.
