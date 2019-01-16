@@ -4,7 +4,7 @@
   <groupId>gr.athena.innovation</groupId>
   <artifactId>fagi</artifactId>
   <name>FAGI</name>
-  <version>1.2.9-SNAPSHOT</version>
+  <version>1.2.11</version>
   <description>FAGI is a software developed, mainly, to facilitate the fusion of interlinked RDF entities containing spatial data.</description>
   <developers>
     <developer>

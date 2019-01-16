@@ -859,8 +859,14 @@ public class LinkedPair {
             fusedModel.removeAll((Resource) null, customProperty.getValueProperty(), (RDFNode) null);
             //add new rootResource - valueProperty - leftNode
             //add new rootResource - valueProperty - rightNode
-            fusedModel.add(rootResource, customProperty.getValueProperty(), nodeA);
-            fusedModel.add(rootResource, customProperty.getValueProperty(), nodeB);
+            if(nodeA != null){
+                fusedModel.add(rootResource, customProperty.getValueProperty(), nodeA);
+            }
+
+            if(nodeB != null){
+                fusedModel.add(rootResource, customProperty.getValueProperty(), nodeB);
+            }
+
         } else {
             Property parentProperty = customProperty.getParent();
             Property valueProperty = customProperty.getValueProperty();
@@ -877,8 +883,14 @@ public class LinkedPair {
                 fusedModel.removeAll(o1.asResource(), valueProperty, (RDFNode) null);
                 //add rootResource - valueProperty - o1 . o1 - valueProperty - leftNode
                 fusedModel.add(rootResource, parentProperty, o1);
-                fusedModel.add(o1.asResource(), valueProperty, nodeA);
-                fusedModel.add(o1.asResource(), valueProperty, nodeB);
+                
+                if(nodeA != null){
+                    fusedModel.add(o1.asResource(), valueProperty, nodeA);
+                }
+                
+                if(nodeB != null){
+                    fusedModel.add(o1.asResource(), valueProperty, nodeB);
+                }
             } else {
                 throw new ApplicationException("object " + o1 + " is not a resource.");
             }
