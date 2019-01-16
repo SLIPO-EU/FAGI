@@ -683,7 +683,7 @@ public class Condition {
             throws WrongInputException {
 
         if (function.getParameters().length != 1) {
-            throw new WrongInputException("Number of parameters in function is wrong.");
+            throw new WrongInputException("Number of parameters in function is wrong." + function.getName());
         }
 
         String parameter = function.getParameters()[0];
@@ -712,7 +712,7 @@ public class Condition {
             throws WrongInputException {
 
         if (function.getParameters().length != 2) {
-            throw new WrongInputException("Number of parameters in function is wrong.");
+            throw new WrongInputException("Number of parameters in function is wrong. " + function.getName());
         }
 
         String parameter = function.getParameters()[0];
@@ -735,7 +735,7 @@ public class Condition {
             throws WrongInputException {
 
         if (function.getParameters().length != 2) {
-            throw new WrongInputException("Number of parameters in function is wrong.");
+            throw new WrongInputException("Number of parameters in function is wrong. " + function.getName());
         }
 
         String parameter = function.getParameters()[0];
