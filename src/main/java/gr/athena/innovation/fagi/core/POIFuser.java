@@ -36,6 +36,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -397,7 +400,7 @@ public class POIFuser implements Fuser{
 
         OutputStream fusedStream = new FileOutputStream(fused, false);
         //OutputStreamWriter fusedStream2 = new OutputStreamWriter(new FileOutputStream(fused, false), StandardCharsets.UTF_8);
-        OutputStream remainingStream = new FileOutputStream(remaining, false);
+        //OutputStream remainingStream = new FileOutputStream(remaining, false);
         OutputStream ambiguousStream = new FileOutputStream(ambiguous, false);
 
         EnumOutputMode mode = configuration.getOutputMode();
@@ -425,7 +428,7 @@ public class POIFuser implements Fuser{
             }
             case BA_MODE:
             {
-                baMode(fused, fusedEntities, remainingStream, configuration, remaining);
+                baMode(fused, fusedEntities, fusedStream, configuration, remaining);
                 break;
             }
             case A_MODE:
@@ -792,7 +795,9 @@ public class POIFuser implements Fuser{
     private void writeRemaining(String inputDatasetPath, String remainingPath) throws IOException{
         Path inputPath = Paths.get(inputDatasetPath);
         Path remaining = Paths.get(remainingPath);
-        Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);        
+        Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);   
+        Set<PosixFilePermission> perms = PosixFilePermissions.fromString(SpecificationConstants.POSIX_FILE_PERMISSIONS_STRING);
+        Files.setPosixFilePermissions(remaining, perms);
     }
 
     public Double getAverageConfidence() {

@@ -21,6 +21,11 @@ public class SpecificationConstants {
      * Buffer size for fusion log output.
      */
     public static final int FUSION_LOG_BUFFER_SIZE = 1000;
+    
+    /**
+     * File permissions when copying input files with arbitrary permissions. 
+     */
+    public static final String POSIX_FILE_PERMISSIONS_STRING = "rw-r--r--";
 
     /**
      * Help message.
