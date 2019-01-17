@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gr.athena.innovation</groupId>
     <artifactId>fagi</artifactId>
-    <version>1.2.12</version>
+    <version>1.2.13</version>
     <packaging>jar</packaging>
 
     <name>FAGI</name>
@@ -13,7 +13,7 @@
         <name>IMSI, Information Management Systems Institute</name>
         <url>https://www.imsi.athenarc.gr/en</url>
     </organization>
-    
+
     <developers>
         <developer>
             <id>nkaragiannakis</id>
