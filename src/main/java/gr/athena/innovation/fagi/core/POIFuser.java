@@ -36,7 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
@@ -180,6 +179,15 @@ public class POIFuser implements Fuser{
 
             //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
             fusedList.add(linkedPair); 
+        }
+
+        //corner case when all links got rejected
+        if(averageGain == null){
+            averageGain = 0.0;
+        }
+        
+        if(averageConfidence == null){
+            averageConfidence = 0.0;
         }
 
         //flush fusionLogBuffer if not empty
@@ -800,14 +808,29 @@ public class POIFuser implements Fuser{
         Files.setPosixFilePermissions(remaining, perms);
     }
 
+    /**
+     * Return the average confidence score.
+     * 
+     * @return
+     */
     public Double getAverageConfidence() {
         return averageConfidence;
     }
 
+    /**
+     * Return the average gain score.
+     * 
+     * @return
+     */
     public Double getAverageGain() {
         return averageGain;
     }
 
+    /**
+     * Return the max gain score.
+     * 
+     * @return
+     */
     public Double getMaxGain() {
         return maxGain;
     }

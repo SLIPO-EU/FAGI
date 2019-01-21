@@ -16,14 +16,27 @@ public class EntityData {
     
     private Model model = ModelFactory.createDefaultModel();
     
+    /**
+     * Empty constructor.
+     */
     public EntityData() {
         //create entity data without initial RDF model.
     }
     
+    /**
+     * Constructor with a model.
+     * 
+     * @param model the RDF jena model.
+     */
     public EntityData(Model model) {
         this.model = model;
     }
 
+    /**
+     * Return the model of this EntityData object, or a new default model if the model does not exist. 
+     * 
+     * @return the model. 
+     */
     public Model getModel() {
         if(model == null){
             return ModelFactory.createDefaultModel();
@@ -31,10 +44,21 @@ public class EntityData {
         return model;
     }
 
+    /**
+     * Set the model of this EntityData object.
+     * 
+     * @param model the model. 
+     */
     public void setModel(Model model) {
         this.model = model;
     }
     
+    /**
+     * Checks if the model of the current EntityData object contains the given RDF property.
+     * 
+     * @param property the RDF property.
+     * @return true if the model contains the property, false otherwise.
+     */
     public boolean containsProperty(Property property){
         for (StmtIterator i = model.listStatements( null, null, (RDFNode) null ); i.hasNext(); ) {
 

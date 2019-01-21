@@ -34,6 +34,15 @@ public class TypedNameAttribute {
     private final Statement classOf;
     private final Statement parentTriple;
 
+    /**
+     * Constructor of a typed name attribute.
+     * 
+     * @param poiURI the URI of the POI.
+     * @param nameValue the value of the name.
+     * @param nameType the type of the name.
+     * @param language the language of the name.
+     * @param objectURI the object URI.
+     */
     public TypedNameAttribute(Resource poiURI, RDFNode nameValue, RDFNode nameType, RDFNode language, RDFNode objectURI) {
         if(nameValue.isLiteral() && nameType.isLiteral() && language.isLiteral() && objectURI.isResource()){
             this.nameValue = nameValue.asLiteral();
@@ -71,6 +80,11 @@ public class TypedNameAttribute {
         return Objects.equals(this.nameType, other.nameType);
     }
 
+    /**
+     * Return the RDF statements of the typed name attribute.
+     * 
+     * @return the statements.
+     */
     public List<Statement> getStatements(){
         
         List<Statement> statements = new ArrayList<>();
@@ -87,6 +101,11 @@ public class TypedNameAttribute {
         return statements;
     }
     
+    /**
+     * Return the value of the typed name attribute as a RDF literal.
+     * 
+     * @return the name value.
+     */
     public Literal getNameValue() {
         return nameValue;
     }

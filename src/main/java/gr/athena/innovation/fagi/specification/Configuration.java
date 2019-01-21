@@ -780,7 +780,7 @@ public class Configuration {
                     "\n inputRDFFormat=" + inputRDFFormat + 
                     "\n locale=" + locale +
                     "\n similarity=" + similarity +
-                    "\n optionalDepth=" + optionalDepth + 
+                    "\n optionalQueryDepth=" + optionalDepth + 
                     "\n -ML-\n" +
                     "\n name model=" + nameModelPath +
                     "\n address model=" + addressModelPath +

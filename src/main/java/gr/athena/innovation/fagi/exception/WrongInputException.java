@@ -7,9 +7,18 @@ package gr.athena.innovation.fagi.exception;
  */
 public class WrongInputException extends Exception{
 
-      public WrongInputException() {}
+    /**
+     * Empty constructor of a Wrong Input Exception. 
+     */
+    public WrongInputException() {}
 
-      public WrongInputException(String message){
+    /**
+     * Constructor of a Wrong Input Exception with the message. 
+     * Calls the super constructor with the message (RuntimeException -> Exception -> Throwable).
+     * 
+     * @param message the exception message as a string.
+     */
+    public WrongInputException(String message){
          super(message);
       }
 }

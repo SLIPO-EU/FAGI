@@ -32,6 +32,14 @@ public class NameAttribute {
     private final Statement classOf;
     private final Statement parentTriple;
 
+    /**
+     * Constructor of a name attribute.
+     * 
+     * @param poiURI the URI of the POI.
+     * @param nameValue the value of the name.
+     * @param language the language.
+     * @param objectURI the object URI.
+     */
     public NameAttribute(Resource poiURI, RDFNode nameValue, RDFNode language, RDFNode objectURI) {
         if(nameValue.isLiteral() && language.isLiteral() && objectURI.isResource()){
             this.nameValue = nameValue.asLiteral();
@@ -67,6 +75,11 @@ public class NameAttribute {
         return Objects.equals(this.language, other.language);
     }
     
+    /**
+     * Return the RDF statements of the name attribute.
+     * 
+     * @return the statements.
+     */
     public List<Statement> getStatements(){
         List<Statement> statements = new ArrayList<>();
         Statement stValue = ResourceFactory.createStatement(objectURI, NAME_VALUE, nameValue);
@@ -80,6 +93,11 @@ public class NameAttribute {
         return statements;
     }
 
+    /**
+     * Return the value of the name attribute as a RDF literal.
+     * 
+     * @return the name value.
+     */
     public Literal getNameValue() {
         return nameValue;
     }

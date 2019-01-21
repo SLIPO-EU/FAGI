@@ -7,6 +7,12 @@ import weka.core.Instances;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Processes features and constructs property instances.
+ * 
+ * @author pChronis
+ * @author nkarag
+ */
 public class FeaturePreprocessor {
 
     private static double getSim(String left, String right) {
@@ -34,6 +40,14 @@ public class FeaturePreprocessor {
         return countBroken(left) - countBroken(right);
     }
 
+    /**
+     * Creates a name instance.
+     * 
+     * @param left the left name value.
+     * @param right the right name value.
+     * 
+     * @return the name instance (dense).
+     */
     public static DenseInstance createNameInst(String left, String right) {
 
         ArrayList<Attribute> atts = createNameAtts();
@@ -47,10 +61,19 @@ public class FeaturePreprocessor {
         inst.setValue(3, getWordsDiff(left, right));
         inst.setValue(4, getBroken(left, right));
         inst.setValue(5, getSim(left, right));
+        
         return inst;
 
     }
 
+    /**
+     * Creates a address-street instance. 
+     * 
+     * @param left the left address-street value.
+     * @param right the right address-street value.
+     * 
+     * @return the address-street instance (dense).
+     */
     public static DenseInstance createStreetInst(String left, String right) {
 
         ArrayList<Attribute> atts = createStreetAtts();
@@ -60,10 +83,19 @@ public class FeaturePreprocessor {
         inst.setDataset(insts);
         inst.setValue(0, getBroken(left, right));
         inst.setValue(1, getSim(left, right));
+        
         return inst;
 
     }
 
+    /**
+     * Creates an e-mail instance.
+     * 
+     * @param left the left e-mail value.
+     * @param right the right e-mail value.
+     * 
+     * @return the e-mail instance (dense).
+     */
     public static DenseInstance createEmailInst(String left, String right) {
 
         ArrayList<Attribute> atts = createEmailAtts();
@@ -75,10 +107,19 @@ public class FeaturePreprocessor {
         inst.setValue(1, right.length());
         inst.setValue(2, left.length() - right.length());
         inst.setValue(3, getSim(left, right));
+        
         return inst;
 
     }
 
+    /**
+     * Creates a website instance.
+     * 
+     * @param left the left website value.
+     * @param right the right website value.
+     * 
+     * @return the website instance (dense).
+     */
     public static DenseInstance createWebInst(String left, String right) {
 
         ArrayList<Attribute> atts = createWebAtts();
@@ -90,10 +131,19 @@ public class FeaturePreprocessor {
         inst.setValue(1, right.length());
         inst.setValue(2, left.length() - right.length());
         inst.setValue(3, getSim(left, right));
+        
         return inst;
 
     }
 
+    /**
+     * Creates a phone-number instance.
+     * 
+     * @param left the left phone number value.
+     * @param right the right phone number value.
+     * 
+     * @return the phone number instance (dense).
+     */
     public static DenseInstance createTeleInst(String left, String right) {
 
         ArrayList<Attribute> atts = createTeleAtts();
@@ -107,6 +157,7 @@ public class FeaturePreprocessor {
         inst.setValue(1, right.length());
         inst.setValue(2, left.length() - right.length());
         inst.setValue(3, getSim(left, right));
+        
         return inst;
 
     }
@@ -118,6 +169,7 @@ public class FeaturePreprocessor {
         teleAtts.add(new Attribute("lenDiff"));
         teleAtts.add(new Attribute("sim"));
         teleAtts.add(new Attribute("lab", Arrays.asList("0", "1", "2", "3")));
+        
         return teleAtts;
     }
 
@@ -128,6 +180,7 @@ public class FeaturePreprocessor {
         webAtts.add(new Attribute("lenDiff"));
         webAtts.add(new Attribute("sim"));
         webAtts.add(new Attribute("lab", Arrays.asList("0", "1", "2", "3")));
+        
         return webAtts;
     }
 
@@ -138,6 +191,7 @@ public class FeaturePreprocessor {
         emailAtts.add(new Attribute("lenDiff"));
         emailAtts.add(new Attribute("sim"));
         emailAtts.add(new Attribute("lab", Arrays.asList("0", "1", "2", "3")));
+        
         return emailAtts;
     }
 
@@ -146,6 +200,7 @@ public class FeaturePreprocessor {
         streetAtts.add(new Attribute("brChar"));
         streetAtts.add(new Attribute("sim"));
         streetAtts.add(new Attribute("lab", Arrays.asList("0", "1", "2", "3")));
+        
         return streetAtts;
     }
 
@@ -158,6 +213,7 @@ public class FeaturePreprocessor {
         nameAtts.add(new Attribute("brChar"));
         nameAtts.add(new Attribute("sim"));
         nameAtts.add(new Attribute("lab", Arrays.asList("0", "1", "2", "3")));
+        
         return nameAtts;
     }
 }

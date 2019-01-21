@@ -24,6 +24,10 @@ public class StatisticsContainer {
 
     private Map<String, StatisticResultPair> map;
 
+    /**
+     * Return the JSON String with the values of this container.
+     * @return the JSON String.
+     */
     public String toJson() {
         
         String formattedJson = null;
@@ -46,6 +50,11 @@ public class StatisticsContainer {
         return formattedJson;
     }
     
+    /**
+     * Return the JSON map of this container.
+     * 
+     * @return the JSON map.
+     */
     public String toJsonMap() {
         
         if(map == null){
@@ -77,26 +86,51 @@ public class StatisticsContainer {
         return formattedJson;
     }
 
+    /**
+     * 
+     * @return true if the container is valid.
+     */
     public boolean isValid() {
         return valid;
     }
 
+    /**
+     *
+     * @param valid the validity of the container.
+     */
     public void setValid(boolean valid) {
         this.valid = valid;
     }
 
+    /**
+     *
+     * @return the map with stat-names as keys and corresponding results as values.
+     */
     public Map<String, StatisticResultPair> getMap() {
         return map;
     }
 
+    /**
+     *
+     * @param map the statistics map.
+     */
     public void setMap(Map<String, StatisticResultPair> map) {
         this.map = map;
     }
 
+    /**
+     *
+     * @return true if the container is complete.
+     */
     public boolean isComplete() {
         return complete;
     }
 
+    /**
+     * Sets this container as complete or not.
+     * 
+     * @param complete the complete value.
+     */
     public void setComplete(boolean complete) {
         this.complete = complete;
     }

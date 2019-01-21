@@ -20,7 +20,8 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ResourceFactory;
 
 /**
- *
+ * Class with the features.
+ * 
  * @author Giorgos Kostoulas
  */
 public class Features {
@@ -77,9 +78,19 @@ public class Features {
     private boolean acceptance;
     private String nameFusionAction;
 
-    public Features() {
-    }
-
+    /**
+     * Set the features. 
+     * 
+     * @param idA the id of A (left).
+     * @param idB the id of B (right).
+     * @param propertyA the property of A (left).
+     * @param propertyB the property of B (right).
+     * @param frequentTermsA the frequent terms of A (left).
+     * @param frequentTermsB the frequent terms of B( (right).
+     * @param locale the locale.
+     * @param acceptance the acceptance value as a string.
+     * @param nameFusionAction the name of the fusion action.
+     */
     public void setFeatures(String idA, String idB, String propertyA, String propertyB, String frequentTermsA, String frequentTermsB,
             Locale locale, String acceptance, String nameFusionAction) {
 
@@ -183,27 +194,44 @@ public class Features {
         return weightedPairLiteral;
     }
 
-    public void setphoneFeatures(String A, String B) {
+    /**
+     * Set the phone features.
+     * 
+     * @param a value for phone a.
+     * @param b value for phone b.
+     */
+    public void setphoneFeatures(String a, String b) {
         IsSamePhoneNumberCustomNormalize ph = new IsSamePhoneNumberCustomNormalize();
-        Literal literalA = ResourceFactory.createStringLiteral(A);
-        Literal literalB = ResourceFactory.createStringLiteral(B);
-        this.setSamePhone(ph.evaluate(literalA, literalB));
-        System.out.println(this.isSamePhone());
+        Literal literalA = ResourceFactory.createStringLiteral(a);
+        Literal literalB = ResourceFactory.createStringLiteral(b);
+        setSamePhone(ph.evaluate(literalA, literalB));
     }
 
-    public void setaddrFeature(String A, String B) {
-        if (StringUtils.isBlank(A) || StringUtils.isBlank(B)) {
-            this.setSameAddress(false);
-        } else if (A.equals(B)) {
-            this.setSameAddress(true);
+    /**
+     * Set the address features.
+     * 
+     * @param a value for address a.
+     * @param b value for address b.
+     */
+    public void setaddrFeature(String a, String b) {
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
+            setSameAddress(false);
+        } else if (a.equals(b)) {
+            setSameAddress(true);
         }
     }
 
-    public void setaddrNameFeature(String A, String B) {
-        if (StringUtils.isBlank(A) || StringUtils.isBlank(B)) {
-            this.setSameAddressName(0);
+    /**
+     * Set address name feature as the levenstein similarity between the address values.
+     * 
+     * @param a the value of address a.
+     * @param b the value of address b.
+     */
+    public void setaddrNameFeature(String a, String b) {
+        if (StringUtils.isBlank(a) || StringUtils.isBlank(b)) {
+            setSameAddressName(0);
         } else {
-            this.setSameAddressName(Levenshtein.computeSimilarity(A, B, null));
+            setSameAddressName(Levenshtein.computeSimilarity(a, b, null));
         }
     }
 

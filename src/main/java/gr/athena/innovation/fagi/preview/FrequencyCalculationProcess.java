@@ -17,6 +17,12 @@ public class FrequencyCalculationProcess {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(FrequencyCalculationProcess.class);
 
+    /**
+     * Executes the frequency calculation process.
+     * 
+     * @param configuration the configuration object.
+     * @param rdfProperties the list of the RDF properties as String values.
+     */
     public void run(Configuration configuration, List<String> rdfProperties) {
 
         //word frequencies using the RDF properties from file

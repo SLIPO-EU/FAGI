@@ -16,7 +16,7 @@ public class Evaluation {
      * Runs the evaluation process with training examples from a given csv path.
      * 
      * @param configuration the configuration.
-     * @param csvPath the csvPAth with training examples.
+     * @param csvPath the path of the CSV file with training examples.
      */
     public void run(Configuration configuration, String csvPath){
 

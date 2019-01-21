@@ -223,10 +223,20 @@ public class CSVRepository extends AbstractRepository{
         return (file.exists() && !file.isDirectory());
     }
     
+    /**
+     * Return the number of initial links.
+     * 
+     * @return the initial links count.
+     */
     public static int getInitialCount() {
         return initialCount;
     }
     
+    /**
+     * Return the number of unique links.
+     * 
+     * @return the number of unique links.
+     */
     public static int getUniqueCount() {
         return uniqueCount;
     }

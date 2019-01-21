@@ -14,6 +14,11 @@ public class StatGroup {
     private String legendB;
     private String legendTotal;
     
+    /**
+     * Constructor of a statistic group object.
+     * 
+     * @param enumGroup the group enumeration.
+     */
     public StatGroup(EnumStatGroup enumGroup){
 
         switch(enumGroup) {
@@ -99,22 +104,47 @@ public class StatGroup {
         return this.enumGroup == other.enumGroup;
     }
 
+    /**
+     * Return the enumeration of the statistic group.
+     * 
+     * @return the statistic group enumeration.
+     */
     public EnumStatGroup getEnumGroup() {
         return enumGroup;
     }
 
+    /**
+     * Return the title.
+     * 
+     * @return the title.
+     */
     public String getTitle() {
         return title;
     }
     
+    /**
+     * Return the legend of A.
+     * 
+     * @return the legend.
+     */
     public String getLegendA() {
         return legendA;
     }
 
+    /**
+     * Return the legend of B.
+     * 
+     * @return the legend.
+     */
     public String getLegendB() {
         return legendB;
     }
 
+    /**
+     * The legend that refers to the total value.
+     * 
+     * @return the legend of the total value.
+     */
     public String getLegendTotal() {
         return legendTotal;
     }

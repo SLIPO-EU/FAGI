@@ -226,28 +226,28 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         map.put(EnumStat.FUSED_INITIAL.getKey(), countInitialVsFused(leftModel, rightModel, EnumStat.FUSED_INITIAL));
 
         map.put(EnumStat.FUSED_NAMES.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_NAMES, 
-                EnumStat.NON_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE));
+                Namespace.NAME, Namespace.NAME_VALUE));
 
         map.put(EnumStat.FUSED_PHONES.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_PHONES, 
-                EnumStat.NON_EMPTY_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE));
+                Namespace.PHONE, Namespace.CONTACT_VALUE));
 
         map.put(EnumStat.FUSED_EMAILS.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_EMAILS, 
-                EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE));
+                Namespace.EMAIL, Namespace.CONTACT_VALUE));
 
         map.put(EnumStat.FUSED_HOMEPAGE.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, 
-                EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                Namespace.HOMEPAGE));
 
         map.put(EnumStat.FUSED_POSTCODE.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_POSTCODE, 
-                EnumStat.NON_EMPTY_POSTCODE, Namespace.ADDRESS, Namespace.POSTCODE));
+                Namespace.ADDRESS, Namespace.POSTCODE));
 
         map.put(EnumStat.FUSED_STREET.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET, 
-                EnumStat.NON_EMPTY_STREETS, Namespace.ADDRESS, Namespace.STREET));
+                Namespace.ADDRESS, Namespace.STREET));
 
         map.put(EnumStat.FUSED_STREET_NUMBER.getKey(), countFusedProperty(leftModel, rightModel, 
-                EnumStat.FUSED_STREET_NUMBER, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER));
+                EnumStat.FUSED_STREET_NUMBER, Namespace.ADDRESS, Namespace.STREET_NUMBER));
 
         map.put(EnumStat.FUSED_FAX.getKey(), countFusedProperty(leftModel, rightModel, EnumStat.FUSED_FAX, 
-                EnumStat.NON_EMPTY_FAX, Namespace.FAX, Namespace.CONTACT_VALUE));
+                Namespace.FAX, Namespace.CONTACT_VALUE));
 
         
         if (totalPOIsA == null || totalPOIsA == 0 || totalPOIsB == null || totalPOIsB == 0) {
@@ -543,39 +543,46 @@ public class RDFStatisticsCollector implements StatisticsCollector {
                 break;
             case FUSED_NAMES:
                 map.put(EnumStat.FUSED_NAMES.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_NAMES, EnumStat.NON_EMPTY_NAMES, Namespace.NAME, Namespace.NAME_VALUE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_NAMES, Namespace.NAME, Namespace.NAME_VALUE));
                 break;
             case FUSED_PHONES:
                 map.put(EnumStat.FUSED_PHONES.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_PHONES, EnumStat.NON_EMPTY_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_PHONES, Namespace.PHONE, Namespace.CONTACT_VALUE));
                 break;
             case FUSED_EMAILS:
                 map.put(EnumStat.FUSED_EMAILS.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_EMAILS, EnumStat.NON_EMPTY_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_EMAILS, Namespace.EMAIL, Namespace.CONTACT_VALUE));
                 break;
             case FUSED_HOMEPAGE:
                 map.put(EnumStat.FUSED_HOMEPAGE.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, EnumStat.NON_EMPTY_WEBSITES, Namespace.HOMEPAGE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_HOMEPAGE, Namespace.HOMEPAGE));
                 break;
             case FUSED_POSTCODE:
                 map.put(EnumStat.FUSED_POSTCODE.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_POSTCODE, EnumStat.NON_EMPTY_POSTCODE, Namespace.ADDRESS, Namespace.POSTCODE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_POSTCODE, Namespace.ADDRESS, Namespace.POSTCODE));
                 break;
             case FUSED_STREET:
                 map.put(EnumStat.FUSED_STREET.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET, EnumStat.NON_EMPTY_STREETS, Namespace.ADDRESS, Namespace.STREET));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET, Namespace.ADDRESS, Namespace.STREET));
                 break;
             case FUSED_STREET_NUMBER:
                 map.put(EnumStat.FUSED_STREET_NUMBER.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET_NUMBER, EnumStat.NON_EMPTY_STREET_NUMBERS, Namespace.ADDRESS, Namespace.STREET_NUMBER));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_STREET_NUMBER, Namespace.ADDRESS, Namespace.STREET_NUMBER));
                 break;
             case FUSED_FAX:
                 map.put(EnumStat.FUSED_FAX.getKey(), 
-                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_FAX, EnumStat.NON_EMPTY_FAX, Namespace.FAX, Namespace.CONTACT_VALUE));
+                        countFusedProperty(leftModel, rightModel, EnumStat.FUSED_FAX, Namespace.FAX, Namespace.CONTACT_VALUE));
                 break;
         }
     }
 
+    /**
+     * Counts the total entities concerning the input datasets.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countTotalEntities(Model a, Model b) {
 
         Integer totalA = SparqlRepository.countPOIs(a);
@@ -601,6 +608,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the total triples of the input datasets.
+     * 
+     * @param a the a model
+     * @param b the b model.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countTriples(Model a, Model b) {
 
         Long totalA = a.size();
@@ -619,6 +633,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the linked and the total POIs of the input.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param links the model of the links.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countLinkedVsTotalPOIs(Model a, Model b, Model links) {
 
         Integer linkedA = SparqlRepository.countLinkedPOIsA(links);
@@ -648,6 +670,12 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the linked POIs.
+     * 
+     * @param links the model of the links.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countLinkedPOIs(Model links) {
 
         Integer linkedPOIsA = SparqlRepository.countDistinctSubjects(links);
@@ -664,6 +692,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the linked triples between the input datasets.
+     * 
+     * @param modelA the a model.
+     * @param modelB the b model.
+     * @param linksModel the model of the links.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countLinkedTriples(Model modelA, Model modelB, Model linksModel) {
 
         Model linkedA = modelA.union(linksModel);
@@ -683,6 +719,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the distinct properties of the input.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countDistinctProperties(Model a, Model b) {
 
         Integer distinctPropertiesA = SparqlRepository.countDistinctProperties(a);
@@ -703,6 +746,15 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the values of the given single property in the input data.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param stat the stat enumeration.
+     * @param property the property to count.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countNonEmptyProperty(Model a, Model b, EnumStat stat, String property) {
 
         Integer propertyA = countNonEmptyProperty(property, a);
@@ -722,6 +774,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the values of the given chain property in the input data.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param stat the stat enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countNonEmptyProperty(Model a, Model b, EnumStat stat, String property1, String property2) {
 
         Integer propertyA = countNonEmptyProperty(property1, property2, a);
@@ -741,6 +803,15 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the empty values of the given property in the input data.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param stat the statistic enumeration.
+     * @param property the property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countEmptyProperty(Model a, Model b, EnumStat stat, String property) {
 
         Integer nA;
@@ -803,6 +874,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the total non empty values of main properties in the input models.
+     * 
+     * @param leftModel the left model (a).
+     * @param rightModel the right model (b).
+     * @return the statistic result object.
+     */
     public StatisticResultPair countTotalNonEmptyProperties(Model leftModel, Model rightModel) {
 
         Integer totalA;
@@ -887,6 +965,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the total empty values of the main properties of the input data.
+     * 
+     * @param leftModel the left model (a).
+     * @param rightModel the right model (b).
+     * @return the statistic result object.
+     */
     public StatisticResultPair countTotalEmptyProperties(Model leftModel, Model rightModel) {
 
         StatisticResultPair names = map.get(EnumStat.EMPTY_NAMES.getKey());
@@ -966,6 +1051,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Calculates the percentage of primary date formats in the input data.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @param stat the statistic enumeration.
+     * @return the statistic result object.
+     */
     public StatisticResultPair calculatePercentageOfPrimaryDateFormats(Model leftModel, Model rightModel, EnumStat stat) {
 
         String date = Namespace.DATE;
@@ -1019,6 +1112,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Calculates the percentage of the given property in the input data.
+     * @param a the a model.
+     * @param b the b model.
+     * @param stat the statistic enumeration.
+     * @param property the property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair calculatePropertyPercentage(Model a, Model b, EnumStat stat, String property) {
 
         if (totalPOIsA == null || totalPOIsB == null) {
@@ -1058,6 +1159,12 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Calculates the percentage of the total non empty properties of the input data. 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @return the statistic result object.
+     */
     public StatisticResultPair calculateTotalNonEmptyPropertiesPercentage(Model leftModel, Model rightModel) {
 
         Double totalPropPercentageA;
@@ -1151,9 +1258,20 @@ public class RDFStatisticsCollector implements StatisticsCollector {
     }
 
     private Integer countNonEmptyProperty(String property1, String property2, Model model) {
-        return SparqlRepository.countPropertyChains(model, property1, property2);
+        return SparqlRepository.countPropertyChain(model, property1, property2);
     }
 
+    /**
+     * Computes the non empty values of the given property-chain only for the linked entities. 
+     * 
+     * @param modelA the a model.
+     * @param modelB the b model.
+     * @param linksModel the model of the links.
+     * @param stat the statistic enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair computeNonEmptyLinkedPropertyChain(Model modelA, Model modelB, Model linksModel,
             EnumStat stat, String property1, String property2) {
 
@@ -1177,6 +1295,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Computes the non empty values of the given property only for the linked entities. 
+     * 
+     * @param modelA the a model.
+     * @param modelB the b model.
+     * @param linksModel the model of the links.
+     * @param stat the statistic enumeration.
+     * @param property the property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair computeNonEmptyLinkedProperty(Model modelA, Model modelB, Model linksModel,
             EnumStat stat, String property) {
 
@@ -1200,6 +1328,17 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Computes the empty values of the given property-chain only for the linked entities. 
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param linksModel the links model.
+     * @param stat the statistic enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair computeEmptyLinkedPropertyChain(Model a, Model b, Model linksModel,
             EnumStat stat, String property1, String property2) {
 
@@ -1232,6 +1371,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Computes the empty values of the given property only for the linked entities. 
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param linksModel the links model.
+     * @param stat the statistic enumeration.
+     * @param property the property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair computeEmptyLinkedProperty(Model a, Model b, Model linksModel,
             EnumStat stat, String property) {
 
@@ -1264,6 +1413,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Calculates the average properties per POI.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @return the statistic result pair.
+     */
     public StatisticResultPair calculateAveragePropertiesPerPOI(Model leftModel, Model rightModel) {
 
         StatisticResultPair distinctProperties = map.get(EnumStat.DISTINCT_PROPERTIES.getKey());
@@ -1300,6 +1456,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
     }
 
+    /**
+     * Calculates the average empty properties per POI.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @return the statistic result pair.
+     */
     public StatisticResultPair calculateAverageEmptyPropertiesPerPOI(Model leftModel, Model rightModel) {
 
         StatisticResultPair distinctProperties = map.get(EnumStat.DISTINCT_PROPERTIES.getKey());
@@ -1338,6 +1501,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
     }
 
+    /**
+     * Calculates the average properties of the linked POIs.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @param links the list of the links.
+     * @return the statistic result pair.
+     */
     public StatisticResultPair calculateAverageLinkedProperties(Model leftModel, Model rightModel, List<Link> links) {
 
         if (totalPOIsA == null || totalPOIsB == null) {
@@ -1377,6 +1548,14 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Calculates the average empty properties of the linked POIs.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @param links the list of the links.
+     * @return the statistic result pair.
+     */
     public StatisticResultPair calculateAverageEmptyLinkedProperties(Model leftModel, Model rightModel, List<Link> links) {
 
         if (totalPOIsA == null || totalPOIsB == null) {
@@ -1429,6 +1608,17 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         }
     }
 
+    /**
+     * Counts the values of the given property that are longer than the other. 
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @param links the list of the links.
+     * @param stat the statistic enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countLongerValue(Model leftModel, Model rightModel, List<Link> links,
             EnumStat stat, String property1, String property2) {
 
@@ -1464,6 +1654,17 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the values of this property that match exactly with each other.
+     * 
+     * @param leftModel the left model.
+     * @param rightModel the right model.
+     * @param links the list of the links.
+     * @param stat the statistic enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countFullMatchingValue(Model leftModel, Model rightModel, List<Link> links,
             EnumStat stat, String property1, String property2) {
 
@@ -1487,6 +1688,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the fused POIs vs the initially linked POIs.
+     * 
+     * @param links the list of the links.
+     * @param stat the statistic enumeration.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countFusedVsLinked(List<Link> links, EnumStat stat) {
 
         String fused;
@@ -1515,6 +1723,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the rejected links vs the initially linked POIs.
+     * 
+     * @param links the list of the links.
+     * @param stat the statistic enumeration.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countRejectedVsLinked(List<Link> links, EnumStat stat) {
 
         String rejected;
@@ -1544,6 +1759,13 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Counts the initial POIs in the input datasets vs the total POIs in the fused dataset.
+     * @param a the a model.
+     * @param b the b model.
+     * @param stat the statistic enumeration.
+     * @return the statistic result object.
+     */
     public StatisticResultPair countInitialVsFused(Model a, Model b, EnumStat stat) {
 
         String path = Configuration.getInstance().getFused();
@@ -1585,7 +1807,16 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
-    public StatisticResultPair countFusedProperty(Model a, Model b, EnumStat fusedStat, EnumStat initialStat, String property) {
+    /**
+     * Counts the occurrences of given single-property in the input and fused data.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param fusedStat the statistic enumeration.
+     * @param property the property.
+     * @return the statistic result object.
+     */
+    public StatisticResultPair countFusedProperty(Model a, Model b, EnumStat fusedStat, String property) {
 
         String path = Configuration.getInstance().getFused();
         Integer count = getCount(path, RDFUtils.removeBrackets(property));
@@ -1606,7 +1837,17 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
-    public StatisticResultPair countFusedProperty(Model a, Model b, EnumStat fusedStat, EnumStat initialStat, String property1, String property2) {
+    /**
+     * Counts the occurrences of given chain-property in the input and fused data.
+     * 
+     * @param a the a model.
+     * @param b the b model.
+     * @param fusedStat the statistic enumeration.
+     * @param property1 the parent property.
+     * @param property2 the value property.
+     * @return the statistic result object.
+     */
+    public StatisticResultPair countFusedProperty(Model a, Model b, EnumStat fusedStat, String property1, String property2) {
 
         String path = Configuration.getInstance().getFused();
         Integer count = getCount(path, property1, property2);
@@ -1738,14 +1979,29 @@ public class RDFStatisticsCollector implements StatisticsCollector {
         return pair;
     }
 
+    /**
+     * Return the map of stat-names as keys and results as value.
+     * 
+     * @return
+     */
     public Map<String, StatisticResultPair> getMap() {
         return map;
     }
 
+    /**
+     * Set the number of total POIs for the A (left) dataset.
+     * 
+     * @param totalPOIsA the total POIs of A.
+     */
     public void setTotalPOIsA(int totalPOIsA) {
         this.totalPOIsA = totalPOIsA;
     }
 
+    /**
+     * Set the number of total POIs for the B (left) dataset.
+     * 
+     * @param totalPOIsB the total POIs of B.
+     */
     public void setTotalPOIsB(int totalPOIsB) {
         this.totalPOIsB = totalPOIsB;
     }

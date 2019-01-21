@@ -19,10 +19,21 @@ public class Frequency {
 
     private Map<String, Integer> map = new HashMap<>();
 
+    /**
+     * Return the frequency map.
+     * 
+     * @return the map.
+     */
     public Map<String, Integer> getMap() {
         return map;
     }
 
+    /**
+     * Return the map with the top-k frequent terms.
+     * 
+     * @param topK the top-k value.
+     * @return the map.
+     */
     public Map<String, Integer> getTopKFrequency(int topK) {
 
         List<Entry<String, Integer>> entries = new ArrayList<>(map.entrySet());

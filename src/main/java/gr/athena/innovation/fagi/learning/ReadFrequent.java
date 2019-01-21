@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class reading frequencies.
@@ -14,7 +15,17 @@ import java.util.ArrayList;
  */
 public class ReadFrequent {
 
-    public static ArrayList<String> getFrequencies(String path, int size, int flter_size) throws FileNotFoundException {
+    /**
+     * Return the frequency values as a List.
+     * 
+     * @param path the file-path of the frequencies.
+     * @param size the size.
+     * @param flter_size the filter size.
+     * @return the list containing the frequencies as string values.
+     * 
+     * @throws FileNotFoundException FileNotFoundException.
+     */
+    public static List<String> getFrequencies(String path, int size, int flter_size) throws FileNotFoundException {
         ArrayList<String> frequencies = new ArrayList<>();
         String cvsSplitBy = "=";
 

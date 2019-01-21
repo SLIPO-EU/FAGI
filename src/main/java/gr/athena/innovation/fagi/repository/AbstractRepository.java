@@ -97,6 +97,11 @@ public abstract class AbstractRepository {
         return links;       
     }
 
+    /**
+     * Return the count of the initial links.
+     * 
+     * @return the initial links count.
+     */
     public static int getInitialCount() {
         return initialCount;
     }

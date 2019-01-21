@@ -37,11 +37,23 @@ public class SimilarityCalculator {
     private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
     private final Configuration configuration;
 
+    /**
+     * Constructor of a similarity calculator object. 
+     * 
+     * @param configuration the configuration object.
+     */
     public SimilarityCalculator(Configuration configuration) {
 
         this.configuration = configuration;
     }
 
+    /**
+     * Calculates the similarities between the pairs of the CSV file.
+     *
+     * @param path the path od the CSV file with training examples.
+     * @param outputPath the output path for the results. A directory is expected and the path should end with a slash.
+     * @param propertName the filename to use for the current property. This is usually set as "name_similarities_ + version + .txt"
+     */
     public void calculateCSVPairSimilarities(String path, String outputPath, String propertName){
         String csvFile = path;
         String line;

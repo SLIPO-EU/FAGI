@@ -40,11 +40,21 @@ public class RDFInputSimilarityViewer {
     private static final Logger LOG = LogManager.getLogger(RDFInputSimilarityViewer.class);
     private final Configuration configuration;
 
+    /**
+     * Constructor of an RDF input similarity viewer object.
+     */
     public RDFInputSimilarityViewer() {
 
         this.configuration = Configuration.getInstance();
     }
 
+    /**
+     * Prints the similarity results under the "similarityMetrics" directory inside the output directory defined in the configuration.
+     * 
+     * @param rdfProperties the list with the RDF properties as String values.
+     * @throws ParseException Parse Exception.
+     * @throws IOException IO Exception.
+     */
     public void printRDFSimilarityResults(List<String> rdfProperties) throws ParseException, IOException {
 
         int index = 0;

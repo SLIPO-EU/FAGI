@@ -40,6 +40,12 @@ public class PhoneNumberNormalizer implements INormalizer{
         return normalizedNumber;
     }
 
+    /**
+     * Removes the non-numeric characters of the given phone number as string.  
+     * 
+     * @param number the phone number as string.
+     * @return a new string that contains only numeric characters.
+     */
     public static String removeNonNumericCharacters(String number){
         
         String numberNumerical = number.replaceAll("[^0-9]", "");

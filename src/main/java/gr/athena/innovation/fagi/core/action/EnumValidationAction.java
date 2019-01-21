@@ -46,11 +46,11 @@ public enum EnumValidationAction {
      */       
     ML_VALIDATION(5);
 
-	private final int value;
+    private final int value;
 
-	private EnumValidationAction(int value) {
-		this.value = value;
-	}
+    private EnumValidationAction(int value) {
+            this.value = value;
+    }
     
     /**
      * Returns the integer value of the action.

@@ -353,36 +353,36 @@ public enum EnumStat {
      * Number of POIs that have the fax property in the fused dataset.
      */
     FUSED_FAX("fusedFax");
-    
-	private final String value;
 
-	private static final Map<String, EnumStat> stringToTypeMap = new HashMap<>();
+    private final String value;
 
-	static {
-		for (EnumStat type : EnumStat.values()) {
-			stringToTypeMap.put(type.value, type);
-		}
-	}
+    private static final Map<String, EnumStat> stringToTypeMap = new HashMap<>();
 
-	private EnumStat(String value) {
-		this.value = value;
-	}
+    static {
+        for (EnumStat type : EnumStat.values()) {
+            stringToTypeMap.put(type.value, type);
+        }
+    }
+
+    private EnumStat(String value) {
+            this.value = value;
+    }
 
     /**
      * Returns the string value (key) of the statistic.
      * @return The value.
      */
     public String getKey() {
-		return this.value;
-	}
+        return this.value;
+    }
 
     /**
      * Returns the mapping of keys to enumStat type.
      * @return The map.
      */
     public static Map<String, EnumStat> getMap() {
-		return EnumStat.stringToTypeMap;
-	}
+	return EnumStat.stringToTypeMap;
+    }
     
     /**
      * Returns the EnumStat object from its String value or UNDEFINED if the type does not exist.
@@ -391,13 +391,13 @@ public enum EnumStat {
      * @return The statistic.
      */
     public static EnumStat fromString(String value) {
-		for (EnumStat item : EnumStat.values()) {
-			if (item.toString().equalsIgnoreCase(value)) {
-				return item;
-			}
-		}
-		return EnumStat.UNDEFINED;
-	}
+        for (EnumStat item : EnumStat.values()) {
+            if (item.toString().equalsIgnoreCase(value)) {
+                return item;
+            }
+        }
+        return EnumStat.UNDEFINED;
+    }
 
     /**
      * Deserialization class. 
@@ -413,12 +413,11 @@ public enum EnumStat {
          * @throws java.io.IOException I/O exception. 
          * @throws com.fasterxml.jackson.core.JsonProcessingException Error with Json processing.
          */
-		@Override
-		public EnumStat deserialize(JsonParser parser, DeserializationContext context) throws IOException,
-						JsonProcessingException {
-			return EnumStat.fromString(parser.getValueAsString());
-		}
-	}
+        @Override
+        public EnumStat deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+            return EnumStat.fromString(parser.getValueAsString());
+        }
+    }
 
     @Override
     public String toString() {
@@ -495,6 +494,11 @@ public enum EnumStat {
         }
     }
 
+    /**
+     * Return the legend that describes a total value.
+     * 
+     * @return the legend.
+     */
     public String getLegendTotal() {
         switch(this) {
             case UNDEFINED: return "undefined";
@@ -568,6 +572,11 @@ public enum EnumStat {
         }
     }
     
+    /**
+     * Return the legend of A.
+     * 
+     * @return the legend.
+     */
     public String getLegendA() {
         switch(this) {
             case UNDEFINED: return "undefined";
@@ -629,6 +638,11 @@ public enum EnumStat {
         }
     }
     
+    /**
+     * Return the legend of B.
+     * 
+     * @return the legend.
+     */
     public String getLegendB() {
         switch(this) {
             case UNDEFINED: return "undefined";

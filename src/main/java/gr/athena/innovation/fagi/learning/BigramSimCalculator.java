@@ -3,8 +3,21 @@ package gr.athena.innovation.fagi.learning;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bigram similarity calculator.
+ * 
+ * @author pChronis
+ * @author nkarag
+ */
 public class BigramSimCalculator {
 
+    /**
+     * Calculates the Bigram similarity.
+     * 
+     * @param s1 the first string argument.
+     * @param s2 the second string argument.
+     * @return the similarity as a double value.
+     */
     public static double calcBigramSim(String s1, String s2) {
 
         if (s1.length() > 1 && s2.length() > 1) {

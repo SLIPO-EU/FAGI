@@ -78,6 +78,11 @@ public final class LinksModel {
         this.filepath = filepath;
     }
 
+    /**
+     * The list of the rejected links.
+     * 
+     * @return the rejected links.
+     */
     public List<Link> getRejected() {
         return rejected;
     }

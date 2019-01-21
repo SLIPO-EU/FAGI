@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -23,17 +24,27 @@ public class Trainer {
 
     private final Configuration configuration;
 
+    /**
+     * Constructor of a trainer object.
+     * 
+     * @param configuration the configuration object.
+     */
     public Trainer(Configuration configuration) {
         this.configuration = configuration;
     }
 
+    /**
+     * Initiates the training process.
+     * 
+     * @throws FileNotFoundException FileNotFoundException.
+     */
     public void train() throws FileNotFoundException {
         parseTrainingSet(configuration.getLocale(), configuration.getPropertyFrequencyA(), configuration.getPropertyFrequencyB());
     }
 
     private void parseTrainingSet(Locale locale, String frequencyPathA, String frequencyPathB) throws FileNotFoundException {
 
-        ArrayList<String> freqA = ReadFrequent.getFrequencies(frequencyPathA, 100, 3); //input freq
+        List<String> freqA = ReadFrequent.getFrequencies(frequencyPathA, 100, 3); //input freq
         //ArrayList<String> freqB = ReadFrequent.getFrequencies(a_path + "files/nameValue.freq.txt", 100, 3); //input freqB
         //ArrayList<String> category = ReadFrequent.getFrequencies(a_path + "files/categoryFrequencies.txt", 30, 3); //input cat frequencies
 

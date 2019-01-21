@@ -94,6 +94,12 @@ public class MetricProcessor {
     
     private Threshold optimalThreshold = new Threshold();
     
+    /**
+     * Constructor of a metric processor object.
+     * Initializes the hashmaps with accept/reject keys and arraylist values. 
+     * 
+     * @param configuration
+     */
     public MetricProcessor(Configuration configuration) {
 
         this.configuration = configuration;
@@ -171,6 +177,17 @@ public class MetricProcessor {
         dSortedJaroWinklerPrecisionMap.put(REJECT, new ArrayList<>());         
     }
 
+    /**
+     * Executes the evaluation. 
+     * 
+     * @param csvPath the csv path containing the training samples.
+     * @param resultsPath the output path of the results as a string.
+     * @param propertyName the property name as a string.
+     * @param thresholdsFilename the name of the optimal-threshold file.
+     * @param notes the information of the current evaluation as a string. 
+     * @throws FileNotFoundException indicates FileNotFoundException.
+     * @throws IOException indicates I/O exception.
+     */
     public void executeEvaluation(String csvPath, String resultsPath, String propertyName, String thresholdsFilename, 
             String notes) throws FileNotFoundException, IOException {
 

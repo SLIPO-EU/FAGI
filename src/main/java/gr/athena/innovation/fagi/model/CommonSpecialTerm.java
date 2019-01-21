@@ -38,14 +38,29 @@ public class CommonSpecialTerm {
         return true;
     }
 
+    /**
+     * Return the current term.
+     * 
+     * @return the term.
+     */
     public String getTerm() {
         return term;
     }
 
+    /**
+     * Set the term.
+     * 
+     * @param term the term.
+     */
     public void setTerm(String term) {
         this.term = term;
     }
 
+    /**
+     * Return the weight value.
+     * 
+     * @return the weight.
+     */
     public double getWeight() {
         return weight;
     }

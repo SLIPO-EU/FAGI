@@ -17,6 +17,11 @@ public final class AmbiguousDataset {
          //defeat instantiation
     }
     
+    /**
+     * Returns a new AmbiguousDataset object if it is not already instantiated.
+     * 
+     * @return the ambiguous dataset object.
+     */
     public static AmbiguousDataset getAmbiguousDataset() {
        if(ambiguousDataset == null) {
           ambiguousDataset = new AmbiguousDataset();
@@ -24,10 +29,19 @@ public final class AmbiguousDataset {
        return ambiguousDataset;
     }
     
+    /**
+     * Set the RDF jena model.
+     * 
+     * @param model the model.
+     */
     public void setModel(Model model){
         this.model = model;
     }
     
+    /**
+     * Return the model of the ambiguous dataset. If the model is null creates and returns a default model.
+     * @return
+     */
     public Model getModel(){
         if(model == null){
             model = ModelFactory.createDefaultModel();

@@ -18,6 +18,11 @@ public class StatisticsExporter {
     
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(StatisticsExporter.class);
     
+    /**
+     * Exports the statistics to the given file-path in JSON format.
+     * @param statsJsonString the JSON String that contains the statistics.
+     * @param filepath the output path.
+     */
     public void exportStatistics(String statsJsonString, String filepath){
 
         File outputFile = new File(filepath);

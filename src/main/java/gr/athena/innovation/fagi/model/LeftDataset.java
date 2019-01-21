@@ -18,6 +18,11 @@ public final class LeftDataset {
          //defeat instantiation
     }
     
+    /**
+     * Returns a new LeftDataset object if it is not already instantiated.
+     * 
+     * @return the left dataset object.
+     */
     public static LeftDataset getLeftDataset() {
        if(leftDataset == null) {
           leftDataset = new LeftDataset();
@@ -25,28 +30,57 @@ public final class LeftDataset {
        return leftDataset;
     }
     
+    /**
+     * Sets the RDF model of the left dataset.
+     * 
+     * @param model the model.
+     */
     public void setModel(Model model){
         this.model = model;
     }
     
+    /**
+     * Return the RDF model of the left dataset.
+     * 
+     * @return the model.
+     */
     public Model getModel(){
         return model;
     }
 
+    /**
+     * Return the namespace of the left dataset.
+     * 
+     * @return the namespace.
+     */
     public String getNamespace() {
         return namespace;
     }
 
+    /**
+     * Set the namespace of the left dataset.
+     * 
+     * @param namespace the namespace.
+     */
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
 
+    /**
+     * Return the file-path of the left dataset.
+     * 
+     * @return the filepath.
+     */
     public String getFilepath() {
         return filepath;
     }
 
+    /**
+     * Set the filepath of the left dataset.
+     * 
+     * @param filepath the filepath.
+     */
     public void setFilepath(String filepath) {
         this.filepath = filepath;
     }
-    
 }

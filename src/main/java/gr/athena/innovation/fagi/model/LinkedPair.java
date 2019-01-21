@@ -63,6 +63,11 @@ public class LinkedPair {
     private final EnumDatasetAction defaultDatasetAction;
     private final boolean verbose = Configuration.getInstance().isVerbose();
 
+    /**
+     * Constructor of a linkedPair object.
+     * 
+     * @param defaultDatasetAction the default dataset action.
+     */
     public LinkedPair(EnumDatasetAction defaultDatasetAction) {
         this.defaultDatasetAction = defaultDatasetAction;
     }
@@ -1617,6 +1622,11 @@ public class LinkedPair {
         }
     }
 
+    /**
+     * Return the value that indicates if this pair is rejected at the validation process.
+     * 
+     * @return true if the linked pair is rejected, false otherwise.
+     */
     public boolean isRejected() {
         return rejected;
     }
@@ -1737,6 +1747,11 @@ public class LinkedPair {
         }
     }
 
+    /**
+     * Return the fusion log object for this pair.
+     * 
+     * @return the fusion log.
+     */
     public FusionLog getFusionLog() {
         return fusionLog;
     }

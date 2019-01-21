@@ -36,6 +36,13 @@ public class Exists implements IFunction, IFunctionTwoModelStringParameters{
         return propertyExistsInModel(model, property);
     }
 
+    /**
+     * Evaluates the existence of the property in the model.
+     * 
+     * @param model the RDF jena model
+     * @param property the customRDFProperty object.
+     * @return true if the property exists in the model, false otherwise.
+     */
     public boolean evaluate(Model model, CustomRDFProperty property) {
         return propertyExistsInModel(model, property);
     }

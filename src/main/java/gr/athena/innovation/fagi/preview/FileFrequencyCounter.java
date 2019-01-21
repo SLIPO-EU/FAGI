@@ -38,11 +38,23 @@ public class FileFrequencyCounter implements FrequencyCounter {
     private final Configuration configuration;
     private final int frequentTopK;
 
+    /**
+     * Constructor of a file frequency counter object.
+     * 
+     * @param frequentTopK the desired k top value.
+     */
     public FileFrequencyCounter(int frequentTopK) {
         this.configuration = Configuration.getInstance();
         this.frequentTopK = frequentTopK;
     }
 
+    /**
+     * Exports the results under the "frequencies/" directory inside the output directory of the configuration. 
+     * Creates filenames based on the properties of the input file.
+     * 
+     * @param inputFilename the input filename. Contains user defined RDF properties (with line breaks). The frequency results will be calculated only for these properties. 
+     * @param dataset the dataset id.
+     */
     @Override
     public void export(String inputFilename, EnumDataset dataset) {
 
@@ -198,18 +210,38 @@ public class FileFrequencyCounter implements FrequencyCounter {
         return split;
     }
 
+    /**
+     * Return the locale.
+     * 
+     * @return the locale.
+     */
     public Locale getLocale() {
         return locale;
     }
 
+    /**
+     * Set the locale.
+     * 
+     * @param locale the locale.
+     */
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
+    /**
+     * Return the list with the defined properties as string values.
+     * 
+     * @return the list of the RDF properties.
+     */
     public List<String> getProperties() {
         return properties;
     }
 
+    /**
+     * Set the list of RDF properties that will participate in the calculation.
+     * 
+     * @param properties the RDF properties.
+     */
     public void setProperties(List<String> properties) {
         this.properties = properties;
     }
