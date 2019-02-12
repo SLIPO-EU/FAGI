@@ -12,6 +12,8 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract repository for reading RDF input. 
@@ -20,6 +22,8 @@ import org.apache.jena.riot.RDFDataMgr;
  */
 public abstract class AbstractRepository {
 
+    private static final Logger LOG = LogManager.getLogger(AbstractRepository.class);
+    
     private static int initialCount;
     
     /**

@@ -7,3 +7,6 @@ util
 target
 nbactions.xml
 /nbproject/
+.classpath
+.project
+.settings/

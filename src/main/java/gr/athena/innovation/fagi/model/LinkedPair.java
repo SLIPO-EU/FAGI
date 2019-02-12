@@ -305,7 +305,7 @@ public class LinkedPair {
             }
 
             LOG.trace("Nodes: " + leftNode.getLocalName() + " " + rightNode.getLocalName());
-            LOG.debug("Fusing values: " + nodeA + " " + nodeB);
+            LOG.debug("Fusing nodes: " + nodeA + " " + nodeB);
             //LOG.trace("fusing: " + literalA + " " + literalB);
             //Checking if it is a simple rule with default actions and no conditions and functions are set.
             //Fuse with the rule defaults and continue to next rule.

@@ -416,12 +416,12 @@ public class POIFuser implements Fuser{
         switch(mode) {
             case AA_MODE:
             {
-                aaMode(fused, fusedEntities, fusedStream, configuration, remaining);
+                aaMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
             case BB_MODE:
             {
-                bbMode(fused, fusedEntities, fusedStream, configuration, remaining);
+                bbMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
             case L_MODE:
@@ -431,12 +431,12 @@ public class POIFuser implements Fuser{
             }
             case AB_MODE:
             {
-                abMode(fused, fusedEntities, fusedStream, configuration, remaining);
+                abMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
             case BA_MODE:
             {
-                baMode(fused, fusedEntities, fusedStream, configuration, remaining);
+                baMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
             case A_MODE:
@@ -455,11 +455,7 @@ public class POIFuser implements Fuser{
 
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
 
-        if(ambiguousModel.isEmpty()){
-            //addMessageToEmptyOutput(ambiguous);
-        } else {
-            ambiguousModel.write(ambiguousStream, configuration.getOutputRDFFormat());
-        }
+        ambiguousModel.write(ambiguousStream, configuration.getOutputRDFFormat());
     }
 
     private void bMode(String remaining, String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) throws IOException {
@@ -509,7 +505,8 @@ public class POIFuser implements Fuser{
         removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNamesToBeExcluded, remaining);
     }
 
-    private void baMode(String fused, List<LinkedPair> fusedEntities, OutputStream remainingStream, Configuration configuration, String remaining) throws IOException {
+    private void baMode(String fused, List<LinkedPair> fusedEntities, OutputStream remainingStream, Configuration configuration) 
+            throws IOException {
         LOG.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + fused);
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
@@ -533,7 +530,7 @@ public class POIFuser implements Fuser{
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
-    private void abMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration, String remaining) throws IOException {
+    private void abMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.AB_MODE + ": Output result will be written to " + fused);
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
@@ -574,7 +571,7 @@ public class POIFuser implements Fuser{
     }
 
     private void bbMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
-            Configuration configuration, String remaining) throws IOException {
+            Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
 
         Model rightModel = RightDataset.getRightDataset().getModel();
@@ -591,7 +588,7 @@ public class POIFuser implements Fuser{
     }
 
     private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
-            Configuration configuration, String remaining) throws IOException {
+            Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
@@ -599,6 +596,7 @@ public class POIFuser implements Fuser{
         for(LinkedPair pair : fusedEntities){
             //add both accepted and rejected to fused model, because the rejected have been removed from the left model.
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
+            LOG.warn("adding");
             leftModel.add(fusedDataModel);
         }
         

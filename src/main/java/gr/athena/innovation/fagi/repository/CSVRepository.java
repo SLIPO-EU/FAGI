@@ -12,10 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -150,8 +147,6 @@ public class CSVRepository extends AbstractRepository{
         Model model = ModelFactory.createDefaultModel();
         List<Link> initialLinks = new ArrayList<>();
         List<Link> filteredLinks = new ArrayList<>();
-
-        Map<String, Entry<String, Double>> mapA = new HashMap<>();
 
         try(BufferedReader br = new BufferedReader(new FileReader(linksFile))) {
             for(String line; (line = br.readLine()) != null; ) {

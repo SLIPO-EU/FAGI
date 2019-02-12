@@ -147,9 +147,9 @@ public class FagiInstance {
                 break;
             }
             case SpecificationConstants.Config.CSV: {
-                AbstractRepository csvRepository = new CSVRepository();
+                CSVRepository csvRepository = new CSVRepository();
                 csvRepository.parseLinks(configuration.getPathLinks());
-                initialLinksCount = AbstractRepository.getInitialCount();
+                initialLinksCount = CSVRepository.getInitialCount();
                 break;
             }
             case SpecificationConstants.Config.CSV_UNIQUE_LINKS:{

@@ -781,7 +781,7 @@ public class Configuration {
                     "\n locale=" + locale +
                     "\n similarity=" + similarity +
                     "\n optionalQueryDepth=" + optionalDepth + 
-                    "\n -ML-\n" +
+                    "\n -ML-" +
                     "\n name model=" + nameModelPath +
                     "\n address model=" + addressModelPath +
                     "\n website model=" + websiteModelPath +
