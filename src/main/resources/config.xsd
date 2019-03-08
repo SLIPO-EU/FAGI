@@ -102,8 +102,9 @@
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
 				    <xs:enumeration value="nt"/>
-                                    <xs:enumeration value="csv"/>
-                                    <xs:enumeration value="csv-unique-links"/>				    
+                    <xs:enumeration value="csv"/>
+                    <xs:enumeration value="csv-unique-links"/>
+                    <xs:enumeration value="csv-ensembles"/>			    
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:element>	

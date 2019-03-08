@@ -112,6 +112,7 @@ public class SchemaDefinition {
 "				  <xs:restriction base=\"xs:string\">\n" +
 "				    <xs:enumeration value=\"csv\"/>\n" +
 "				    <xs:enumeration value=\"csv-unique-links\"/>\n" +
+"				    <xs:enumeration value=\"csv-ensembles\"/>\n" +
 "				    <xs:enumeration value=\"nt\"/>				    \n" +
 "				  </xs:restriction>\n" +
 "				</xs:simpleType>\n" +

@@ -271,6 +271,9 @@ public class ConfigurationParser {
                             case "csv-unique-links":
                                 linksFormat = SpecificationConstants.Config.CSV_UNIQUE_LINKS;
                                 break;  
+                            case "csv-ensembles":
+                                linksFormat = SpecificationConstants.Config.CSV_ENSEMBLES;
+                                break; 
                             default:
                                 throw new WrongInputException("Wrong links format. Define between " 
                                         + SpecificationConstants.Config.NT + " " 

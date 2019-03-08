@@ -3,6 +3,8 @@ package gr.athena.innovation.fagi.repository;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.model.LinksModel;
+import gr.athena.innovation.fagi.specification.Configuration;
+import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.utils.RDFUtils;
 import java.io.BufferedReader;
@@ -12,7 +14,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -34,6 +40,7 @@ public class CSVRepository extends AbstractRepository{
     private static final Logger LOG = LogManager.getLogger(CSVRepository.class);
     private static int initialCount;
     private static int uniqueCount;
+    private static int ensemblesCount;
 
     @Override
     public void parseLeft(String filepath) throws WrongInputException {
@@ -213,6 +220,167 @@ public class CSVRepository extends AbstractRepository{
         return false;
     }
 
+    /**
+     * @param linksFile The file path of the initialLinks.
+     * @return List of link objects.
+     * @throws java.io.FileNotFoundException
+     */    
+    public static List<Link> extractEnsembles(final String linksFile) throws FileNotFoundException, IOException {
+
+        Model model = ModelFactory.createDefaultModel();
+
+        List<Link> initialLinks = new ArrayList<>();
+        List<Link> linksToReturn = new ArrayList<>();
+
+        try(BufferedReader br = new BufferedReader(new FileReader(linksFile))) {
+            for(String line; (line = br.readLine()) != null; ) {
+
+                if(StringUtils.isBlank(line)){
+                    continue;
+                }
+
+                initialCount++;
+
+                String[] parts = line.split("\\s+");
+                String nodeA = RDFUtils.removeBrackets(parts[0]);
+                String nodeB = RDFUtils.removeBrackets(parts[1]);
+
+                Resource s = ResourceFactory.createResource(nodeA);
+                Property p = ResourceFactory.createProperty(Namespace.SAME_AS_NO_BRACKETS);
+                Resource o = ResourceFactory.createResource(nodeB);
+                Statement statement = ResourceFactory.createStatement(s, p, o);
+                model.add(statement);
+
+                Float score = Float.parseFloat(parts[2]);
+
+                final String uriA = RDFUtils.getIdFromResource(nodeA);
+                final String uriB = RDFUtils.getIdFromResource(nodeB);
+
+                Link link = new Link(nodeA, uriA, nodeB, uriB, score);
+
+                initialLinks.add(link);
+            }
+        }
+
+        initialLinks.sort((o1, o2) -> -o1.getScore().compareTo(o2.getScore())); //descending
+
+        final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+        
+        for(Link link : initialLinks){
+            switch(mode){
+                case AA_MODE:
+                case A_MODE:
+                case AB_MODE:
+                case L_MODE: {
+                    LOG.trace("\n\nlink " + link.getKey());
+                    
+                    Map<String, Link> ensembleMapA = new HashMap<>();
+                    Set<String> bNodes = new HashSet<>();
+                    Map<String, Link> ensembleCandidates = new HashMap<>();
+                    Map<String, Link> linkEnsemblesA = new HashMap<>();
+                    
+                    String nodeA = link.getNodeA();
+                    String nodeB = link.getNodeB();
+                    
+                    if(ensembleMapA.containsKey(nodeA)){
+                        //firstly, remove the link from the simple links
+                        Link l = ensembleMapA.get(nodeA);
+                        
+                        if(l.isEnsemble()){
+                            linksToReturn.remove(ensembleMapA.get(nodeA));
+                        }
+
+                        //node A already participates in another link. Resolve what to do with node B
+                        if(bNodes.contains(nodeB)){
+                            //node B is already assigned to another ensemble with higher score. skip link (do nothing)
+                            LOG.trace("skiping: " + link.getKey());
+                        } else {
+                            //node B should be included in the ensemble. Get the ensemble link and add node B to it.
+                            Link ensemble = ensembleMapA.get(nodeA);
+                            ensemble.addEnsembleB(nodeB);
+                            
+                            bNodes.add(nodeB);
+                            ensemble.setEnsemble(true);
+                            
+                            //get the first link that were found and should belong to this ensemble now
+                            Link firstLink = ensembleCandidates.get(nodeA);
+                            ensemble.addEnsembleB(firstLink.getNodeB());
+                            
+                            linkEnsemblesA.put(nodeA, ensemble);
+                            linksToReturn.remove(firstLink);
+                        }
+                    } else {
+                        //link is not an ensemble or is not an ensemble yet.
+                        ensembleCandidates.put(nodeA, link);
+                        bNodes.add(nodeB);
+                        ensembleMapA.put(nodeA, link);
+                        linksToReturn.add(link);
+                    }
+                    linksToReturn.addAll(new ArrayList(linkEnsemblesA.values()));
+                    break;
+                }
+                case BB_MODE:
+                case B_MODE:
+                case BA_MODE: {
+                    LOG.trace("\n\nlink " + link.getKey());
+
+                    Map<String, Link> ensembleMapB = new HashMap<>();
+                    Set<String> aNodes = new HashSet<>();
+                    Map<String, Link> ensembleCandidates = new HashMap<>();
+                    Map<String, Link> linkEnsemblesB = new HashMap<>();
+                    
+                    String nodeA = link.getNodeA();
+                    String nodeB = link.getNodeB();
+                    if(ensembleMapB.containsKey(nodeB)){
+                        //firstly, remove the link from the simple links
+                        Link l = ensembleMapB.get(nodeB);
+                        
+                        if(l.isEnsemble()){
+                            linksToReturn.remove(ensembleMapB.get(nodeB));
+                        }
+
+                        //node A already participates in another link. Resolve what to do with node B
+                        if(aNodes.contains(nodeA)){
+                            //node B is already assigned to another ensemble with higher score. skip link (do nothing)
+                            LOG.trace("skiping: " + link.getKey());
+                        } else {
+                            //node B should be included in the ensemble. Get the ensemble link and add node B to it.
+                            Link ensemble = ensembleMapB.get(nodeB);
+                            ensemble.addEnsembleA(nodeA);
+                            
+                            aNodes.add(nodeA);
+                            ensemble.setEnsemble(true);
+                            
+                            //get the first link that were found and should belong to this ensemble now
+                            Link firstLink = ensembleCandidates.get(nodeB);
+                            ensemble.addEnsembleA(firstLink.getNodeA());
+                            
+                            linkEnsemblesB.put(nodeB, ensemble);
+                            linksToReturn.remove(firstLink);
+                        }
+                    } else {
+                        //link is not an ensemble or is not an ensemble yet.
+                        ensembleCandidates.put(nodeB, link);
+                        aNodes.add(nodeA);
+                        ensembleMapB.put(nodeB, link);
+                        linksToReturn.add(link);
+                    }
+                    
+                    break;
+                }    
+            }
+        }
+        
+        LinksModel linksModel = LinksModel.getLinksModel();
+        linksModel.setModel(model);
+        linksModel.setFilepath(linksFile);
+        linksModel.setLinks(linksToReturn);
+
+        ensemblesCount = linksToReturn.size();
+
+        return linksToReturn;
+    }
+    
     private boolean isValidPath(String filepath){
         File file = new File(filepath);
         return (file.exists() && !file.isDirectory());
@@ -234,5 +402,14 @@ public class CSVRepository extends AbstractRepository{
      */
     public static int getUniqueCount() {
         return uniqueCount;
+    }
+    
+    /**
+     * Return the number of ensembles. This count includes the simple one-to-one links.
+     * 
+     * @return the number of ensembles.
+     */
+    public static int getEnsemblesCount() {
+        return ensemblesCount;
     }
 }

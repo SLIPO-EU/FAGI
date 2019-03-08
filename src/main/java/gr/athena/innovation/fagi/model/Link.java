@@ -1,6 +1,10 @@
 package gr.athena.innovation.fagi.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a link between two RDF nodes.
@@ -12,6 +16,10 @@ public class Link implements Serializable {
     private final String nodeB;
     private final String localNameA;
     private final String localNameB;
+    
+    private boolean ensemble = false;
+    private final List<String> aEnsembles = new ArrayList<>();
+    private final Set<String> bEnsembles = new HashSet<>();
     private Float score;
 
     @Override
@@ -95,5 +103,21 @@ public class Link implements Serializable {
      */
     public Float getScore() {
         return score;
+    }
+
+    public void addEnsembleA(String nodeA) {
+        aEnsembles.add(nodeA);
+    }
+    
+    public void addEnsembleB(String nodeB) {
+        bEnsembles.add(nodeB);
+    }
+
+    public boolean isEnsemble() {
+        return ensemble;
+    }
+
+    public void setEnsemble(boolean ensemble) {
+        this.ensemble = ensemble;
     }
 }

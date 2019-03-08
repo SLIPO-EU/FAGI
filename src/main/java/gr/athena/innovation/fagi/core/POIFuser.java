@@ -111,6 +111,19 @@ public class POIFuser implements Fuser{
 
         for (Link link : links.getLinks()){
 
+            if(link.isEnsemble()){
+                //construct models
+ 
+                //validate
+                
+                //fuse
+                
+                    //resolve default dataset action
+                    //  fuse functional properties
+                    //  fuse non-functional
+                continue;
+            }
+            
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, configuration.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, configuration.getOptionalDepth());
@@ -596,7 +609,6 @@ public class POIFuser implements Fuser{
         for(LinkedPair pair : fusedEntities){
             //add both accepted and rejected to fused model, because the rejected have been removed from the left model.
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
-            LOG.warn("adding");
             leftModel.add(fusedDataModel);
         }
         

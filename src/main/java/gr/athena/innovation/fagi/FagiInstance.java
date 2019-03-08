@@ -157,6 +157,11 @@ public class FagiInstance {
                 initialLinksCount = CSVRepository.getInitialCount();
                 break;
             }
+            case SpecificationConstants.Config.CSV_ENSEMBLES:{
+                CSVRepository.extractEnsembles(configuration.getPathLinks());
+                initialLinksCount = CSVRepository.getInitialCount();
+                break;
+            }
         }
 
         AmbiguousDataset.getAmbiguousDataset().getModel();
@@ -281,6 +286,9 @@ public class FagiInstance {
 
             if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
                 LOG.info("Unique links: " + CSVRepository.getUniqueCount());
+            } else if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_ENSEMBLES)){
+                LOG.info("Ensembles (including one-to-one): " + CSVRepository.getEnsemblesCount());
+                LOG.info("Initial links: " + CSVRepository.getInitialCount());
             }
 
             LOG.info("Fused: " + fused + ", Rejected links: " + rejected);

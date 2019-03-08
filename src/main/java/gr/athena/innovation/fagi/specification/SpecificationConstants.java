@@ -132,6 +132,11 @@ public class SpecificationConstants {
          * CSV-unique-links value for links format tag in XML.
          */
         public static final String CSV_UNIQUE_LINKS = "csv-unique-links";
+        
+        /**
+         * CSV-ensembles value for links input in XML.
+         */
+        public static final String CSV_ENSEMBLES = "csv-ensembles";
 
         /**
          * Name for categories tag in XML.
