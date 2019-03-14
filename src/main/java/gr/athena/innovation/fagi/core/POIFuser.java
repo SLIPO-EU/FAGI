@@ -84,12 +84,12 @@ public class POIFuser implements Fuser{
     /**
      * Fuses all links using the Rules defined in the XML file.
      * 
-     * @param configuration The configuration object.
+     * @param config The configuration object.
      * @param ruleSpec The rule specification object.
      * @param functionMap The map containing the available functions.
      */
     @Override
-    public List<LinkedPair> fuseAll(Configuration configuration, RuleSpecification ruleSpec, 
+    public List<LinkedPair> fuseAll(Configuration config, RuleSpecification ruleSpec, 
             Map<String, IFunction> functionMap) throws WrongInputException, IOException{
 
         List<LinkedPair> fusedList = new ArrayList<>();
@@ -100,12 +100,12 @@ public class POIFuser implements Fuser{
         Model right = RightDataset.getRightDataset().getModel();
         LinksModel links = LinksModel.getLinksModel();
 
-        EnumOutputMode mode = configuration.getOutputMode();
+        EnumOutputMode mode = config.getOutputMode();
 
         if(verbose){
             //clean fusion log if exists already
-            if(new File(configuration.getFusionLog()).exists()){
-                FileChannel.open(Paths.get(configuration.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
+            if(new File(config.getFusionLog()).exists()){
+                FileChannel.open(Paths.get(config.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
             }
         }
 
@@ -113,11 +113,16 @@ public class POIFuser implements Fuser{
 
             if(link.isEnsemble()){
                 //construct models
- 
+                //create the jena models for each node of the pair and remove them from the source models.
+                Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
+                Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
+                
                 //validate
-                
+                //the validation accepts/rejects nodes in the ensemble. 
+                //If the nodes from either A, B gets empty, the whole ensemble gets rejected
+                validateEnsemble(link, functionMap, ruleSpec);
+
                 //fuse
-                
                     //resolve default dataset action
                     //  fuse functional properties
                     //  fuse non-functional
@@ -125,8 +130,8 @@ public class POIFuser implements Fuser{
             }
             
             //create the jena models for each node of the pair and remove them from the source models.
-            Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, configuration.getOptionalDepth());
-            Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, configuration.getOptionalDepth());
+            Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
+            Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
 
             if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
@@ -843,5 +848,88 @@ public class POIFuser implements Fuser{
      */
     public Double getMaxGain() {
         return maxGain;
+    }
+
+    private void validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec) throws WrongInputException {
+
+        Set<String> a = link.getEnsemblesA();
+        Set<String> b = link.getEnsemblesB();
+        final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+
+        switch(mode){
+            case AA_MODE:
+            case A_MODE:
+            case AB_MODE:
+            case L_MODE: {
+                //a based mode defines that ensembles in A, is actually a single node.
+                if(a.size()>1){
+                    LOG.error(a);
+                    throw new IllegalStateException("Ensembles in A should be a single node, considering this fusion mode.");
+                }
+
+                //String nodeA = a.iterator().next();
+                EntityData leftData = new EntityData();
+                EnsembleValidator val = new EnsembleValidator();
+
+                for(String node : b){
+                    EntityData rightData = new EntityData();
+
+                    /* VALIDATION */
+                    EnumValidationAction validation = val.validate(ruleSpec.getValidationRules(), 
+                            functionMap, leftData, rightData);
+
+                    switch(validation){
+                        case ACCEPT:
+                        case ACCEPT_MARK_AMBIGUOUS:
+                        case ML_VALIDATION:    
+                            //do nothing
+                            break;
+                        case REJECT:
+                        case REJECT_MARK_AMBIGUOUS:
+                            //remove node from ensemble set
+                            b.remove(node);
+
+                            break;
+                    }
+                }
+
+                break;
+            }
+            case BB_MODE:
+            case B_MODE:
+            case BA_MODE: {
+                if(b.size()>1){
+                    LOG.error(b);
+                    throw new IllegalStateException("Ensembles in B should be a single node, considering this fusion mode.");
+                }
+                String nodeB = b.iterator().next();
+                EntityData rightData = new EntityData();
+                EnsembleValidator val = new EnsembleValidator();
+
+                for(String node : a){
+                    EntityData leftData = new EntityData();
+
+                    /* VALIDATION */
+                    EnumValidationAction validation = val.validate(ruleSpec.getValidationRules(), 
+                            functionMap, leftData, rightData);
+
+                    switch(validation){
+                        case ACCEPT:
+                        case ACCEPT_MARK_AMBIGUOUS:
+                        case ML_VALIDATION:    
+                            //do nothing
+                            break;
+                        case REJECT:
+                        case REJECT_MARK_AMBIGUOUS:
+                            //remove node from ensemble set
+                            a.remove(node);
+
+                            break;
+                    }
+                }
+
+                break;
+            }
+        }    
     }
 }

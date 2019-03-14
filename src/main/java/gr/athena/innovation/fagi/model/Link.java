@@ -1,9 +1,7 @@
 package gr.athena.innovation.fagi.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -18,7 +16,7 @@ public class Link implements Serializable {
     private final String localNameB;
     
     private boolean ensemble = false;
-    private final List<String> aEnsembles = new ArrayList<>();
+    private final Set<String> aEnsembles = new HashSet<>();
     private final Set<String> bEnsembles = new HashSet<>();
     private Float score;
 
@@ -119,5 +117,13 @@ public class Link implements Serializable {
 
     public void setEnsemble(boolean ensemble) {
         this.ensemble = ensemble;
+    }
+
+    public Set<String> getEnsemblesA() {
+        return aEnsembles;
+    }
+
+    public Set<String> getEnsemblesB() {
+        return bEnsembles;
     }
 }
