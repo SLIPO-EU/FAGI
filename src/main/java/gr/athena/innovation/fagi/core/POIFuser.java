@@ -39,6 +39,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -114,21 +115,42 @@ public class POIFuser implements Fuser{
             if(link.isEnsemble()){
                 //construct models
                 //create the jena models for each node of the pair and remove them from the source models.
-                Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
-                Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
-                
+
+                Map<String, Model> modelsA = new HashMap<>();
+                Map<String, Model> modelsB = new HashMap<>();
+
+                for(String a : link.getEnsemblesA()){
+                    Model tempA = constructEntityDataModel(a, left, tempModelA, config.getOptionalDepth());
+                    modelsA.put(a, tempA);
+                }
+
+                if(link.getEnsemblesA().isEmpty()){
+                    Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
+                    modelsA.put(link.getNodeA(), modelA);
+                }
+
+                for(String b : link.getEnsemblesB()){
+                    Model tempB = constructEntityDataModel(b, left, tempModelB, config.getOptionalDepth());
+                    modelsB.put(b, tempB);
+                }
+
+                if(link.getEnsemblesB().isEmpty()){
+                    Model modelB = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
+                    modelsB.put(link.getNodeB(), modelB);
+                }
+
                 //validate
                 //the validation accepts/rejects nodes in the ensemble. 
                 //If the nodes from either A, B gets empty, the whole ensemble gets rejected
-                validateEnsemble(link, functionMap, ruleSpec);
+                validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
 
-                //fuse
-                    //resolve default dataset action
-                    //  fuse functional properties
-                    //  fuse non-functional
+                //fuse  
+                fuseEnsemble(link, modelsA, modelsB);
+
+                fusedPairsCount++;
                 continue;
             }
-            
+
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
@@ -850,7 +872,10 @@ public class POIFuser implements Fuser{
         return maxGain;
     }
 
-    private void validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec) throws WrongInputException {
+    private void validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec, 
+            Map<String, Model> modelsA, Map<String, Model> modelsB) throws WrongInputException {
+
+        EnsembleValidator validator = new EnsembleValidator();
 
         Set<String> a = link.getEnsemblesA();
         Set<String> b = link.getEnsemblesB();
@@ -867,27 +892,32 @@ public class POIFuser implements Fuser{
                     throw new IllegalStateException("Ensembles in A should be a single node, considering this fusion mode.");
                 }
 
-                //String nodeA = a.iterator().next();
                 EntityData leftData = new EntityData();
-                EnsembleValidator val = new EnsembleValidator();
+                Map.Entry<String, Model> entryA = modelsA.entrySet().iterator().next();
 
-                for(String node : b){
+                leftData.setUri(entryA.getKey());
+                leftData.setModel(entryA.getValue());
+
+                for(Map.Entry<String, Model> entry : modelsB.entrySet()){
                     EntityData rightData = new EntityData();
+                    rightData.setUri(entry.getKey());
+                    rightData.setModel(entry.getValue());
 
                     /* VALIDATION */
-                    EnumValidationAction validation = val.validate(ruleSpec.getValidationRules(), 
+                    EnumValidationAction validation = validator.validate(ruleSpec.getValidationRules(), 
                             functionMap, leftData, rightData);
 
                     switch(validation){
                         case ACCEPT:
                         case ACCEPT_MARK_AMBIGUOUS:
-                        case ML_VALIDATION:    
+                        case ML_VALIDATION:
                             //do nothing
                             break;
                         case REJECT:
                         case REJECT_MARK_AMBIGUOUS:
                             //remove node from ensemble set
-                            b.remove(node);
+                            b.remove(entry.getKey());
+                            rejectedCount++;
 
                             break;
                     }
@@ -902,28 +932,33 @@ public class POIFuser implements Fuser{
                     LOG.error(b);
                     throw new IllegalStateException("Ensembles in B should be a single node, considering this fusion mode.");
                 }
-                String nodeB = b.iterator().next();
-                EntityData rightData = new EntityData();
-                EnsembleValidator val = new EnsembleValidator();
 
-                for(String node : a){
+                EntityData rightData = new EntityData();
+                Map.Entry<String, Model> entryB = modelsB.entrySet().iterator().next();
+
+                rightData.setUri(entryB.getKey());
+                rightData.setModel(entryB.getValue());
+
+                for(Map.Entry<String, Model> entry : modelsA.entrySet()){
                     EntityData leftData = new EntityData();
+                    leftData.setUri(entry.getKey());
+                    leftData.setModel(entry.getValue());
 
                     /* VALIDATION */
-                    EnumValidationAction validation = val.validate(ruleSpec.getValidationRules(), 
+                    EnumValidationAction validation = validator.validate(ruleSpec.getValidationRules(), 
                             functionMap, leftData, rightData);
 
                     switch(validation){
                         case ACCEPT:
                         case ACCEPT_MARK_AMBIGUOUS:
-                        case ML_VALIDATION:    
+                        case ML_VALIDATION:
                             //do nothing
                             break;
                         case REJECT:
                         case REJECT_MARK_AMBIGUOUS:
                             //remove node from ensemble set
-                            a.remove(node);
-
+                            a.remove(entry.getKey());
+                            rejectedCount++;
                             break;
                     }
                 }
@@ -931,5 +966,15 @@ public class POIFuser implements Fuser{
                 break;
             }
         }    
+    }
+
+    private void fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
+        //resolve default dataset action
+        //rename uris
+        //produce linkedPairs with fused models.
+        
+        //  fuse functional properties
+        //  fuse non-functional
+        
     }
 }

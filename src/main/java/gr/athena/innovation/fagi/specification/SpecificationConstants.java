@@ -396,6 +396,15 @@ public class SpecificationConstants {
     }
 
     /**
+     * Properties used for fusion of ensembles. 
+     */
+    public static class Properties {
+        
+        public static final String ADDRESS = "http://slipo.eu/def#address";
+        public static final String NAME = "http://slipo.eu/def#name";
+    }
+
+    /**
      * Similarity class groups anything that has to do with similarity constants.
      */
     public static class Similarity {

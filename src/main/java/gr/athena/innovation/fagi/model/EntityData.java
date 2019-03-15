@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 public class EntityData {
     
     private Model model = ModelFactory.createDefaultModel();
+    private String uri;
     
     /**
      * Empty constructor.
@@ -69,5 +70,13 @@ public class EntityData {
             }
         }
         return false;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

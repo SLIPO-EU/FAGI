@@ -23,14 +23,15 @@ import org.apache.logging.log4j.Logger;
  * @author nkarag
  */
 public class EnsembleValidator {
-    
+
     private static final Logger LOG = LogManager.getLogger(EnsembleValidator.class);
-    
+
     private EnumValidationAction validation = EnumValidationAction.UNDEFINED;
-    
+
     public EnumValidationAction validate(List<Rule> validationRules, Map<String, IFunction> functionMap, 
             EntityData leftEntityData, EntityData rightEntityData) throws WrongInputException{
 
+        LOG.debug("validating: " + leftEntityData.getUri() + " " + rightEntityData.getUri());
         //EntityData leftEntityData = leftNode.getEntityData();
         //EntityData rightEntityData = rightNode.getEntityData();
         LinkedPair pair = new LinkedPair(EnumDatasetAction.UNDEFINED);

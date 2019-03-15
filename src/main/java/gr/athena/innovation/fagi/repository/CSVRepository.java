@@ -265,7 +265,14 @@ public class CSVRepository extends AbstractRepository{
         initialLinks.sort((o1, o2) -> -o1.getScore().compareTo(o2.getScore())); //descending
 
         final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
-        
+        Map<String, Link> ensembleMapA = new HashMap<>();
+        Map<String, Link> ensembleMapB = new HashMap<>();
+        Set<String> aNodes = new HashSet<>();
+        Map<String, Link> ensembleCandidates = new HashMap<>();
+        Map<String, Link> linkEnsemblesB = new HashMap<>();
+        Set<String> bNodes = new HashSet<>();
+
+        Map<String, Link> linkEnsemblesA = new HashMap<>();
         for(Link link : initialLinks){
             switch(mode){
                 case AA_MODE:
@@ -273,12 +280,7 @@ public class CSVRepository extends AbstractRepository{
                 case AB_MODE:
                 case L_MODE: {
                     LOG.trace("\n\nlink " + link.getKey());
-                    
-                    Map<String, Link> ensembleMapA = new HashMap<>();
-                    Set<String> bNodes = new HashSet<>();
-                    Map<String, Link> ensembleCandidates = new HashMap<>();
-                    Map<String, Link> linkEnsemblesA = new HashMap<>();
-                    
+
                     String nodeA = link.getNodeA();
                     String nodeB = link.getNodeB();
                     
@@ -298,10 +300,10 @@ public class CSVRepository extends AbstractRepository{
                             //node B should be included in the ensemble. Get the ensemble link and add node B to it.
                             Link ensemble = ensembleMapA.get(nodeA);
                             ensemble.addEnsembleB(nodeB);
-                            
+
                             bNodes.add(nodeB);
                             ensemble.setEnsemble(true);
-                            
+
                             //get the first link that were found and should belong to this ensemble now
                             Link firstLink = ensembleCandidates.get(nodeA);
                             ensemble.addEnsembleB(firstLink.getNodeB());
@@ -323,12 +325,7 @@ public class CSVRepository extends AbstractRepository{
                 case B_MODE:
                 case BA_MODE: {
                     LOG.trace("\n\nlink " + link.getKey());
-
-                    Map<String, Link> ensembleMapB = new HashMap<>();
-                    Set<String> aNodes = new HashSet<>();
-                    Map<String, Link> ensembleCandidates = new HashMap<>();
-                    Map<String, Link> linkEnsemblesB = new HashMap<>();
-                    
+ 
                     String nodeA = link.getNodeA();
                     String nodeB = link.getNodeB();
                     if(ensembleMapB.containsKey(nodeB)){
@@ -350,7 +347,7 @@ public class CSVRepository extends AbstractRepository{
                             
                             aNodes.add(nodeA);
                             ensemble.setEnsemble(true);
-                            
+
                             //get the first link that were found and should belong to this ensemble now
                             Link firstLink = ensembleCandidates.get(nodeB);
                             ensemble.addEnsembleA(firstLink.getNodeA());
