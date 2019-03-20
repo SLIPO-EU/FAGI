@@ -35,18 +35,18 @@ public enum EnumDatasetAction {
      */
     KEEP_BOTH(3);
 
-	private final int value;
-    
-	private static final Map<Integer, EnumDatasetAction> intToTypeMap = new HashMap<>();
-	static {
-		for (EnumDatasetAction type : EnumDatasetAction.values()) {
-			intToTypeMap.put(type.value, type);
-		}
-	}
-         
-	private EnumDatasetAction(int value) {
-		this.value = value;
-	}
+    private final int value;
+
+    private static final Map<Integer, EnumDatasetAction> intToTypeMap = new HashMap<>();
+    static {
+            for (EnumDatasetAction type : EnumDatasetAction.values()) {
+                    intToTypeMap.put(type.value, type);
+            }
+    }
+
+    private EnumDatasetAction(int value) {
+            this.value = value;
+    }
 
     /**
      * Returns the integer value of the action.

@@ -198,6 +198,62 @@ public class SparqlRepository {
     }
 
     /**
+     * Return the list of literal values of the given property in this model.
+     * 
+     * @param p the RDF property.
+     * @param model the model.
+     * @return the list of literals.
+     */
+    public static List<Literal> getLiteralsOfProperty(Property p, Model model) {
+
+        List<Literal> literals = new ArrayList<>();
+        List<RDFNode> objectList = model.listObjectsOfProperty(p).toList();
+        
+        for(RDFNode object : objectList){
+            if(object.isLiteral()){
+                literals.add(object.asLiteral());
+            }
+        }
+        
+        if(literals.isEmpty()){
+            LOG.warn("No literals were found. Property: " + p.toString());
+        }
+        
+        return literals;
+    }
+    
+    /**
+     * Return the list of literals of the given properties from the model.
+     * 
+     * @param p1 the parent property.
+     * @param p2 the value property.
+     * @param model the model.
+     * @return the literals.
+     */
+    public static List<Literal> getLiteralsFromPropertyChain(Property p1, Property p2, Model model) {
+        List<Literal> literals = new ArrayList<>();
+        String var = "o2";
+        String queryString = SparqlConstructor.selectObjectFromChainQuery(p1.toString(), p2.toString());
+        
+        Query query = QueryFactory.create(queryString);
+
+        try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+            ResultSet results = qexec.execSelect();
+            for (; results.hasNext();) {
+                QuerySolution soln = results.nextSolution();
+
+                RDFNode c = soln.get(var);
+                if (c.isLiteral()) {
+                    literals.add(c.asLiteral());
+                } else {
+                    LOG.warn("Expected literal but found resource " + c);
+                }
+            }
+        }
+        return literals;
+    }
+
+    /**
      * Return the literal of the property chain in this model.
      * 
      * @param p1 the parent property.

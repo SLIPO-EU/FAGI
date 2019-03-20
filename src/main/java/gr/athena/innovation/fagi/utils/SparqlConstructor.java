@@ -252,7 +252,7 @@ public class SparqlConstructor {
         String query = "SELECT ?o2 " 
                     + "WHERE {"
                     + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2"
-                    + "}";            
+                    + "}";
 
         return query;
     }

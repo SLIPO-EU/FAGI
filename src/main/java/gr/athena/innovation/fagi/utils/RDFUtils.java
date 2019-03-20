@@ -317,7 +317,26 @@ public class RDFUtils {
         return propertyRDF;
     }
 
+    public static CustomRDFProperty getCustomRDFPropertyFromString(String property) {
 
+        if (StringUtils.isBlank(property)) {
+            throw new IllegalArgumentException("Property string is empty or null.");
+        }
+
+        CustomRDFProperty customRDFProperty = new CustomRDFProperty();
+        if(property.contains(" ")){
+            String[] parts = property.split(" ");
+            customRDFProperty.setSingleLevel(false);
+            customRDFProperty.setParent(ResourceFactory.createProperty(parts[0]));
+            customRDFProperty.setValueProperty(ResourceFactory.createProperty(parts[1]));
+            
+        } else {
+            customRDFProperty.setSingleLevel(true);
+            customRDFProperty.setValueProperty(ResourceFactory.createProperty(property));
+        }
+
+        return customRDFProperty;
+    }
 
     public static Literal getLiteralValueFromChain(String property1, String property2, Model model) {
         if (property1 != null) {

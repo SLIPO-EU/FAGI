@@ -6,6 +6,7 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.Action;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
+import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.specification.Configuration;
@@ -16,6 +17,7 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.FusionLog;
 import gr.athena.innovation.fagi.model.RightDataset;
+import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -45,6 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
@@ -965,7 +968,7 @@ public class POIFuser implements Fuser{
 
                 break;
             }
-        }    
+        }
     }
 
     private void fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
@@ -973,8 +976,94 @@ public class POIFuser implements Fuser{
         //rename uris
         //produce linkedPairs with fused models.
         
-        //  fuse functional properties
-        //  fuse non-functional
+        Model fusedModel;// = ModelFactory.createDefaultModel();
+        final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+        switch(mode){
+            case AA_MODE:
+            case A_MODE:
+            case AB_MODE:
+            case L_MODE: {
+                
+                fusedModel = modelsA.values().iterator().next(); //a models contain a single model in A based modes.
+                
+                //functional properties, keepOne
+                String functionalProp = SpecificationConstants.Properties.ADDRESS;
+                CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
+                
+                List<CustomRDFProperty> functionalProps = new ArrayList<>();
+                functionalProps.add(prop);
+                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
+
+                break;
+            }
+            case BB_MODE:
+            case B_MODE:
+            case BA_MODE: {
+                fusedModel = modelsB.values().iterator().next(); //a models contain a single model in A based modes.
+                
+                //functional properties, keepOne
+                String functionalProp = SpecificationConstants.Properties.ADDRESS;
+                CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
+                
+                List<CustomRDFProperty> functionalProps = new ArrayList<>();
+                functionalProps.add(prop);
+                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
+                break;
+            }
+        }
+    }
+
+    private void fuse(FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel, 
+            Map<String, Model> models) {
+
+        switch(strategy){
+            case KEEP_UNIQUE_BY_VOTE:
+                for(CustomRDFProperty prop : properties){
+                    keepUnique(prop, fusedModel, models);
+                }
+                 
+                break;
+            case KEEP_ALL:
+                for(CustomRDFProperty prop : properties){
+                    keepAll(prop, fusedModel, models);
+                }
+                
+                break;
+        }
+    }
+
+    private void keepUnique(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
+
+        if(prop.isSingleLevel()){
+ 
+            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
+            Literal votedValue = getVotedValue(models, literals);
+
+        } else {
+            List<Literal> literals = SparqlRepository
+                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+        }
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    private void keepAll(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    private Literal getVotedValue(Map<String, Model> models, List<Literal> literals) {
+        List<Literal> list = new ArrayList<>();
+        list.addAll(literals);
+        Map<Literal, Long> occurrences = list.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
         
+        Literal mostCommonPropertyValue = null;
+        long maxCount = -1;
+        for(Map.Entry<Literal, Long> entry: occurrences.entrySet()){
+            if(entry.getValue() > maxCount) {
+                mostCommonPropertyValue = entry.getKey();
+                maxCount = entry.getValue();
+            }
+        }
+
+        return mostCommonPropertyValue;
     }
 }
