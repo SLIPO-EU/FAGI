@@ -26,6 +26,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.LogManager;
 
 /**
@@ -1068,6 +1071,33 @@ public class SparqlRepository {
         return objects;
     }
     
+    /**
+     * Delete any triples of the given property.
+     * 
+     * @param property the RDF property.
+     * @param model the model.
+     */
+    public static void deleteProperty(String property, Model model){
+        String queryString = SparqlConstructor.deletePropertyQuery(property);
+        LOG.debug(queryString);
+        UpdateRequest q = UpdateFactory.create(queryString);
+        UpdateAction.execute(q, model);
+    }
+
+    /**
+     * Delete any triples of the given property chain.
+     * 
+     * @param property1 the parent RDF property.
+     * @param property2 the value RDF property.
+     * @param model the model.
+     */
+    public static void deleteProperty(String property1, String property2,  Model model){
+        String queryString = SparqlConstructor.deletePropertyChainQuery(property1, property2);
+        LOG.debug(queryString);
+        UpdateRequest q = UpdateFactory.create(queryString);
+        UpdateAction.execute(q, model);
+    }
+
     /**
      * Retrieve the name model object from the given RDF model.
      * 

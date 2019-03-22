@@ -114,14 +114,14 @@ public class POIFuser implements Fuser{
         }
 
         for (Link link : links.getLinks()){
-
             if(link.isEnsemble()){
-                //construct models
-                //create the jena models for each node of the pair and remove them from the source models.
+                LOG.trace("resolving ensemble link... " + link.getKey());
 
                 Map<String, Model> modelsA = new HashMap<>();
                 Map<String, Model> modelsB = new HashMap<>();
 
+                //construct models
+                //create the jena models for each node of the pair and remove them from the source models.
                 for(String a : link.getEnsemblesA()){
                     Model tempA = constructEntityDataModel(a, left, tempModelA, config.getOptionalDepth());
                     modelsA.put(a, tempA);
@@ -147,12 +147,28 @@ public class POIFuser implements Fuser{
                 //If the nodes from either A, B gets empty, the whole ensemble gets rejected
                 validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
 
-                //fuse  
-                fuseEnsemble(link, modelsA, modelsB);
+                //fuse
+                Model fusedModel = fuseEnsemble(link, modelsA, modelsB);
+
+                LinkedPair pair = new LinkedPair(EnumDatasetAction.UNDEFINED);
+                pair.setLink(link);
+
+                Entity fusedEntity = new Entity();
+                EntityData entityData = new EntityData();
+                entityData.setModel(fusedModel);
+
+                fusedEntity.setEntityData(entityData);
+
+                pair.setFusedEntity(fusedEntity);
+
+                fusedList.add(pair);
 
                 fusedPairsCount++;
+
                 continue;
             }
+
+            LOG.info("resolving simple link... " + link.getKey());
 
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
@@ -971,7 +987,7 @@ public class POIFuser implements Fuser{
         }
     }
 
-    private void fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
+    private Model fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
         //resolve default dataset action
         //rename uris
         //produce linkedPairs with fused models.
@@ -983,34 +999,51 @@ public class POIFuser implements Fuser{
             case A_MODE:
             case AB_MODE:
             case L_MODE: {
-                
                 fusedModel = modelsA.values().iterator().next(); //a models contain a single model in A based modes.
                 
+                //temp - code: functional/non-functional properties will come from configuration
                 //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS;
-                CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
+                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
+                CustomRDFProperty prop1 = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
                 
                 List<CustomRDFProperty> functionalProps = new ArrayList<>();
-                functionalProps.add(prop);
+                functionalProps.add(prop1);
+                
+                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
+                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
+                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
+                nonFunctionalProps.add(prop2);
+                
                 fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
-
+                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, nonFunctionalProps, fusedModel, modelsB);
                 break;
             }
             case BB_MODE:
             case B_MODE:
             case BA_MODE: {
                 fusedModel = modelsB.values().iterator().next(); //a models contain a single model in A based modes.
-                
+
+                //temp - code: functional/non-functional properties will come from configuration
                 //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS;
+                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
                 CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
-                
+
+                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
+                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
+                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
+                nonFunctionalProps.add(prop2);
+
                 List<CustomRDFProperty> functionalProps = new ArrayList<>();
                 functionalProps.add(prop);
                 fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
+                fuse(FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
                 break;
             }
+            default:
+                throw new UnsupportedOperationException("Wrong fusion mode!");
         }
+        
+        return fusedModel;
     }
 
     private void fuse(FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel, 
@@ -1021,40 +1054,168 @@ public class POIFuser implements Fuser{
                 for(CustomRDFProperty prop : properties){
                     keepUnique(prop, fusedModel, models);
                 }
-                 
                 break;
             case KEEP_ALL:
                 for(CustomRDFProperty prop : properties){
                     keepAll(prop, fusedModel, models);
                 }
-                
+                break;
+            case KEEP_ANY:
+                for(CustomRDFProperty prop : properties){
+                    keepAny(prop, fusedModel, models);
+                }
                 break;
         }
     }
 
     private void keepUnique(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
 
+        Resource subject;
         if(prop.isSingleLevel()){
- 
             List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
-            Literal votedValue = getVotedValue(models, literals);
+            //voted value has been computed from both a, b models.
+            Literal votedValue = getVotedValue(prop, models, literals);
+
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
+            
+            LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
+            if(subject != null){
+                Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
+                fusedModel.add(statement);
+            }
+
+
+        } else {
+
+            List<Literal> literals = SparqlRepository
+                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+            //voted value has been computed from both a, b models.
+            Literal votedValue = getVotedValue(prop, models, literals);
+
+            RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+
+            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
+
+            LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
+            if(subject != null){
+                Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
+                Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), votedValue);
+                fusedModel.add(statement1);
+                fusedModel.add(statement2);
+            }
+        }
+    }
+
+    private void keepAny(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
+        Resource subject;
+        if(prop.isSingleLevel()){
+            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
+
+            Literal value;
+            if(!literals.isEmpty()){
+                value = literals.get(0);
+            } else {
+                value = getAnyValue(prop, models);
+            }
+
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+            
+            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
+
+            Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), value);
+
+            fusedModel.add(statement);
 
         } else {
             List<Literal> literals = SparqlRepository
-                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+
+            Literal value;
+            if(!literals.isEmpty()){
+                value = literals.get(0);
+            } else {
+                value = getAnyValue(prop, models);
+            }
+
+            RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+            
+            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
+            
+            Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
+            Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), value);
+
+            fusedModel.add(statement1);
+            fusedModel.add(statement2);
         }
-        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     private void keepAll(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+
+        //keep fused model as is. (contains literals from base dataset.
+        //for each model in models: add literal by adding a count in the property localname (URI).
+
+        for(Map.Entry<String, Model> mod : models.entrySet()){
+            //rename key (old uri to base uri)
+            //rename property uri (localname) by adding count
+            //add triple to fusedModel
+        }
+
+        Resource subject;
+        if(prop.isSingleLevel()){
+            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
+            //voted value has been computed from both a, b models.
+            Literal votedValue = getVotedValue(prop, models, literals);
+
+            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+            Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
+            fusedModel.add(statement);
+
+        } else {
+
+            List<Literal> literals = SparqlRepository
+                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+            //voted value has been computed from both a, b models.
+            Literal value = getVotedValue(prop, models, literals);
+
+            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
+            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+            Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), value);
+            Statement statement2 = ResourceFactory.createStatement(subject, prop.getValueProperty(), value);
+            fusedModel.add(statement1);
+            fusedModel.add(statement2);
+        }
+        
+        //still throw this, until the action is complete.
+        throw new UnsupportedOperationException("not supported yet.");
     }
 
-    private Literal getVotedValue(Map<String, Model> models, List<Literal> literals) {
+    private Literal getVotedValue(CustomRDFProperty prop, Map<String, Model> models, List<Literal> literals) {
         List<Literal> list = new ArrayList<>();
         list.addAll(literals);
+
+        if(prop.isSingleLevel()){
+            for(Map.Entry<String, Model> entry : models.entrySet()){
+                Model model = entry.getValue();
+                List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
+
+                list.addAll(tempLiterals);
+            }
+        } else {
+            for(Map.Entry<String, Model> entry : models.entrySet()){
+                Model model = entry.getValue();
+                List<Literal> tempLiterals = SparqlRepository
+                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
+
+                list.addAll(tempLiterals);
+            }
+        }
+
         Map<Literal, Long> occurrences = list.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
-        
+
         Literal mostCommonPropertyValue = null;
         long maxCount = -1;
         for(Map.Entry<Literal, Long> entry: occurrences.entrySet()){
@@ -1065,5 +1226,31 @@ public class POIFuser implements Fuser{
         }
 
         return mostCommonPropertyValue;
+    }
+
+    private Literal getAnyValue(CustomRDFProperty prop, Map<String, Model> models) {
+
+        if(prop.isSingleLevel()){
+            for(Map.Entry<String, Model> entry : models.entrySet()){
+                Model model = entry.getValue();
+                List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
+
+                if(!tempLiterals.isEmpty()){
+                    return tempLiterals.get(0);
+                }
+            }
+        } else {
+            for(Map.Entry<String, Model> entry : models.entrySet()){
+                Model model = entry.getValue();
+                List<Literal> tempLiterals = SparqlRepository
+                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
+
+                if(!tempLiterals.isEmpty()){
+                    return tempLiterals.get(0);
+                }
+            }
+        }
+
+        throw new IllegalStateException("No literals found for property " + prop);
     }
 }

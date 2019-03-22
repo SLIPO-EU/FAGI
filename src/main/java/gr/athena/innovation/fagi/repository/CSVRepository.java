@@ -279,18 +279,12 @@ public class CSVRepository extends AbstractRepository{
                 case A_MODE:
                 case AB_MODE:
                 case L_MODE: {
-                    LOG.trace("\n\nlink " + link.getKey());
-
                     String nodeA = link.getNodeA();
                     String nodeB = link.getNodeB();
                     
                     if(ensembleMapA.containsKey(nodeA)){
                         //firstly, remove the link from the simple links
                         Link l = ensembleMapA.get(nodeA);
-                        
-                        if(l.isEnsemble()){
-                            linksToReturn.remove(ensembleMapA.get(nodeA));
-                        }
 
                         //node A already participates in another link. Resolve what to do with node B
                         if(bNodes.contains(nodeB)){
@@ -309,16 +303,15 @@ public class CSVRepository extends AbstractRepository{
                             ensemble.addEnsembleB(firstLink.getNodeB());
                             
                             linkEnsemblesA.put(nodeA, ensemble);
-                            linksToReturn.remove(firstLink);
                         }
                     } else {
                         //link is not an ensemble or is not an ensemble yet.
                         ensembleCandidates.put(nodeA, link);
                         bNodes.add(nodeB);
                         ensembleMapA.put(nodeA, link);
-                        linksToReturn.add(link);
+                        linkEnsemblesA.put(nodeA, link);
                     }
-                    linksToReturn.addAll(new ArrayList(linkEnsemblesA.values()));
+                    
                     break;
                 }
                 case BB_MODE:
@@ -331,10 +324,6 @@ public class CSVRepository extends AbstractRepository{
                     if(ensembleMapB.containsKey(nodeB)){
                         //firstly, remove the link from the simple links
                         Link l = ensembleMapB.get(nodeB);
-                        
-                        if(l.isEnsemble()){
-                            linksToReturn.remove(ensembleMapB.get(nodeB));
-                        }
 
                         //node A already participates in another link. Resolve what to do with node B
                         if(aNodes.contains(nodeA)){
@@ -344,7 +333,7 @@ public class CSVRepository extends AbstractRepository{
                             //node B should be included in the ensemble. Get the ensemble link and add node B to it.
                             Link ensemble = ensembleMapB.get(nodeB);
                             ensemble.addEnsembleA(nodeA);
-                            
+
                             aNodes.add(nodeA);
                             ensemble.setEnsemble(true);
 
@@ -353,21 +342,22 @@ public class CSVRepository extends AbstractRepository{
                             ensemble.addEnsembleA(firstLink.getNodeA());
                             
                             linkEnsemblesB.put(nodeB, ensemble);
-                            linksToReturn.remove(firstLink);
                         }
                     } else {
                         //link is not an ensemble or is not an ensemble yet.
                         ensembleCandidates.put(nodeB, link);
                         aNodes.add(nodeA);
                         ensembleMapB.put(nodeB, link);
-                        linksToReturn.add(link);
+                        linkEnsemblesB.put(nodeB, link);
                     }
-                    
+
                     break;
                 }    
             }
         }
-        
+
+        linksToReturn.addAll(new ArrayList(linkEnsemblesA.values()));
+
         LinksModel linksModel = LinksModel.getLinksModel();
         linksModel.setModel(model);
         linksModel.setFilepath(linksFile);

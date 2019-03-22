@@ -2,6 +2,7 @@ package gr.athena.innovation.fagi.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -10,11 +11,45 @@ import java.util.Set;
  * @author nkarag
  */
 public class Link implements Serializable {
+
     private final String nodeA;
     private final String nodeB;
     private final String localNameA;
     private final String localNameB;
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 43 * hash + Objects.hashCode(this.nodeA);
+        hash = 43 * hash + Objects.hashCode(this.nodeB);
+        hash = 43 * hash + (this.ensemble ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Link other = (Link) obj;
+        if (this.ensemble != other.ensemble) {
+            return false;
+        }
+        if (!Objects.equals(this.nodeA, other.nodeA)) {
+            return false;
+        }
+        if (!Objects.equals(this.nodeB, other.nodeB)) {
+            return false;
+        }
+        return true;
+    }
+
     private boolean ensemble = false;
     private final Set<String> aEnsembles = new HashSet<>();
     private final Set<String> bEnsembles = new HashSet<>();

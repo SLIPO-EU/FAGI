@@ -138,7 +138,7 @@ public class FagiInstance {
         
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
-        
+
         int initialLinksCount = 0;
         switch(configuration.getLinksFormat()){
             case SpecificationConstants.Config.NT: {

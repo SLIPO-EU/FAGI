@@ -401,7 +401,10 @@ public class SpecificationConstants {
     public static class Properties {
         
         public static final String ADDRESS = "http://slipo.eu/def#address";
+        public static final String STREET = "http://slipo.eu/def#street";
         public static final String NAME = "http://slipo.eu/def#name";
+        public static final String NAME_VALUE = "http://slipo.eu/def#nameValue";
+        public static final String HOMEPAGE = "http://slipo.eu/def#homepage";
     }
 
     /**

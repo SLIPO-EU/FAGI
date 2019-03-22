@@ -412,4 +412,19 @@ public class SparqlConstructor {
 
         return query;
     }
+
+    public static String deletePropertyQuery(String predicate){
+        String query = "DELETE { ?s <" + predicate + "> ?o }" 
+                        + "WHERE {"
+                        + "?s <" + predicate + "> ?o"
+                        + "}";
+        return query;
+    }
+    public static String deletePropertyChainQuery(String predicate1, String predicate2){
+        String query = "DELETE { ?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2 }" 
+                        + "WHERE {"
+                        + "?s <" + predicate1 + "> ?o1 . ?o1 <" + predicate2 + "> ?o2 "
+                        + "}";
+        return query;
+    }
 }
