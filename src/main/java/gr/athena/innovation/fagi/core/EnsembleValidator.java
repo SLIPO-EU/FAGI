@@ -34,20 +34,20 @@ public class EnsembleValidator {
     private static final Logger LOG = LogManager.getLogger(EnsembleValidator.class);
 
     private EnumValidationAction validationAction = EnumValidationAction.UNDEFINED;
-
     private int rejected = 0;
 
     /**
-     * Validates an ensemble link. Validating essentially accepts (does nothing) or removes models from the ensemble link.  
+     * Validates an ensemble link.Validating essentially accepts (does nothing) or removes models from the ensemble link.  
      * 
      * @param link the link.
      * @param functionMap the map of the functions.
      * @param ruleSpec the rule specification.
      * @param modelsA the models from A.
      * @param modelsB the models from B.
+     * @return accepts the link by returning true, or false if all links of the ensemble were rejected.
      * @throws WrongInputException wrong input.
      */
-    public void validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec,
+    public boolean validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec,
             Map<String, Model> modelsA, Map<String, Model> modelsB) throws WrongInputException {
 
         Set<String> a = link.getEnsemblesA();
@@ -139,6 +139,30 @@ public class EnsembleValidator {
                 break;
             }
         }
+        
+        switch (mode) {
+            case AA_MODE:
+            case A_MODE:
+            case AB_MODE:
+            case L_MODE: {
+                if(b.isEmpty()){
+                    //all nodes from B were rejected.
+                    return false;
+                }
+                break;
+            }
+            case BB_MODE:
+            case B_MODE:
+            case BA_MODE: {
+                if(a.isEmpty()){
+                    //all nodes from A were rejected.
+                    return false;
+                }
+                break;
+            }
+        }
+
+        return true;
     }
 
     /**

@@ -1755,4 +1755,13 @@ public class LinkedPair {
     public FusionLog getFusionLog() {
         return fusionLog;
     }
+
+    /**
+     * Set the accepted/rejected value for this linked pair.
+     * 
+     * @param rejected
+     */
+    public void setRejected(boolean rejected) {
+        this.rejected = rejected;
+    }
 }

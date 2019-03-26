@@ -39,13 +39,20 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Utilities for String/RDF manipulation.
+ * 
  * @author nkarag
  */
 public class RDFUtils {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(RDFUtils.class);
     
+    /**
+     * Returns the alphanumeric ID of a URI resource as String.
+     * 
+     * @param resourceString the resource string.
+     * @return the ID string.
+     */
     public static String getIdFromResource(String resourceString) {
         //example
         //input: http://slipo.eu/id/poi/0d1bb367-f3a5-10c1-b33c-381ef1e2f041
@@ -56,6 +63,12 @@ public class RDFUtils {
         return id;
     }
 
+    /**
+     * Returns the alphanumeric ID of a URI resource object.
+     * 
+     * @param resource the resource.
+     * @return the ID string.
+     */
     public static String getIdFromResource(Resource resource) {
 
         String resourceString = resource.toString();
@@ -65,6 +78,13 @@ public class RDFUtils {
         return id;
     }
 
+    /**
+     * Returns the alphanumeric ID of a URI resource-part as String. 
+     * Resource-part can be any string that comes from splitting a triple on white-space.
+     * 
+     * @param resourcePart the resource part.
+     * @return the ID as a string.
+     */
     public static String getIdFromResourcePart(String resourcePart) {
         //expects: <namespace:id> or <namespace:id/localname>
         int endPosition = StringUtils.lastIndexOf(resourcePart, "/");
@@ -79,6 +99,11 @@ public class RDFUtils {
         return res;
     }
 
+    /**
+     * Returns the local-name of a custom RDF property.
+     * @param property the property.
+     * @return the local-name.
+     */
     public static String getLocalName(CustomRDFProperty property) {
         String localName;
         if(property.isSingleLevel()){
@@ -94,10 +119,20 @@ public class RDFUtils {
         return localName;
     }
     
+    /**
+     * Adds brackets to a String node.
+     * @param node the node as a string.
+     * @return the string node with brackets.
+     */
     public static String addBrackets(String node){
         return "<" + node + ">";
     }
 
+    /**
+     * Removes brackets of the given string node.
+     * @param node the node as a string.
+     * @return the string node without brackets.
+     */
     public static String removeBrackets(String node){
         return node.substring(1, node.length()-1);
     }
@@ -122,8 +157,13 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Extracts a geometry from a WKT string by checking the CRS prefix.
+     * 
+     * @param wkt the WKT.
+     * @return the WKT without CRS prefix.
+     */
     public static String extractGeometry(String wkt){
-
         if(wkt.startsWith(Namespace.CRS_4326)){
             String targetWKT = wkt.replaceAll(Namespace.CRS_4326, "").trim();
             return targetWKT;
@@ -132,6 +172,13 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Returns the root resource based on the fusion mode.
+     * 
+     * @param leftNode the left node.
+     * @param rightNode the right node.
+     * @return the root resource.
+     */
     public static Resource getRootResource(Entity leftNode, Entity rightNode) {
 
         EnumOutputMode mode = Configuration.getInstance().getOutputMode();
@@ -153,6 +200,14 @@ public class RDFUtils {
         }
     }
     
+    /**
+     * Returns the resource based on the fusion mode and the given property.
+     * 
+     * @param leftNode the left node.
+     * @param rightNode the right node.
+     * @param property the custom RDF property.
+     * @return the resource.
+     */
     public static Resource resolveResource(Entity leftNode, Entity rightNode, CustomRDFProperty property) {
 
         EnumOutputMode mode = Configuration.getInstance().getOutputMode();
@@ -190,6 +245,13 @@ public class RDFUtils {
         }
     }
     
+    /**
+     * Checks if the given model is rejected from a rule previously. 
+     * A rejected model is always empty, so this method simply checks the size of the model.
+     * 
+     * @param model the model.
+     * @return true if the model is rejected, else otherwise.
+     */
     public static boolean isRejectedByPreviousRule(Model model) {
         //the link has been rejectedFromRule (or rejectedFromRule and marked ambiguous) by previous rule.
         //TODO: if size is 1, maybe strict check if the triple contains the ambiguity
@@ -197,6 +259,13 @@ public class RDFUtils {
         return model.isEmpty() || model.size() == 1;
     }
 
+    /**
+     * Constructs a statement of an ambiguous link.
+     * 
+     * @param uri1 the first URI.
+     * @param uri2 the second URI.
+     * @return the statement.
+     */
     public static Statement getAmbiguousLinkStatement(String uri1, String uri2) {
 
         Property ambiguousLink = ResourceFactory.createProperty(Namespace.LINKED_AMBIGUOUSLY);
@@ -209,6 +278,13 @@ public class RDFUtils {
         return statement;
     }
 
+    /**
+     * Constructs a statement of an ambiguous property.
+     * 
+     * @param uri the URI.
+     * @param property the property.
+     * @return the statement.
+     */
     public static Statement getAmbiguousPropertyStatement(String uri, Property property) {
 
         Property ambiguousProperty = ResourceFactory.createProperty(Namespace.HAS_AMBIGUOUS_PROPERTY);
@@ -220,6 +296,13 @@ public class RDFUtils {
         return statement;
     }
 
+    /**
+     * Constructs a statement of an ambiguous sub-property.
+     * 
+     * @param uri the URI.
+     * @param subProperty the sub-property.
+     * @return the statement.
+     */
     public static Statement getAmbiguousSubPropertyStatement(String uri, Property subProperty) {
 
         Property ambiguousSubProperty = ResourceFactory.createProperty(Namespace.HAS_AMBIGUOUS_SUB_PROPERTY);
@@ -231,6 +314,12 @@ public class RDFUtils {
         return statement;
     }
     
+    /**
+     * Renames an entity based of the URI of another,
+     * 
+     * @param entityToBeRenamed the entity to be renamed.
+     * @param entity the base entity.
+     */
     public static void renameResourceURIs(Entity entityToBeRenamed, Entity entity) {
         Model original = entityToBeRenamed.getEntityData().getModel();
         Iterator<Statement> statementIterator = original.listStatements().toList().iterator();
@@ -263,6 +352,12 @@ public class RDFUtils {
         entityToBeRenamed.getEntityData().setModel(newModel);
     }
     
+    /**
+     * Parses a geometry from a string literal.
+     * 
+     * @param literal the literal.
+     * @return the geometry object.
+     */
     public static Geometry parseGeometry(String literal) {
 
         String literalWithoutCRS = literal.replace(Namespace.CRS_4326 + " ", "");
@@ -284,6 +379,13 @@ public class RDFUtils {
         return geometry;
     }
 
+    /**
+     * Returns the RDF node of the given property in the model.
+     * 
+     * @param property the property.
+     * @param model the model.
+     * @return the RDF node.
+     */
     public static RDFNode getRDFNode(String property, Model model) {
         Property propertyRDF = getRDFPropertyFromString(property);
 
@@ -295,6 +397,13 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Returns the literal of the given property in the given model.
+     * 
+     * @param property the property.
+     * @param model the model.
+     * @return the literal object.
+     */
     public static Literal getLiteralValue(String property, Model model) {
         Property propertyRDF = getRDFPropertyFromString(property);
 
@@ -306,6 +415,11 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Constructs a property from a string using the resource factory.
+     * @param property the property.
+     * @return the property.
+     */
     public static Property getRDFPropertyFromString(String property) {
 
         if (StringUtils.isBlank(property)) {
@@ -317,6 +431,12 @@ public class RDFUtils {
         return propertyRDF;
     }
 
+    /**
+     * Constructs a custom RDF property based on the given string property.
+     * 
+     * @param property the property.
+     * @return the custom RDF property.
+     */
     public static CustomRDFProperty getCustomRDFPropertyFromString(String property) {
 
         if (StringUtils.isBlank(property)) {
@@ -338,6 +458,14 @@ public class RDFUtils {
         return customRDFProperty;
     }
 
+    /**
+     * Returns the literal of the given property chain in the model.
+     * 
+     * @param property1 the parent property.
+     * @param property2 the child property.
+     * @param model the model.
+     * @return the literal.
+     */
     public static Literal getLiteralValueFromChain(String property1, String property2, Model model) {
         if (property1 != null) {
             Literal literal = SparqlRepository.getLiteralFromPropertyChain(property1, property2, model, true);
@@ -351,6 +479,14 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Returns the RDF node of the given property chain in the model.
+     * 
+     * @param property1 the parent property.
+     * @param property2 the child property.
+     * @param model the model.
+     * @return the RDF node.
+     */
     public static RDFNode getRDFNodeFromChain(String property1, String property2, Model model) {
         if (property1 != null) {
             RDFNode node = SparqlRepository.getObjectOfPropertyChain(property1, property2, model, true);
@@ -364,6 +500,12 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Returns the WKT literal given a geometry object.
+     * 
+     * @param geometry the geometry object.
+     * @return the WKT string.
+     */
     public static String getWKTLiteral(Geometry geometry) {
 
         WKTWriter wellKnownTextWriter = new WKTWriter();
@@ -372,6 +514,13 @@ public class RDFUtils {
         return wktString;
     }
 
+    /**
+     * Checks if the property can be used for geometric fusion.
+     * 
+     * @param property the property.
+     * @param action the action.
+     * @throws WrongInputException wrong input.
+     */
     public static void validateGeometryProperty(Property property, EnumFusionAction action) throws WrongInputException {
         if (!property.toString().equals(Namespace.WKT)) {
             LOG.error("The selected action " + action.toString() + " applies only for WKT geometry literals");
@@ -379,6 +528,13 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Checks if the property refers to WKT and throws exception if it does not.
+     * 
+     * @param property the property.
+     * @param action the action.
+     * @throws WrongInputException wrong input.
+     */
     public static void validateActionForProperty(Property property, EnumFusionAction action) throws WrongInputException {
         if (property.toString().equals(Namespace.WKT)) {
             LOG.error("The selected action " + action.toString() + " does not apply on geometries.");
@@ -386,6 +542,11 @@ public class RDFUtils {
         }
     }
     
+    /**
+     * Checks if the property refers to a name based on the SLIPO-ontology.
+     * @param property the property.
+     * @throws WrongInputException wrong input.
+     */
     public static void validateNameAction(CustomRDFProperty property) throws WrongInputException {
         if(property.isSingleLevel()){
             if(!property.getValueProperty().toString().equals(Namespace.NAME_NO_BRACKETS)){
@@ -400,6 +561,15 @@ public class RDFUtils {
         }
     }
 
+    /**
+     * Returns the statement of the interlinking score.
+     * 
+     * @param uri the URI.
+     * @param score the score.
+     * @param modelA the model of A.
+     * @param modelB the model of B.
+     * @return the statement.
+     */
     public static Statement getInterlinkingScore(String uri, float score, Model modelA, Model modelB) {
 
         Resource resource = ResourceFactory.createResource(uri);
@@ -414,11 +584,25 @@ public class RDFUtils {
         return statement;
     }
 
+    /**
+     * Returns a string that denotes a fusion value for unlinked URI nodes.
+     * @param uri the URI.
+     * @return the unlinked flag.
+     */
     public static String getUnlinkedFlag(String uri) {
         String flag = uri + " " + Namespace.FUSION_GAIN + Namespace.ORIGINAL_LITERAL;
         return flag;
     }
 
+    /**
+     * Returns the fusion confidence statement.
+     * 
+     * @param fusedUri the URI.
+     * @param modelA the model of A.
+     * @param modelB the model of B.
+     * @param fusedModel the fused model.
+     * @return the statement.
+     */
     public static Statement getFusionConfidenceStatement(String fusedUri, Model modelA, Model modelB, Model fusedModel) {
         Resource fusedRes = ResourceFactory.createResource(fusedUri);
         Property confidenceProperty = ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS);
@@ -432,6 +616,13 @@ public class RDFUtils {
         return statement;
     }
     
+    /**
+     * Computes the fusion confidence.
+     * 
+     * @param modelA the model of A.
+     * @param modelB the model of B.
+     * @return the fusion confidence score.
+     */
     public static Double computeFusionConfidence(Model modelA, Model modelB){
         
         List<Double> sims = new ArrayList<>();
@@ -463,6 +654,17 @@ public class RDFUtils {
         return confidence;
     }
 
+    /**
+     * Returns the fusion-gain statement.
+     * 
+     * @param fusedUri the URI.
+     * @param nodeA the left node.
+     * @param nodeB the right node.
+     * @param modelA the left model.
+     * @param modelB the right model.
+     * @param fusedModel the fused model.
+     * @return the statement.
+     */
     public static Statement getFusionGainStatement(String fusedUri, String nodeA, String nodeB, Model modelA, 
             Model modelB, Model fusedModel) {
         //get previous score if exists. Append new score
@@ -483,6 +685,17 @@ public class RDFUtils {
         return statement;
     }
 
+    /**
+     * Computes the fusion-gain score.
+     * 
+     * @param fusedUri the fused URI.
+     * @param nodeA the left node.
+     * @param nodeB the right node.
+     * @param modelA the left model.
+     * @param modelB the right model.
+     * @param fusedModel the fused model.
+     * @return the fusion-gain score.
+     */
     public static float computeFusionGain(Resource fusedUri, Resource nodeA, Resource nodeB, Model modelA, Model modelB, Model fusedModel) {
         Set<Property> propsA = SparqlRepository.getDistinctPropertiesOfResource(modelA, nodeA);
         Set<Property> propsB = SparqlRepository.getDistinctPropertiesOfResource(modelB, nodeB);
@@ -496,6 +709,43 @@ public class RDFUtils {
         Double score = (fusedProps.size() - common.size())/ (double)(propsA.size() + propsB.size());
 
         return score.floatValue();
+    }
+
+    /**
+     * Returns the last computed fusion-gain score from the given literal.
+     * Example of fusion gain literal:{scoreA: 1.0, scoreB: 1.0, score: 0.11111111}"
+     * 
+     * @param literal the literal.
+     * @return the score.
+     */
+    public static Double getLastFusionGainFromLiteral(Literal literal) {
+
+        String value = literal.getString();
+        
+        int startIndex = value.lastIndexOf(' '); 
+        int endIndex = value.lastIndexOf('}');
+        if(startIndex == -1 || endIndex == -1){
+            LOG.warn("cannot parse fusion gain from: " + literal);
+            throw new ApplicationException("cannot parse fusion gain from: " + literal);
+        }
+
+        String gainString = value.substring(startIndex, endIndex);
+        
+        Double gain = Double.parseDouble(gainString);
+        return gain;
+    }
+
+    /**
+     * Constructs an intermediate node for POI ensemble fusion.
+     * 
+     * @param resourceURI the resource URI.
+     * @param localName the local-name.
+     * @param i an integer value to construct different nodes for same properties.
+     * @return the intermediate node as a string.
+     */
+    public static String constructIntermediateEnsembleNode(Resource resourceURI, String localName, int i) {
+        String uri = resourceURI + "/" + localName + "_" + i;
+        return uri;
     }
 
     private static Literal constructScoreLiteral(Literal scoreA, Literal scoreB, float score) {
@@ -588,29 +838,5 @@ public class RDFUtils {
         } else {
             return 1 - (distance / (double) 300);
         }
-    }
-    
-    public static Double getLastFusionGainFromLiteral(Literal literal) {
-        
-        //example of fusion gain literal:{scoreA: 1.0, scoreB: 1.0, score: 0.11111111}"
-
-        String value = literal.getString();
-        
-        int startIndex = value.lastIndexOf(' '); 
-        int endIndex = value.lastIndexOf('}');
-        if(startIndex == -1 || endIndex == -1){
-            LOG.warn("cannot parse fusion gain from: " + literal);
-            throw new ApplicationException("cannot parse fusion gain from: " + literal);
-        }
-        
-        String gainString = value.substring(startIndex, endIndex);
-        
-        Double gain = Double.parseDouble(gainString);
-        return gain;
-    }
-
-    public static String constructIntermediateEnsembleNode(Resource resourceURI, String localName, int i) {
-        String uri = resourceURI + "/" + localName + "_" + i;
-        return uri;
     }
 }

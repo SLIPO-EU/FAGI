@@ -6,7 +6,6 @@ import gr.athena.innovation.fagi.core.function.IFunction;
 import gr.athena.innovation.fagi.exception.WrongInputException;
 import gr.athena.innovation.fagi.model.Action;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
-import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.model.Entity;
 import gr.athena.innovation.fagi.specification.Configuration;
@@ -17,7 +16,6 @@ import gr.athena.innovation.fagi.model.LinksModel;
 import gr.athena.innovation.fagi.model.EntityData;
 import gr.athena.innovation.fagi.model.FusionLog;
 import gr.athena.innovation.fagi.model.RightDataset;
-import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -47,7 +45,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -138,7 +135,7 @@ public class POIFuser implements Fuser {
                 }
 
                 if (link.getEnsemblesB().isEmpty()) {
-                    Model modelB = constructEntityDataModel(link.getNodeA(), right, tempModelB, config.getOptionalDepth());
+                    Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
                     modelsB.put(link.getNodeB(), modelB);
                 }
 
@@ -146,15 +143,24 @@ public class POIFuser implements Fuser {
                 //the validation accepts/rejects nodes in the ensemble. 
                 //If the nodes from either A, B gets empty, the whole ensemble gets rejected
                 EnsembleValidator ensembleValidator = new EnsembleValidator();
-                ensembleValidator.validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
+
+                boolean accepted = ensembleValidator.validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
+
                 rejectedCount = ensembleValidator.getRejected();
 
                 //fuse
                 EnsembleFuser ensembleFuser = new EnsembleFuser();
-
-                Model fusedModel = fuseEnsemble(link, modelsA, modelsB);
-
                 LinkedPair pair = new LinkedPair(EnumDatasetAction.UNDEFINED);
+                Model fusedModel;
+                
+                if(accepted){
+                    fusedModel = ensembleFuser.fuseEnsemble(link, modelsA, modelsB);
+                    pair.setRejected(false);
+                } else {
+                    fusedModel = resolveFusedModelForRejectedEnsemble(link, modelsA, modelsB);
+                    pair.setRejected(true);
+                }
+
                 pair.setLink(link);
 
                 Entity fusedEntity = new Entity();
@@ -875,275 +881,27 @@ public class POIFuser implements Fuser {
         return maxGain;
     }
 
-    private Model fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
+    private Model resolveFusedModelForRejectedEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
 
-        Model fusedModel;
-        final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+        EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+        Model model;
         switch (mode) {
             case AA_MODE:
-            case A_MODE:
             case AB_MODE:
-            case L_MODE: {
-                fusedModel = modelsA.values().iterator().next(); //a models contain a single model in A based modes.
-
-                //temp - code: functional/non-functional properties will come from configuration
-                //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
-                CustomRDFProperty prop1 = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
-
-                List<CustomRDFProperty> functionalProps = new ArrayList<>();
-                functionalProps.add(prop1);
-
-                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
-                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
-                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
-                nonFunctionalProps.add(prop2);
-
-                Resource resourceURI;
-                if (prop2.isSingleLevel()) {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
-                } else {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
-                }
-
-                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
-                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
+            case A_MODE:
+            case L_MODE:
+            case DEFAULT:
+                model = modelsA.get(link.getNodeA());
                 break;
-            }
             case BB_MODE:
+            case BA_MODE:
             case B_MODE:
-            case BA_MODE: {
-                fusedModel = modelsB.values().iterator().next(); //a models contain a single model in A based modes.
-
-                //temp - code: functional/non-functional properties will come from configuration
-                //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
-                CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
-
-                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
-                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
-                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
-                nonFunctionalProps.add(prop2);
-
-                List<CustomRDFProperty> functionalProps = new ArrayList<>();
-                functionalProps.add(prop);
-
-                Resource resourceURI;
-                if (prop2.isSingleLevel()) {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
-                } else {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
-                }
-
-                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
-                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsA);
+                model = modelsB.get(link.getNodeB());
                 break;
-            }
             default:
-                throw new UnsupportedOperationException("Wrong fusion mode!");
+                LOG.fatal("Cannot resolve fused model for ensemble. Check Default fused output mode.");
+                throw new IllegalArgumentException();
         }
-
-        return fusedModel;
-    }
-
-    private void fuse(Resource resourceURI, FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel,
-            Map<String, Model> models) {
-
-        switch (strategy) {
-            case KEEP_UNIQUE_BY_VOTE:
-                for (CustomRDFProperty prop : properties) {
-                    keepUnique(resourceURI, prop, fusedModel, models);
-                }
-                break;
-            case KEEP_ALL:
-                for (CustomRDFProperty prop : properties) {
-                    keepAll(resourceURI, prop, fusedModel, models);
-                }
-                break;
-            case KEEP_ANY:
-                for (CustomRDFProperty prop : properties) {
-                    keepAny(resourceURI, prop, fusedModel, models);
-                }
-                break;
-        }
-    }
-
-    private void keepUnique(Resource subject, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-
-        if (prop.isSingleLevel()) {
-            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
-            //voted value has been computed from both a, b models.
-            Literal votedValue = getVotedValue(prop, models, literals);
-
-            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
-
-            LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if (subject != null) {
-                Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
-                fusedModel.add(statement);
-            }
-        } else {
-
-            List<Literal> literals = SparqlRepository
-                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
-            //voted value has been computed from both a, b models.
-            Literal votedValue = getVotedValue(prop, models, literals);
-
-            RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
-
-            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
-
-            LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if (subject != null) {
-                Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
-                Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), votedValue);
-                fusedModel.add(statement1);
-                fusedModel.add(statement2);
-            }
-        }
-    }
-
-    private void keepAny(Resource subject, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-
-        if (prop.isSingleLevel()) {
-            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
-
-            Literal value;
-            if (!literals.isEmpty()) {
-                value = literals.get(0);
-            } else {
-                value = getAnyValue(prop, models);
-            }
-
-            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
-
-            Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), value);
-
-            fusedModel.add(statement);
-
-        } else {
-            List<Literal> literals = SparqlRepository
-                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
-
-            Literal value;
-            if (!literals.isEmpty()) {
-                value = literals.get(0);
-            } else {
-                value = getAnyValue(prop, models);
-            }
-
-            RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
-
-            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
-
-            Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
-            Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), value);
-
-            fusedModel.add(statement1);
-            fusedModel.add(statement2);
-        }
-    }
-
-    private void keepAll(Resource resourceURI, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-        //keep fused model as is. (contains literals from base dataset.
-        //add all literals from models in the fused by constructing intermediate nodes with counter if needed.
-
-        //Single properties donnot use count, but they get multiple same properties in order not to break ontology alignment 
-        Set<Literal> ensembleLiterals = new HashSet<>();
-
-        for (Map.Entry<String, Model> entry : models.entrySet()) {
-            if (prop.isSingleLevel()) {
-                List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), entry.getValue());
-
-                ensembleLiterals.addAll(literals);
-            } else {
-                List<Literal> literals = SparqlRepository.getLiteralsFromPropertyChain(prop.getParent(),
-                        prop.getValueProperty(), entry.getValue());
-                ensembleLiterals.addAll(literals);
-            }
-        }
-
-        if (prop.isSingleLevel()) {
-            for (Literal l : ensembleLiterals) {
-                Statement statement = ResourceFactory.createStatement(resourceURI, prop.getValueProperty(), l);
-                fusedModel.add(statement);
-            }
-        } else {
-            String propertyLocalName = RDFUtils.getLocalName(prop);
-            int i = 0;
-            for (Literal literal : ensembleLiterals) {
-                Resource intermediateNode = ResourceFactory
-                        .createResource(RDFUtils.constructIntermediateEnsembleNode(resourceURI, propertyLocalName, i));
-
-                Statement statement1 = ResourceFactory.createStatement(resourceURI, prop.getParent(), intermediateNode);
-                Statement statement2 = ResourceFactory.createStatement(intermediateNode, prop.getValueProperty(), literal);
-
-                fusedModel.add(statement1);
-                fusedModel.add(statement2);
-
-                i++;
-            }
-        }
-    }
-
-    private Literal getVotedValue(CustomRDFProperty prop, Map<String, Model> models, List<Literal> literals) {
-        List<Literal> list = new ArrayList<>();
-        list.addAll(literals);
-
-        if (prop.isSingleLevel()) {
-            for (Map.Entry<String, Model> entry : models.entrySet()) {
-                Model model = entry.getValue();
-                List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
-
-                list.addAll(tempLiterals);
-            }
-        } else {
-            for (Map.Entry<String, Model> entry : models.entrySet()) {
-                Model model = entry.getValue();
-                List<Literal> tempLiterals = SparqlRepository
-                        .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
-
-                list.addAll(tempLiterals);
-            }
-        }
-
-        Map<Literal, Long> occurrences = list.stream().collect(Collectors.groupingBy(w -> w, Collectors.counting()));
-
-        Literal mostCommonPropertyValue = null;
-        long maxCount = -1;
-        for (Map.Entry<Literal, Long> entry : occurrences.entrySet()) {
-            if (entry.getValue() > maxCount) {
-                mostCommonPropertyValue = entry.getKey();
-                maxCount = entry.getValue();
-            }
-        }
-
-        return mostCommonPropertyValue;
-    }
-
-    private Literal getAnyValue(CustomRDFProperty prop, Map<String, Model> models) {
-
-        if (prop.isSingleLevel()) {
-            for (Map.Entry<String, Model> entry : models.entrySet()) {
-                Model model = entry.getValue();
-                List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
-
-                if (!tempLiterals.isEmpty()) {
-                    return tempLiterals.get(0);
-                }
-            }
-        } else {
-            for (Map.Entry<String, Model> entry : models.entrySet()) {
-                Model model = entry.getValue();
-                List<Literal> tempLiterals = SparqlRepository
-                        .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
-
-                if (!tempLiterals.isEmpty()) {
-                    return tempLiterals.get(0);
-                }
-            }
-        }
-
-        throw new IllegalStateException("No literals found for property " + prop);
+        return model;
     }
 }
