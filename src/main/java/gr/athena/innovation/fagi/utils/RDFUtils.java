@@ -608,4 +608,9 @@ public class RDFUtils {
         Double gain = Double.parseDouble(gainString);
         return gain;
     }
+
+    public static String constructIntermediateEnsembleNode(Resource resourceURI, String localName, int i) {
+        String uri = resourceURI + "/" + localName + "_" + i;
+        return uri;
+    }
 }

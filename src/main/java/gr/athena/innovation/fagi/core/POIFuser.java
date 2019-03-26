@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -68,10 +67,10 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Fusion core class. Contains methods for the fusion process.
- * 
+ *
  * @author nkarag
  */
-public class POIFuser implements Fuser{ 
+public class POIFuser implements Fuser {
 
     private static final Logger LOG = LogManager.getLogger(POIFuser.class);
     private int linkedEntitiesNotFoundInDataset = 0;
@@ -87,14 +86,14 @@ public class POIFuser implements Fuser{
 
     /**
      * Fuses all links using the Rules defined in the XML file.
-     * 
+     *
      * @param config The configuration object.
      * @param ruleSpec The rule specification object.
      * @param functionMap The map containing the available functions.
      */
     @Override
-    public List<LinkedPair> fuseAll(Configuration config, RuleSpecification ruleSpec, 
-            Map<String, IFunction> functionMap) throws WrongInputException, IOException{
+    public List<LinkedPair> fuseAll(Configuration config, RuleSpecification ruleSpec,
+            Map<String, IFunction> functionMap) throws WrongInputException, IOException {
 
         List<LinkedPair> fusedList = new ArrayList<>();
 
@@ -106,15 +105,16 @@ public class POIFuser implements Fuser{
 
         EnumOutputMode mode = config.getOutputMode();
 
-        if(verbose){
+        if (verbose) {
             //clean fusion log if exists already
-            if(new File(config.getFusionLog()).exists()){
+            if (new File(config.getFusionLog()).exists()) {
                 FileChannel.open(Paths.get(config.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
             }
         }
 
-        for (Link link : links.getLinks()){
-            if(link.isEnsemble()){
+        for (Link link : links.getLinks()) {
+
+            if (link.isEnsemble()) {
                 LOG.trace("resolving ensemble link... " + link.getKey());
 
                 Map<String, Model> modelsA = new HashMap<>();
@@ -122,32 +122,36 @@ public class POIFuser implements Fuser{
 
                 //construct models
                 //create the jena models for each node of the pair and remove them from the source models.
-                for(String a : link.getEnsemblesA()){
+                for (String a : link.getEnsemblesA()) {
                     Model tempA = constructEntityDataModel(a, left, tempModelA, config.getOptionalDepth());
                     modelsA.put(a, tempA);
                 }
 
-                if(link.getEnsemblesA().isEmpty()){
+                if (link.getEnsemblesA().isEmpty()) {
                     Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
                     modelsA.put(link.getNodeA(), modelA);
                 }
 
-                for(String b : link.getEnsemblesB()){
-                    Model tempB = constructEntityDataModel(b, left, tempModelB, config.getOptionalDepth());
+                for (String b : link.getEnsemblesB()) {
+                    Model tempB = constructEntityDataModel(b, right, tempModelB, config.getOptionalDepth());
                     modelsB.put(b, tempB);
                 }
 
-                if(link.getEnsemblesB().isEmpty()){
-                    Model modelB = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
+                if (link.getEnsemblesB().isEmpty()) {
+                    Model modelB = constructEntityDataModel(link.getNodeA(), right, tempModelB, config.getOptionalDepth());
                     modelsB.put(link.getNodeB(), modelB);
                 }
 
                 //validate
                 //the validation accepts/rejects nodes in the ensemble. 
                 //If the nodes from either A, B gets empty, the whole ensemble gets rejected
-                validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
+                EnsembleValidator ensembleValidator = new EnsembleValidator();
+                ensembleValidator.validateEnsemble(link, functionMap, ruleSpec, modelsA, modelsB);
+                rejectedCount = ensembleValidator.getRejected();
 
                 //fuse
+                EnsembleFuser ensembleFuser = new EnsembleFuser();
+
                 Model fusedModel = fuseEnsemble(link, modelsA, modelsB);
 
                 LinkedPair pair = new LinkedPair(EnumDatasetAction.UNDEFINED);
@@ -174,20 +178,20 @@ public class POIFuser implements Fuser{
             Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());
             Model modelB = constructEntityDataModel(link.getNodeB(), right, tempModelB, config.getOptionalDepth());
 
-            if(modelA.size() == 0 || modelB.size() == 0){  //one of the two entities not found in dataset, skip iteration.
+            if (modelA.size() == 0 || modelB.size() == 0) {  //one of the two entities not found in dataset, skip iteration.
                 linkedEntitiesNotFoundInDataset++;
                 continue;
             }
 
             LinkedPair linkedPair = fuseLink(link, modelA, modelB, ruleSpec, functionMap, mode);
-            if(linkedPair.isRejected()){
+            if (linkedPair.isRejected()) {
                 rejectedCount++;
             } else {
                 fusedPairsCount++;
             }
 
             //Add scores only on accepted pairs.
-            if(!linkedPair.isRejected()){
+            if (!linkedPair.isRejected()) {
                 //Add interlinking score, fusion score, fusion confidence
                 Model fusedModel = linkedPair.getFusedEntity().getEntityData().getModel();
 
@@ -195,7 +199,7 @@ public class POIFuser implements Fuser{
 
                 Statement interlinkingScore;
                 Float score = link.getScore();
-                if(score != null){
+                if (score != null) {
                     interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, score, modelA, modelB);
                     fusedModel.add(interlinkingScore);
                 }
@@ -212,46 +216,46 @@ public class POIFuser implements Fuser{
 
                 double confidence = Double.parseDouble(fusionConfidence.getString());
 
-                if(averageConfidence == null){
+                if (averageConfidence == null) {
                     averageConfidence = confidence;
                 }
 
-                averageConfidence = (averageConfidence + confidence)/2;
+                averageConfidence = (averageConfidence + confidence) / 2;
 
                 Double gain = RDFUtils.getLastFusionGainFromLiteral(fusionGain.getLiteral());
-                if(averageGain == null){
+                if (averageGain == null) {
                     averageGain = gain;
                 }
 
-                if(gain > maxGain){
+                if (gain > maxGain) {
                     maxGain = gain;
                 }
 
                 FusionLog log = linkedPair.getFusionLog();
-                averageGain = (averageGain + gain)/2;
+                averageGain = (averageGain + gain) / 2;
                 log.setConfidenceScore(fusionConfidence.getString());
 
-                if(verbose){
+                if (verbose) {
                     addProvenanceToModel(fusedUri, log, fusedModel);
                 }
             }
 
             //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
-            fusedList.add(linkedPair); 
+            fusedList.add(linkedPair);
         }
 
         //corner case when all links got rejected
-        if(averageGain == null){
+        if (averageGain == null) {
             averageGain = 0.0;
         }
-        
-        if(averageConfidence == null){
+
+        if (averageConfidence == null) {
             averageConfidence = 0.0;
         }
 
         //flush fusionLogBuffer if not empty
-        if(verbose){
-            if(fusionLogBuffer.size() > 0){
+        if (verbose) {
+            if (fusionLogBuffer.size() > 0) {
                 writeFusionLog(fusionLogBuffer);
                 fusionLogBuffer.clear();
             }
@@ -269,26 +273,26 @@ public class POIFuser implements Fuser{
         Resource uri = ResourceFactory.createResource(fusedUri);
         Property prop = ResourceFactory.createProperty(Namespace.Prov.DERIVED);
         Resource provNode = ResourceFactory.createResource(provNodeString);
-        
+
         //type of agent
         Property typeOf = ResourceFactory.createProperty(Namespace.Prov.RDF_TYPE);
         Resource agentResource = ResourceFactory.createResource(Namespace.Prov.AGENT);
-        
+
         //default fusion action
         Property defaultFusionActionProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_DEFAULT_FUSION_ACTION);
         Literal defaultActionLiteral = ResourceFactory.createStringLiteral(log.getDefaultFusionAction().toString());
-        
+
         Statement provDefaultFusionAction = ResourceFactory.createStatement(provNode,
                 defaultFusionActionProperty, defaultActionLiteral);
-        
+
         //score
         Property scoreProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_SCORE);
         Literal scoreLiteral = ResourceFactory.createStringLiteral(log.getConfidenceScore());
-        
+
         //left uri
         Property leftUriProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT);
         Literal leftUriLiteral = ResourceFactory.createStringLiteral(log.getLeftURI());
-        
+
         //right uri
         Property rightUriProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT);
         Literal rightUriLiteral = ResourceFactory.createStringLiteral(log.getRightURI());
@@ -303,7 +307,7 @@ public class POIFuser implements Fuser{
         Statement scoreStatement = ResourceFactory.createStatement(provNode, scoreProperty, scoreLiteral);
         Statement provStatement = ResourceFactory.createStatement(uri, prop, provNode);
         Statement agentStatement = ResourceFactory.createStatement(provNode, typeOf, agentResource);
-        
+
         //fused URI agent
         fusedModel.add(valStatement);
         fusedModel.add(leftStatement);
@@ -312,25 +316,25 @@ public class POIFuser implements Fuser{
         fusedModel.add(provStatement);
         fusedModel.add(agentStatement);
         fusedModel.add(provDefaultFusionAction);
-        
+
         List<Action> actions = log.getActions();
-        for(Action action : actions){
+        for (Action action : actions) {
             int hash = action.getAttribute().hashCode();
-            
+
             String actionString = provNodeString + "/" + hash;
             Resource actionResource = ResourceFactory.createResource(actionString);
             Property actionProperty = ResourceFactory.createProperty(Namespace.Prov.APLLIED_ACTION);
-            
+
             //fusion action
             Property fusionAction = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSION_ACTION);
             Literal literal = ResourceFactory.createStringLiteral(action.getFusionAction());
-            
+
             //attribute
             Property attributeProperty = ResourceFactory.createProperty(Namespace.Prov.PROV_ATTRIBUTE);
             String attribute = action.getAttribute();
-            
+
             //attribute has chain properties
-            if(attribute.contains(" ")){
+            if (attribute.contains(" ")) {
                 String[] spl = attribute.split(" ");
                 String at1 = spl[0];
                 String at2 = spl[1];
@@ -348,7 +352,7 @@ public class POIFuser implements Fuser{
             }
 
             //valueA
-            if(action.getValueA() != null){
+            if (action.getValueA() != null) {
                 Property leftValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_LEFT_VALUE);
                 Literal leftValueLit = ResourceFactory.createStringLiteral(action.getValueA());
                 Statement leftValStat = ResourceFactory.createStatement(actionResource, leftValueProp, leftValueLit);
@@ -361,7 +365,7 @@ public class POIFuser implements Fuser{
             }
 
             //valueB
-            if(action.getValueB() != null){
+            if (action.getValueB() != null) {
                 Property rightValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_RIGHT_VALUE);
                 Literal rightValueLit = ResourceFactory.createStringLiteral(action.getValueB());
                 Statement rightValStat = ResourceFactory.createStatement(actionResource, rightValueProp, rightValueLit);
@@ -374,7 +378,7 @@ public class POIFuser implements Fuser{
             }
 
             //fused value
-            if(action.getFusedValue() != null){
+            if (action.getFusedValue() != null) {
                 Property fusedValueProp = ResourceFactory.createProperty(Namespace.Prov.PROV_FUSED_VALUE);
                 Literal fusedValueLit = ResourceFactory.createStringLiteral(action.getFusedValue());
                 Statement fusedValStat = ResourceFactory.createStatement(actionResource, fusedValueProp, fusedValueLit);
@@ -385,18 +389,18 @@ public class POIFuser implements Fuser{
                 Statement fusedValStat = ResourceFactory.createStatement(actionResource, fusedValueProp, fusedValueLit);
                 fusedModel.add(fusedValStat);
             }
-            
+
             Statement s1 = ResourceFactory.createStatement(uri, actionProperty, actionResource);
             Statement s2 = ResourceFactory.createStatement(actionResource, typeOf, agentResource);
             Statement s3 = ResourceFactory.createStatement(actionResource, fusionAction, literal);
-            
+
             fusedModel.add(s1);
             fusedModel.add(s2);
             fusedModel.add(s3);
         }
     }
 
-    private LinkedPair fuseLink(Link link, Model modelA, Model modelB, RuleSpecification ruleSpec, 
+    private LinkedPair fuseLink(Link link, Model modelA, Model modelB, RuleSpecification ruleSpec,
             Map<String, IFunction> functionMap, EnumOutputMode mode) throws WrongInputException, IOException {
 
         LinkedPair linkedPair = new LinkedPair(ruleSpec.getDefaultDatasetAction());
@@ -429,16 +433,16 @@ public class POIFuser implements Fuser{
         /* FUSION */
         FusionLog fusionLog = linkedPair.fusePair(ruleSpec, functionMap, validation);
 
-        if(verbose){
+        if (verbose) {
             String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
-            Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, 
+            Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB,
                     linkedPair.getFusedEntity().getEntityData().getModel());
 
             fusionLog.setConfidenceScore(fusionConfidence.getString());
 
             fusionLogBuffer.add(fusionLog.toJson());
 
-            if(fusionLogBuffer.size() > SpecificationConstants.FUSION_LOG_BUFFER_SIZE){
+            if (fusionLogBuffer.size() > SpecificationConstants.FUSION_LOG_BUFFER_SIZE) {
                 writeFusionLog(fusionLogBuffer);
                 fusionLogBuffer.clear();
             }
@@ -448,18 +452,18 @@ public class POIFuser implements Fuser{
     }
 
     /**
-     * Produces the output result by creating a new graph to the specified output 
-     * or combines the fused entities with the source datasets based on the fusion mode.
-     * 
+     * Produces the output result by creating a new graph to the specified output or combines the fused entities with
+     * the source datasets based on the fusion mode.
+     *
      * @param configuration The configuration object.
-     * @param fusedEntities The list with fused <code>LinkedPair</code> objects. 
+     * @param fusedEntities The list with fused <code>LinkedPair</code> objects.
      * @param defaultDatasetAction the default dataset action enumeration.
      * @throws FileNotFoundException Thrown when file was not found.
      */
     @Override
-    public void combine(Configuration configuration, 
-            List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction) 
-                    throws FileNotFoundException, IOException{
+    public void combine(Configuration configuration,
+            List<LinkedPair> fusedEntities, EnumDatasetAction defaultDatasetAction)
+            throws FileNotFoundException, IOException {
 
         String fused = configuration.getFused();
         String remaining = configuration.getRemaining();
@@ -472,44 +476,37 @@ public class POIFuser implements Fuser{
 
         EnumOutputMode mode = configuration.getOutputMode();
 
-        switch(mode) {
-            case AA_MODE:
-            {
+        switch (mode) {
+            case AA_MODE: {
                 aaMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
-            case BB_MODE:
-            {
+            case BB_MODE: {
                 bbMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
-            case L_MODE:
-            {
+            case L_MODE: {
                 lMode(fused, fusedEntities, fusedStream, configuration);
-                break; 
+                break;
             }
-            case AB_MODE:
-            {
+            case AB_MODE: {
                 abMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
-            case BA_MODE:
-            {
+            case BA_MODE: {
                 baMode(fused, fusedEntities, fusedStream, configuration);
                 break;
             }
-            case A_MODE:
-            {
+            case A_MODE: {
                 aMode(fused, remaining, fusedEntities, fusedStream, configuration);
                 break;
             }
-            case B_MODE:
-            {
+            case B_MODE: {
                 bMode(remaining, fused, fusedEntities, fusedStream, configuration);
                 break;
             }
             default:
-                throw new UnsupportedOperationException("Wrong Output mode!");               
+                throw new UnsupportedOperationException("Wrong Output mode!");
         }
 
         Model ambiguousModel = AmbiguousDataset.getAmbiguousDataset().getModel();
@@ -520,24 +517,24 @@ public class POIFuser implements Fuser{
     private void bMode(String remaining, String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.B_MODE + ": Output results will be written to " + remaining
                 + " and " + fused + ". Unlinked entities will be excluded from A.");
-        
+
         Model rightModel = RightDataset.getRightDataset().getModel();
-        
+
         Set<String> leftLocalNamesToBeExcluded = new HashSet<>();
-        for(LinkedPair pair : fusedEntities){
-            
+        for (LinkedPair pair : fusedEntities) {
+
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
 
             //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should be considered unlinked.
-            if(!pair.isRejected()){
+            if (!pair.isRejected()) {
                 String localName = pair.getLeftNode().getLocalName();
                 leftLocalNamesToBeExcluded.add(localName);
             }
         }
-        
+
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
-        
+
         removeUnlinkedTriples(LeftDataset.getLeftDataset().getFilepath(), leftLocalNamesToBeExcluded, remaining);
     }
 
@@ -548,12 +545,12 @@ public class POIFuser implements Fuser{
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
         Set<String> rightLocalNamesToBeExcluded = new HashSet<>();
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             leftModel.add(fusedDataModel);
-            
+
             //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should be considered unlinked.
-            if(!pair.isRejected()){
+            if (!pair.isRejected()) {
                 String localName = pair.getRightNode().getLocalName();
                 rightLocalNamesToBeExcluded.add(localName);
             }
@@ -564,28 +561,28 @@ public class POIFuser implements Fuser{
         removeUnlinkedTriples(RightDataset.getRightDataset().getFilepath(), rightLocalNamesToBeExcluded, remaining);
     }
 
-    private void baMode(String fused, List<LinkedPair> fusedEntities, OutputStream remainingStream, Configuration configuration) 
+    private void baMode(String fused, List<LinkedPair> fusedEntities, OutputStream remainingStream, Configuration configuration)
             throws IOException {
         LOG.info(EnumOutputMode.BA_MODE + ": Output result will be written to " + fused);
         Model leftModel = LeftDataset.getLeftDataset().getModel();
         Model rightModel = RightDataset.getRightDataset().getModel();
-        
+
         Set<String> leftLocalNamesToBeExcluded = new HashSet<>();
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedDataModel);
-            
+
             //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should come from the other.
-            if(!pair.isRejected()){
+            if (!pair.isRejected()) {
                 String localName = pair.getRightNode().getLocalName();
                 leftLocalNamesToBeExcluded.add(localName);
             }
         }
 
         leftModel.write(remainingStream, configuration.getOutputRDFFormat());
-        
+
         addUnlinkedTriples(fused, LeftDataset.getLeftDataset().getFilepath(), leftLocalNamesToBeExcluded);
-        
+
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
@@ -594,13 +591,13 @@ public class POIFuser implements Fuser{
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
         Set<String> rightLocalNamesToBeExcluded = new HashSet<>();
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
 
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
-            leftModel.add(fusedDataModel); 
-            
+            leftModel.add(fusedDataModel);
+
             //Accepted pairs should be excluded from the "unlinked POIs" list. Both rejected and unlinked should come from the other.
-            if(!pair.isRejected()){
+            if (!pair.isRejected()) {
                 String localName = pair.getRightNode().getLocalName();
                 rightLocalNamesToBeExcluded.add(localName);
             }
@@ -618,9 +615,9 @@ public class POIFuser implements Fuser{
 
         Model newModel = ModelFactory.createDefaultModel();
 
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
             //only accepted links should appear in the fused.
-            if(!pair.isRejected()){
+            if (!pair.isRejected()) {
                 Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
                 newModel.add(fusedModel);
             }
@@ -629,35 +626,35 @@ public class POIFuser implements Fuser{
         newModel.write(fusedStream, configuration.getOutputRDFFormat());
     }
 
-    private void bbMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
+    private void bbMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream,
             Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.BB_MODE + ": Output result will be written to " + fused);
 
         Model rightModel = RightDataset.getRightDataset().getModel();
 
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
             //add both accepted and rejected to fused model, because the rejected have been removed from the right model.
             Model fusedModel = pair.getFusedEntity().getEntityData().getModel();
             rightModel.add(fusedModel);
         }
 
         rightModel.write(fusedStream, configuration.getOutputRDFFormat());
-        
+
         writeRemaining(LeftDataset.getLeftDataset().getFilepath(), Configuration.getInstance().getRemaining());
     }
 
-    private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream, 
+    private void aaMode(String fused, List<LinkedPair> fusedEntities, OutputStream fusedStream,
             Configuration configuration) throws IOException {
         LOG.info(EnumOutputMode.AA_MODE + ": Output result will be written to " + fused);
 
         Model leftModel = LeftDataset.getLeftDataset().getModel();
 
-        for(LinkedPair pair : fusedEntities){
+        for (LinkedPair pair : fusedEntities) {
             //add both accepted and rejected to fused model, because the rejected have been removed from the left model.
             Model fusedDataModel = pair.getFusedEntity().getEntityData().getModel();
             leftModel.add(fusedDataModel);
         }
-        
+
         leftModel.write(fusedStream, configuration.getOutputRDFFormat());
 
         writeRemaining(RightDataset.getRightDataset().getFilepath(), Configuration.getInstance().getRemaining());
@@ -665,22 +662,22 @@ public class POIFuser implements Fuser{
 
     private void writeFusionLog(List<String> fusionLogBuffer) throws IOException {
         String path = Configuration.getInstance().getFusionLog();
-	FileUtils.writeLines(new File(path), "UTF-8", fusionLogBuffer, "\n", true);
+        FileUtils.writeLines(new File(path), "UTF-8", fusionLogBuffer, "\n", true);
     }
 
     private Entity constructEntity(Model model, String resourceURI, String localName) {
-        
+
         Entity entity = new Entity();
         EntityData entityData = new EntityData(model);
         entity.setResourceURI(resourceURI);
         entity.setLocalName(localName);
         entity.setEntityData(entityData);
-        
+
         return entity;
     }
 
     //creates a jena rdf model for this node and removes the node from the source dataset
-    private Model constructEntityDataModel(String node, Model sourceModel, Model temp, int depth){
+    private Model constructEntityDataModel(String node, Model sourceModel, Model temp, int depth) {
 
         String q = SparqlConstructor.constructNodeQueryWithDepth(node, depth);
         Query query = QueryFactory.create(q);
@@ -693,8 +690,8 @@ public class POIFuser implements Fuser{
         //Also, strange concurrent modification exception when using jena statement iterator. Using list iterator instead.
         List<Statement> stList = jenaIterator.toList();
         Iterator<Statement> stIterator = stList.iterator();
-        
-        if(stList.isEmpty()){
+
+        if (stList.isEmpty()) {
             //One entity links to multiple: the entity has been removed from the source model.
             //Recover the entity from the temp model.
             queryExecution = QueryExecutionFactory.create(query, temp);
@@ -704,13 +701,13 @@ public class POIFuser implements Fuser{
             stIterator = stList.iterator();
         }
 
-        while ( stIterator.hasNext() ) {
+        while (stIterator.hasNext()) {
             Statement st = stIterator.next();
             sourceModel.remove(st);
 
             //add statement to the temp model, in case the same entity links to multiple.
             temp.add(st);
-        }         
+        }
 
         return model;
     }
@@ -718,14 +715,14 @@ public class POIFuser implements Fuser{
     private String resolveURI(EnumOutputMode mode, String leftURI, String rightURI) {
         String resourceURI;
         switch (mode) {
-            
+
             case AA_MODE:
             case AB_MODE:
             case A_MODE:
             case L_MODE:
             case DEFAULT:
                 resourceURI = leftURI;
-                break;                
+                break;
             case BB_MODE:
             case BA_MODE:
             case B_MODE:
@@ -741,14 +738,14 @@ public class POIFuser implements Fuser{
     private String resolveLocalName(EnumOutputMode mode, String leftLocalName, String rightLocalName) {
         String localName;
         switch (mode) {
-            
+
             case AA_MODE:
             case AB_MODE:
             case A_MODE:
             case L_MODE:
             case DEFAULT:
                 localName = leftLocalName;
-                break;                
+                break;
             case BB_MODE:
             case BA_MODE:
             case B_MODE:
@@ -760,10 +757,10 @@ public class POIFuser implements Fuser{
         }
         return localName;
     }
-    
+
     /**
      * Returns the count of linked entities that were not found in the source datasets.
-     * 
+     *
      * @return the number of linked entities not found in the dataset.
      */
     public int getLinkedEntitiesNotFoundInDataset() {
@@ -772,7 +769,7 @@ public class POIFuser implements Fuser{
 
     /**
      * Set the number of linked entities that were not found in the dataset.
-     * 
+     *
      * @param linkedEntitiesNotFoundInDataset the number of linked entities not found in the dataset.
      */
     public void setLinkedEntitiesNotFoundInDataset(int linkedEntitiesNotFoundInDataset) {
@@ -781,7 +778,7 @@ public class POIFuser implements Fuser{
 
     /**
      * Returns the total fused entities.
-     * 
+     *
      * @return the number of the fused entities.
      */
     public int getFusedPairsCount() {
@@ -790,7 +787,7 @@ public class POIFuser implements Fuser{
 
     /**
      * Returns the total rejected links.
-     * 
+     *
      * @return the number of the rejected links.
      */
     public int getRejectedCount() {
@@ -799,19 +796,19 @@ public class POIFuser implements Fuser{
 
     private void addUnlinkedTriples(String outputPath, String datasetPath, Set<String> uriSet) throws IOException {
 
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
-             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, true))) {
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8);
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, true))) {
             String previousId = "";
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
 
-                String id = getResourceURI(idPart);
+                String id = RDFUtils.getIdFromResourcePart(idPart);
 
-                if(!uriSet.contains(id)){
+                if (!uriSet.contains(id)) {
                     //add original flag to poi. Exclude flags from classification triples
                     //todo: this does not bring any score existed, but flags it original
-                    if(!idPart.contains("term") && !id.equals(previousId)){
+                    if (!idPart.contains("term") && !id.equals(previousId)) {
                         String fl = RDFUtils.getUnlinkedFlag(idPart);
                         bufferedWriter.append(fl);
                         bufferedWriter.newLine();
@@ -822,20 +819,20 @@ public class POIFuser implements Fuser{
                 }
                 //else the line belongs to interlinked entity
             }
-        }   
+        }
     }
 
     private void removeUnlinkedTriples(String datasetPath, Set<String> localNames, String outputPath) throws IOException {
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8); 
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, false))) {
-            
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(datasetPath), StandardCharsets.UTF_8);
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputPath, false))) {
+
             for (String line; (line = br.readLine()) != null;) {
                 String[] parts = line.split(" ");
                 String idPart = parts[0];
 
-                String localName = getResourceURI(idPart);
+                String localName = RDFUtils.getIdFromResourcePart(idPart);
 
-                if(!localNames.contains(localName)){
+                if (!localNames.contains(localName)) {
                     bufferedWriter.append(line);
                     bufferedWriter.newLine();
                 }
@@ -843,30 +840,17 @@ public class POIFuser implements Fuser{
         }
     }
 
-    private static String getResourceURI(String part) {
-        int endPosition = StringUtils.lastIndexOf(part, "/");
-        int startPosition = StringUtils.ordinalIndexOf(part, "/", 5) + 1;
-        String res;
-        if(part.substring(startPosition).contains("/")){
-            res = part.subSequence(startPosition, endPosition).toString();
-        } else {
-            res = part.subSequence(startPosition, part.length()-1).toString();
-        }
-
-        return res;
-    }
-
-    private void writeRemaining(String inputDatasetPath, String remainingPath) throws IOException{
+    private void writeRemaining(String inputDatasetPath, String remainingPath) throws IOException {
         Path inputPath = Paths.get(inputDatasetPath);
         Path remaining = Paths.get(remainingPath);
-        Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);   
+        Files.copy(inputPath, remaining, StandardCopyOption.REPLACE_EXISTING);
         Set<PosixFilePermission> perms = PosixFilePermissions.fromString(SpecificationConstants.POSIX_FILE_PERMISSIONS_STRING);
         Files.setPosixFilePermissions(remaining, perms);
     }
 
     /**
      * Return the average confidence score.
-     * 
+     *
      * @return
      */
     public Double getAverageConfidence() {
@@ -875,7 +859,7 @@ public class POIFuser implements Fuser{
 
     /**
      * Return the average gain score.
-     * 
+     *
      * @return
      */
     public Double getAverageGain() {
@@ -884,138 +868,46 @@ public class POIFuser implements Fuser{
 
     /**
      * Return the max gain score.
-     * 
+     *
      * @return
      */
     public Double getMaxGain() {
         return maxGain;
     }
 
-    private void validateEnsemble(Link link, Map<String, IFunction> functionMap, RuleSpecification ruleSpec, 
-            Map<String, Model> modelsA, Map<String, Model> modelsB) throws WrongInputException {
-
-        EnsembleValidator validator = new EnsembleValidator();
-
-        Set<String> a = link.getEnsemblesA();
-        Set<String> b = link.getEnsemblesB();
-        final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
-
-        switch(mode){
-            case AA_MODE:
-            case A_MODE:
-            case AB_MODE:
-            case L_MODE: {
-                //a based mode defines that ensembles in A, is actually a single node.
-                if(a.size()>1){
-                    LOG.error(a);
-                    throw new IllegalStateException("Ensembles in A should be a single node, considering this fusion mode.");
-                }
-
-                EntityData leftData = new EntityData();
-                Map.Entry<String, Model> entryA = modelsA.entrySet().iterator().next();
-
-                leftData.setUri(entryA.getKey());
-                leftData.setModel(entryA.getValue());
-
-                for(Map.Entry<String, Model> entry : modelsB.entrySet()){
-                    EntityData rightData = new EntityData();
-                    rightData.setUri(entry.getKey());
-                    rightData.setModel(entry.getValue());
-
-                    /* VALIDATION */
-                    EnumValidationAction validation = validator.validate(ruleSpec.getValidationRules(), 
-                            functionMap, leftData, rightData);
-
-                    switch(validation){
-                        case ACCEPT:
-                        case ACCEPT_MARK_AMBIGUOUS:
-                        case ML_VALIDATION:
-                            //do nothing
-                            break;
-                        case REJECT:
-                        case REJECT_MARK_AMBIGUOUS:
-                            //remove node from ensemble set
-                            b.remove(entry.getKey());
-                            rejectedCount++;
-
-                            break;
-                    }
-                }
-
-                break;
-            }
-            case BB_MODE:
-            case B_MODE:
-            case BA_MODE: {
-                if(b.size()>1){
-                    LOG.error(b);
-                    throw new IllegalStateException("Ensembles in B should be a single node, considering this fusion mode.");
-                }
-
-                EntityData rightData = new EntityData();
-                Map.Entry<String, Model> entryB = modelsB.entrySet().iterator().next();
-
-                rightData.setUri(entryB.getKey());
-                rightData.setModel(entryB.getValue());
-
-                for(Map.Entry<String, Model> entry : modelsA.entrySet()){
-                    EntityData leftData = new EntityData();
-                    leftData.setUri(entry.getKey());
-                    leftData.setModel(entry.getValue());
-
-                    /* VALIDATION */
-                    EnumValidationAction validation = validator.validate(ruleSpec.getValidationRules(), 
-                            functionMap, leftData, rightData);
-
-                    switch(validation){
-                        case ACCEPT:
-                        case ACCEPT_MARK_AMBIGUOUS:
-                        case ML_VALIDATION:
-                            //do nothing
-                            break;
-                        case REJECT:
-                        case REJECT_MARK_AMBIGUOUS:
-                            //remove node from ensemble set
-                            a.remove(entry.getKey());
-                            rejectedCount++;
-                            break;
-                    }
-                }
-
-                break;
-            }
-        }
-    }
-
     private Model fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
-        //resolve default dataset action
-        //rename uris
-        //produce linkedPairs with fused models.
-        
-        Model fusedModel;// = ModelFactory.createDefaultModel();
+
+        Model fusedModel;
         final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
-        switch(mode){
+        switch (mode) {
             case AA_MODE:
             case A_MODE:
             case AB_MODE:
             case L_MODE: {
                 fusedModel = modelsA.values().iterator().next(); //a models contain a single model in A based modes.
-                
+
                 //temp - code: functional/non-functional properties will come from configuration
                 //functional properties, keepOne
                 String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
                 CustomRDFProperty prop1 = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
-                
+
                 List<CustomRDFProperty> functionalProps = new ArrayList<>();
                 functionalProps.add(prop1);
-                
+
                 String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
                 CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
                 List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
                 nonFunctionalProps.add(prop2);
-                
-                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
-                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, nonFunctionalProps, fusedModel, modelsB);
+
+                Resource resourceURI;
+                if (prop2.isSingleLevel()) {
+                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
+                } else {
+                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
+                }
+
+                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
+                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
                 break;
             }
             case BB_MODE:
@@ -1035,71 +927,74 @@ public class POIFuser implements Fuser{
 
                 List<CustomRDFProperty> functionalProps = new ArrayList<>();
                 functionalProps.add(prop);
-                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
-                fuse(FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
+
+                Resource resourceURI;
+                if (prop2.isSingleLevel()) {
+                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
+                } else {
+                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
+                }
+
+                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
+                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsA);
                 break;
             }
             default:
                 throw new UnsupportedOperationException("Wrong fusion mode!");
         }
-        
+
         return fusedModel;
     }
 
-    private void fuse(FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel, 
+    private void fuse(Resource resourceURI, FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel,
             Map<String, Model> models) {
 
-        switch(strategy){
+        switch (strategy) {
             case KEEP_UNIQUE_BY_VOTE:
-                for(CustomRDFProperty prop : properties){
-                    keepUnique(prop, fusedModel, models);
+                for (CustomRDFProperty prop : properties) {
+                    keepUnique(resourceURI, prop, fusedModel, models);
                 }
                 break;
             case KEEP_ALL:
-                for(CustomRDFProperty prop : properties){
-                    keepAll(prop, fusedModel, models);
+                for (CustomRDFProperty prop : properties) {
+                    keepAll(resourceURI, prop, fusedModel, models);
                 }
                 break;
             case KEEP_ANY:
-                for(CustomRDFProperty prop : properties){
-                    keepAny(prop, fusedModel, models);
+                for (CustomRDFProperty prop : properties) {
+                    keepAny(resourceURI, prop, fusedModel, models);
                 }
                 break;
         }
     }
 
-    private void keepUnique(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
+    private void keepUnique(Resource subject, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
 
-        Resource subject;
-        if(prop.isSingleLevel()){
+        if (prop.isSingleLevel()) {
             List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
             //voted value has been computed from both a, b models.
             Literal votedValue = getVotedValue(prop, models, literals);
 
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
             SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
-            
+
             LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if(subject != null){
+            if (subject != null) {
                 Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
                 fusedModel.add(statement);
             }
-
-
         } else {
 
             List<Literal> literals = SparqlRepository
-                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
             //voted value has been computed from both a, b models.
             Literal votedValue = getVotedValue(prop, models, literals);
 
             RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
 
             SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
 
             LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if(subject != null){
+            if (subject != null) {
                 Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
                 Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), votedValue);
                 fusedModel.add(statement1);
@@ -1108,20 +1003,18 @@ public class POIFuser implements Fuser{
         }
     }
 
-    private void keepAny(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-        Resource subject;
-        if(prop.isSingleLevel()){
+    private void keepAny(Resource subject, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
+
+        if (prop.isSingleLevel()) {
             List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
 
             Literal value;
-            if(!literals.isEmpty()){
+            if (!literals.isEmpty()) {
                 value = literals.get(0);
             } else {
                 value = getAnyValue(prop, models);
             }
 
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
-            
             SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
 
             Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), value);
@@ -1130,20 +1023,19 @@ public class POIFuser implements Fuser{
 
         } else {
             List<Literal> literals = SparqlRepository
-                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
+                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
 
             Literal value;
-            if(!literals.isEmpty()){
+            if (!literals.isEmpty()) {
                 value = literals.get(0);
             } else {
                 value = getAnyValue(prop, models);
             }
 
             RDFNode o1 = SparqlRepository.getObjectOfProperty(prop.getParent(), fusedModel);
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
-            
+
             SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
-            
+
             Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
             Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), value);
 
@@ -1152,63 +1044,64 @@ public class POIFuser implements Fuser{
         }
     }
 
-    private void keepAll(CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
-
+    private void keepAll(Resource resourceURI, CustomRDFProperty prop, Model fusedModel, Map<String, Model> models) {
         //keep fused model as is. (contains literals from base dataset.
-        //for each model in models: add literal by adding a count in the property localname (URI).
+        //add all literals from models in the fused by constructing intermediate nodes with counter if needed.
 
-        for(Map.Entry<String, Model> mod : models.entrySet()){
-            //rename key (old uri to base uri)
-            //rename property uri (localname) by adding count
-            //add triple to fusedModel
+        //Single properties donnot use count, but they get multiple same properties in order not to break ontology alignment 
+        Set<Literal> ensembleLiterals = new HashSet<>();
+
+        for (Map.Entry<String, Model> entry : models.entrySet()) {
+            if (prop.isSingleLevel()) {
+                List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), entry.getValue());
+
+                ensembleLiterals.addAll(literals);
+            } else {
+                List<Literal> literals = SparqlRepository.getLiteralsFromPropertyChain(prop.getParent(),
+                        prop.getValueProperty(), entry.getValue());
+                ensembleLiterals.addAll(literals);
+            }
         }
 
-        Resource subject;
-        if(prop.isSingleLevel()){
-            List<Literal> literals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), fusedModel);
-            //voted value has been computed from both a, b models.
-            Literal votedValue = getVotedValue(prop, models, literals);
-
-            SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
-            Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
-            fusedModel.add(statement);
-
+        if (prop.isSingleLevel()) {
+            for (Literal l : ensembleLiterals) {
+                Statement statement = ResourceFactory.createStatement(resourceURI, prop.getValueProperty(), l);
+                fusedModel.add(statement);
+            }
         } else {
+            String propertyLocalName = RDFUtils.getLocalName(prop);
+            int i = 0;
+            for (Literal literal : ensembleLiterals) {
+                Resource intermediateNode = ResourceFactory
+                        .createResource(RDFUtils.constructIntermediateEnsembleNode(resourceURI, propertyLocalName, i));
 
-            List<Literal> literals = SparqlRepository
-                .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), fusedModel);
-            //voted value has been computed from both a, b models.
-            Literal value = getVotedValue(prop, models, literals);
+                Statement statement1 = ResourceFactory.createStatement(resourceURI, prop.getParent(), intermediateNode);
+                Statement statement2 = ResourceFactory.createStatement(intermediateNode, prop.getValueProperty(), literal);
 
-            SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
-            subject = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
-            Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), value);
-            Statement statement2 = ResourceFactory.createStatement(subject, prop.getValueProperty(), value);
-            fusedModel.add(statement1);
-            fusedModel.add(statement2);
+                fusedModel.add(statement1);
+                fusedModel.add(statement2);
+
+                i++;
+            }
         }
-        
-        //still throw this, until the action is complete.
-        throw new UnsupportedOperationException("not supported yet.");
     }
 
     private Literal getVotedValue(CustomRDFProperty prop, Map<String, Model> models, List<Literal> literals) {
         List<Literal> list = new ArrayList<>();
         list.addAll(literals);
 
-        if(prop.isSingleLevel()){
-            for(Map.Entry<String, Model> entry : models.entrySet()){
+        if (prop.isSingleLevel()) {
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
                 Model model = entry.getValue();
                 List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
 
                 list.addAll(tempLiterals);
             }
         } else {
-            for(Map.Entry<String, Model> entry : models.entrySet()){
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
                 Model model = entry.getValue();
                 List<Literal> tempLiterals = SparqlRepository
-                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
+                        .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
 
                 list.addAll(tempLiterals);
             }
@@ -1218,8 +1111,8 @@ public class POIFuser implements Fuser{
 
         Literal mostCommonPropertyValue = null;
         long maxCount = -1;
-        for(Map.Entry<Literal, Long> entry: occurrences.entrySet()){
-            if(entry.getValue() > maxCount) {
+        for (Map.Entry<Literal, Long> entry : occurrences.entrySet()) {
+            if (entry.getValue() > maxCount) {
                 mostCommonPropertyValue = entry.getKey();
                 maxCount = entry.getValue();
             }
@@ -1230,22 +1123,22 @@ public class POIFuser implements Fuser{
 
     private Literal getAnyValue(CustomRDFProperty prop, Map<String, Model> models) {
 
-        if(prop.isSingleLevel()){
-            for(Map.Entry<String, Model> entry : models.entrySet()){
+        if (prop.isSingleLevel()) {
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
                 Model model = entry.getValue();
                 List<Literal> tempLiterals = SparqlRepository.getLiteralsOfProperty(prop.getValueProperty(), model);
 
-                if(!tempLiterals.isEmpty()){
+                if (!tempLiterals.isEmpty()) {
                     return tempLiterals.get(0);
                 }
             }
         } else {
-            for(Map.Entry<String, Model> entry : models.entrySet()){
+            for (Map.Entry<String, Model> entry : models.entrySet()) {
                 Model model = entry.getValue();
                 List<Literal> tempLiterals = SparqlRepository
-                    .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
+                        .getLiteralsFromPropertyChain(prop.getParent(), prop.getValueProperty(), model);
 
-                if(!tempLiterals.isEmpty()){
+                if (!tempLiterals.isEmpty()) {
                     return tempLiterals.get(0);
                 }
             }
