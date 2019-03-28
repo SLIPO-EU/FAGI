@@ -18,8 +18,11 @@ import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rul
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -104,7 +107,23 @@ public class RuleProcessor {
             ruleSpec.addValidationItem(validationRule);
 
         }
-        
+
+        //get <functionalProperty> content of the XML.
+        NodeList functionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.FUNCTIONAL_PROPERTIES);
+        String functionalPropertiesContent = functionalPropertiesList.item(0).getTextContent();
+
+        String[] functionalPropertiesArray = functionalPropertiesContent.split(";");
+        Set<String> functionalProps = new HashSet(Arrays.asList(functionalPropertiesArray));
+        ruleSpec.setFunctionalProperties(functionalProps);
+
+        //get <nonFunctionalProperty> content of the XML.
+        NodeList nonFunctionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.NON_FUNCTIONAL_PROPERTIES);
+        String nonFunctionalPropertiesContent = nonFunctionalPropertiesList.item(0).getTextContent();
+
+        String[] nonFunctionalPropertiesArray = nonFunctionalPropertiesContent.split(";");
+        Set<String> nonFunctionalProps = new HashSet(Arrays.asList(nonFunctionalPropertiesArray));
+        ruleSpec.setNonFunctionalProperties(nonFunctionalProps);
+
         return ruleSpec;
     }
 

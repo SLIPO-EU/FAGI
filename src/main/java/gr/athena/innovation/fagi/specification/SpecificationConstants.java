@@ -373,6 +373,16 @@ public class SpecificationConstants {
          * Concatenation separator.
          */
         public static final String CONCATENATION_SEP = ", ";
+
+        /**
+         * Functional properties tag in XML.
+         */
+        public static final String FUNCTIONAL_PROPERTIES = "functionalProperties";
+
+        /**
+         * Non-functional properties tag in XML.
+         */
+        public static final String NON_FUNCTIONAL_PROPERTIES = "nonFunctionalProperties";
     }  
 
     /**

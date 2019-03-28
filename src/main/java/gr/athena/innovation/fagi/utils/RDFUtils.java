@@ -22,6 +22,7 @@ import gr.athena.innovation.fagi.specification.Namespace;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -746,6 +747,17 @@ public class RDFUtils {
     public static String constructIntermediateEnsembleNode(Resource resourceURI, String localName, int i) {
         String uri = resourceURI + "/" + localName + "_" + i;
         return uri;
+    }
+
+    public static Set<CustomRDFProperty> convertToCustomRDFProperty(Set<String> properties) {
+        Set<CustomRDFProperty> props = new HashSet<>();
+
+        for(String prop : properties){
+            CustomRDFProperty customProp = getCustomRDFPropertyFromString(prop);
+            props.add(customProp);
+        }
+
+        return props;
     }
 
     private static Literal constructScoreLiteral(Literal scoreA, Literal scoreB, float score) {

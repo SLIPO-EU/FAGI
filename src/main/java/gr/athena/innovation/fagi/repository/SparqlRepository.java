@@ -219,7 +219,7 @@ public class SparqlRepository {
         }
         
         if(literals.isEmpty()){
-            LOG.warn("No literals were found. Property: " + p.toString());
+            LOG.trace("No literals were found. Property: " + p.toString());
         }
         
         return literals;

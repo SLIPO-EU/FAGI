@@ -394,6 +394,14 @@ public class SchemaDefinition {
 "					</xs:complexType>\n" +
 "				</xs:element>\n" +
 "				\n" +
+"                               <xs:element name=\"ensembles\">\n" +
+"                                   <xs:complexType>\n" +
+"                                       <xs:sequence>\n" +
+"                                           <xs:element name=\"functionalProperties\" type=\"xs:string\"/>\n" +
+"                                           <xs:element name=\"nonFunctionalProperties\" type=\"xs:string\"/>\n" +
+"                                       </xs:sequence>\n" +
+"                                   </xs:complexType>  \n" +
+"                               </xs:element>" +
 "			</xs:choice>\n" +
 "		</xs:complexType>\n" +
 "	</xs:element>\n" +

@@ -3,6 +3,7 @@ package gr.athena.innovation.fagi.core;
 import gr.athena.innovation.fagi.model.CustomRDFProperty;
 import gr.athena.innovation.fagi.model.Link;
 import gr.athena.innovation.fagi.repository.SparqlRepository;
+import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
@@ -30,6 +31,12 @@ public class EnsembleFuser {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(EnsembleFuser.class);
 
+    private final RuleSpecification ruleSpecification;
+
+    public EnsembleFuser(RuleSpecification ruleSpecification) {
+        this.ruleSpecification = ruleSpecification;
+    }
+
     /**
      * Method for fusing an ensemble link.
      * 
@@ -40,66 +47,34 @@ public class EnsembleFuser {
      */
     public Model fuseEnsemble(Link link, Map<String, Model> modelsA, Map<String, Model> modelsB) {
 
+        Set<CustomRDFProperty> functionalProps = RDFUtils.convertToCustomRDFProperty(ruleSpecification.getFunctionalProperties());
+        Set<CustomRDFProperty> nonFunctionalProps = RDFUtils.convertToCustomRDFProperty(ruleSpecification.getNonFunctionalProperties());
+        
         Model fusedModel;
         final EnumOutputMode mode = Configuration.getInstance().getOutputMode();
+
         switch (mode) {
             case AA_MODE:
             case A_MODE:
             case AB_MODE:
             case L_MODE: {
-                fusedModel = modelsA.values().iterator().next(); //a models contain a single model in A based modes.
 
-                //temp - code: functional/non-functional properties will come from configuration
-                //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
-                CustomRDFProperty prop1 = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
+                fusedModel = modelsA.values().iterator().next(); //modelsA contains a single model in A based modes.
 
-                List<CustomRDFProperty> functionalProps = new ArrayList<>();
-                functionalProps.add(prop1);
+                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
+                fuse(FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
 
-                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
-                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
-                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
-                nonFunctionalProps.add(prop2);
-
-                Resource resourceURI;
-                if (prop2.isSingleLevel()) {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
-                } else {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
-                }
-
-                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsB);
-                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsB);
                 break;
             }
             case BB_MODE:
             case B_MODE:
             case BA_MODE: {
-                fusedModel = modelsB.values().iterator().next(); //a models contain a single model in A based modes.
 
-                //temp - code: functional/non-functional properties will come from configuration
-                //functional properties, keepOne
-                String functionalProp = SpecificationConstants.Properties.ADDRESS + " " + SpecificationConstants.Properties.STREET;
-                CustomRDFProperty prop = RDFUtils.getCustomRDFPropertyFromString(functionalProp);
+                fusedModel = modelsB.values().iterator().next(); //modelsB contains a single model in B based modes.
 
-                String nonFunctionalProp = SpecificationConstants.Properties.NAME + " " + SpecificationConstants.Properties.NAME_VALUE;
-                CustomRDFProperty prop2 = RDFUtils.getCustomRDFPropertyFromString(nonFunctionalProp);
-                List<CustomRDFProperty> nonFunctionalProps = new ArrayList<>();
-                nonFunctionalProps.add(prop2);
+                fuse(FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
+                fuse(FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsA);
 
-                List<CustomRDFProperty> functionalProps = new ArrayList<>();
-                functionalProps.add(prop);
-
-                Resource resourceURI;
-                if (prop2.isSingleLevel()) {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getValueProperty().toString(), fusedModel);
-                } else {
-                    resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop2.getParent().toString(), fusedModel);
-                }
-
-                fuse(resourceURI, FusionStrategy.KEEP_UNIQUE_BY_VOTE, functionalProps, fusedModel, modelsA);
-                fuse(resourceURI, FusionStrategy.KEEP_ALL, nonFunctionalProps, fusedModel, modelsA);
                 break;
             }
             default:
@@ -109,22 +84,43 @@ public class EnsembleFuser {
         return fusedModel;
     }
 
-    private void fuse(Resource resourceURI, FusionStrategy strategy, List<CustomRDFProperty> properties, Model fusedModel,
+    private void fuse(FusionStrategy strategy, Set<CustomRDFProperty> properties, Model fusedModel,
             Map<String, Model> models) {
 
         switch (strategy) {
             case KEEP_UNIQUE_BY_VOTE:
                 for (CustomRDFProperty prop : properties) {
+                    Resource resourceURI;
+                    if (prop.isSingleLevel()) {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+                    } else {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+                    }
+
                     keepUnique(resourceURI, prop, fusedModel, models);
                 }
                 break;
             case KEEP_ALL:
                 for (CustomRDFProperty prop : properties) {
+                    Resource resourceURI;
+                    if (prop.isSingleLevel()) {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+                    } else {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+                    }
+                    
                     keepAll(resourceURI, prop, fusedModel, models);
                 }
                 break;
             case KEEP_ANY:
                 for (CustomRDFProperty prop : properties) {
+                    Resource resourceURI;
+                    if (prop.isSingleLevel()) {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getValueProperty().toString(), fusedModel);
+                    } else {
+                        resourceURI = SparqlRepository.getSubjectOfSingleProperty(prop.getParent().toString(), fusedModel);
+                    }
+
                     keepAny(resourceURI, prop, fusedModel, models);
                 }
                 break;

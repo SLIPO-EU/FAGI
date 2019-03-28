@@ -149,7 +149,7 @@ public class POIFuser implements Fuser {
                 rejectedCount = ensembleValidator.getRejected();
 
                 //fuse
-                EnsembleFuser ensembleFuser = new EnsembleFuser();
+                EnsembleFuser ensembleFuser = new EnsembleFuser(ruleSpec);
                 LinkedPair pair = new LinkedPair(EnumDatasetAction.UNDEFINED);
                 Model fusedModel;
                 
