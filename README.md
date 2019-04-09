@@ -67,11 +67,12 @@ Specifically:
 
 `date`: Optional tag. Denotes which dataset is the most recent. Format expected: yyyy-MM-dd
 
-Specifically for the links, there are two supported formats. N-triples like `<poiA> <owl:sameAs> <poiB>` format and CSV like `poiA poiB score` (space separated and [0-1] value for the score). In the case of a CSV file, you can define two different modes. The first takes into account all the provided links and executes the fusion process accordingly and the second keeps unique links with the highest confidence score. The values described are the following: 
+Specifically for the links, there are two supported formats. N-triples like `<poiA> <owl:sameAs> <poiB>` format and CSV like `poiA poiB score` (space separated and [0-1] value for the score). In the case of a CSV file, you can define three different modes. The first takes into account all the provided links and executes the fusion process accordingly, the second keeps unique links with the highest confidence score, and the third takes into account POI-ensembles by handling cases that a POI from one dataset is linked with multiple POIs from the other (the rules applied in this case are different and described at the rule specification below). The values are the following: 
 
 * nt
 * csv
 * csv-unique-links
+* csv-ensembles
 
 Furthermore, the `target` tag refers to the target/output dataset and contains the following configuration tags:
 
@@ -149,6 +150,8 @@ Then, inside the expression we can put together a combination of `<and>`, `<or>`
 
 Except fusion rules which are defined with the `<rule>` tag, there is an option to add validation rules using the `<validationRule>` tag. With a validation rule we can accept/reject and/or mark a link as ambiguous in the model. The validation rules follow the exact same logic described above with the only difference being that the fusion actions are replaced with the validation actions, both described at the tables below.
 
+* POI-ensembles rules are defined in the `<ensembles>` tag, in the same level as the fusion and validation rules. Inside the ensembles tag, we define `<functional>` and `<nonFunctional>` RDF properties that define the fusion strategy for each category. Functional properties are attributes that are supposed to be unique in a POI (such as address, website, geometry). The fusion action applied on these properties is keeping a unique value by a voting strategy (most frequent value will be kept). Non-functional properties refer to attributes that can have multiple values (such as name, phone etc) and the fusion action that will apply is keeping all values on different property URIs. In any case, the user is free to define which properties will be handled as functional/non-functional as semicolon separated values inside the corresponding tags. The link-validation process uses the already defined validation rules.
+
 A sample rules.xml file could look like this: 
 
 <rules>
@@ -220,6 +223,11 @@ A sample rules.xml file could look like this:
 		</actionRuleSet>
 		<defaultAction>keep-left</defaultAction>
 	</rule>	
+	
+	<ensembles>
+		<functionalProperties>http://slipo.eu/def#address http://slipo.eu/def#street;http://slipo.eu/def#address http://slipo.eu/def#number;http://slipo.eu/def#homepage</functionalProperties>
+		<nonFunctionalProperties>http://slipo.eu/def#name http://slipo.eu/def#nameValue</nonFunctionalProperties>
+	</ensembles>
 	
 </rules>
 
