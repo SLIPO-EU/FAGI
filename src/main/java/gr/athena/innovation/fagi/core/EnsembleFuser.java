@@ -6,7 +6,6 @@ import gr.athena.innovation.fagi.repository.SparqlRepository;
 import gr.athena.innovation.fagi.rule.RuleSpecification;
 import gr.athena.innovation.fagi.specification.Configuration;
 import gr.athena.innovation.fagi.specification.EnumOutputMode;
-import gr.athena.innovation.fagi.specification.SpecificationConstants;
 import gr.athena.innovation.fagi.utils.RDFUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -137,7 +136,7 @@ public class EnsembleFuser {
             SparqlRepository.deleteProperty(prop.getValueProperty().toString(), fusedModel);
 
             LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if (subject != null) {
+            if (subject != null && votedValue != null) {
                 Statement statement = ResourceFactory.createStatement(subject, prop.getValueProperty(), votedValue);
                 fusedModel.add(statement);
             }
@@ -154,7 +153,7 @@ public class EnsembleFuser {
             SparqlRepository.deleteProperty(prop.getParent().toString(), prop.getValueProperty().toString(), fusedModel);
 
             LOG.trace(subject + " " + prop.getValueProperty() + " " + votedValue);
-            if (subject != null) {
+            if (subject != null && votedValue != null) {
                 Statement statement1 = ResourceFactory.createStatement(subject, prop.getParent(), o1.asResource());
                 Statement statement2 = ResourceFactory.createStatement(o1.asResource(), prop.getValueProperty(), votedValue);
                 fusedModel.add(statement1);

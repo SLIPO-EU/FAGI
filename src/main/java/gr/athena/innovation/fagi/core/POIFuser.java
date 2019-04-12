@@ -178,7 +178,7 @@ public class POIFuser implements Fuser {
                 continue;
             }
 
-            LOG.info("resolving simple link... " + link.getKey());
+            LOG.trace("resolving simple link... " + link.getKey());
 
             //create the jena models for each node of the pair and remove them from the source models.
             Model modelA = constructEntityDataModel(link.getNodeA(), left, tempModelA, config.getOptionalDepth());

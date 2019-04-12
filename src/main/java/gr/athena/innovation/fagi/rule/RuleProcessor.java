@@ -12,6 +12,7 @@ import gr.athena.innovation.fagi.rule.model.Expression;
 import gr.athena.innovation.fagi.rule.model.ExternalProperty;
 import gr.athena.innovation.fagi.rule.model.Rule;
 import gr.athena.innovation.fagi.specification.SpecificationConstants;
+import gr.athena.innovation.fagi.specification.Configuration;
 import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.AND;
 import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.NOT;
 import static gr.athena.innovation.fagi.specification.SpecificationConstants.Rule.OR;
@@ -26,6 +27,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -108,22 +110,31 @@ public class RuleProcessor {
 
         }
 
-        //get <functionalProperty> content of the XML.
-        NodeList functionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.FUNCTIONAL_PROPERTIES);
-        String functionalPropertiesContent = functionalPropertiesList.item(0).getTextContent();
+        Configuration config = Configuration.getInstance();
+        if(config.getLinksFormat().equals(SpecificationConstants.Config.CSV_ENSEMBLES)){
+            //get <functionalProperty> content of the XML.
+            NodeList functionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.FUNCTIONAL_PROPERTIES);
+            String functionalPropertiesContent = functionalPropertiesList.item(0).getTextContent();
 
-        String[] functionalPropertiesArray = functionalPropertiesContent.split(";");
-        Set<String> functionalProps = new HashSet(Arrays.asList(functionalPropertiesArray));
-        ruleSpec.setFunctionalProperties(functionalProps);
+            String[] functionalPropertiesArray = functionalPropertiesContent.split(";", -1);
+            Set<String> functionalProps = new HashSet(Arrays.asList(functionalPropertiesArray));
+            ruleSpec.setFunctionalProperties(functionalProps);
 
-        //get <nonFunctionalProperty> content of the XML.
-        NodeList nonFunctionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.NON_FUNCTIONAL_PROPERTIES);
-        String nonFunctionalPropertiesContent = nonFunctionalPropertiesList.item(0).getTextContent();
+            //get <nonFunctionalProperty> content of the XML.
+            NodeList nonFunctionalPropertiesList = doc.getElementsByTagName(SpecificationConstants.Rule.NON_FUNCTIONAL_PROPERTIES);
+            String nonFunctionalPropertiesContent = nonFunctionalPropertiesList.item(0).getTextContent();
 
-        String[] nonFunctionalPropertiesArray = nonFunctionalPropertiesContent.split(";");
-        Set<String> nonFunctionalProps = new HashSet(Arrays.asList(nonFunctionalPropertiesArray));
-        ruleSpec.setNonFunctionalProperties(nonFunctionalProps);
 
+            String[] nonFunctionalPropertiesArray = nonFunctionalPropertiesContent.split(";", -1);
+            Set<String> nonFunctionalProps = new HashSet(Arrays.asList(nonFunctionalPropertiesArray));
+            ruleSpec.setNonFunctionalProperties(nonFunctionalProps);
+
+            if(StringUtils.isBlank(nonFunctionalPropertiesContent) || StringUtils.isBlank(functionalPropertiesContent)){
+                throw new WrongInputException("Link ensembles fusion strategy requires "
+                        + "\"functional\" and \"nonFunctional\" property rules.");
+            }
+        }
+            
         return ruleSpec;
     }
 
