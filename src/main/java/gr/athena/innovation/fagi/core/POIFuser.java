@@ -106,6 +106,9 @@ public class POIFuser implements Fuser {
             //clean fusion log if exists already
             if (new File(config.getFusionLog()).exists()) {
                 FileChannel.open(Paths.get(config.getFusionLog()), StandardOpenOption.WRITE).truncate(0).close();
+            } else {
+                File fusionLogFile = new File(config.getFusionLog());
+                fusionLogFile.createNewFile();
             }
         }
 

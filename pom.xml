@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gr.athena.innovation</groupId>
     <artifactId>fagi</artifactId>
-    <version>1.2.15</version>
+    <version>1.2.16</version>
     <packaging>jar</packaging>
 
     <name>FAGI</name>
@@ -32,7 +32,7 @@
 
     <build>
         <plugins>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -121,7 +121,7 @@
                     </execution>
                 </executions>
             </plugin>
-                                                                                                                     
+
         </plugins>
     </build>
 
