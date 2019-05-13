@@ -51,6 +51,8 @@ The `similarity` is also optional and it is used as a part of the custom matchin
 
 The `verbose` tag expects a boolean value `true` or `false`. If the verbose mode is activated the execution will produce a fusion log that contains all rules/actions that have been applied on each attribute of all POIs during the fusion process. All original and fused values of the properties of each POI will also be logged in this file. Additionally, the fused RDF output will contain triples that indicate provenance information about the POIs based on the fusion process.
 
+The `stats` tag expects a value between `light` or `detailed`. The light version produces basic statistics and metrics as long as execution times. The detailed version produces the much more detailed list of statistics, but also requires more memory and time to compute. If the `stats` field is missing or empty, no statistics will be computed.
+
 The `rules` tag expects the absolute path of the "rules.xml" file. 
 
 The `left`, `right`, and `links` tags refer to the source datasets. Each of these XML tags contain additional tags that describe each of the datasets.

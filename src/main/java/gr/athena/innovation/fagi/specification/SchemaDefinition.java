@@ -79,6 +79,15 @@ public class SchemaDefinition {
 "		  </xs:simpleType>\n" +
 "		</xs:element>\n" +
 "		<xs:element name=\"verbose\" type=\"xs:boolean\" />		\n" +
+"		<xs:element name=\"stats\" minOccurs=\"0\">\n" +
+"		  <xs:simpleType>\n" +
+"			<xs:restriction base=\"xs:string\">\n" +
+"			  <xs:enumeration value=\"\"/>\n" +
+"			  <xs:enumeration value=\"light\"/>\n" +
+"			  <xs:enumeration value=\"detailed\"/>\n" +
+"			</xs:restriction>\n" +
+"		  </xs:simpleType>\n" +
+"		</xs:element>\n" +
 "		<xs:element name=\"rules\" type=\"xs:anyURI\"/>		\n" +
 "		<xs:element name=\"left\">\n" +
 "		  <xs:complexType>\n" +

@@ -47,6 +47,7 @@ public class Configuration {
     private String inputRDFFormat;
     private String rulesPath;
     private Locale locale = null;
+    private String stats;
     private String similarity;
     private String fusionLog;
     private String trainingSetCsvPath;
@@ -752,6 +753,14 @@ public class Configuration {
         this.geoModelPath = geoModelPath;
     }
 
+    public String getStats() {
+        return stats;
+    }
+
+    public void setStats(String stats) {
+        this.stats = stats;
+    }
+
     @Override
     public String toString() {
         return "\nconfiguration{" + 
@@ -770,6 +779,7 @@ public class Configuration {
                     "\n idLinks=" + idLinks + 
                     "\n linksFormat=" + linksFormat +
                     "\n\n outputMode=" + outputMode +
+                    "\n statsMode=" + stats +
                     "\n outputDir=" + outputDir +
                     "\n fused=" + fused +
                     "\n remaining=" + remaining +

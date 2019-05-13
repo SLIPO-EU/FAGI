@@ -13,6 +13,8 @@ import gr.athena.innovation.fagi.model.LinkedPair;
 import gr.athena.innovation.fagi.learning.Trainer;
 import gr.athena.innovation.fagi.model.AmbiguousDataset;
 import gr.athena.innovation.fagi.preview.FrequencyCalculationProcess;
+import gr.athena.innovation.fagi.preview.LightContainer;
+import gr.athena.innovation.fagi.preview.LightStatisticsProcessor;
 import gr.athena.innovation.fagi.preview.RDFInputSimilarityViewer;
 import gr.athena.innovation.fagi.preview.RDFStatisticsCollector;
 import gr.athena.innovation.fagi.preview.statistics.StatisticsContainer;
@@ -54,14 +56,9 @@ public class FagiInstance {
 
     private final boolean runEvaluation = false;
     private final boolean exportFrequencies = false;
-    private final boolean exportStatistics = true;
     private final boolean exportSimilaritiesPerLink = false;
     private final boolean train = false;
     private final boolean fuse = true;
-    private Integer fused = null;
-    private Integer rejected = null;
-    private Integer ambiguous = null;
-    private int originalInputLinksCount = 0;
 
     /**
      * FagiInstance Constructor. Expects the absolute path of the configuration XML file.
@@ -139,7 +136,9 @@ public class FagiInstance {
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
 
-        int initialLinksCount = 0;
+        LOG.info("Source datasets loaded.");
+        
+        Integer initialLinksCount = 0;
         switch(configuration.getLinksFormat()){
             case SpecificationConstants.Config.NT: {
                 genericRDFRepository.parseLinks(configuration.getPathLinks());
@@ -164,6 +163,8 @@ public class FagiInstance {
             }
         }
 
+        LOG.info("Links file loaded.");
+        
         AmbiguousDataset.getAmbiguousDataset().getModel();
 
         long stopTimeReadFiles = System.currentTimeMillis();
@@ -180,6 +181,8 @@ public class FagiInstance {
         TermResolver.setTerms(specialTerms);
         CallingCodeResolver.setCodes(codes);
 
+        LOG.info("Resource files loaded.");
+        
         if(exportFrequencies){
             LOG.info("Exporting frequencies...");
             FrequencyCalculationProcess freqProcess = new FrequencyCalculationProcess();
@@ -239,25 +242,61 @@ public class FagiInstance {
 
             long startTimeComputeStatistics = System.currentTimeMillis(); 
 
-            rejected = fuser.getRejectedCount();
-            fused = fuser.getFusedPairsCount();
+            Integer rejected = fuser.getRejectedCount();
+            Integer fused = fuser.getFusedPairsCount();
 
             StatisticsContainer container;
-            if (exportStatistics) {
+            StatisticsExporter exporter = new StatisticsExporter();
+            
+            LightContainer lightContainer = new LightContainer();
+            LightStatisticsProcessor lightStatProcessor = new LightStatisticsProcessor(lightContainer);
+
+            String finalStats = "";
+
+            if (configuration.getStats().equals(SpecificationConstants.Config.DETAILED_STATS)) {
                 LOG.info("Calculating statistics...");
                 //statistics obtained using RDF
                 RDFStatisticsCollector collector = new RDFStatisticsCollector();
                 container = collector.collect();
-                StatisticsExporter exporter = new StatisticsExporter();
 
                 if(!container.isValid() && !container.isComplete()){
                     LOG.warn("Could not export statistics. Input dataset(s) do not contain " 
                             + Namespace.SOURCE + " property that is being used to count the entities."); 
                 }
 
-                exporter.exportStatistics(container.toJsonMap(), configuration.getStatsFilepath());
-            }
+                finalStats = container.toJsonMap();
 
+            } else if(configuration.getStats().equals(SpecificationConstants.Config.LIGHT_STATS)){
+
+                lightContainer.setAverageConfidence(fuser.getAverageConfidence());
+                lightContainer.setAverageGain(fuser.getAverageGain());
+                lightContainer.setMaxGain(fuser.getMaxGain());
+                lightContainer.setInitialLinks(initialLinksCount.toString());
+                lightContainer.setFusedPOIs(fused.toString());
+                
+                lightContainer.setFusedPath(configuration.getFused());
+                lightContainer.setPathA(configuration.getPathDatasetA());
+                lightContainer.setPathB(configuration.getPathDatasetB());
+
+                
+                if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
+                    LOG.info("Unique links: " + CSVRepository.getUniqueCount());
+                    Integer uniqueLinks = CSVRepository.getUniqueCount();
+                    lightContainer.setUniqueLinks(uniqueLinks.toString());
+                } else {
+                    lightContainer.setUniqueLinks(initialLinksCount.toString());
+                }
+            
+                lightContainer.setRejectedLinks(rejected.toString());
+                
+                lightStatProcessor = new LightStatisticsProcessor(lightContainer);
+                lightStatProcessor.compute();
+
+            } else {
+                finalStats = "";
+                LOG.info("Statistics will not be computed. Select a value in the \"stats\" field.");
+            }
+            
             long stopTimeComputeStatistics = System.currentTimeMillis();
 
             Long datasetLoadTime = stopTimeReadFiles - startTimeReadFiles;
@@ -268,17 +307,31 @@ public class FagiInstance {
             Properties prop = new Properties();
             prop.setProperty("fused", fused.toString());
             prop.setProperty("rejected", rejected.toString());
-            prop.setProperty("average-gain", fuser.getAverageGain().toString());
-            prop.setProperty("max-gain", fuser.getMaxGain().toString());
-            prop.setProperty("average-confidence", fuser.getAverageConfidence().toString());
             prop.setProperty("dataset-load-time(ms)", datasetLoadTime.toString());
             prop.setProperty("statistics-time(ms)", statisticsTime.toString());
             prop.setProperty("fusion(ms)", fusionTime.toString());
             prop.setProperty("total-time(ms)", totalTime.toString());
 
+            if(configuration.isVerbose()){
+                prop.setProperty("average-gain", fuser.getAverageGain().toString());
+                prop.setProperty("max-gain", fuser.getMaxGain().toString());
+                prop.setProperty("average-confidence", fuser.getAverageConfidence().toString());
+            } else {
+                prop.setProperty("average-gain", "available in verbose execution");
+                prop.setProperty("max-gain", "available in verbose execution");
+                prop.setProperty("average-confidence", "available in verbose execution");
+            }
+
             OutputStream st = new FileOutputStream(configuration.getOutputDir() + "/" + "fusion.properties", false);
             prop.store(st, null);
 
+            if(configuration.getStats().equals("light")){
+                lightStatProcessor.updateExecutionTimes(datasetLoadTime.toString(), fusionTime.toString(), statisticsTime.toString());
+                finalStats = lightStatProcessor.getStats();
+            }
+
+            exporter.exportStatistics(finalStats, configuration.getStatsFilepath());
+            
             LOG.info(configuration.toString());
 
             LOG.info("####### ###### ##### #### ### ## # Results # ## ### #### ##### ###### #######");

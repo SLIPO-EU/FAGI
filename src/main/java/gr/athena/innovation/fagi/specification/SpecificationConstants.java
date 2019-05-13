@@ -84,6 +84,21 @@ public class SpecificationConstants {
         public static final String FUSION_LOG = "fusionLog";
 
         /**
+         * Name for stats mode in XML. 
+         */
+        public static final String STATS = "stats";
+        
+        /**
+         * Name for light-stats mode in XML. 
+         */
+        public static final String LIGHT_STATS = "light";
+        
+        /**
+         * Name for detailed-stats mode in XML. 
+         */
+        public static final String DETAILED_STATS = "detailed";
+
+        /**
          * Name for rules (file-path) tag in XML. 
          */
         public static final String RULES = "rules";

@@ -185,7 +185,7 @@ public class StatisticResultPair implements Serializable{
 
     /**
      *
-     * @param legendTota lthe legend that refers to the total value.
+     * @param legendTotal the legend that refers to the total value.
      */
     public void setLegendTotal(String legendTotal) {
         this.legendTotal = legendTotal;

@@ -152,6 +152,28 @@ public class ConfigurationParser {
 
             configuration.setSimilarity(similarity);
 
+            NodeList statsNodeList = doc.getElementsByTagName(SpecificationConstants.Config.STATS);
+            String statsModeText = "";
+            String stats;
+            
+            if (statsNodeList.getLength() > 0) {
+                statsModeText = statsNodeList.item(0).getTextContent();
+            }
+            
+            switch (statsModeText.toUpperCase()) {
+                case "LIGHT":
+                    stats = SpecificationConstants.Config.LIGHT_STATS;
+                    break;
+                case "DETAILED":
+                    stats = SpecificationConstants.Config.DETAILED_STATS;
+                    break;
+                case "":
+                default:
+                    stats = "";
+            }
+
+            configuration.setStats(stats);
+
             NodeList rulesNodeList = doc.getElementsByTagName(SpecificationConstants.Config.RULES);
             String rules = rulesNodeList.item(0).getTextContent();
             configuration.setRulesPath(rules);

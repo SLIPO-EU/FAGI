@@ -112,6 +112,7 @@ public class POIFuser implements Fuser {
             }
         }
 
+        int linksCount = 0;
         for (Link link : links.getLinks()) {
 
             if (link.isEnsemble()) {
@@ -206,53 +207,58 @@ public class POIFuser implements Fuser {
 
                 String fusedUri = resolveURI(mode, link.getNodeA(), link.getNodeB());
 
-                Statement interlinkingScore;
-                Float score = link.getScore();
-                if (score != null) {
-                    interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, score, modelA, modelB);
-                    fusedModel.add(interlinkingScore);
-                }
-
-                Statement fusionGain = RDFUtils.getFusionGainStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
-                Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
-
-                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
-                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
-                fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
-
-                fusedModel.add(fusionGain);
-                fusedModel.add(fusionConfidence);
-
-                double confidence = Double.parseDouble(fusionConfidence.getString());
-
-                if (averageConfidence == null) {
-                    averageConfidence = confidence;
-                }
-
-                averageConfidence = (averageConfidence + confidence) / 2;
-
-                Double gain = RDFUtils.getLastFusionGainFromLiteral(fusionGain.getLiteral());
-                if (averageGain == null) {
-                    averageGain = gain;
-                }
-
-                if (gain > maxGain) {
-                    maxGain = gain;
-                }
-
-                FusionLog log = linkedPair.getFusionLog();
-                averageGain = (averageGain + gain) / 2;
-                log.setConfidenceScore(fusionConfidence.getString());
-
                 if (verbose) {
+                    Statement interlinkingScore;
+                    Float score = link.getScore();
+                    if (score != null) {
+                        interlinkingScore = RDFUtils.getInterlinkingScore(fusedUri, score, modelA, modelB);
+                        fusedModel.add(interlinkingScore);
+                    }
+
+                    Statement fusionGain = RDFUtils.getFusionGainStatement(fusedUri, link.getNodeA(), link.getNodeB(), modelA, modelB, fusedModel);
+                    Statement fusionConfidence = RDFUtils.getFusionConfidenceStatement(fusedUri, modelA, modelB, fusedModel);
+
+                    fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_GAIN_NO_BRACKETS), (RDFNode) null);
+                    fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.FUSION_CONFIDENCE_NO_BRACKETS), (RDFNode) null);
+                    fusedModel.removeAll((Resource) null, ResourceFactory.createProperty(Namespace.INTERLINKING_SCORE), (RDFNode) null);
+
+                    fusedModel.add(fusionGain);
+                    fusedModel.add(fusionConfidence);
+
+                    double confidence = Double.parseDouble(fusionConfidence.getString());
+
+                    if (averageConfidence == null) {
+                        averageConfidence = confidence;
+                    }
+
+                    averageConfidence = (averageConfidence + confidence) / 2;
+
+                    Double gain = RDFUtils.getLastFusionGainFromLiteral(fusionGain.getLiteral());
+                    if (averageGain == null) {
+                        averageGain = gain;
+                    }
+
+                    if (gain > maxGain) {
+                        maxGain = gain;
+                    }
+
+                    FusionLog log = linkedPair.getFusionLog();
+                    averageGain = (averageGain + gain) / 2;
+                    log.setConfidenceScore(fusionConfidence.getString());
+
                     addProvenanceToModel(fusedUri, log, fusedModel);
                 }
             }
 
             //add accepted and rejected to fused list. Fusion mode treats them differently at combine.
             fusedList.add(linkedPair);
+            linksCount++;
+            if(linksCount % 100000 == 0){
+                LOG.info("Links processed: " + linksCount);
+            }
         }
 
+        LOG.info("All links processed (" + linksCount + ").");
         //corner case when all links got rejected
         if (averageGain == null) {
             averageGain = 0.0;

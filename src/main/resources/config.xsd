@@ -70,6 +70,15 @@
 		  </xs:simpleType>
 		</xs:element>
 		<xs:element name="verbose" type="xs:boolean"/>
+		<xs:element name="stats" minOccurs="0">
+		  <xs:simpleType>
+			<xs:restriction base="xs:string">
+			  <xs:enumeration value=""/>
+			  <xs:enumeration value="light"/>
+			  <xs:enumeration value="detailed"/>
+			</xs:restriction>
+		  </xs:simpleType>
+		</xs:element>
 		<xs:element name="rules" type="xs:anyURI"/>		
 		<xs:element name="left">
 		  <xs:complexType>
