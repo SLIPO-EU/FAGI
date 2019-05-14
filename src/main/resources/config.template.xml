@@ -5,6 +5,7 @@
 	<locale></locale>
 	<similarity>jarowinkler</similarity>
 	<verbose>false</verbose>
+	<stats>light</stats>
 	<rules></rules>
 	<left>
 		<id></id>

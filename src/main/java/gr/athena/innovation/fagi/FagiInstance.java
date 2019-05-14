@@ -132,7 +132,7 @@ public class FagiInstance {
         long startTimeReadFiles = System.currentTimeMillis();
 
         AbstractRepository genericRDFRepository = new GenericRDFRepository();
-        
+
         genericRDFRepository.parseLeft(configuration.getPathDatasetA());
         genericRDFRepository.parseRight(configuration.getPathDatasetB());
 
@@ -277,7 +277,6 @@ public class FagiInstance {
                 lightContainer.setFusedPath(configuration.getFused());
                 lightContainer.setPathA(configuration.getPathDatasetA());
                 lightContainer.setPathB(configuration.getPathDatasetB());
-
                 
                 if(configuration.getLinksFormat().equals(SpecificationConstants.Config.CSV_UNIQUE_LINKS)){
                     LOG.info("Unique links: " + CSVRepository.getUniqueCount());

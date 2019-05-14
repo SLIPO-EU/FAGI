@@ -11,8 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -88,11 +86,12 @@ public class LightStatisticsProcessor {
             LOG.info("\n" + formattedJson);
 
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(LightStatisticsProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(LightStatisticsProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
+            throw new ApplicationException(ex.getMessage());
         }
-        
     }
 
     /**
@@ -114,7 +113,7 @@ public class LightStatisticsProcessor {
 
         JSONObject item2 = new JSONObject();
         item2.put(LABEL, "Fusion");
-        item2.put(VALUE, "15");
+        item2.put(VALUE, time2);
         
         JSONObject item3 = new JSONObject();
         item3.put(LABEL, "Statistics");
