@@ -24,8 +24,11 @@ public class LightStatisticsProcessor {
 
     private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(LightStatisticsProcessor.class);
 
+    private static final String TYPE = "type";
     private static final String LABEL = "label";
     private static final String VALUE = "value";
+    private static final String PERCENT = "PERCENT";
+    private static final String ABSOLUTE = "ABSOLUTE";
 
     private final JSONObject statistics = new JSONObject();
     private final LightContainer lightContainer;
@@ -49,8 +52,11 @@ public class LightStatisticsProcessor {
 
             LOG.info("Computing light statistics");
 
-            //Initial POIS
-            statistics.put("initialPOIs", countInitialPOIs());
+            //Initial POIS in A
+            statistics.put("initialPOIsA", countInitialPOIsA());
+            
+            //Initial POIS in B
+            statistics.put("initialPOIsB", countInitialPOIsB());
 
             //Total POIs in fused
             statistics.put("poisInFinalDataset", countPoisInFinalDataset());
@@ -104,6 +110,7 @@ public class LightStatisticsProcessor {
     public void updateExecutionTimes(String time1, String time2, String time3){
 
         JSONObject json = new JSONObject();
+        json.put(TYPE, PERCENT);
         json.put(LABEL, "Execution time (ms)");
         JSONArray  jsonArray = new JSONArray();
 
@@ -136,35 +143,50 @@ public class LightStatisticsProcessor {
         return statistics.toJSONString();
     }
 
-    private JSONObject countInitialPOIs() {
-        
+    private JSONObject countInitialPOIsA() {
+
         Integer poisA = countPOIs(lightContainer.getPathA());
-        Integer poisB = countPOIs(lightContainer.getPathB());
-        
+
         JSONObject initialPOIsStat = new JSONObject();
-        initialPOIsStat.put(LABEL, "Initial POIs");
+        initialPOIsStat.put(TYPE, ABSOLUTE);
+        initialPOIsStat.put(LABEL, "Initial POIs in A");
         JSONArray  initialPOIs = new JSONArray();
 
         JSONObject item1 = new JSONObject();
         item1.put(LABEL, "POIs in A");
         item1.put(VALUE, poisA.toString());
 
+        initialPOIs.add(item1);
+        initialPOIsStat.put("items", initialPOIs);
+
+        return initialPOIsStat;
+    }
+
+    private JSONObject countInitialPOIsB() {
+
+        Integer poisB = countPOIs(lightContainer.getPathB());
+
+        JSONObject initialPOIsStat = new JSONObject();
+        initialPOIsStat.put(TYPE, ABSOLUTE);
+        initialPOIsStat.put(LABEL, "Initial POIs in B");
+        JSONArray  initialPOIs = new JSONArray();
+
         JSONObject item2 = new JSONObject();
         item2.put(LABEL, "POIs in B");
         item2.put(VALUE, poisB.toString());
 
-        initialPOIs.add(item1);
         initialPOIs.add(item2);
         initialPOIsStat.put("items", initialPOIs);
 
         return initialPOIsStat;
     }
-    
+
     private JSONObject countPoisInFinalDataset() {
         
         Integer pois = countPOIs(lightContainer.getFusedPath());
         
         JSONObject json = new JSONObject();
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "POIs in final dataset");
         JSONArray  jsonArray = new JSONArray();
 
@@ -179,6 +201,7 @@ public class LightStatisticsProcessor {
 
     private JSONObject countFusedPois() {
         JSONObject json = new JSONObject();
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "Fused POIs");
         JSONArray  jsonArray = new JSONArray();
 
@@ -193,6 +216,7 @@ public class LightStatisticsProcessor {
 
     private JSONObject countInitialLinks() {
         JSONObject json = new JSONObject();
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "Initial links");
         JSONArray  jsonArray = new JSONArray();
 
@@ -207,6 +231,7 @@ public class LightStatisticsProcessor {
 
     private JSONObject countUniqueLinks() {
         JSONObject json = new JSONObject();
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "Unique links");
         JSONArray  jsonArray = new JSONArray();
 
@@ -221,6 +246,7 @@ public class LightStatisticsProcessor {
 
     private JSONObject countUniqueRejectedLinks() {
         JSONObject json = new JSONObject();
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "Unique vs rejected links");
         JSONArray  jsonArray = new JSONArray();
 
@@ -241,11 +267,12 @@ public class LightStatisticsProcessor {
 
     private JSONObject setConfidence() {
         JSONObject json = new JSONObject();
-        json.put(LABEL, "Average Confidence");
+        json.put(TYPE, PERCENT);
+        json.put(LABEL, "Average fusion-confidence");
         JSONArray  jsonArray = new JSONArray();
 
         JSONObject item = new JSONObject();
-        item.put(LABEL, "Average Confidence");
+        item.put(LABEL, "Average fusion-confidence");
         item.put(VALUE, df2.format(lightContainer.getAverageConfidence()));
 
         jsonArray.add(item);
@@ -255,11 +282,12 @@ public class LightStatisticsProcessor {
 
     private JSONObject setAverageGain() {
         JSONObject json = new JSONObject();
-        json.put(LABEL, "Average Gain");
+        json.put(TYPE, PERCENT);
+        json.put(LABEL, "Average attribute-gain");
         JSONArray  jsonArray = new JSONArray();
 
         JSONObject item = new JSONObject();
-        item.put(LABEL, "Average Gain");
+        item.put(LABEL, "Average attribute-gain");
         item.put(VALUE, df2.format(lightContainer.getAverageGain()));
 
         jsonArray.add(item);
@@ -269,11 +297,12 @@ public class LightStatisticsProcessor {
 
     private JSONObject setMaxGain() {
         JSONObject json = new JSONObject();
-        json.put(LABEL, "Max Gain");
+        json.put(TYPE, PERCENT);
+        json.put(LABEL, "Max attribute-gain");
         JSONArray  jsonArray = new JSONArray();
 
         JSONObject item = new JSONObject();
-        item.put(LABEL, "Max Gain");
+        item.put(LABEL, "Max attribute-gain");
         item.put(VALUE, df2.format(lightContainer.getMaxGain()));
 
         jsonArray.add(item);
