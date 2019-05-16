@@ -110,7 +110,7 @@ public class LightStatisticsProcessor {
     public void updateExecutionTimes(String time1, String time2, String time3){
 
         JSONObject json = new JSONObject();
-        json.put(TYPE, PERCENT);
+        json.put(TYPE, ABSOLUTE);
         json.put(LABEL, "Execution time (ms)");
         JSONArray  jsonArray = new JSONArray();
 
